@@ -1,11 +1,12 @@
-import { CodecTypeExtensions, CodecTypeOptions, CompatibleNamespaceTypes } from './types';
+import { CodecOptions, CodecType, CompatibleNamespaceTypes } from './types';
 
-type Vec<T> = CodecTypeExtensions<{
-    yahoo: () => void;
-}> &
-    T[];
+export type Vec<T> = T[];
 
-export function createVecCodec<N, T>(typeName: CompatibleNamespaceTypes<N, T>): CodecTypeOptions<N, Vec<T>> {
+export type VecCodecType<T> = CodecType<Vec<T>>;
+
+export type VecCodecOptions<N, T> = CodecOptions<N, Vec<T>>;
+
+export function defineVecCodec<N, T>(typeName: CompatibleNamespaceTypes<N, T>): VecCodecOptions<N, T> {
     return {
         encode: () => null as any,
         decode: () => null as any,

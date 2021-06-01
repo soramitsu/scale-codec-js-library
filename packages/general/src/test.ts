@@ -1,30 +1,43 @@
-import { createEnumCodec, Enum } from './enum';
-import { createCodecMap } from './map';
-import { createRoot } from './root';
-import { createStructWith } from './struct';
-import { CodecTypeOptions } from './types';
+import { defineEnumCodec, EnumCodecType } from './enum';
+import { defineMapCodec } from './map';
+import { defineNamespace } from './namespace';
+import { defineStructCodec } from './struct';
+import { CodecType, NamespaceValue } from './types';
+import { StringCodec } from './string';
+import { defineTupleCodec, Tuple } from './tuple';
+import { defineVecCodec, VecCodecType } from './vec';
+import { CodecNumber, defineNumCodec } from './numbers';
 
 type NS = {
-    Id: {
+    Id: CodecType<{
         name: string;
         domain: string;
-    };
-    String: string;
-    'BTreeMap<string, Id>': Map<string, NS['Id']>;
-    'Option<Id>': Enum<{ None: null; Some: NS['Id'] }>;
+    }>;
+    String: CodecType<string>;
+    'BTreeMap<string, Id>': CodecType<Map<string, NamespaceValue<NS, 'Id'>>>;
+    'Option<Id>': EnumCodecType<{ None: null; Some: NamespaceValue<NS, 'Id'> }>;
+    '()': CodecType<Tuple<[]>>;
+    'Vec<u8>': VecCodecType<CodecNumber>;
+    Number: CodecType<CodecNumber>;
 };
 
 // const OptionId=
 
-const r = createRoot<NS>({
-    Id: createStructWith([
+const r = defineNamespace<NS>({
+    Id: defineStructCodec<NS, NamespaceValue<NS, 'Id'>>([
         ['name', 'String'],
         ['domain', 'String'],
     ]),
-    String: null as CodecTypeOptions<NS, string>,
-    'BTreeMap<string, Id>': createCodecMap('String', 'Id'),
-    'Option<Id>': createEnumCodec<NS, NS['Option<Id>'] extends Enum<infer V> ? V : never>(['None', ['Some', 'Id']]),
+    String: StringCodec,
+    'BTreeMap<string, Id>': defineMapCodec('String', 'Id'),
+    'Option<Id>': defineEnumCodec<NS, NS['Option<Id>'] extends EnumCodecType<infer V> ? V : never>([
+        'None',
+        ['Some', 'Id'],
+    ]),
+    '()': defineTupleCodec([]),
+    Number: defineNumCodec(256, 'signed'),
+    'Vec<u8>': defineVecCodec('Number'),
 });
 
 r.lookup('BTreeMap<string, Id>');
-r.lookup('Option<Id>').create('None');
+const a = r.lookup('Option<Id>').create('None').unwrap('Some');

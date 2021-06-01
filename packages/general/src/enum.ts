@@ -1,8 +1,8 @@
 // import { ScaleEncoder, ScaleDecoder } from './core';
 // import { ScaleString, ScaleStringDecoder } from './string';
 
-import { createRoot } from './root';
-import { CodecTypeOptions, CompatibleNamespaceTypes, Root, StrKeys } from './types';
+import { createNamespace } from './root';
+import { Namespace, CompatibleNamespaceTypes, StrKeys, CodecType, CodecOptions } from './types';
 
 export type Enum<V> = EnumMethods<V>;
 
@@ -24,10 +24,10 @@ export type EnumConstructor<V extends {}> = {
     };
 };
 
-export type EnumConstructorOpts<V extends {}, N extends {}, R = Root<N>> = {
+export type EnumConstructorOpts<V extends {}> = {
     create: {
-        <K extends VariantsWithValues<V>, Inner extends V[K]>(root: R, variant: K, value: Inner): Enum<V>;
-        <K extends VariantsWithoutValues<V>>(root: R, variant: K): Enum<V>;
+        <K extends VariantsWithValues<V>, Inner extends V[K]>(variant: K, value: Inner): Enum<V>;
+        <K extends VariantsWithoutValues<V>>(variant: K): Enum<V>;
     };
 };
 
@@ -57,13 +57,18 @@ type NonEmptyVariantDefinition<Name, Type> =
           discriminant?: number;
       };
 
-export function createEnumCodec<N extends {}, V extends {}>(
+export type EnumCodecOptions<N, V> = CodecOptions<N, Enum<V>> & EnumConstructor<V>;
+
+export type EnumCodecType<V> = CodecType<Enum<V>> & EnumConstructor<V>;
+
+export function defineEnumCodec<N extends {}, V extends {}>(
     definition: EnumVariantsDefinition<N, V>,
-): CodecTypeOptions<N, Enum<V>> {
+): EnumCodecOptions<N, V> {
     return {
         // codec: {
         encode: () => new Uint8Array(),
         decode: () => null as unknown as Enum<V>,
+        create: () => null as any,
         // },
         // constructor: {
         //     create: () => null as unknown as Enum<V>,
@@ -92,13 +97,13 @@ export type Result<Ok, Err> = Enum<{
         String: string;
     };
 
-    const root = createRoot<NSWithEnum>({} as any);
+    const root = createNamespace<NSWithEnum>({} as any);
 
     const OptStrType = root.lookup('Option<String>');
 
     const val = OptStrType.create('Some', '123');
 
-    const OptionEnumDef = createEnumCodec<
+    const OptionEnumDef = defineEnumCodec<
         {
             String: string;
         },

@@ -1,4 +1,4 @@
-import { CodecTypeOptions, StrKeys, CompatibleNamespaceTypes } from './types';
+import { CodecOptions, StrKeys, CompatibleNamespaceTypes, CodecType } from './types';
 
 // struct - key-value type, where key - field name, and value - type of inner value
 
@@ -7,7 +7,7 @@ type StructDefinition<N, S> = {
     [K in keyof S]: [K, CompatibleNamespaceTypes<N, S[K]>];
 }[StrKeys<S>][];
 
-export function createStructWith<N, S>(defs: StructDefinition<N, S>): CodecTypeOptions<N, S> {
+export function defineStructCodec<N, S>(defs: StructDefinition<N, S>): CodecOptions<N, S> {
     return null;
 }
 
@@ -18,16 +18,18 @@ export function createStructWith<N, S>(defs: StructDefinition<N, S>): CodecTypeO
     }
 
     type NS = {
-        String: string;
-        u32: number;
-        u64: number;
-        Id: Id;
+        String: CodecType<string>;
+        u32: CodecType<number>;
+        u64: CodecType<number>;
+        Id: CodecType<Id>;
     };
 
-    const IdOpts = createStructWith<NS, Id>([
+    const IdOpts = defineStructCodec<NS, Id>([
         ['name', 'String'],
         ['domain', 'u64'],
     ]);
+
+    IdOpts.decode(null, new Uint8Array());
 }
 
 // // import { ScaleCreateDefault, ScaleCreateFromVoid, ScaleDecoder, ScaleEncoder } from './core';

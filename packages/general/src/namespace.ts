@@ -1,6 +1,6 @@
-import { CodecType, CodecTypeOptions, NamespaceOptions, NamespaceToCodecTypes, Root } from './types';
+import { CodecOptions, CodecType, CodecTypeValue, Namespace, TypesOpts } from './types';
 
-function compileTypeDefinition<N extends {}, V>(root: Root<N>, typeOptions: CodecTypeOptions<N, V>): CodecType<V> {
+function compileTypeDefinition<N extends {}, V>(root: Namespace<N>, typeOptions: CodecOptions<N, V>): CodecType<V> {
     const { encode, decode } = typeOptions;
     return {
         encode: (v) => encode(root, v),
@@ -8,34 +8,34 @@ function compileTypeDefinition<N extends {}, V>(root: Root<N>, typeOptions: Code
     };
 }
 
-export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N> {
-    const root: Root<N> = {} as any;
+export function defineNamespace<N extends {}>(namescape: TypesOpts<N>): Namespace<N> {
+    const ns: Namespace<N> = {} as any;
 
-    const types: NamespaceToCodecTypes<N> = Object.fromEntries(
-        (Object.entries(namescape) as [keyof N, CodecTypeOptions<N, any>][]).map(([typeName, options]) => [
+    const types: N = Object.fromEntries(
+        (Object.entries(namescape) as [keyof N, CodecOptions<N, any>][]).map(([typeName, options]) => [
             typeName,
-            compileTypeDefinition(root, options),
+            compileTypeDefinition(ns, options),
         ]),
     ) as any;
 
-    root.lookup = (type) => types[type];
-    root.encode = (type, val) => root.lookup(type).encode(val);
-    root.decode = (type, buff) => root.lookup(type).decode(buff);
+    ns.lookup = (type) => types[type];
+    // ns.encode = (type, val) => ns.lookup(type).encode(val);
+    // ns.decode = (type, buff) => ns.lookup(type).decode(buff);
 
-    return root;
+    return ns;
 }
 
 // testing
 
 {
     type MyTypes = {
-        Id: {
+        Id: CodecType<{
             name: string;
             domain: string;
-        };
-        Account: {
-            id: MyTypes['Id'];
-        };
+        }>;
+        Account: CodecType<{
+            id: CodecTypeValue<MyTypes['Id']>;
+        }>;
     };
 
     // interface Id {
@@ -51,7 +51,7 @@ export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N
     //     [K in keyof MyTypes]: CodecType<MyTypes[K]>;
     // };
 
-    const root = createRoot<MyTypes>({
+    const root = defineNamespace<MyTypes>({
         Id: {
             encode(root, { name, domain }) {
                 console.log('encoding %o & %o', name, domain);
@@ -94,7 +94,7 @@ export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N
         };
     }
 
-    const root = createRoot<{
+    const root = defineNamespace<{
         u8: CodecNumber;
         u16: CodecNumber;
         u32: CodecNumber;
@@ -119,7 +119,7 @@ export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N
         SmartString: CodecTypeOptions<NS, string> & { fromHex(hex: string): string };
     };
 
-    const root = createRoot<NS>(null as any);
+    const root = defineNamespace<NS>(null as any);
 
     root.lookup('SmartString').fromHex();
 

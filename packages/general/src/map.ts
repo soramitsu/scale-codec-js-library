@@ -1,14 +1,20 @@
-import { CodecTypeOptions } from './types';
+import { ValuesAsCodecs, CodecOptions, Namespace, CodecTypeValue, CompatibleNamespaceTypes, CodecType } from './types';
 
-export function createCodecMap<N extends {}, K extends keyof N & string, V extends keyof N & string>(
-    keyType: K,
-    valueType: V,
-): CodecTypeOptions<N, Map<N[K], N[V]>> {
+export function defineMapCodec<
+    N extends {},
+    K extends { [x in keyof N]: CodecTypeValue<N[x]> }[keyof N],
+    V extends { [x in keyof N]: CodecTypeValue<N[x]> }[keyof N],
+>(
+    keyTypeName: CompatibleNamespaceTypes<N, K>,
+    valueTypeName: CompatibleNamespaceTypes<N, V>,
+): CodecOptions<N, Map<K, V>> {
     return {
         encode: (root, map) => {
-            // yeah, typed map!
-            const Key = root.lookup(keyType);
-            const Value = root.lookup(valueType);
+            // ohhhh, it it impossible to type correctly. But, it is very scoped unsafety and may be tested
+            const Key = root.lookup(keyTypeName) as unknown as CodecType<K>;
+            const Value = root.lookup(valueTypeName) as unknown as CodecType<K>;
+
+            // Key
 
             const encodedEntries = [...map.entries()].map(([k, v]) =>
                 // here is issue: encode(value: any) - ANY?!!

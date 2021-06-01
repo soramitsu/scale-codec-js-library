@@ -1,4 +1,4 @@
-import { CodecTypeOptions } from './types';
+import { CodecOptions } from './types';
 
 type CodecNumType = 'signed' | 'unsigned';
 
@@ -8,7 +8,7 @@ export class CodecNumber {
     encode(): Uint8Array {}
 }
 
-export function createCodecNumberTypeOptions(bits: number, type: CodecNumType): CodecTypeOptions<any, CodecNumber> {
+export function defineNumCodec(bits: number, type: CodecNumType): CodecOptions<any, CodecNumber> {
     return {
         decode: (root, buff) => new CodecNumber(4123, bits, type),
         encode: (root, val) => val.encode(),
@@ -17,9 +17,9 @@ export function createCodecNumberTypeOptions(bits: number, type: CodecNumType): 
 
 // creating types
 
-export const u32 = createCodecNumberTypeOptions(32, 'unsigned');
+export const u32 = defineNumCodec(32, 'unsigned');
 
-export const i32 = createCodecNumberTypeOptions(32, 'signed');
+export const i32 = defineNumCodec(32, 'signed');
 
 // const root = createRoot<{
 //     u8: CodecNumber;
