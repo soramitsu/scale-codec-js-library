@@ -1,37 +1,4 @@
-export type CodecType<V, E = {}> = {
-    encode: (value: V) => Uint8Array;
-    decode: (buffer: Uint8Array) => V;
-    // create?: (something: Default) => V;
-    // createFromVoid?: () => V;
-} & E;
-
-export type CodecTypeValue<C extends CodecType<unknown>> = C extends CodecType<infer V> ? V : never;
-
-// export type NamescapeDefault = Record<string, CodecType<unknown>>;
-
-export type NamespaceOptions<N extends {}> = {
-    [K in keyof N]: CodecTypeOptions<N, N[K]>;
-};
-
-export interface Root<N extends {}> {
-    lookup: RootLoolupFn<N>;
-    encode: RootEncodeFn<N>;
-    decode: RootDecodeFn<N>;
-}
-
-export type RootLoolupFn<N extends {}> = <K extends keyof N>(type: K) => CodecType<N[K]>;
-
-export type RootEncodeFn<N extends {}> = <K extends keyof N>(type: K, value: N[K]) => Uint8Array;
-
-export type RootDecodeFn<N extends {}> = <K extends keyof N>(type: K, buffer: Uint8Array) => N[K];
-
-// definition internal, frame worked
-export type CodecTypeOptions<N extends {}, V extends any, R = Root<N>> = {
-    encode: (root: R, value: V) => Uint8Array;
-    decode: (root: R, buffer: Uint8Array) => V;
-    // create?: <V>(root: R, value: V) => T;
-    // createFromVoid?: (root: R) => T;
-};
+import { CodecType, CodecTypeOptions, NamespaceOptions, NamespaceToCodecTypes, Root } from './types';
 
 function compileTypeDefinition<N extends {}, V>(root: Root<N>, typeOptions: CodecTypeOptions<N, V>): CodecType<V> {
     const { encode, decode } = typeOptions;
@@ -40,10 +7,6 @@ function compileTypeDefinition<N extends {}, V>(root: Root<N>, typeOptions: Code
         decode: (b) => decode(root, b),
     };
 }
-
-type NamespaceToCodecTypes<N extends {}> = {
-    [K in keyof N]: CodecType<N[K]>;
-};
 
 export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N> {
     const root: Root<N> = {} as any;
@@ -62,30 +25,7 @@ export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N
     return root;
 }
 
-// class RootImpl<N extends NamescapeDefault> implements Root<N> {
-//     private types: N;
-
-//     constructor(defs: NamespaceOptions<N>) {
-//         this.types = Object.fromEntries(
-//             (Object.entries(defs) as [keyof N, TypeOptions<N, any>][]).map(([typeName, options]) => [
-//                 typeName,
-//                 compileTypeDefinition(this, options),
-//             ]),
-//         ) as any;
-//     }
-
-//     lookup<K extends keyof N>(type: K): N[K] {
-//         return this.types[type];
-//     }
-
-//     encode<K extends keyof N>(type: K, value: CodecTypeValue<N[K]>): Uint8Array {
-//         return this.lookup(type).encode(value);
-//     }
-
-//     decode<K extends keyof N>(type: K, buffer: Uint8Array): CodecTypeValue<N[K]> {
-//         return this.lookup(type).decode(buffer);
-//     }
-// }
+// testing
 
 {
     type MyTypes = {

@@ -1,4 +1,4 @@
-import { CodecTypeOptions } from './core';
+import { CodecTypeOptions } from './types';
 
 type CodecNumType = 'signed' | 'unsigned';
 

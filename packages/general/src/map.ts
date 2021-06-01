@@ -1,4 +1,4 @@
-import { CodecTypeOptions } from './core';
+import { CodecTypeOptions } from './types';
 
 export function createCodecMap<N extends {}, K extends keyof N & string, V extends keyof N & string>(
     keyType: K,
