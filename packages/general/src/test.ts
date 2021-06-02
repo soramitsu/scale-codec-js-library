@@ -6,7 +6,7 @@ import { CodecType, NamespaceValue } from './types';
 import { StringCodec } from './string';
 import { defineTupleCodec, Tuple } from './tuple';
 import { defineVecCodec, VecCodecType } from './vec';
-import { CodecNumber, defineNumCodec } from './numbers';
+import { CodecNumber, u32 } from './numbers';
 
 type NS = {
     Id: CodecType<{
@@ -17,8 +17,8 @@ type NS = {
     'BTreeMap<string, Id>': CodecType<Map<string, NamespaceValue<NS, 'Id'>>>;
     'Option<Id>': EnumCodecType<{ None: null; Some: NamespaceValue<NS, 'Id'> }>;
     '()': CodecType<Tuple<[]>>;
-    'Vec<u8>': VecCodecType<CodecNumber>;
-    Number: CodecType<CodecNumber>;
+    'Vec<u32>': VecCodecType<CodecNumber>;
+    u32: CodecType<CodecNumber>;
 };
 
 // const OptionId=
@@ -35,8 +35,8 @@ const r = defineNamespace<NS>({
         ['Some', 'Id'],
     ]),
     '()': defineTupleCodec([]),
-    Number: defineNumCodec(256, 'signed'),
-    'Vec<u8>': defineVecCodec('Number'),
+    u32: u32,
+    'Vec<u32>': defineVecCodec('u32'),
 });
 
 r.lookup('BTreeMap<string, Id>');

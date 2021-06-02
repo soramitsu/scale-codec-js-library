@@ -1,7 +1,7 @@
 // import { ScaleEncoder, ScaleDecoder } from './core';
 // import { ScaleString, ScaleStringDecoder } from './string';
 
-import { createNamespace } from './root';
+import { defineNamespace } from './namespace';
 import { Namespace, CompatibleNamespaceTypes, StrKeys, CodecType, CodecOptions } from './types';
 
 export type Enum<V> = EnumMethods<V>;
@@ -97,7 +97,7 @@ export type Result<Ok, Err> = Enum<{
         String: string;
     };
 
-    const root = createNamespace<NSWithEnum>({} as any);
+    const root = defineNamespace<NSWithEnum>({} as any);
 
     const OptStrType = root.lookup('Option<String>');
 
