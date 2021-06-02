@@ -7,70 +7,61 @@
  * Base options of codec. Each entry in namespace definition should
  * implement this interface
  *
- * Generic `N` specifies namespace of codecs, `V` - codec's decoded value
+ * Generic `N` specifies namespace of types, `V` - codec's decoded value
+ *
+ * TODO do not work with uint directly - provide Writer and Reader. Performance, no unnecessary allocations
  */
-export type CodecOptions<N, V> = {
-    encode: (root: Namespace<N>, value: V) => Uint8Array;
-    decode: (root: Namespace<N>, buffer: Uint8Array) => V;
+export type Codec<N, V> = {
+    encode: (namespace: NamespaceCompiled<N>, value: V) => Uint8Array;
+    decode: (namespace: NamespaceCompiled<N>, buffer: Uint8Array) => V;
 };
 
 /**
- * Base Codec interface. `CodecOptions` compiles to it inside of namespace.
- * Generic `V` specifies the decoded value
+ * Compiled codec - pure encode & decode functions for some value
  */
-export type CodecType<V> = {
+export type CodecCompiled<V> = {
     encode: (value: V) => Uint8Array;
     decode: (buffer: Uint8Array) => V;
 };
 
 /**
- * Utility type, that converts namespace of codec types to namespace of their options
+ * Utility type, that converts namespace of values to namespace of their codecs (in this namespace)
  */
-export type TypesOpts<N> = {
-    [K in keyof N]: N[K] extends CodecType<infer V> ? CodecOptions<N, V> & Omit<N[K], keyof CodecType<V>> : never;
+export type NamespaceAsCodecs<N> = {
+    [K in keyof N]: Codec<N, N[K]>;
 };
 
 /**
- * Utility type, that converts namespace of values to base codec types with this values
+ * Utility type, that converts namespace of values to their compiled codecs
  */
-export type ValuesAsCodecs<N> = {
-    [K in keyof N]: CodecType<N[K]>;
+export type NamespaceAsCompiledCodecs<N> = {
+    [K in keyof N]: CodecCompiled<N[K]>;
 };
 
 /**
  * Utility type that converts namespace of codecs to their values
  */
 export type CodecsAsValues<N> = {
-    [K in keyof N]: N[K] extends CodecType<infer V> ? V : never;
+    [K in keyof N]: N[K] extends CodecCompiled<infer V> ? V : never;
 };
 
 /**
  * Compiled namespace interface
  */
-export type Namespace<N> = {
+export type NamespaceCompiled<N> = {
     /**
      * Looks up for type in the namespace and returns compiled codec type
      */
-    lookup: <K extends keyof N>(type: K) => N[K];
+    lookup: <K extends keyof N>(type: K) => CodecCompiled<N[K]>;
 };
 
 /**
- * Utility type, that returns keys from namespace of codecs (`N`), which codec types values are compatible
- * with type `T` (that means that `T` extends the value of codec)
+ * Utility type, that returns keys from namespace of values which are compatible
+ * with type `T` (that means that `T` extends the value)
  */
 export type CompatibleNamespaceTypes<N, T> = {
-    [K in keyof N]: N[K] extends CodecType<infer V> ? (T extends V ? K : never) : never;
+    [K in keyof N]: T extends N[K] ? K : never;
 }[keyof N];
-
-/**
- * Utility type that extracts codec value from namespace by key
- */
-export type NamespaceValue<N, K extends keyof N> = CodecTypeValue<N[K]>;
-
-/**
- * Extracts value of `CodecType`
- */
-export type CodecTypeValue<T> = T extends CodecType<infer V> ? V : never;
 ```
 
 ## Defining namespace
@@ -78,59 +69,73 @@ export type CodecTypeValue<T> = T extends CodecType<infer V> ? V : never;
 All dancing around namespace type, which have that structure:
 
 ```ts
-import { defineEnumCodec, EnumCodecType } from './enum';
-import { defineMapCodec } from './map';
-import { defineNamespace } from './namespace';
-import { defineStructCodec } from './struct';
-import { CodecType, NamespaceValue } from './types';
-import { StringCodec } from './string';
-import { defineTupleCodec, Tuple } from './tuple';
-import { defineVecCodec, VecCodecType } from './vec';
-import { CodecNumber, u32 } from './numbers';
+import { compileNamespace } from './namespace';
+import {
+    defineEnumCodec,
+    defineStructCodec,
+    defineVecCodec,
+    Option,
+    OptionVariants,
+    PrimitiveCodecs,
+    PrimitiveTypes,
+    MapCodec,
+} from './std';
 
-// specifying namespace as map of codec types
-
-type NS = {
-    Id: CodecType<{
+type MyCustomNamespace = PrimitiveTypes & {
+    Id: {
         name: string;
         domain: string;
-    }>;
-    String: CodecType<string>;
-    'BTreeMap<string, Id>': CodecType<Map<string, NamespaceValue<NS, 'Id'>>>;
-    'Option<Id>': EnumCodecType<{ None: null; Some: NamespaceValue<NS, 'Id'> }>;
-    '()': CodecType<Tuple<[]>>;
-    'Vec<u32>': VecCodecType<CodecNumber>;
-    u32: CodecType<CodecNumber>;
+    };
+    'BTreeMap<String,Id>': Map<PrimitiveTypes['String'], MyCustomNamespace['Id']>;
+    'Option<Id>': Option<MyCustomNamespace['Id']>;
+    'Vec<u32>': PrimitiveTypes['u32'][];
 };
 
-// defining (compiling) namespace from codec options
-
-const namespace = defineNamespace<NS>({
-    Id: defineStructCodec<NS, NamespaceValue<NS, 'Id'>>([
+const codecs = {
+    Id: defineStructCodec<MyCustomNamespace, MyCustomNamespace['Id']>([
         ['name', 'String'],
         ['domain', 'String'],
     ]),
-    String: StringCodec,
-    'BTreeMap<string, Id>': defineMapCodec('String', 'Id'),
-    'Option<Id>': defineEnumCodec<NS, NS['Option<Id>'] extends EnumCodecType<infer V> ? V : never>([
-        'None',
-        ['Some', 'Id'],
-    ]),
-    '()': defineTupleCodec([]),
-    u32: u32,
-    'Vec<u32>': defineVecCodec('u32'),
+    'BTreeMap<String,Id>': MapCodec<MyCustomNamespace, 'String', 'Id'>('String', 'Id'),
+    'Option<Id>': defineEnumCodec<MyCustomNamespace, OptionVariants<MyCustomNamespace['Id']>>(['None', ['Some', 'Id']]),
+    'Vec<u32>': defineVecCodec<MyCustomNamespace, number>('u32'),
+};
+
+const namespace = compileNamespace<MyCustomNamespace>({
+    ...PrimitiveCodecs,
+    ...codecs,
 });
 ```
 
-For now, namespace is ready to use! Yes, it's definition is not very clear, but we should specify namespace only once and then use types from it type-safe and without boilerplate.
+And now namespace is ready to use! It's definition is not very clear, but (1) it should be specified only once and (2) it designed to be able to be generated automatically.
 
 ```ts
-const id: Id = {
-    name: 'Some name',
-    domain: 'Soramitsu',
-};
+const map: Map<string, MyCustomNamespace['Id']> = namespace.lookup('BTreeMap<String,Id>').decode(new Uint8Array());
 
-const idEncoded = namespace.lookup('Id').encode(id);
+const maybeId: Option<MyCustomNamespace['Id']> = codecs['Option<Id>'].create('Some', {
+    name: '412',
+    domain: '4141',
+});
 
-const decoded = namespace.lookup('Id').decode(idEncoded);
+const id: MyCustomNamespace['Id'] = maybeId.unwrap('Some');
+
+namespace.lookup('Id').encode(id);
+```
+
+> Note that type annotations like `id: MyCustonNamespace['Id']` are unnecessary and only for demonstration.
+
+## How definitions for the custom namespaces may looks like?
+
+```ts
+import { PrimitiveTypes } from './std';
+
+interface CustomNamespaceDefinition {
+    [x: string]:
+        | string // alias to some type
+        | keyof PrimitiveTypes // alias to some standard type
+        | {
+              type: 'Vec'; // or enum|tuple|struct|map
+              // ...specific options for each type
+          };
+}
 ```

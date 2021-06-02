@@ -1,18 +1,25 @@
-import { CodecOptions, CodecType, CodecTypeValue, Namespace, TypesOpts } from './types';
+import {
+    Codec,
+    CodecCompiled,
+    CodecTypeValue,
+    NamespaceCompiled,
+    NamespaceAsCodecs,
+    NamespaceAsCompiledCodecs,
+} from './types';
 
-function compileTypeDefinition<N extends {}, V>(root: Namespace<N>, typeOptions: CodecOptions<N, V>): CodecType<V> {
-    const { encode, decode } = typeOptions;
+function compileTypeDefinition<N extends {}, V>(namespace: NamespaceCompiled<N>, codec: Codec<N, V>): CodecCompiled<V> {
+    const { encode, decode } = codec;
     return {
-        encode: (v) => encode(root, v),
-        decode: (b) => decode(root, b),
+        encode: (v) => encode(namespace, v),
+        decode: (b) => decode(namespace, b),
     };
 }
 
-export function defineNamespace<N extends {}>(namescape: TypesOpts<N>): Namespace<N> {
-    const ns: Namespace<N> = {} as any;
+export function compileNamespace<N extends {}>(namescape: NamespaceAsCodecs<N>): NamespaceCompiled<N> {
+    const ns: NamespaceCompiled<N> = {} as any;
 
-    const types: N = Object.fromEntries(
-        (Object.entries(namescape) as [keyof N, CodecOptions<N, any>][]).map(([typeName, options]) => [
+    const types: NamespaceAsCompiledCodecs<N> = Object.fromEntries(
+        (Object.entries(namescape) as [keyof N, Codec<N, any>][]).map(([typeName, options]) => [
             typeName,
             compileTypeDefinition(ns, options),
         ]),
@@ -29,13 +36,13 @@ export function defineNamespace<N extends {}>(namescape: TypesOpts<N>): Namespac
 
 {
     type MyTypes = {
-        Id: CodecType<{
+        Id: {
             name: string;
             domain: string;
-        }>;
-        Account: CodecType<{
-            id: CodecTypeValue<MyTypes['Id']>;
-        }>;
+        };
+        Account: {
+            id: MyTypes['Id'];
+        };
     };
 
     // interface Id {
@@ -51,7 +58,7 @@ export function defineNamespace<N extends {}>(namescape: TypesOpts<N>): Namespac
     //     [K in keyof MyTypes]: CodecType<MyTypes[K]>;
     // };
 
-    const root = defineNamespace<MyTypes>({
+    const root = compileNamespace<MyTypes>({
         Id: {
             encode(root, { name, domain }) {
                 console.log('encoding %o & %o', name, domain);
@@ -94,7 +101,7 @@ export function defineNamespace<N extends {}>(namescape: TypesOpts<N>): Namespac
         };
     }
 
-    const root = defineNamespace<{
+    const root = compileNamespace<{
         u8: CodecNumber;
         u16: CodecNumber;
         u32: CodecNumber;
@@ -119,7 +126,7 @@ export function defineNamespace<N extends {}>(namescape: TypesOpts<N>): Namespac
         SmartString: CodecTypeOptions<NS, string> & { fromHex(hex: string): string };
     };
 
-    const root = defineNamespace<NS>(null as any);
+    const root = compileNamespace<NS>(null as any);
 
     root.lookup('SmartString').fromHex();
 

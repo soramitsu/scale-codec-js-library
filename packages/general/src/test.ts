@@ -1,43 +1,47 @@
-import { defineEnumCodec, EnumCodecType } from './enum';
-import { defineMapCodec } from './map';
-import { defineNamespace } from './namespace';
-import { defineStructCodec } from './struct';
-import { CodecType, NamespaceValue } from './types';
-import { StringCodec } from './string';
-import { defineTupleCodec, Tuple } from './tuple';
-import { defineVecCodec, VecCodecType } from './vec';
-import { CodecNumber, u32 } from './numbers';
+import { compileNamespace } from './namespace';
+import {
+    defineEnumCodec,
+    defineStructCodec,
+    defineVecCodec,
+    Option,
+    OptionVariants,
+    PrimitiveCodecs,
+    PrimitiveTypes,
+    MapCodec,
+} from './std';
 
-type NS = {
-    Id: CodecType<{
+type MyCustomNamespace = PrimitiveTypes & {
+    Id: {
         name: string;
         domain: string;
-    }>;
-    String: CodecType<string>;
-    'BTreeMap<string, Id>': CodecType<Map<string, NamespaceValue<NS, 'Id'>>>;
-    'Option<Id>': EnumCodecType<{ None: null; Some: NamespaceValue<NS, 'Id'> }>;
-    '()': CodecType<Tuple<[]>>;
-    'Vec<u32>': VecCodecType<CodecNumber>;
-    u32: CodecType<CodecNumber>;
+    };
+    'BTreeMap<String,Id>': Map<PrimitiveTypes['String'], MyCustomNamespace['Id']>;
+    'Option<Id>': Option<MyCustomNamespace['Id']>;
+    'Vec<u32>': PrimitiveTypes['u32'][];
 };
 
-// const OptionId=
-
-const r = defineNamespace<NS>({
-    Id: defineStructCodec<NS, NamespaceValue<NS, 'Id'>>([
+const codecs = {
+    Id: defineStructCodec<MyCustomNamespace, MyCustomNamespace['Id']>([
         ['name', 'String'],
         ['domain', 'String'],
     ]),
-    String: StringCodec,
-    'BTreeMap<string, Id>': defineMapCodec('String', 'Id'),
-    'Option<Id>': defineEnumCodec<NS, NS['Option<Id>'] extends EnumCodecType<infer V> ? V : never>([
-        'None',
-        ['Some', 'Id'],
-    ]),
-    '()': defineTupleCodec([]),
-    u32: u32,
-    'Vec<u32>': defineVecCodec('u32'),
+    'BTreeMap<String,Id>': MapCodec<MyCustomNamespace, 'String', 'Id'>('String', 'Id'),
+    'Option<Id>': defineEnumCodec<MyCustomNamespace, OptionVariants<MyCustomNamespace['Id']>>(['None', ['Some', 'Id']]),
+    'Vec<u32>': defineVecCodec<MyCustomNamespace, number>('u32'),
+};
+
+const namespace = compileNamespace<MyCustomNamespace>({
+    ...PrimitiveCodecs,
+    ...codecs,
 });
 
-r.lookup('BTreeMap<string, Id>');
-const a = r.lookup('Option<Id>').create('None').unwrap('Some');
+const map: Map<string, MyCustomNamespace['Id']> = namespace.lookup('BTreeMap<String,Id>').decode(new Uint8Array());
+
+const maybeId: Option<MyCustomNamespace['Id']> = codecs['Option<Id>'].create('Some', {
+    name: '412',
+    domain: '4141',
+});
+
+const id: MyCustomNamespace['Id'] = maybeId.unwrap('Some');
+
+namespace.lookup('Id').encode(id);

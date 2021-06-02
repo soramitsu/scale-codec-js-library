@@ -1,4 +1,4 @@
-import { CodecOptions, StrKeys, CompatibleNamespaceTypes, CodecType } from './types';
+import { Codec, StrKeys, CompatibleNamespaceTypes } from '../types';
 
 // struct - key-value type, where key - field name, and value - type of inner value
 
@@ -7,7 +7,7 @@ type StructDefinition<N, S> = {
     [K in keyof S]: [K, CompatibleNamespaceTypes<N, S[K]>];
 }[StrKeys<S>][];
 
-export function defineStructCodec<N, S>(defs: StructDefinition<N, S>): CodecOptions<N, S> {
+export function defineStructCodec<N, S>(defs: StructDefinition<N, S>): Codec<N, S> {
     return null;
 }
 
@@ -18,10 +18,10 @@ export function defineStructCodec<N, S>(defs: StructDefinition<N, S>): CodecOpti
     }
 
     type NS = {
-        String: CodecType<string>;
-        u32: CodecType<number>;
-        u64: CodecType<number>;
-        Id: CodecType<Id>;
+        String: string;
+        u32: number;
+        u64: number;
+        Id: Id;
     };
 
     const IdOpts = defineStructCodec<NS, Id>([

@@ -1,18 +1,21 @@
-import { ValuesAsCodecs, CodecOptions, Namespace, CodecTypeValue, CompatibleNamespaceTypes, CodecType } from './types';
+import { Codec } from '../types';
 
-export function defineMapCodec<
-    N extends {},
-    K extends { [x in keyof N]: CodecTypeValue<N[x]> }[keyof N],
-    V extends { [x in keyof N]: CodecTypeValue<N[x]> }[keyof N],
->(
-    keyTypeName: CompatibleNamespaceTypes<N, K>,
-    valueTypeName: CompatibleNamespaceTypes<N, V>,
-): CodecOptions<N, Map<K, V>> {
+/**
+ * FIXME convert to class!
+ * new MapCodec('String', 'u64');
+ * class MapCodec<N, K, V> implements Codec<N, Map<N[K], N[V]>> {}
+ * @param keyTypeName
+ * @param valueTypeName
+ */
+export function MapCodec<N extends {}, K extends keyof N, V extends keyof N>(
+    keyTypeName: K,
+    valueTypeName: V,
+): Codec<N, Map<N[K], N[V]>> {
     return {
         encode: (root, map) => {
             // ohhhh, it it impossible to type correctly. But, it is very scoped unsafety and may be tested
-            const Key = root.lookup(keyTypeName) as unknown as CodecType<K>;
-            const Value = root.lookup(valueTypeName) as unknown as CodecType<K>;
+            const Key = root.lookup(keyTypeName);
+            const Value = root.lookup(valueTypeName);
 
             // Key
 
@@ -24,8 +27,8 @@ export function defineMapCodec<
             return new Uint8Array();
         },
         decode: (root, buff) => {
-            const Key = root.lookup(keyType);
-            const Value = root.lookup(valueType);
+            const Key = root.lookup(keyTypeName);
+            const Value = root.lookup(valueTypeName);
 
             // decoding buffer
             const k = Key.decode(buff.slice(0, 15));
