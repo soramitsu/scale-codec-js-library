@@ -1,18 +1,6 @@
 import JSBI from 'jsbi';
 import { decodeBigInt, encodeBigInt } from './int';
 
-// it('32-bit unsigned 0', () => {
-//     const num = JSBI.BigInt(0);
-
-//     expect(
-//         encodeBigInt(num, {
-//             bits: 32,
-//             endianness: 'le',
-//             isSigned: false,
-//         }),
-//     ).toEqual(new Uint8Array([0, 0, 0, 0]));
-// });
-
 describe('encodeBigInt()', (): void => {
     it('converts null values to 0x00', (): void => {
         expect(encodeBigInt(JSBI.BigInt(0), { endianness: 'be' })).toEqual(new Uint8Array());
@@ -82,29 +70,4 @@ describe('decodeBigInt', (): void => {
     it('handles overflows correctly (little-endian)', (): void => {
         expect(decodeBigInt(new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0])).toString()).toBe('256');
     });
-
-    // it('handles backward compatibility)', (): void => {
-    //   expect(
-    //     u8aToBn(
-    //       new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0]),
-    //       false
-    //     ).eq(
-    //       u8aToBn(
-    //         new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0]),
-    //         { isLe: false }
-    //       )
-    //     )
-    //   ).toBe(true);
-    //   expect(
-    //     u8aToBn(
-    //       new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0]),
-    //       true
-    //     ).eq(
-    //       u8aToBn(
-    //         new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0]),
-    //         { isLe: true }
-    //       )
-    //     )
-    //   ).toBe(true);
-    // });
 });

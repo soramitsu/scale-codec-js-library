@@ -30,8 +30,8 @@
     "dependencies": {
         "bn.js": "^5.2.0",
         "hada": "^0.0.8",
-        "hex-my-bytes": "^1.0.0",
-        "jsbi": "^3.1.4"
+        "jsbi": "^3.1.4",
+        "web-encoding": "^1.1.5"
     },
     "eslintConfig": {
         "extends": [
