@@ -1,91 +1,38 @@
-export type CodecType<V, E = {}> = {
-    encode: (value: V) => Uint8Array;
-    decode: (buffer: Uint8Array) => V;
-    // create?: (something: Default) => V;
-    // createFromVoid?: () => V;
-} & E;
+import {
+    Codec,
+    CodecCompiled,
+    CodecTypeValue,
+    NamespaceCompiled,
+    NamespaceAsCodecs,
+    NamespaceAsCompiledCodecs,
+} from './types';
 
-export type CodecTypeValue<C extends CodecType<unknown>> = C extends CodecType<infer V> ? V : never;
-
-// export type NamescapeDefault = Record<string, CodecType<unknown>>;
-
-export type NamespaceOptions<N extends {}> = {
-    [K in keyof N]: CodecTypeOptions<N, N[K]>;
-};
-
-export interface Root<N extends {}> {
-    lookup: RootLoolupFn<N>;
-    encode: RootEncodeFn<N>;
-    decode: RootDecodeFn<N>;
-}
-
-export type RootLoolupFn<N extends {}> = <K extends keyof N>(type: K) => CodecType<N[K]>;
-
-export type RootEncodeFn<N extends {}> = <K extends keyof N>(type: K, value: N[K]) => Uint8Array;
-
-export type RootDecodeFn<N extends {}> = <K extends keyof N>(type: K, buffer: Uint8Array) => N[K];
-
-// definition internal, frame worked
-export type CodecTypeOptions<N extends {}, V extends any, R = Root<N>> = {
-    encode: (root: R, value: V) => Uint8Array;
-    decode: (root: R, buffer: Uint8Array) => V;
-    // create?: <V>(root: R, value: V) => T;
-    // createFromVoid?: (root: R) => T;
-};
-
-function compileTypeDefinition<N extends {}, V>(root: Root<N>, typeOptions: CodecTypeOptions<N, V>): CodecType<V> {
-    const { encode, decode } = typeOptions;
+function compileTypeDefinition<N extends {}, V>(namespace: NamespaceCompiled<N>, codec: Codec<N, V>): CodecCompiled<V> {
+    const { encode, decode } = codec;
     return {
-        encode: (v) => encode(root, v),
-        decode: (b) => decode(root, b),
+        encode: (v) => encode(namespace, v),
+        decode: (b) => decode(namespace, b),
     };
 }
 
-type NamespaceToCodecTypes<N extends {}> = {
-    [K in keyof N]: CodecType<N[K]>;
-};
+export function compileNamespace<N extends {}>(namescape: NamespaceAsCodecs<N>): NamespaceCompiled<N> {
+    const ns: NamespaceCompiled<N> = {} as any;
 
-export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N> {
-    const root: Root<N> = {} as any;
-
-    const types: NamespaceToCodecTypes<N> = Object.fromEntries(
-        (Object.entries(namescape) as [keyof N, CodecTypeOptions<N, any>][]).map(([typeName, options]) => [
+    const types: NamespaceAsCompiledCodecs<N> = Object.fromEntries(
+        (Object.entries(namescape) as [keyof N, Codec<N, any>][]).map(([typeName, options]) => [
             typeName,
-            compileTypeDefinition(root, options),
+            compileTypeDefinition(ns, options),
         ]),
     ) as any;
 
-    root.lookup = (type) => types[type];
-    root.encode = (type, val) => root.lookup(type).encode(val);
-    root.decode = (type, buff) => root.lookup(type).decode(buff);
+    ns.lookup = (type) => types[type];
+    // ns.encode = (type, val) => ns.lookup(type).encode(val);
+    // ns.decode = (type, buff) => ns.lookup(type).decode(buff);
 
-    return root;
+    return ns;
 }
 
-// class RootImpl<N extends NamescapeDefault> implements Root<N> {
-//     private types: N;
-
-//     constructor(defs: NamespaceOptions<N>) {
-//         this.types = Object.fromEntries(
-//             (Object.entries(defs) as [keyof N, TypeOptions<N, any>][]).map(([typeName, options]) => [
-//                 typeName,
-//                 compileTypeDefinition(this, options),
-//             ]),
-//         ) as any;
-//     }
-
-//     lookup<K extends keyof N>(type: K): N[K] {
-//         return this.types[type];
-//     }
-
-//     encode<K extends keyof N>(type: K, value: CodecTypeValue<N[K]>): Uint8Array {
-//         return this.lookup(type).encode(value);
-//     }
-
-//     decode<K extends keyof N>(type: K, buffer: Uint8Array): CodecTypeValue<N[K]> {
-//         return this.lookup(type).decode(buffer);
-//     }
-// }
+// testing
 
 {
     type MyTypes = {
@@ -111,7 +58,7 @@ export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N
     //     [K in keyof MyTypes]: CodecType<MyTypes[K]>;
     // };
 
-    const root = createRoot<MyTypes>({
+    const root = compileNamespace<MyTypes>({
         Id: {
             encode(root, { name, domain }) {
                 console.log('encoding %o & %o', name, domain);
@@ -154,7 +101,7 @@ export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N
         };
     }
 
-    const root = createRoot<{
+    const root = compileNamespace<{
         u8: CodecNumber;
         u16: CodecNumber;
         u32: CodecNumber;
@@ -179,7 +126,7 @@ export function createRoot<N extends {}>(namescape: NamespaceOptions<N>): Root<N
         SmartString: CodecTypeOptions<NS, string> & { fromHex(hex: string): string };
     };
 
-    const root = createRoot<NS>(null as any);
+    const root = compileNamespace<NS>(null as any);
 
     root.lookup('SmartString').fromHex();
 

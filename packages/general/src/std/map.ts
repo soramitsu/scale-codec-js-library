@@ -1,14 +1,23 @@
-import { CodecTypeOptions } from './core';
+import { Codec } from '../types';
 
-export function createCodecMap<N extends {}, K extends keyof N & string, V extends keyof N & string>(
-    keyType: K,
-    valueType: V,
-): CodecTypeOptions<N, Map<N[K], N[V]>> {
+/**
+ * FIXME convert to class!
+ * new MapCodec('String', 'u64');
+ * class MapCodec<N, K, V> implements Codec<N, Map<N[K], N[V]>> {}
+ * @param keyTypeName
+ * @param valueTypeName
+ */
+export function MapCodec<N extends {}, K extends keyof N, V extends keyof N>(
+    keyTypeName: K,
+    valueTypeName: V,
+): Codec<N, Map<N[K], N[V]>> {
     return {
         encode: (root, map) => {
-            // yeah, typed map!
-            const Key = root.lookup(keyType);
-            const Value = root.lookup(valueType);
+            // ohhhh, it it impossible to type correctly. But, it is very scoped unsafety and may be tested
+            const Key = root.lookup(keyTypeName);
+            const Value = root.lookup(valueTypeName);
+
+            // Key
 
             const encodedEntries = [...map.entries()].map(([k, v]) =>
                 // here is issue: encode(value: any) - ANY?!!
@@ -18,8 +27,8 @@ export function createCodecMap<N extends {}, K extends keyof N & string, V exten
             return new Uint8Array();
         },
         decode: (root, buff) => {
-            const Key = root.lookup(keyType);
-            const Value = root.lookup(valueType);
+            const Key = root.lookup(keyTypeName);
+            const Value = root.lookup(valueTypeName);
 
             // decoding buffer
             const k = Key.decode(buff.slice(0, 15));
