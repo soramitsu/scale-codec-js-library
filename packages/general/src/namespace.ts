@@ -1,21 +1,18 @@
-import {
-    Codec,
-    CodecCompiled,
-    CodecTypeValue,
-    NamespaceCompiled,
-    NamespaceAsCodecs,
-    NamespaceAsCompiledCodecs,
-} from './types';
+import { Codec, CodecCompiled, NamespaceCompiled, NamespaceAsCodecs, NamespaceAsCompiledCodecs } from './types';
 
-function compileTypeDefinition<N extends {}, V>(namespace: NamespaceCompiled<N>, codec: Codec<N, V>): CodecCompiled<V> {
-    const { encode, decode } = codec;
-    return {
-        encode: (v) => encode(namespace, v),
-        decode: (b) => decode(namespace, b),
-    };
+function compileTypeDefinition<N extends {}, V>(namespace: NamespaceCompiled<N>, codec: Codec<V, N>): CodecCompiled<V> {
+    return codec.type === 'primitive'
+        ? {
+              encode: codec.encode,
+              decode: codec.decode,
+          }
+        : {
+              encode: (v) => codec.encode(namespace, v),
+              decode: (b) => codec.decode(namespace, b),
+          };
 }
 
-export function compileNamespace<N extends {}>(namescape: NamespaceAsCodecs<N>): NamespaceCompiled<N> {
+export function compileNamespace<N>(namescape: NamespaceAsCodecs<N>): NamespaceCompiled<N> {
     const ns: NamespaceCompiled<N> = {} as any;
 
     const types: NamespaceAsCompiledCodecs<N> = Object.fromEntries(
@@ -34,112 +31,112 @@ export function compileNamespace<N extends {}>(namescape: NamespaceAsCodecs<N>):
 
 // testing
 
-{
-    type MyTypes = {
-        Id: {
-            name: string;
-            domain: string;
-        };
-        Account: {
-            id: MyTypes['Id'];
-        };
-    };
+// {
+//     interface MyTypes {
+//         Id: {
+//             name: string;
+//             domain: string;
+//         };
+//         Account: {
+//             id: MyTypes['Id'];
+//         };
+//     }
 
-    // interface Id {
-    //     name: string;
-    //     domain: string;
-    // }
+//     // interface Id {
+//     //     name: string;
+//     //     domain: string;
+//     // }
 
-    // interface Account {
-    //     id: Id;
-    // }
+//     // interface Account {
+//     //     id: Id;
+//     // }
 
-    // type Namespace = {
-    //     [K in keyof MyTypes]: CodecType<MyTypes[K]>;
-    // };
+//     // type Namespace = {
+//     //     [K in keyof MyTypes]: CodecType<MyTypes[K]>;
+//     // };
 
-    const root = compileNamespace<MyTypes>({
-        Id: {
-            encode(root, { name, domain }) {
-                console.log('encoding %o & %o', name, domain);
-                // const name = id;
-                return new Uint8Array();
-            },
-            decode(root, buff) {
-                return { name: 'test', domain: 'puff' };
-            },
-        },
-        Account: {
-            encode: (root, { id }) => {
-                return root.lookup('Id').encode(id);
-                // root.lookup('Id')
-                // return root.encode('Id', id);
-            },
-            decode: (root, buff) => {
-                const id = root.lookup('Id').decode(buff);
-                return { id };
-            },
-        },
-    });
+//     const root = compileNamespace<MyTypes>({
+//         Id: {
+//             encode(root, { name, domain }) {
+//                 console.log('encoding %o & %o', name, domain);
+//                 // const name = id;
+//                 return new Uint8Array();
+//             },
+//             decode(root, buff) {
+//                 return { name: 'test', domain: 'puff' };
+//             },
+//         },
+//         Account: {
+//             encode: (root, { id }) => {
+//                 return root.lookup('Id').encode(id);
+//                 // root.lookup('Id')
+//                 // return root.encode('Id', id);
+//             },
+//             decode: (root, buff) => {
+//                 const id = root.lookup('Id').decode(buff);
+//                 return { id };
+//             },
+//         },
+//     });
 
-    // root.lookup('Id').
-}
+//     // root.lookup('Id').
+// }
 
-{
-    type CodecNumType = 'signed' | 'unsigned';
+// {
+//     type CodecNumType = 'signed' | 'unsigned';
 
-    class CodecNumber {
-        public constructor(value: number, bits: number, type: CodecNumType) {}
+//     class CodecNumber {
+//         public constructor(value: number, bits: number, type: CodecNumType) {}
 
-        encode(): Uint8Array {}
-    }
+//         encode(): Uint8Array {}
+//     }
 
-    function createCodecNumber(bits: number, type: CodecNumType): CodecTypeOptions<any, CodecNumber> {
-        return {
-            decode: (root, buff) => new CodecNumber(4123, bits, type),
-            encode: (root, val) => val.encode(),
-        };
-    }
+//     function createCodecNumber(bits: number, type: CodecNumType): CodecTypeOptions<any, CodecNumber> {
+//         return {
+//             decode: (root, buff) => new CodecNumber(4123, bits, type),
+//             encode: (root, val) => val.encode(),
+//         };
+//     }
 
-    const root = compileNamespace<{
-        u8: CodecNumber;
-        u16: CodecNumber;
-        u32: CodecNumber;
-        i8: CodecNumber;
-        i16: CodecNumber;
-        i32: CodecNumber;
-    }>({
-        u8: createCodecNumber(8, 'unsigned'),
-        u16: createCodecNumber(16, 'unsigned'),
-        u32: createCodecNumber(32, 'unsigned'),
-        i8: createCodecNumber(8, 'signed'),
-        i16: createCodecNumber(16, 'signed'),
-        i32: createCodecNumber(32, 'signed'),
-    });
+//     const root = compileNamespace<{
+//         u8: CodecNumber;
+//         u16: CodecNumber;
+//         u32: CodecNumber;
+//         i8: CodecNumber;
+//         i16: CodecNumber;
+//         i32: CodecNumber;
+//     }>({
+//         u8: createCodecNumber(8, 'unsigned'),
+//         u16: createCodecNumber(16, 'unsigned'),
+//         u32: createCodecNumber(32, 'unsigned'),
+//         i8: createCodecNumber(8, 'signed'),
+//         i16: createCodecNumber(16, 'signed'),
+//         i32: createCodecNumber(32, 'signed'),
+//     });
 
-    const buff = root.lookup('u8').encode(new CodecNumber(4152, 412, 'unsigned'));
-}
+//     const buff = root.lookup('u8').encode(new CodecNumber(4152, 412, 'unsigned'));
+// }
 
-// custom type options
-{
-    type NS = {
-        SmartString: CodecTypeOptions<NS, string> & { fromHex(hex: string): string };
-    };
+// // custom type options
+// {
+//     interface NS {
+//         SmartString: CodecTypeOptions<NS, string> & { fromHex: (hex: string) => string };
+//     }
 
-    const root = compileNamespace<NS>(null as any);
+//     const root = compileNamespace<NS>(null as any);
 
-    root.lookup('SmartString').fromHex();
+//     root.lookup('SmartString').fromHex();
 
-    type Base = {
-        foo: string;
-    };
+//     interface Base {
+//         foo: string;
+//     }
 
-    interface BaseExtended extends Base {
-        bar: number;
-    }
+//     interface BaseExtended extends Base {
+//         bar: number;
+//     }
 
-    type BaseExtension = Omit<BaseExtended, keyof Base>;
-}
+//     type BaseExtension = Omit<BaseExtended, keyof Base>;
+// }
 
 // enum
 {

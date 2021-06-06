@@ -1,0 +1,17 @@
+{
+    "name": "@scale-codec/eslint-config",
+    "version": "1.0.0",
+    "main": "index.js",
+    "dependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.26.0",
+        "@typescript-eslint/parser": "^4.26.0",
+        "eslint": "^7.28.0",
+        "eslint-config-alloy": "^4.1.0"
+    },
+    "devDependencies": {
+        "@scale-codec/prettier-config": "workspace:^1.0.0",
+        "prettier": "^2.3.1",
+        "prettier-eslint": "^12.0.0"
+    },
+    "prettier": "@scale-codec/prettier-config"
+}

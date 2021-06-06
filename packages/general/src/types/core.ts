@@ -1,29 +1,30 @@
-/**
- * Base options of codec. Each entry in namespace definition should
- * implement this interface
- *
- * Generic `N` specifies namespace of types, `V` - codec's decoded value
- *
- * TODO do not work with uint directly - provide Writer and Reader. Performance, no unnecessary allocations
- */
-export type Codec<N, V> = {
+export type Codec<V, N = any> = CodecPrimitive<V> | CodecComplex<V, N>;
+
+export interface CodecPrimitive<V> {
+    type: 'primitive';
+    encode: (value: V) => Uint8Array;
+    decode: (bytes: Uint8Array) => [V, number];
+}
+
+export interface CodecComplex<V, N> {
+    type: 'complex';
     encode: (namespace: NamespaceCompiled<N>, value: V) => Uint8Array;
-    decode: (namespace: NamespaceCompiled<N>, buffer: Uint8Array) => V;
-};
+    decode: (namespace: NamespaceCompiled<N>, buffer: Uint8Array) => [V, number];
+}
 
 /**
  * Compiled codec - pure encode & decode functions for some value
  */
-export type CodecCompiled<V> = {
+export interface CodecCompiled<V> {
     encode: (value: V) => Uint8Array;
-    decode: (buffer: Uint8Array) => V;
-};
+    decode: (buffer: Uint8Array) => [V, number];
+}
 
 /**
  * Utility type, that converts namespace of values to namespace of their codecs (in this namespace)
  */
 export type NamespaceAsCodecs<N> = {
-    [K in keyof N]: Codec<N, N[K]>;
+    [K in keyof N]: Codec<N[K], N>;
 };
 
 /**
@@ -43,12 +44,12 @@ export type CodecsAsValues<N> = {
 /**
  * Compiled namespace interface
  */
-export type NamespaceCompiled<N> = {
+export interface NamespaceCompiled<N> {
     /**
      * Looks up for type in the namespace and returns compiled codec type
      */
     lookup: <K extends keyof N>(type: K) => CodecCompiled<N[K]>;
-};
+}
 
 /**
  * Utility type, that returns keys from namespace of values which are compatible

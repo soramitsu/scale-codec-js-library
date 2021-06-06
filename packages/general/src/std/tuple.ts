@@ -1,40 +1,49 @@
-import { Codec, CompatibleNamespaceTypes } from '../types';
+import { concatUint8Arrays, decodeArrayWithDecoders } from '@scale-codec/codecs';
+import { CodecComplex, CodecPrimitive, CompatibleNamespaceTypes } from '../types';
 
-export class Tuple<V extends any[]> {}
+// export class Tuple<V extends any[]> {}
 
 type ArrayValues<T extends any[]> = T extends (infer V)[] ? V : never;
 
 // type M
 
+function* yieldMappedArray<T, R>(arr: T[], mapFn: (item: T) => R): Generator<R, void> {
+    for (const item of arr) {
+        yield mapFn(item);
+    }
+}
+
 export function defineTupleCodec<N, Values extends N[keyof N][]>(
     types: CompatibleNamespaceTypes<N, ArrayValues<Values>>[],
-): Codec<N, Tuple<Values>> {
+): CodecComplex<Values, N> {
     return {
-        decode(root, buff) {
-            // unsafe!
-            const codecs = types.map((x) => root.lookup(x)) as unknown as Values extends Array<infer V>
-                ? CodecCompiled<V>[]
-                : never;
+        type: 'complex',
+        encode(ns, values) {
+            const encodedValues = values.map((x, i) => {
+                const Type = ns.lookup(types[i]);
+                return Type.encode(x as any);
+            });
 
-            codecs[0].decode(buff.slice(0, 50));
-
-            return new Tuple();
+            return concatUint8Arrays(...encodedValues);
         },
-        encode() {
-            return new Uint8Array();
+        decode(ns, bytes) {
+            const decoders = yieldMappedArray(types, (key) => ns.lookup(key).decode);
+
+            return decodeArrayWithDecoders(bytes, decoders) as any;
         },
     };
 }
 
-export const EmptyTupleCodec: Codec<any, null> = {
+export const EmptyTupleCodec: CodecPrimitive<null> = {
+    type: 'primitive',
     encode: () => new Uint8Array(),
-    decode: () => null,
+    decode: () => [null, 0],
 };
 
-defineTupleCodec<
-    {
-        String: string;
-        Num: number;
-    },
-    [string, string, number]
->(['String', 'String', 'Num']);
+// defineTupleCodec<
+//     {
+//         String: string;
+//         Num: number;
+//     },
+//     [string, string, number]
+// >(['String', 'String', 'Num']);

@@ -1,18 +1,31 @@
 import { Codec } from '../types';
+import { decodeBigInt, encodeBigInt } from '@scale-codec/codecs';
+import JSBI from 'jsbi';
 
-export type SupportedNumberBitLength = 8 | 16 | 32 | 64 | 128 | 256;
+export type SupportedNumberBitLength = 8 | 16 | 32 | 64;
 
 // FIXME convert to class
-export function NumberCodec(bits: SupportedNumberBitLength, signed: boolean): Codec<any, number> {
+export function NumberCodec(bits: SupportedNumberBitLength, isSigned: boolean): Codec<JSBI> {
+    const BYTES_LENGTH = bits / 8;
+
     return {
-        decode: (ns, buff) => 0,
-        encode: (ns, num) => new Uint8Array(),
+        type: 'primitive',
+        decode: (buff) => [decodeBigInt(buff, { isSigned }), BYTES_LENGTH],
+        encode: (num) => encodeBigInt(num, { bits, isSigned }),
     };
 }
 
 export const i8 = NumberCodec(8, false);
+export const i16 = NumberCodec(16, false);
+export const i32 = NumberCodec(32, false);
+export const i64 = NumberCodec(64, false);
+// export const i128 = NumberCodec(128, false);
 
 export const u8 = NumberCodec(8, true);
+export const u16 = NumberCodec(16, true);
+export const u32 = NumberCodec(32, true);
+export const u64 = NumberCodec(64, true);
+// export const u128 = NumberCodec(128, true);
 
 // export class CodecNumber<Signed extends boolean, Bits extends SupportedNumberBitLength> {
 //     public static with<B extends SupportedNumberBitLength, S extends boolean>(bits: B, isSigned: S) {

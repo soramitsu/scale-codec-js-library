@@ -1,20 +1,18 @@
-import { Codec, CompatibleNamespaceTypes } from '../types';
+import { decodeArrayContainer, encodeArrayContainer } from '@scale-codec/codecs';
+import { CodecComplex } from '../types';
 
 export type Vec<T> = T[];
 
-export type VecCodecType<T> = CodecCompiled<Vec<T>>;
-
-export type VecCodecOptions<N, T> = Codec<N, Vec<T>>;
-
-export function defineVecCodec<N, T>(typeName: CompatibleNamespaceTypes<N, T>): Codec<N, T[]> {
+export function defineVecCodec<N, K extends keyof N>(typeName: K): CodecComplex<N[K][], N> {
     return {
-        encode: () => null as any,
-        decode: () => null as any,
+        type: 'complex',
+        encode: (ns, arr) => {
+            const ItemCodec = ns.lookup(typeName);
+            return encodeArrayContainer(arr, ItemCodec.encode);
+        },
+        decode: (ns, buffer) => {
+            const ItemCodec = ns.lookup(typeName);
+            return decodeArrayContainer(buffer, ItemCodec.decode);
+        },
     };
 }
-
-// const Vec: {
-//     encode:
-// }
-
-// const vec = createVecCodec<{ String: string }, string>('String');

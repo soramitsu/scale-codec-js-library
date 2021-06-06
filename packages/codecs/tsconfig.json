@@ -1,22 +1,5 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "lib": [
-            "esnext" 
-        ],
-        "esModuleInterop": true,
-        // "declaration": true,
-        // "removeComments": false,
-        // "stripInternal": true,
-        // since 2.3
-        // "strict": true,
-        "alwaysStrict": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "strictNullChecks": true,
-        "moduleResolution": "node"
-    },
+    "extends": "../config-ts/tsconfig.json",
     "include": [
         "./src"
     ]

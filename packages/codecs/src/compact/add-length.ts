@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { concatUint8Arrays } from '../shared';
+import { concatUint8Arrays } from '@scale-codec/util';
 import { encodeBigIntCompact } from './encode-big-int';
 
 /**
@@ -7,5 +7,5 @@ import { encodeBigIntCompact } from './encode-big-int';
  * @description Adds a length prefix to the input value
  */
 export function compactAddLength(input: Uint8Array): Uint8Array {
-    return concatUint8Arrays(encodeBigIntCompact(JSBI.BigInt(input.length)), input);
+    return concatUint8Arrays([encodeBigIntCompact(JSBI.BigInt(input.length)), input]);
 }

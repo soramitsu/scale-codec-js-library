@@ -6,11 +6,13 @@ import { bytesToHex } from 'hada';
 
 export type Endianness = 'le' | 'be';
 
+export type AllowedBits = -1 | 8 | 16 | 32 | 64 | 128 | 256; // and so on, but let's be realistic
+
 export interface NumberEncodeOptions {
     /**
      * @default -1
      */
-    bits?: number;
+    bits?: AllowedBits;
 
     /**
      * @default 'le'
@@ -57,6 +59,13 @@ export interface BigIntDecodeOptions {
      * @default false
      */
     isSigned?: boolean;
+
+    /**
+     * If bits is -1 then all bytes will be decoded else will be taken subarray of bits
+     *
+     * @default -1
+     */
+    bits?: AllowedBits;
 }
 
 /**
@@ -65,8 +74,9 @@ export interface BigIntDecodeOptions {
 export function decodeBigInt(bytes: Uint8Array, options?: BigIntDecodeOptions): JSBI {
     const endianness = options?.endianness ?? 'le';
     const isSigned = options?.isSigned ?? false;
+    const bits = options?.bits ?? -1;
 
-    const hex = bytesToHex(Array.from(bytes));
+    const hex = bytesToHex(Array.from(bits === -1 ? bytes : bytes.subarray(0, bits / 8)));
 
     const bn = new BN(hex, 16, endianness);
 

@@ -70,4 +70,8 @@ describe('decodeBigInt', (): void => {
     it('handles overflows correctly (little-endian)', (): void => {
         expect(decodeBigInt(new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0])).toString()).toBe('256');
     });
+
+    it('takes only specified count of bits', () => {
+        expect(decodeBigInt(new Uint8Array([0, 255]), { bits: 8 }).toString()).toBe('0');
+    });
 });

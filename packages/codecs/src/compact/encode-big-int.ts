@@ -1,7 +1,7 @@
 import JSBI from 'jsbi';
 import { encodeBigInt } from '../int';
 import { BI_2, BI_1, MAX_U16, MAX_U32, MAX_U8 } from '../consts';
-import { assert, concatUint8Arrays } from '../shared';
+import { assert, concatUint8Arrays } from '@scale-codec/util';
 
 /**
  * @describe Encodes a number into a compact representation
@@ -25,9 +25,9 @@ export function encodeBigIntCompact(bn: JSBI): Uint8Array {
 
     assert(length >= 4, 'Invalid length, previous checks match anything less than 2^30');
 
-    return concatUint8Arrays(
+    return concatUint8Arrays([
         // subtract 4 as minimum (also catered for in decoding)
         Uint8Array.from([((length - 4) << 2) + 0b11]),
         u8a.subarray(0, length),
-    );
+    ]);
 }
