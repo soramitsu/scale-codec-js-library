@@ -1,7 +1,9 @@
 import JSBI from 'jsbi';
 import { decodeBigInt, encodeBigInt } from './int';
-import { decodeArrayContainer, encodeArrayContainer } from './containers';
+import { decodeArrayContainer, decodeTuple, encodeArrayContainer, encodeTuple } from './containers';
 import { decodeStrCompact, encodeStrCompact } from './str';
+import { decodeBool, encodeBool } from './bool';
+import { yieldNTimes } from '@scale-codec/util';
 
 function hexifyBytes(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -83,5 +85,63 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
         const [decoded, len] = decodeArrayContainer(encoded, decode);
         expect(decoded).toEqual(strings);
         expect(len).toEqual(encoded.length);
+    });
+
+    // https://github.com/paritytech/parity-scale-codec/blob/master/src/codec.rs#L1336
+    it.todo('vec of option int encoded as expected');
+
+    // https://github.com/paritytech/parity-scale-codec/blob/master/src/codec.rs#L1344
+    it.todo('vec of option bool encoded as expected');
+});
+
+describe('Tuple', () => {
+    it('tuple () encoded as expected', () => {
+        const encoded = encodeTuple([], []);
+
+        expect(encoded).toEqual(new Uint8Array());
+
+        expect(decodeTuple(encoded, [])).toEqual([[], 0]);
+    });
+
+    it('tuple (u64, String, Vec<i8>, (i32, i32), bool) encoded as expected', () => {
+        type Codec<T> = [(v: T) => Uint8Array, (b: Uint8Array) => [T, number]];
+
+        const strCodec: Codec<string> = [encodeStrCompact, decodeStrCompact];
+        const i32Codec: Codec<JSBI> = [
+            (n) => encodeBigInt(n, { bits: 32, isSigned: true }),
+            (b) => [decodeBigInt(b, { bits: 32, isSigned: true }), 4],
+        ];
+        const i8Codec: Codec<JSBI> = [
+            (n) => encodeBigInt(n, { bits: 8, isSigned: true }),
+            (b) => [decodeBigInt(b, { bits: 8, isSigned: true }), 1],
+        ];
+        const u64Codec: Codec<JSBI> = [(n) => encodeBigInt(n, { bits: 64 }), (b) => [decodeBigInt(b, { bits: 64 }), 8]];
+        const veci8Codec: Codec<JSBI[]> = [
+            (arr) => encodeArrayContainer(arr, i8Codec[0]),
+            (b) => decodeArrayContainer(b, i8Codec[1]),
+        ];
+        const boolCodec: Codec<boolean> = [encodeBool, (b) => [decodeBool(b), 1]];
+        const i32TupleCodec: Codec<[JSBI, JSBI]> = [
+            (v) => encodeTuple(v, yieldNTimes(i32Codec[0], 2)),
+            (b) => decodeTuple(b, yieldNTimes(i32Codec[1], 2)),
+        ];
+
+        const TUPLE_CODECS = [u64Codec, strCodec, veci8Codec, i32TupleCodec, boolCodec];
+
+        const ENCODED = Uint8Array.from([
+            64, 0, 0, 0, 0, 0, 0, 0, 24, 72, 101, 110, 110, 111, 63, 20, 7, 1, 22, 5, 214, 110, 239, 255, 255, 16, 248,
+            6, 0, 1,
+        ]);
+
+        const VALUE = [
+            JSBI.BigInt(64),
+            'Henno?',
+            [7, 1, 22, 5, -42].map(JSBI.BigInt),
+            [-4242, 456720].map(JSBI.BigInt),
+            true,
+        ];
+
+        expect(encodeTuple(VALUE, TUPLE_CODECS.map((x) => x[0]) as any)).toEqual(ENCODED);
+        expect(decodeTuple(ENCODED, TUPLE_CODECS.map((x) => x[1]) as any)).toEqual([VALUE, ENCODED.length]);
     });
 });
