@@ -1,5 +1,5 @@
 {
-    "name": "@scale-codec/codecs",
+    "name": "@scale-codec/core",
     "version": "0.1.0",
     "description": "",
     "main": "src/lib.ts",
