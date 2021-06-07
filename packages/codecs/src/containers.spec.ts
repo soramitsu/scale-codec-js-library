@@ -2,9 +2,11 @@ import JSBI from 'jsbi';
 import { decodeBigInt, encodeBigInt } from './int';
 import {
     decodeArrayContainer,
+    decodeMap,
     decodeStruct,
     decodeTuple,
     encodeArrayContainer,
+    encodeMap,
     encodeStruct,
     encodeTuple,
     RawEnum,
@@ -14,6 +16,8 @@ import { decodeStrCompact, encodeStrCompact } from './str';
 import { decodeBool, encodeBool } from './bool';
 import { yieldNTimes } from '@scale-codec/util';
 import { Decoder, Encoder } from './types';
+
+/* eslint-disable max-nested-callbacks */
 
 function hexifyBytes(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -299,6 +303,49 @@ describe('Enum', () => {
 
         it('"Some(false)" decoded as expected', () => {
             expect(schema.decode(new Uint8Array([1, 0]))).toEqual([schema.create('Some', false), 2]);
+        });
+    });
+});
+
+describe('Map', () => {
+    describe('Map<string, u32>', () => {
+        const map = new Map<string, JSBI>([['bazzing', JSBI.BigInt(69)]]);
+        const encoded = Uint8Array.from([4, 28, 98, 97, 122, 122, 105, 110, 103, 69, 0, 0, 0]);
+
+        it('encode', () => {
+            expect(encodeMap(map, encodeStrCompact, (v) => encodeBigInt(v, { bits: 32 }))).toEqual(encoded);
+        });
+
+        it('decode', () => {
+            expect(decodeMap(encoded, decodeStrCompact, (v) => decodeBigInt(v, { bits: 32 }))).toEqual([
+                map,
+                encoded.length,
+            ]);
+        });
+    });
+
+    describe('Map<u32, u32>', () => {
+        const map = new Map<JSBI, JSBI>(
+            [
+                [1, 2],
+                [23, 24],
+                [28, 30],
+                [45, 80],
+            ].map(([k, v]) => [JSBI.BigInt(k), JSBI.BigInt(v)]),
+        );
+        const encoded = Uint8Array.from([
+            16, 1, 0, 0, 0, 2, 0, 0, 0, 23, 0, 0, 0, 24, 0, 0, 0, 28, 0, 0, 0, 30, 0, 0, 0, 45, 0, 0, 0, 80, 0, 0, 0,
+        ]);
+
+        const encode: Encoder<JSBI> = (v) => encodeBigInt(v, { bits: 32 });
+        const decode: Decoder<JSBI> = (b) => decodeBigInt(b, { bits: 32 });
+
+        it('encode', () => {
+            expect(encodeMap(map, encode, encode)).toEqual(encoded);
+        });
+
+        it('decode', () => {
+            expect(decodeMap(encoded, decode, decode)).toEqual([map, encoded.length]);
         });
     });
 });

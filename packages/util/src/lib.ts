@@ -39,3 +39,15 @@ export function* yieldMapped<T, R>(items: Iterable<T>, mapFn: (item: T) => R): G
         yield mapFn(item);
     }
 }
+
+export function* yieldCycleNTimes<T>(items: T[], n: number): Generator<T, void> {
+    let i = n;
+    while (i-- > 0) {
+        for (const item of items) yield item;
+    }
+}
+
+export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
+    if (!map.has(key)) throw new Error(`failed to unwrap - key "${key}" not found`);
+    return map.get(key)!;
+}
