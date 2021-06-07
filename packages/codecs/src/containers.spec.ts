@@ -54,7 +54,7 @@ describe('Vec', () => {
         });
 
         it('decode', () => {
-            const numDecode = (b: Uint8Array): [JSBI, number] => [decodeBigInt(b, { bits: 8 }), 1];
+            const numDecode = (b: Uint8Array): [JSBI, number] => decodeBigInt(b, { bits: 8 });
             const encoded = prettyHexToBytes(hex);
 
             const [decoded, len] = decodeArrayContainer(encoded, numDecode);
@@ -70,7 +70,7 @@ describe('Vec', () => {
         const hex = '1c 00 00 01 00 ff ff 02 00 fe ff 03 00 fd ff';
 
         const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 16, isSigned: true });
-        const numDecode = (b: Uint8Array): [JSBI, number] => [decodeBigInt(b, { bits: 16, isSigned: true }), 2];
+        const numDecode = (b: Uint8Array): [JSBI, number] => decodeBigInt(b, { bits: 16, isSigned: true });
 
         const encoded = encodeArrayContainer(numbers, numEncode);
         expect(hexifyBytes(encoded)).toEqual(hex);
@@ -100,7 +100,7 @@ describe('Vec', () => {
             4,
         ]);
 
-        const [_decoded, len] = decodeArrayContainer(encoded, (bytes) => [decodeBigInt(bytes, { bits: 8 }), 1]);
+        const [_decoded, len] = decodeArrayContainer(encoded, (bytes) => decodeBigInt(bytes, { bits: 8 }));
 
         expect(len).toEqual(actualVecBytesLen);
     });
@@ -129,7 +129,7 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     describe('vec of option int encoded as expected', () => {
         const enumSchema = createOptionSchema<JSBI>(
             (v) => encodeBigInt(v, { bits: 8, isSigned: true }),
-            (b) => [decodeBigInt(b, { bits: 8, isSigned: true }), 1],
+            (b) => decodeBigInt(b, { bits: 8, isSigned: true }),
         );
         const vec = [
             enumSchema.create('Some', JSBI.BigInt(1)),
@@ -151,7 +151,7 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     // it is a special type, OptionBool. see related Rust's source code
     // it encodes not like default enum
     describe('vec of option bool encoded as expected', () => {
-        const schema = createOptionSchema<boolean>(encodeBool, (b) => [decodeBool(b), 1]);
+        const schema = createOptionSchema<boolean>(encodeBool, decodeBool);
         const vec: RawEnum<Option<boolean>>[] = [
             schema.create('Some', true),
             schema.create('Some', false),
@@ -208,18 +208,18 @@ describe('Tuple', () => {
         const strCodec: Codec<string> = [encodeStrCompact, decodeStrCompact];
         const i32Codec: Codec<JSBI> = [
             (n) => encodeBigInt(n, { bits: 32, isSigned: true }),
-            (b) => [decodeBigInt(b, { bits: 32, isSigned: true }), 4],
+            (b) => decodeBigInt(b, { bits: 32, isSigned: true }),
         ];
         const i8Codec: Codec<JSBI> = [
             (n) => encodeBigInt(n, { bits: 8, isSigned: true }),
-            (b) => [decodeBigInt(b, { bits: 8, isSigned: true }), 1],
+            (b) => decodeBigInt(b, { bits: 8, isSigned: true }),
         ];
-        const u64Codec: Codec<JSBI> = [(n) => encodeBigInt(n, { bits: 64 }), (b) => [decodeBigInt(b, { bits: 64 }), 8]];
+        const u64Codec: Codec<JSBI> = [(n) => encodeBigInt(n, { bits: 64 }), (b) => decodeBigInt(b, { bits: 64 })];
         const veci8Codec: Codec<JSBI[]> = [
             (arr) => encodeArrayContainer(arr, i8Codec[0]),
             (b) => decodeArrayContainer(b, i8Codec[1]),
         ];
-        const boolCodec: Codec<boolean> = [encodeBool, (b) => [decodeBool(b), 1]];
+        const boolCodec: Codec<boolean> = [encodeBool, decodeBool];
         const i32TupleCodec: Codec<[JSBI, JSBI]> = [
             (v) => encodeTuple(v, yieldNTimes(i32Codec[0], 2)),
             (b) => decodeTuple(b, yieldNTimes(i32Codec[1], 2)),
@@ -270,7 +270,7 @@ describe('Struct', () => {
         it('decode', () => {
             const decoders: { [K in keyof typeof STRUCT]: Decoder<typeof STRUCT[K]> } = {
                 foo: decodeStrCompact,
-                bar: (buff: Uint8Array) => [decodeBigInt(buff, { bits: 32 }), 32 / 8],
+                bar: (buff: Uint8Array) => decodeBigInt(buff, { bits: 32 }),
             };
 
             const [decoded, len] = decodeStruct(ENCODED, decoders, ORDER);
@@ -283,7 +283,7 @@ describe('Struct', () => {
 
 describe('Enum', () => {
     describe('Option<bool>', () => {
-        const schema = createOptionSchema(encodeBool, (b) => [decodeBool(b), 1]);
+        const schema = createOptionSchema(encodeBool, decodeBool);
 
         it('"None" encoded as expected', () => {
             expect(schema.create('None').encode()).toEqual(new Uint8Array([0]));

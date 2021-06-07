@@ -45,33 +45,38 @@ describe('encodeBigInt()', (): void => {
 
 describe('decodeBigInt', (): void => {
     it('converts little-endian by default', (): void => {
-        expect(decodeBigInt(new Uint8Array([0x12, 0x34])).toString(16)).toBe('3412');
+        expect(decodeBigInt(new Uint8Array([0x12, 0x34]))[0].toString(16)).toBe('3412');
     });
+
     it('converts values (big-endian)', (): void => {
-        expect(decodeBigInt(new Uint8Array([0x12, 0x34]), { endianness: 'be' }).toString(16)).toBe('1234');
+        expect(decodeBigInt(new Uint8Array([0x12, 0x34]), { endianness: 'be' })[0].toString(16)).toBe('1234');
     });
 
     it('converts values (little-endian)', (): void => {
-        expect(decodeBigInt(new Uint8Array([0x12, 0x34]), { endianness: 'le' }).toString(16)).toBe('3412');
+        expect(decodeBigInt(new Uint8Array([0x12, 0x34]), { endianness: 'le' })[0].toString(16)).toBe('3412');
     });
 
     it('converts empty', (): void => {
-        expect(decodeBigInt(new Uint8Array(), { endianness: 'le' }).toString(16)).toBe('0');
+        expect(decodeBigInt(new Uint8Array(), { endianness: 'le' })[0].toString(16)).toBe('0');
     });
 
     it('handles negative numbers (little-endian)', (): void => {
-        expect(decodeBigInt(new Uint8Array([46, 251]), { endianness: 'le', isSigned: true }).toString()).toBe('-1234');
+        expect(decodeBigInt(new Uint8Array([46, 251]), { endianness: 'le', isSigned: true })[0].toString()).toBe(
+            '-1234',
+        );
     });
 
     it('handles negative numbers (big-endian)', (): void => {
-        expect(decodeBigInt(new Uint8Array([251, 46]), { endianness: 'be', isSigned: true }).toString()).toBe('-1234');
+        expect(decodeBigInt(new Uint8Array([251, 46]), { endianness: 'be', isSigned: true })[0].toString()).toBe(
+            '-1234',
+        );
     });
 
     it('handles overflows correctly (little-endian)', (): void => {
-        expect(decodeBigInt(new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0])).toString()).toBe('256');
+        expect(decodeBigInt(new Uint8Array([0, 1, 0, 0, 0, 0, 0, 0]))[0].toString()).toBe('256');
     });
 
     it('takes only specified count of bits', () => {
-        expect(decodeBigInt(new Uint8Array([0, 255]), { bits: 8 }).toString()).toBe('0');
+        expect(decodeBigInt(new Uint8Array([0, 255]), { bits: 8 })[0].toString()).toBe('0');
     });
 });

@@ -1,6 +1,7 @@
 import JSBI from 'jsbi';
 import { TextEncoder, TextDecoder } from 'web-encoding';
 import { compactAddLength, retrieveOffsetAndEncodedLength } from './compact';
+import { DecodeResult } from './types';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder('utf-8', {
@@ -16,7 +17,7 @@ export function encodeStr(str: string): Uint8Array {
     return encoder.encode(str);
 }
 
-export function decodeStrCompact(buff: Uint8Array): [string, number] {
+export function decodeStrCompact(buff: Uint8Array): DecodeResult<string> {
     const [offset, length] = retrieveOffsetAndEncodedLength(buff);
     const lenNum = JSBI.toNumber(length);
     const total = offset + lenNum;

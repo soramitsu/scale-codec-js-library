@@ -4,6 +4,8 @@ import JSBI from 'jsbi';
 // const MAX_U16 = new BN(2).pow(new BN(16 - 2)).subn(1);
 // const MAX_U32 = new BN(2).pow(new BN(32 - 2)).subn(1);
 
+export const BI_m1 = JSBI.BigInt(-1);
+export const BI_0 = JSBI.BigInt(0);
 export const BI_1 = JSBI.BigInt(1);
 export const BI_2 = JSBI.BigInt(2);
 export const BI_3 = JSBI.BigInt(3);

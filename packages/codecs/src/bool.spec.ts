@@ -9,7 +9,7 @@ describe.only('booleans', () => {
         });
 
         it(`decode ${byte} to ${flag}`, () => {
-            expect(decodeBool(new Uint8Array([byte]))).toEqual(flag);
+            expect(decodeBool(new Uint8Array([byte]))).toEqual([flag, 1]);
         });
     }
 });
