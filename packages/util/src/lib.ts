@@ -51,3 +51,11 @@ export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
     if (!map.has(key)) throw new Error(`failed to unwrap - key "${key}" not found`);
     return map.get(key)!;
 }
+
+export function hexifyBytes(v: Uint8Array): string {
+    return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
+}
+
+export function prettyHexToBytes(hex: string): Uint8Array {
+    return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)));
+}
