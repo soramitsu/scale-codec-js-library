@@ -3,3 +3,4 @@ export * from './str';
 export * from './bool';
 export * from './compact';
 export * from './containers';
+export * from './types';
