@@ -87,6 +87,7 @@ importers:
       '@scale-codec/core': workspace:^0.1.0
       '@scale-codec/eslint-config': workspace:^1.0.0
       '@scale-codec/prettier-config': workspace:^1.0.0
+      '@scale-codec/util': workspace:^0.1.0
       '@types/jest': ^26.0.23
       eslint: ^7.28.0
       hada: ^0.0.8
@@ -99,6 +100,7 @@ importers:
       typescript: ^4.3.2
     dependencies:
       '@scale-codec/core': link:../core
+      '@scale-codec/util': link:../util
       hada: 0.0.8
       jsbi: 3.1.4
     devDependencies:

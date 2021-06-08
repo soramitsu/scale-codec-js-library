@@ -1,73 +1,74 @@
-import { CompatibleNamespaceTypes, StrKeys, Codec } from '../types';
+import { Encode, RustEnum, RustEnumNonEmptyVariants, RustEnumSchema } from '@scale-codec/core';
+import { StrKeys, ContextSensitiveCodec, CompatibleNamespaceKeys } from '../types';
+import { typedFromEntries, typedToEntries } from '../util';
 
-export type Enum<V> = EnumMethods<V>;
+// type ContextEnumDef<N, V> = {
+//     [K in keyof V]: ContextEnumItemDef<V[K], N>;
+// };
 
-export type EnumMethods<Variants extends {}> = {
-    // is & unwrap may be getters, does not matter, it is an ergonomics question
-    is<K extends StrKeys<Variants>>(variantName: K): boolean;
-    unwrap<K extends VariantsWithValues<Variants>, Inner extends Variants[K]>(variantName: K): Inner;
-    match<R = void>(
-        matchMap: {
-            [K in StrKeys<Variants>]: Variants[K] extends null ? () => R : (value: Variants[K]) => R;
-        },
-    ): R;
-};
+interface ContextEnumItemDef<Val, N> {
+    valueRef: Val extends null ? null : keyof N;
+    discriminant: number;
+}
 
-export type EnumConstructor<V extends {}> = {
-    create: {
-        <K extends VariantsWithValues<V>, Inner extends V[K]>(variant: K, value: Inner): Enum<V>;
-        <K extends VariantsWithoutValues<V>>(variant: K): Enum<V>;
-    };
-};
+/**
+ * TODO how to expose `schema` to the world? It has very useful method `create` for creating enums
+ * @param def
+ */
+export function defEnum<V, N>(
+    schema: RustEnumSchema<V>,
+    dynCodecs: {
+        [K in RustEnumNonEmptyVariants<V>]: CompatibleNamespaceKeys<N, V[K]>;
+    },
+): ContextSensitiveCodec<RustEnum<V>, N> {
+    // const schema = new RustEnumSchema(
+    //     typedFromEntries(typedToEntries(def).map(([key, { discriminant }]) => [key, { discriminant }])),
+    // );
 
-export type EnumConstructorOpts<V extends {}> = {
-    create: {
-        <K extends VariantsWithValues<V>, Inner extends V[K]>(variant: K, value: Inner): Enum<V>;
-        <K extends VariantsWithoutValues<V>>(variant: K): Enum<V>;
-    };
-};
-
-export type VariantsWithValues<V extends {}> = {
-    [K in StrKeys<V>]: V[K] extends null ? never : K;
-}[StrKeys<V>];
-
-// export type AllVariants<V extends {}> = StrKeys<V>;
-
-export type VariantsWithoutValues<V extends {}> = {
-    [K in StrKeys<V>]: V[K] extends null ? K : never;
-}[StrKeys<V>];
-
-export type EnumVariantsDefinition<N extends {}, Variants extends {}> = {
-    [VariantName in StrKeys<Variants>]: Variants[VariantName] extends null
-        ? EmptyVariantDefinition<VariantName>
-        : NonEmptyVariantDefinition<VariantName, CompatibleNamespaceTypes<N, Variants[VariantName]>>;
-}[StrKeys<Variants>][];
-
-export type EmptyVariantDefinition<Name> = Name | [Name] | { name: Name; discriminant: number };
-
-export type NonEmptyVariantDefinition<Name, Type> =
-    | [Name, Type]
-    | {
-          name: Name;
-          value: Type;
-          discriminant?: number;
-      };
-
-export type EnumCodec<N, V> = Codec<N, Enum<V>> & EnumConstructor<V>;
-
-export function defineEnumCodec<N extends {}, V extends {}>(definition: EnumVariantsDefinition<N, V>): EnumCodec<N, V> {
     return {
-        encode: () => new Uint8Array(),
-        decode: () => null as unknown as Enum<V>,
-        create: () => null as any,
+        // schema,
+        setup({ dynCodec }) {
+            const codec = schema.enumCodec(
+                typedFromEntries(typedToEntries(dynCodecs).map(([k, v]) => [k, dynCodec(v)])) as any,
+            );
+
+            return codec;
+        },
     };
 }
 
-export type Option<T> = Enum<OptionVariants<T>>;
+// defineEnum<
+//     {
+//         Str1: string;
+//         Str2: string;
+//         Flag: boolean;
+//     },
+//     {
+//         String: string;
+//         Bool: boolean;
+//     }
+// >(
+//     new RustEnumSchema({
+//         Str: { discriminant: 0 },
+//         Flag: { discriminant: 1 },
+//     }),
+//     {
+//         Str: 'String',
+//         Flag: 'Bool',
+//     },
+// );
 
-export type OptionVariants<T> = { None: null; Some: T };
+export interface OptionVariants<T> {
+    None: null;
+    Some: T;
+}
 
-export type Result<Ok, Err> = Enum<{
+export interface ResultVariants<Ok, Err> {
     Ok: Ok;
     Err: Err;
-}>;
+}
+
+// export type Result<Ok, Err> = Enum<{
+//     Ok: Ok;
+//     Err: Err;
+// }>;

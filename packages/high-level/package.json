@@ -1,16 +1,17 @@
 {
-    "name": "general",
+    "name": "@scale-codec/high-level",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@scale-codec/codecs": "workspace:^0.1.0",
+        "@scale-codec/core": "workspace:^0.1.0",
+        "@scale-codec/util": "workspace:^0.1.0",
         "hada": "^0.0.8",
         "jsbi": "^3.1.4"
     },

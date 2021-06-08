@@ -1,18 +1,16 @@
-import { decodeArrayContainer, encodeArrayContainer } from '@scale-codec/codecs';
-import { CodecComplex } from '../types';
+import { decodeArrayContainer, encodeArrayContainer } from '@scale-codec/core';
+import { ContextSensitiveCodec } from '../types';
 
-export type Vec<T> = T[];
+// export type Vec<T> = T[];
 
-export function defineVecCodec<N, K extends keyof N>(typeName: K): CodecComplex<N[K][], N> {
+export function defVec<N, K extends keyof N>(valueRef: K): ContextSensitiveCodec<N[K][], N> {
     return {
-        type: 'complex',
-        encode: (ns, arr) => {
-            const ItemCodec = ns.lookup(typeName);
-            return encodeArrayContainer(arr, ItemCodec.encode);
-        },
-        decode: (ns, buffer) => {
-            const ItemCodec = ns.lookup(typeName);
-            return decodeArrayContainer(buffer, ItemCodec.decode);
+        setup({ dynCodec }) {
+            const Item = dynCodec(valueRef);
+            return {
+                encode: (v) => encodeArrayContainer(v, Item.encode),
+                decode: (b) => decodeArrayContainer(b, Item.decode),
+            };
         },
     };
 }

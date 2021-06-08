@@ -1,8 +1,6 @@
-import { decodeBool, encodeBool } from '@scale-codec/codecs';
-import { Codec } from '../types';
+import { decodeBool, encodeBool, Codec } from '@scale-codec/core';
 
-export const BoolCodec: Codec<any, boolean> = {
-    type: 'primitive',
-    encode: (val) => encodeBool(val),
-    decode: (buff) => [decodeBool(buff), 1],
+export const BoolCodec: Codec<boolean> = {
+    encode: encodeBool,
+    decode: decodeBool,
 };

@@ -1,192 +1,50 @@
-import { Codec, CodecCompiled, NamespaceCompiled, NamespaceAsCodecs, NamespaceAsCompiledCodecs } from './types';
+import { Codec } from '@scale-codec/core';
+import { mapGetUnwrap } from '@scale-codec/util';
+import { ContextSensitiveCodec } from './types';
+import { typedToEntries } from './util';
 
-function compileTypeDefinition<N extends {}, V>(namespace: NamespaceCompiled<N>, codec: Codec<V, N>): CodecCompiled<V> {
-    return codec.type === 'primitive'
-        ? {
-              encode: codec.encode,
-              decode: codec.decode,
-          }
-        : {
-              encode: (v) => codec.encode(namespace, v),
-              decode: (b) => codec.decode(namespace, b),
-          };
+export type NamespaceDefinitionCodecs<N> = {
+    [K in keyof N]: Codec<N[K]> | ContextSensitiveCodec<N[K], N>;
+};
+
+export interface Namespace<N> {
+    encode: <K extends keyof N>(ref: K, value: N[K]) => Uint8Array;
+    decode: <K extends keyof N>(ref: K, bytes: Uint8Array) => N[K];
 }
 
-export function compileNamespace<N>(namescape: NamespaceAsCodecs<N>): NamespaceCompiled<N> {
-    const ns: NamespaceCompiled<N> = {} as any;
-
-    const types: NamespaceAsCompiledCodecs<N> = Object.fromEntries(
-        (Object.entries(namescape) as [keyof N, Codec<N, any>][]).map(([typeName, options]) => [
-            typeName,
-            compileTypeDefinition(ns, options),
-        ]),
-    ) as any;
-
-    ns.lookup = (type) => types[type];
-    // ns.encode = (type, val) => ns.lookup(type).encode(val);
-    // ns.decode = (type, buff) => ns.lookup(type).decode(buff);
-
-    return ns;
+function isContextSensitiveCodec<V, N>(
+    item: Codec<V> | ContextSensitiveCodec<V, N>,
+): item is ContextSensitiveCodec<V, N> {
+    return !!(item as ContextSensitiveCodec<V, N>).setup;
 }
 
-// testing
+export function defNamespace<N>(codecs: NamespaceDefinitionCodecs<N>): Namespace<N> {
+    const dynDispatchMap = new Map<keyof N, Codec<N[keyof N]>>();
 
-// {
-//     interface MyTypes {
-//         Id: {
-//             name: string;
-//             domain: string;
-//         };
-//         Account: {
-//             id: MyTypes['Id'];
-//         };
-//     }
+    // defining function for dynamic dispatching of encode/decode
+    function dynCodec(name: keyof N): Codec<N[keyof N]> {
+        return {
+            encode: (v) => mapGetUnwrap(dynDispatchMap, name).encode(v),
+            decode: (b) => mapGetUnwrap(dynDispatchMap, name).decode(b),
+        };
+    }
 
-//     // interface Id {
-//     //     name: string;
-//     //     domain: string;
-//     // }
+    // for codecs setup below
+    const setupCtx = { dynCodec };
 
-//     // interface Account {
-//     //     id: Id;
-//     // }
+    // codecs setup
+    typedToEntries(codecs).forEach(([codecName, item]) => {
+        const codec: Codec<N[keyof N]> = isContextSensitiveCodec(item)
+            ? item.setup(setupCtx)
+            : // typescript cannot understand that it is Codec<T> anyway
+              (item as Codec<N[keyof N]>);
 
-//     // type Namespace = {
-//     //     [K in keyof MyTypes]: CodecType<MyTypes[K]>;
-//     // };
+        dynDispatchMap.set(codecName, codec);
+    });
 
-//     const root = compileNamespace<MyTypes>({
-//         Id: {
-//             encode(root, { name, domain }) {
-//                 console.log('encoding %o & %o', name, domain);
-//                 // const name = id;
-//                 return new Uint8Array();
-//             },
-//             decode(root, buff) {
-//                 return { name: 'test', domain: 'puff' };
-//             },
-//         },
-//         Account: {
-//             encode: (root, { id }) => {
-//                 return root.lookup('Id').encode(id);
-//                 // root.lookup('Id')
-//                 // return root.encode('Id', id);
-//             },
-//             decode: (root, buff) => {
-//                 const id = root.lookup('Id').decode(buff);
-//                 return { id };
-//             },
-//         },
-//     });
-
-//     // root.lookup('Id').
-// }
-
-// {
-//     type CodecNumType = 'signed' | 'unsigned';
-
-//     class CodecNumber {
-//         public constructor(value: number, bits: number, type: CodecNumType) {}
-
-//         encode(): Uint8Array {}
-//     }
-
-//     function createCodecNumber(bits: number, type: CodecNumType): CodecTypeOptions<any, CodecNumber> {
-//         return {
-//             decode: (root, buff) => new CodecNumber(4123, bits, type),
-//             encode: (root, val) => val.encode(),
-//         };
-//     }
-
-//     const root = compileNamespace<{
-//         u8: CodecNumber;
-//         u16: CodecNumber;
-//         u32: CodecNumber;
-//         i8: CodecNumber;
-//         i16: CodecNumber;
-//         i32: CodecNumber;
-//     }>({
-//         u8: createCodecNumber(8, 'unsigned'),
-//         u16: createCodecNumber(16, 'unsigned'),
-//         u32: createCodecNumber(32, 'unsigned'),
-//         i8: createCodecNumber(8, 'signed'),
-//         i16: createCodecNumber(16, 'signed'),
-//         i32: createCodecNumber(32, 'signed'),
-//     });
-
-//     const buff = root.lookup('u8').encode(new CodecNumber(4152, 412, 'unsigned'));
-// }
-
-// // custom type options
-// {
-//     interface NS {
-//         SmartString: CodecTypeOptions<NS, string> & { fromHex: (hex: string) => string };
-//     }
-
-//     const root = compileNamespace<NS>(null as any);
-
-//     root.lookup('SmartString').fromHex();
-
-//     interface Base {
-//         foo: string;
-//     }
-
-//     interface BaseExtended extends Base {
-//         bar: number;
-//     }
-
-//     type BaseExtension = Omit<BaseExtended, keyof Base>;
-// }
-
-// enum
-{
+    return {
+        encode: (ref, value) => mapGetUnwrap(dynDispatchMap, ref).encode(value),
+        decode: <K extends keyof N>(ref: K, bytes: Uint8Array) =>
+            mapGetUnwrap(dynDispatchMap, ref).decode(bytes)[0] as N[K],
+    };
 }
-// type TypeCompiled<
-//     Defs extends Definitions<any, any>,
-//     K extends keyof Defs,
-//     Def extends TypeDef<any, any> = Defs[K],
-// > = Def extends TypeDef<any, infer T>
-//     ? {
-//           encode: (value: T) => Uint8Array;
-//           decode: (buffer: Uint8Array) => T;
-//       } & (Def extends { create: (root: any, value: infer V) => T } ? { create: (value: V) => T } : {})
-//     : //  & (
-//       //     Def extends { createFromVoid: (root: any) }
-//       // )
-//       never;
-
-// type DefinedTypes<N> = keyof N & string;
-
-// class Root<Defs extends Definitions<Namespace, Root<Namespace, any>>> {
-//     constructor(types: Defs) {}
-
-//     lookup<K extends DefinedTypes<Namespace>>(type: K): TypeCompiled<Defs, K> {
-//         return null;
-//     }
-// }
-
-// const root = new Root({
-//     Id: {
-//         encode: () => new Uint8Array(),
-//         decode: () => 'string',
-//     },
-// });
-
-// interface Codec {
-//     decode(encodedBytes: Uint8Array): unknown;
-
-// }
-
-// export function defineDecoder<T extends ScaleEncoder>(
-//     something: T & {
-//         decode(bytes: Uint8Array): T;
-//     },
-// ): T & ScaleDecoder<T> {
-//     return { ...something, [ScaleSymbolDecode]: something.decode };
-// }
-
-// export function defineEncoder<T extends ScaleEncoder>(
-//     something: T & {
-//         encode
-//     }
-// )

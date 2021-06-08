@@ -1,14 +1,6 @@
-import { compileNamespace } from './namespace';
-import {
-    defineEnumCodec,
-    defineStructCodec,
-    defineVecCodec,
-    Option,
-    OptionVariants,
-    PrimitiveCodecs,
-    PrimitiveTypes,
-    MapCodec,
-} from './std';
+import { RustEnum, RustEnumSchema } from '@scale-codec/core';
+import { defNamespace } from './namespace';
+import { defEnum, defStruct, defVec, defMap, defTuple, OptionVariants, PrimitiveCodecs, PrimitiveTypes } from './std';
 
 type MyCustomNamespace = PrimitiveTypes & {
     Id: {
@@ -16,32 +8,36 @@ type MyCustomNamespace = PrimitiveTypes & {
         domain: string;
     };
     'BTreeMap<String,Id>': Map<PrimitiveTypes['String'], MyCustomNamespace['Id']>;
-    'Option<Id>': Option<MyCustomNamespace['Id']>;
+    'Option<Id>': RustEnum<OptionVariants<MyCustomNamespace['Id']>>;
     'Vec<u32>': PrimitiveTypes['u32'][];
+    '(u32, i8)': [PrimitiveTypes['u32'], PrimitiveTypes['i32']];
 };
 
-const codecs = {
-    Id: defineStructCodec<MyCustomNamespace, MyCustomNamespace['Id']>([
+// FIXME
+const OptionId = new RustEnumSchema<OptionVariants<MyCustomNamespace['Id']>>({
+    None: { discriminant: 0 },
+    Some: { discriminant: 1 },
+});
+
+const namespace = defNamespace<MyCustomNamespace>({
+    ...PrimitiveCodecs,
+    Id: defStruct([
         ['name', 'String'],
         ['domain', 'String'],
     ]),
-    'BTreeMap<String,Id>': MapCodec<MyCustomNamespace, 'String', 'Id'>('String', 'Id'),
-    'Option<Id>': defineEnumCodec<MyCustomNamespace, OptionVariants<MyCustomNamespace['Id']>>(['None', ['Some', 'Id']]),
-    'Vec<u32>': defineVecCodec<MyCustomNamespace, number>('u32'),
-};
-
-const namespace = compileNamespace<MyCustomNamespace>({
-    ...PrimitiveCodecs,
-    ...codecs,
+    '(u32, i8)': defTuple(['u32', 'i8']),
+    'Vec<u32>': defVec('u32'),
+    'BTreeMap<String,Id>': defMap('String', 'Id'),
+    'Option<Id>': defEnum(OptionId, { Some: 'Id' }),
 });
 
-const map: Map<string, MyCustomNamespace['Id']> = namespace.lookup('BTreeMap<String,Id>').decode(new Uint8Array());
+const map = namespace.decode('BTreeMap<String,Id>', new Uint8Array());
 
-const maybeId: Option<MyCustomNamespace['Id']> = codecs['Option<Id>'].create('Some', {
+const maybeId = OptionId.create('Some', {
     name: '412',
     domain: '4141',
 });
 
-const id: MyCustomNamespace['Id'] = maybeId.unwrap('Some');
+const id = maybeId.as('Some');
 
-namespace.lookup('Id').encode(id);
+namespace.encode('Id', id);

@@ -1,8 +1,6 @@
-import { decodeStrCompact, encodeStrCompact } from '@scale-codec/codecs';
-import { Codec } from '../types';
+import { decodeStrCompact, encodeStrCompact, Codec } from '@scale-codec/core';
 
 export const StringCodec: Codec<string> = {
-    type: 'primitive',
-    encode: (val) => encodeStrCompact(val),
-    decode: (buff) => decodeStrCompact(buff),
+    encode: encodeStrCompact,
+    decode: decodeStrCompact,
 };
