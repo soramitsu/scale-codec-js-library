@@ -3,8 +3,14 @@ import BN from 'bn.js';
 import { bytesToHex } from 'hada';
 import { DecodeResult } from './types';
 
+/**
+ * Little-Endian (`le`) or Big-Endian (`be`)
+ */
 export type Endianness = 'le' | 'be';
 
+/**
+ * This value may be any multiple of 8 or -1, which indicates "any" number of bits
+ */
 export type AllowedBits = -1 | 8 | 16 | 32 | 64 | 128 | 256; // and so on, but let's be realistic
 
 /**
@@ -227,7 +233,7 @@ const codecs: {
     },
 };
 
-export interface NumberEncodeOptions {
+export interface BigIntEncodeOptions {
     /**
      * @default -1
      */
@@ -239,6 +245,8 @@ export interface NumberEncodeOptions {
     endianness?: Endianness;
 
     /**
+     * If `true` then it is `int`, else `uint`
+     *
      * @default false
      */
     isSigned?: boolean;
@@ -247,7 +255,7 @@ export interface NumberEncodeOptions {
 /**
  * TODO remove bn.js dependency
  */
-export function encodeBigInt(value: JSBI, options?: NumberEncodeOptions): Uint8Array {
+export function encodeBigInt(value: JSBI, options?: BigIntEncodeOptions): Uint8Array {
     const bits = options?.bits ?? -1;
     const endianness: Endianness = options?.endianness ?? 'le';
     const isSigned = options?.isSigned ?? false;
@@ -275,12 +283,15 @@ export interface BigIntDecodeOptions {
     endianness?: Endianness;
 
     /**
+     * If `true` then it is `int`, else `uint`
+     *
      * @default false
      */
     isSigned?: boolean;
 
     /**
-     * If bits is -1 then all bytes will be decoded else will be taken subarray of bits
+     * If `bits === -1` then all bytes will be decoded into BigInt,
+     * otherwise only as many as the number of bits.
      *
      * @default -1
      */

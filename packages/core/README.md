@@ -18,6 +18,20 @@ Containers:
 -   [x] Structs
 -   [x] Enums
 
+### Docs
+
+Build docs:
+
+```sh
+pnpm docs:build
+```
+
+Serve built docs:
+
+```sh
+pnpm docs:serve
+```
+
 ### Why `JSBI` for numbers?
 
 Because it can be easily migrated to the native BigInt in the future with babel plugin: https://github.com/GoogleChromeLabs/babel-plugin-transform-jsbi-to-bigint
@@ -25,4 +39,3 @@ Because it can be easily migrated to the native BigInt in the future with babel 
 ### TODO
 
 -   [ ] Completely remove `BN.js` from integers codecs.
--   [ ] Auto-generated docs
