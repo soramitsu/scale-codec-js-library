@@ -1,24 +1,16 @@
-import JSBI from 'jsbi';
-import { decodeBigInt, encodeBigInt } from './int';
-import {
-    decodeArrayContainer,
-    decodeMap,
-    decodeStruct,
-    decodeTuple,
-    encodeArrayContainer,
-    encodeMap,
-    encodeStruct,
-    encodeTuple,
-    RawEnum,
-    RawEnumCodec,
-    RawEnumSchema,
-} from './containers';
-import { decodeStrCompact, encodeStrCompact } from './str';
-import { decodeBool, encodeBool } from './bool';
-import { yieldNTimes } from '@scale-codec/util';
-import { Decode, Encode } from './types';
-
 /* eslint-disable max-nested-callbacks */
+
+import { yieldNTimes } from '@scale-codec/util';
+import JSBI from 'jsbi';
+import { encodeBool, decodeBool } from '../../bool';
+import { encodeBigInt, decodeBigInt } from '../../int';
+import { encodeStrCompact, decodeStrCompact } from '../../str';
+import { Encode, Decode } from '../../types';
+import { encodeArrayContainer, decodeArrayContainer } from '../array';
+import { RustEnumSchema, RustEnumCodec, RustEnum } from '../enum';
+import { encodeMap, decodeMap } from '../map';
+import { encodeStruct, decodeStruct } from '../struct';
+import { encodeTuple, decodeTuple } from '../tuple';
 
 function hexifyBytes(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -38,8 +30,8 @@ interface Option<T> {
 function createOptionSchema<T>(
     encode: Encode<T>,
     decode: Decode<T>,
-): { schema: RawEnumSchema<Option<T>>; codec: RawEnumCodec<Option<T>> } {
-    const schema = new RawEnumSchema<Option<T>>({
+): { schema: RustEnumSchema<Option<T>>; codec: RustEnumCodec<Option<T>> } {
+    const schema = new RustEnumSchema<Option<T>>({
         None: { discriminant: 0 },
         Some: { discriminant: 1 },
     });
@@ -165,7 +157,7 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     // it encodes not like default enum
     describe('vec of option bool encoded as expected', () => {
         const { schema } = createOptionSchema<boolean>(encodeBool, decodeBool);
-        const vec: RawEnum<Option<boolean>>[] = [
+        const vec: RustEnum<Option<boolean>>[] = [
             schema.create('Some', true),
             schema.create('Some', false),
             schema.create('None'),
