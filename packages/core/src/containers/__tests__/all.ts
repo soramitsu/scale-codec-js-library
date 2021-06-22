@@ -5,9 +5,9 @@ import JSBI from 'jsbi';
 import { encodeBool, decodeBool } from '../../bool';
 import { encodeBigInt, decodeBigInt } from '../../int';
 import { encodeStrCompact, decodeStrCompact } from '../../str';
-import { Encode, Decode } from '../../types';
+import { Encode, Decode, DecodeResult } from '../../types';
 import { encodeArrayContainer, decodeArrayContainer } from '../array';
-import { RustEnumSchema, RustEnumCodec, RustEnum } from '../enum';
+import { EnumSchema, EnumCodec, EnumInstance } from '../enum';
 import { encodeMap, decodeMap } from '../map';
 import { encodeStruct, decodeStruct } from '../struct';
 import { encodeTuple, decodeTuple } from '../tuple';
@@ -30,13 +30,13 @@ interface Option<T> {
 function createOptionSchema<T>(
     encode: Encode<T>,
     decode: Decode<T>,
-): { schema: RustEnumSchema<Option<T>>; codec: RustEnumCodec<Option<T>> } {
-    const schema = new RustEnumSchema<Option<T>>({
+): { schema: EnumSchema<Option<T>>; codec: EnumCodec<Option<T>> } {
+    const schema = new EnumSchema<Option<T>>({
         None: { discriminant: 0 },
         Some: { discriminant: 1 },
     });
 
-    const codec = schema.enumCodec({
+    const codec = schema.createCodec({
         Some: { encode, decode },
         // any because T maybe null from TS view
     } as any);
@@ -136,10 +136,10 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
             (v) => encodeBigInt(v, { bits: 8, isSigned: true }),
             (b) => decodeBigInt(b, { bits: 8, isSigned: true }),
         );
-        const vec = [
-            schema.create('Some', JSBI.BigInt(1)),
-            schema.create('Some', JSBI.BigInt(-1)),
-            schema.create('None'),
+        const vec: EnumInstance<Option<JSBI>>[] = [
+            EnumInstance.create('Some', JSBI.BigInt(1)),
+            EnumInstance.create('Some', JSBI.BigInt(-1)),
+            EnumInstance.create('None'),
         ];
         const hex = '0c 01 01 01 ff 00';
 
@@ -157,10 +157,10 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     // it encodes not like default enum
     describe('vec of option bool encoded as expected', () => {
         const { schema } = createOptionSchema<boolean>(encodeBool, decodeBool);
-        const vec: RustEnum<Option<boolean>>[] = [
-            schema.create('Some', true),
-            schema.create('Some', false),
-            schema.create('None'),
+        const vec: EnumInstance<Option<boolean>>[] = [
+            EnumInstance.create('Some', true),
+            EnumInstance.create('Some', false),
+            EnumInstance.create('None'),
         ];
         const hex = '0c 01 02 00';
 
@@ -181,14 +181,14 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
 
         it('decode', () => {
             expect(
-                decodeArrayContainer(prettyHexToBytes(hex), (bytes) => {
+                decodeArrayContainer(prettyHexToBytes(hex), (bytes): DecodeResult<EnumInstance<Option<boolean>>> => {
                     switch (bytes[0]) {
                         case 0:
-                            return [schema.create('None'), 1];
+                            return [EnumInstance.create('None'), 1];
                         case 1:
-                            return [schema.create('Some', true), 1];
+                            return [EnumInstance.create('Some', true), 1];
                         case 2:
-                            return [schema.create('Some', false), 1];
+                            return [EnumInstance.create('Some', false), 1];
                         default:
                             throw new Error('unreachable?');
                     }
@@ -291,19 +291,21 @@ describe('Enum', () => {
         const { schema, codec } = createOptionSchema(encodeBool, decodeBool);
 
         it('"None" encoded as expected', () => {
-            expect(codec.encode(schema.create('None'))).toEqual(new Uint8Array([0]));
+            expect(codec.encode(EnumInstance.create('None'))).toEqual(new Uint8Array([0]));
         });
 
         it('"None" decoded as expected', () => {
-            expect(codec.decode(new Uint8Array([0]))).toEqual([schema.create('None'), 1]);
+            const none: EnumInstance<Option<boolean>> = EnumInstance.create('None');
+            expect(codec.decode(new Uint8Array([0]))).toEqual([none, 1]);
         });
 
         it('"Some(false)" encoded as expected', () => {
-            expect(codec.encode(schema.create('Some', false))).toEqual(new Uint8Array([1, 0]));
+            expect(codec.encode(EnumInstance.create('Some', false))).toEqual(new Uint8Array([1, 0]));
         });
 
         it('"Some(false)" decoded as expected', () => {
-            expect(codec.decode(new Uint8Array([1, 0]))).toEqual([schema.create('Some', false), 2]);
+            const some: EnumInstance<Option<boolean>> = EnumInstance.create('Some', false);
+            expect(codec.decode(new Uint8Array([1, 0]))).toEqual([some, 2]);
         });
     });
 });

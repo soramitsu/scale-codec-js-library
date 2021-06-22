@@ -1,12 +1,30 @@
 import { concatUint8Arrays } from '@scale-codec/util';
 import { Codec, DecodeResult } from '../types';
 
-export class RustEnum<V> {
+export class EnumInstance<V> {
+    public static create<
+        VStatic,
+        K extends { [x in keyof VStatic]: VStatic[x] extends null ? x : never }[keyof VStatic],
+    >(emptyVariant: K): EnumInstance<VStatic>;
+
+    public static create<
+        VStatic,
+        K extends { [x in keyof VStatic]: VStatic[x] extends null ? never : x }[keyof VStatic],
+    >(
+        variantWithValue: K,
+        // eslint-disable-next-line @typescript-eslint/unified-signatures
+        value: VStatic[K],
+    ): EnumInstance<VStatic>;
+
+    public static create<VStatic>(variant: keyof VStatic, value?: any): EnumInstance<VStatic> {
+        return new EnumInstance(variant, value ?? null);
+    }
+
     public readonly variant: keyof V;
 
     public readonly value: unknown;
 
-    public constructor(variantName: keyof V, value?: unknown) {
+    private constructor(variantName: keyof V, value?: unknown) {
         this.value = value;
         this.variant = variantName;
     }
@@ -23,9 +41,10 @@ export class RustEnum<V> {
         throw new Error(`cast failed - enum is not the "${variant}"`);
     }
 
-    public match<R = any>(matchMap: RustEnumMatchMap<V, R>): R {
+    public match<R = any>(matchMap: EnumMatchMap<V, R>): R {
         return matchMap[this.variant](this.value as any);
     }
+
     public toJSON() {
         return {
             variant: this.variant,
@@ -34,20 +53,20 @@ export class RustEnum<V> {
     }
 }
 
-export type RustEnumMatchMap<V, R = any> = {
+export type EnumMatchMap<V, R = any> = {
     [K in keyof V]: V[K] extends null ? () => R : (value: V[K]) => R;
 };
 
-export type RustEnumSchemaDef<V> = {
+export type EnumSchemaDef<V> = {
     [K in keyof V]: { discriminant: number };
 };
 
-export class RustEnumSchema<V> {
-    private readonly def: RustEnumSchemaDef<V>;
+export class EnumSchema<V> {
+    private readonly def: EnumSchemaDef<V>;
 
     private readonly disVarMap: Record<number, keyof V>;
 
-    public constructor(def: RustEnumSchemaDef<V>) {
+    public constructor(def: EnumSchemaDef<V>) {
         this.def = def;
         this.disVarMap = Object.fromEntries(
             (Object.entries(def) as [keyof V, { discriminant: number }][]).map(([variant, { discriminant }]) => [
@@ -58,8 +77,8 @@ export class RustEnumSchema<V> {
 
         this.getVariantDiscriminant = this.getVariantDiscriminant.bind(this);
         this.getDiscriminantVariant = this.getDiscriminantVariant.bind(this);
-        this.enumCodec = this.enumCodec.bind(this);
-        this.create = this.create.bind(this);
+        this.createCodec = this.createCodec.bind(this);
+        // this.create = this.create.bind(this);
     }
 
     public getVariantDiscriminant(variant: keyof V): number {
@@ -70,41 +89,31 @@ export class RustEnumSchema<V> {
         return this.disVarMap[discriminant];
     }
 
-    public enumCodec(codecs: RustEnumCodecs<V>): RustEnumCodec<V> {
-        return new RustEnumCodec(this, codecs);
-    }
-
-    public create<K extends { [x in keyof V]: V[x] extends null ? x : never }[keyof V]>(emptyVariant: K): RustEnum<V>;
-    public create<K extends { [x in keyof V]: V[x] extends null ? never : x }[keyof V]>(
-        variantWithValue: K,
-        // eslint-disable-next-line @typescript-eslint/unified-signatures
-        value: V[K],
-    ): RustEnum<V>;
-    public create(variant: keyof V, value?: any): RustEnum<V> {
-        return new RustEnum(variant, value ?? null);
+    public createCodec(codecs: EnumCodecsMap<V>): EnumCodec<V> {
+        return new EnumCodec(this, codecs);
     }
 }
 
-export type RustEnumNonEmptyVariants<V> = {
+export type EnumNonEmptyVariants<V> = {
     [K in keyof V]: V[K] extends null ? never : K;
 }[keyof V];
 
-export type RustEnumCodecs<V> = {
-    [K in RustEnumNonEmptyVariants<V>]: Codec<V[K]>;
+export type EnumCodecsMap<V> = {
+    [K in EnumNonEmptyVariants<V>]: Codec<V[K]>;
 };
 
-export class RustEnumCodec<V> implements Codec<RustEnum<V>> {
-    private schema: RustEnumSchema<V>;
-    private codecs: RustEnumCodecs<V>;
+export class EnumCodec<V> implements Codec<EnumInstance<V>> {
+    private schema: EnumSchema<V>;
+    private codecs: EnumCodecsMap<V>;
 
-    public constructor(schema: RustEnumSchema<V>, codecs: RustEnumCodecs<V>) {
+    public constructor(schema: EnumSchema<V>, codecs: EnumCodecsMap<V>) {
         this.schema = schema;
         this.codecs = codecs;
         this.encode = this.encode.bind(this);
         this.decode = this.decode.bind(this);
     }
 
-    public encode(val: RustEnum<V>): Uint8Array {
+    public encode(val: EnumInstance<V>): Uint8Array {
         const { variant, value } = val;
         const discriminant = this.schema.getVariantDiscriminant(variant);
         const codec = this.codecByVariant(variant);
@@ -115,7 +124,7 @@ export class RustEnumCodec<V> implements Codec<RustEnum<V>> {
         return concatUint8Arrays(arrs);
     }
 
-    public decode(bytes: Uint8Array): DecodeResult<RustEnum<V>> {
+    public decode(bytes: Uint8Array): DecodeResult<EnumInstance<V>> {
         const discriminant = bytes[0];
         const variant = this.schema.getDiscriminantVariant(discriminant);
         const codec = this.codecByVariant(variant);
@@ -129,10 +138,11 @@ export class RustEnumCodec<V> implements Codec<RustEnum<V>> {
             value = decoded;
         }
 
-        return [new RustEnum(variant, value), len];
+        // unsafe `any` allowed here, i think
+        return [EnumInstance.create(variant as any, value as any), len];
     }
 
     private codecByVariant(variant: keyof V): Codec<unknown> | null {
-        return variant in this.codecs ? this.codecs[variant as keyof RustEnumCodecs<V>] : null;
+        return variant in this.codecs ? this.codecs[variant as keyof EnumCodecsMap<V>] : null;
     }
 }
