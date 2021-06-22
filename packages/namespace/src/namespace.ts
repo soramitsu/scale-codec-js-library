@@ -1,10 +1,15 @@
-import { Codec } from '@scale-codec/core';
+import { Codec, DecodeResult } from '@scale-codec/core';
 import { mapGetUnwrap } from '@scale-codec/util';
+import { PrimitiveTypes, PrimitiveCodecs } from './std';
 import { ContextSensitiveCodec } from './types';
 import { typedToEntries } from './util';
 
 export type NamespaceDefinitionCodecs<N> = {
     [K in keyof N]: Codec<N[K]> | ContextSensitiveCodec<N[K], N>;
+};
+
+export type NamespaceWithPrimitivesDefinitionCodecs<N> = {
+    [K in keyof N]: Codec<N[K]> | ContextSensitiveCodec<N[K], N & PrimitiveTypes>;
 };
 
 export interface Namespace<N> {
@@ -22,10 +27,10 @@ export function defNamespace<N>(codecs: NamespaceDefinitionCodecs<N>): Namespace
     const dynDispatchMap = new Map<keyof N, Codec<N[keyof N]>>();
 
     // defining function for dynamic dispatching of encode/decode
-    function dynCodec(name: keyof N): Codec<N[keyof N]> {
+    function dynCodec<K extends keyof N>(name: K): Codec<N[K]> {
         return {
             encode: (v) => mapGetUnwrap(dynDispatchMap, name).encode(v),
-            decode: (b) => mapGetUnwrap(dynDispatchMap, name).decode(b),
+            decode: (b) => mapGetUnwrap(dynDispatchMap, name).decode(b) as DecodeResult<N[K]>,
         };
     }
 
@@ -47,4 +52,12 @@ export function defNamespace<N>(codecs: NamespaceDefinitionCodecs<N>): Namespace
         decode: <K extends keyof N>(ref: K, bytes: Uint8Array) =>
             mapGetUnwrap(dynDispatchMap, ref).decode(bytes)[0] as N[K],
     };
+}
+
+export function defNamespaceWithPrimitives<N>(
+    codecs: NamespaceWithPrimitivesDefinitionCodecs<N>,
+): Namespace<N & PrimitiveTypes> {
+    return defNamespace<N & PrimitiveTypes>(
+        { ...PrimitiveCodecs, ...codecs } as any /* idk why typescript sees here some error */,
+    );
 }
