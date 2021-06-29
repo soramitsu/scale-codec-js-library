@@ -1,9 +1,7 @@
-import { EnumInstance, EnumSchema } from '@scale-codec/core';
+import { Enum, EnumSchema, GetEnumDef, Valuable } from '@scale-codec/core';
 import { defNamespaceWithPrimitives } from './namespace';
 import { defStruct, defVec, PrimitiveTypes, defEnum } from './std';
 import JSBI from 'jsbi';
-
-type EnumInstanceVariants<I extends EnumInstance<any>> = I extends EnumInstance<infer V> ? V : never;
 
 interface MyNamespace {
     Person: {
@@ -12,7 +10,7 @@ interface MyNamespace {
         age: PrimitiveTypes['u32'];
         gender: MyNamespace['Gender'];
     };
-    Gender: EnumInstance<{
+    Gender: Enum<{
         Male: null;
         Female: null;
     }>;
@@ -21,10 +19,10 @@ interface MyNamespace {
         persons: MyNamespace['Vec<Person>'];
         government: MyNamespace['GovernmentType'];
     };
-    GovernmentType: EnumInstance<{
+    GovernmentType: Enum<{
         Anarchy: null;
-        Dictatorship: MyNamespace['DictatorInfo'];
-        Senate: MyNamespace['SenateInfo'];
+        Dictatorship: Valuable<MyNamespace['DictatorInfo']>;
+        Senate: Valuable<MyNamespace['SenateInfo']>;
     }>;
     DictatorInfo: {
         person: MyNamespace['Person'];
@@ -43,7 +41,7 @@ const namespace = defNamespaceWithPrimitives<MyNamespace>({
         ['gender', 'Gender'],
     ]),
     Gender: defEnum(
-        new EnumSchema<EnumInstanceVariants<MyNamespace['Gender']>>({
+        new EnumSchema<GetEnumDef<MyNamespace['Gender']>>({
             Male: { discriminant: 0 },
             Female: { discriminant: 1 },
         }),
@@ -55,12 +53,15 @@ const namespace = defNamespaceWithPrimitives<MyNamespace>({
         ['government', 'GovernmentType'],
     ]),
     GovernmentType: defEnum(
-        new EnumSchema<EnumInstanceVariants<MyNamespace['GovernmentType']>>({
+        new EnumSchema<GetEnumDef<MyNamespace['GovernmentType']>>({
             Anarchy: { discriminant: 0 },
             Dictatorship: { discriminant: 1 },
             Senate: { discriminant: 2 },
         }),
-        { Dictatorship: 'DictatorInfo', Senate: 'SenateInfo' },
+        {
+            Dictatorship: 'DictatorInfo',
+            Senate: 'SenateInfo',
+        },
     ),
     DictatorInfo: defStruct([
         ['person', 'Person'],
@@ -96,10 +97,11 @@ const somePerson: MyNamespace['Person'] = {
     firstName: 'Mora',
     lastName: 'Preshy',
     age: JSBI.BigInt(15),
-    gender: EnumInstance.create('Female'),
+    gender: Enum.create('Male'),
 };
 
 const somePersonEncoded = namespace.encode('Person', somePerson);
+// somePersonEncoded
 
 // or with automatic type inference
 namespace.encode('SenateInfo', {

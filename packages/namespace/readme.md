@@ -4,6 +4,8 @@ This library provides tools for creating complex namespaces whose types need to 
 
 ## Example
 
+> **TODO**: update examples after enums refactoring
+
 Rust source code:
 
 ```rust

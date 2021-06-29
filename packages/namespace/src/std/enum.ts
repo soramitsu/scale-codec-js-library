@@ -1,13 +1,21 @@
-import { EnumInstance, EnumNonEmptyVariants, EnumSchema } from '@scale-codec/core';
+import {
+    Enum,
+    ValuableVariants,
+    EnumSchema,
+    Option,
+    GetValuableVariantValue,
+    Result,
+    GetEnumDef,
+} from '@scale-codec/core';
 import { ContextSensitiveCodec, CompatibleNamespaceKeys } from '../types';
 import { typedFromEntries, typedToEntries } from '../util';
 
-export function defEnum<V, N>(
-    schema: EnumSchema<V>,
+export function defEnum<Def, N>(
+    schema: EnumSchema<Def>,
     dynCodecs: {
-        [K in EnumNonEmptyVariants<V>]: CompatibleNamespaceKeys<N, V[K]>;
+        [K in ValuableVariants<Def>]: CompatibleNamespaceKeys<N, GetValuableVariantValue<Def[K]>>;
     },
-): ContextSensitiveCodec<EnumInstance<V>, N> {
+): ContextSensitiveCodec<Enum<Def>, N> {
     return {
         setup({ dynCodec }) {
             const codec = schema.createCodec(
@@ -19,45 +27,29 @@ export function defEnum<V, N>(
     };
 }
 
-/* Option */
-export interface OptionVariants<T> {
-    Some: T;
-    None: null;
-}
-
-export type OptionInstance<T> = EnumInstance<OptionVariants<T>>;
-
-const OPTION_SCHEMA = new EnumSchema<OptionVariants<any>>({
+const OPTION_SCHEMA = new EnumSchema<GetEnumDef<Option<any>>>({
     None: { discriminant: 0 },
     Some: { discriminant: 1 },
 });
 
-export function defOptionEnum<T, N>(
-    someValueRef: CompatibleNamespaceKeys<N, T>,
-): ContextSensitiveCodec<OptionInstance<T>, N> {
-    return defEnum(
-        OPTION_SCHEMA,
-        { Some: someValueRef } as any /* as any because TypeScript cannot know that T is not a null */,
-    );
+/**
+ * `Option<T>` enum definition shorthand
+ */
+export function defOptionEnum<T, N>(someValueRef: CompatibleNamespaceKeys<N, T>): ContextSensitiveCodec<Option<T>, N> {
+    return defEnum(OPTION_SCHEMA, { Some: someValueRef });
 }
 
-/* Result */
-
-export interface ResultVariants<Ok, Err> {
-    Ok: Ok;
-    Err: Err;
-}
-
-export type ResultInstance<Ok, Err> = EnumInstance<ResultVariants<Ok, Err>>;
-
-const RESULT_SCHEMA = new EnumSchema<ResultVariants<any, any>>({
+const RESULT_SCHEMA = new EnumSchema<GetEnumDef<Result<any, any>>>({
     Ok: { discriminant: 0 },
     Err: { discriminant: 1 },
 });
 
-export function defResultEnum<Ok, Err, N>(
-    okValueRef: CompatibleNamespaceKeys<N, Ok>,
-    errValueRef: CompatibleNamespaceKeys<N, Err>,
-): ContextSensitiveCodec<ResultInstance<Ok, Err>, N> {
+/**
+ * `Result<O, E>` enum definition shorthand
+ */
+export function defResultEnum<O, E, N>(
+    okValueRef: CompatibleNamespaceKeys<N, O>,
+    errValueRef: CompatibleNamespaceKeys<N, E>,
+): ContextSensitiveCodec<Result<O, E>, N> {
     return defEnum(RESULT_SCHEMA, { Ok: okValueRef, Err: errValueRef });
 }
