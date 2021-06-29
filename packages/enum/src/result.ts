@@ -1,16 +1,21 @@
-import { Enum } from './enum';
+import { Enum, Valuable } from './enum';
 
-export class Result<O, E> extends Enum<{
-    Ok: { value: O };
-    Err: { value: E };
-}> {
-    public static Ok<O, E>(ok: O): Result<O, E> {
-        return new Result('Ok', { value: ok });
-    }
+export type Result<O, E> = Enum<{
+    Ok: Valuable<O>;
+    Err: Valuable<E>;
+}>;
 
-    public static Err<O, E>(err: E): Result<O, E> {
-        return new Result('Err', { value: err });
-    }
+// export class Result<O, E> extends Enum<{
+//     Ok: { value: O };
+//     Err: { value: E };
+// }> {
+//     public static Ok<O, E>(ok: O): Result<O, E> {
+//         return new Result('Ok', { value: ok });
+//     }
 
-    // TODO unwraps, mappings etc
-}
+//     public static Err<O, E>(err: E): Result<O, E> {
+//         return new Result('Err', { value: err });
+//     }
+
+//     // TODO unwraps, mappings etc
+// }

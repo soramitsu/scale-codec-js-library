@@ -81,6 +81,8 @@ for (const item of items) {
 
 ### Common enums - Option and Result
 
+> Draft, will be deleted?
+
 There are defined to most common Rust's enums - `Option<T>` for defining the presense or absense of some content, and `Result<Ok, Err>` for defining results of operations that can be failed. `Option` and `Result` are classes that extends base `Enum` and introduce some helpfull methods:
 
 ```ts

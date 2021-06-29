@@ -8,17 +8,21 @@ export type ValuableVariants<Def> = { [V in keyof Def]: Def[V] extends Valuable<
 
 export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
 
+export type GetEnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never;
+
 export type EnumMatchMap<V, R = any> = {
     [K in keyof V]: V[K] extends Valuable<infer T> ? (value: T) => R : () => R;
 };
 
 export class Enum<Def> {
     public static create<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def>;
+
     public static create<Def, V extends ValuableVariants<Def>>(
         variant: V,
         // eslint-disable-next-line @typescript-eslint/unified-signatures
         value: GetValuableVariantValue<Def[V]>,
     ): Enum<Def>;
+
     public static create<Def, V extends keyof Def>(
         variant: V,
         value?: Def[V] extends Valuable<infer T> ? T : undefined,
@@ -34,7 +38,7 @@ export class Enum<Def> {
 
     public readonly content: null | { value: unknown };
 
-    protected constructor(variant: keyof Def, content?: { value: unknown }) {
+    private constructor(variant: keyof Def, content?: { value: unknown }) {
         this.content = content ?? null;
         this.variant = variant;
     }

@@ -1,20 +1,33 @@
-import { Enum } from './enum';
+import { Enum, Valuable } from './enum';
 
-export class Option<T> extends Enum<{
-    Some: { value: T };
+export type Option<T> = Enum<{
     None: undefined;
-}> {
-    public static Some<T>(value: T): Option<T> {
-        return new Option('Some', { value });
-    }
+    Some: Valuable<T>;
+}>;
 
-    public static None<T>(): Option<T> {
-        return new Option('None');
-    }
+// export function Some<T>(value: T): Option<T> {
+//     return Enum.create('Some', value);
+// }
 
-    public unwrap(): T {
-        return this.as('Some');
-    }
+// export function None<T>(): Option<T> {
+//     return Enum.create('None');
+// }
 
-    // TODO
-}
+// export class Option<T> extends Enum<{
+//     Some: { value: T };
+//     None: undefined;
+// }> {
+//     public static Some<T>(value: T): Option<T> {
+//         return new Option('Some', { value });
+//     }
+
+//     public static None<T>(): Option<T> {
+//         return new Option('None');
+//     }
+
+//     public unwrap(): T {
+//         return this.as('Some');
+//     }
+
+//     // TODO
+// }

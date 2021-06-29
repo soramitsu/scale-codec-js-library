@@ -44,6 +44,7 @@ export type EnumCodecsMap<Def> = {
 
 export class EnumCodec<Def> implements Codec<Enum<Def>> {
     private schema: EnumSchema<Def>;
+
     private codecs: EnumCodecsMap<Def>;
 
     public constructor(schema: EnumSchema<Def>, codecs: EnumCodecsMap<Def>) {
