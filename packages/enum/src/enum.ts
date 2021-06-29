@@ -1,15 +1,15 @@
-interface ValuableVariant<T> {
+export interface Valuable<T> {
     value: T;
 }
 
-type EmptyVariants<Def> = { [V in keyof Def]: Def[V] extends ValuableVariant<any> ? never : V }[keyof Def];
+export type EmptyVariants<Def> = { [V in keyof Def]: Def[V] extends Valuable<any> ? never : V }[keyof Def];
 
-type ValuableVariants<Def> = { [V in keyof Def]: Def[V] extends ValuableVariant<any> ? V : never }[keyof Def];
+export type ValuableVariants<Def> = { [V in keyof Def]: Def[V] extends Valuable<any> ? V : never }[keyof Def];
 
-type GetValuableVariantValue<V extends ValuableVariant<any>> = V extends ValuableVariant<infer T> ? T : never;
+export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
 
 export type EnumMatchMap<V, R = any> = {
-    [K in keyof V]: V[K] extends ValuableVariant<infer T> ? (value: T) => R : () => R;
+    [K in keyof V]: V[K] extends Valuable<infer T> ? (value: T) => R : () => R;
 };
 
 export class Enum<Def> {
@@ -21,7 +21,7 @@ export class Enum<Def> {
     ): Enum<Def>;
     public static create<Def, V extends keyof Def>(
         variant: V,
-        value?: Def[V] extends ValuableVariant<infer T> ? T : undefined,
+        value?: Def[V] extends Valuable<infer T> ? T : undefined,
     ): Enum<Def> {
         return new Enum(
             variant,
@@ -43,7 +43,7 @@ export class Enum<Def> {
         return this.variant === variant;
     }
 
-    public as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends ValuableVariant<infer T> ? T : never {
+    public as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends Valuable<infer T> ? T : never {
         if (this.is(variant) && this.content) {
             return this.content.value as Def[V];
         }
