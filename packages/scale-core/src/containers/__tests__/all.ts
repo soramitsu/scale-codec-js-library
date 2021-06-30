@@ -3,9 +3,14 @@
 import { yieldNTimes } from '@scale-codec/util';
 import { Enum, Valuable } from '@scale-codec/enum';
 import JSBI from 'jsbi';
-import { encodeBool, decodeBool } from '../../bool';
-import { encodeBigInt, decodeBigInt } from '../../int';
-import { encodeStrCompact, decodeStrCompact } from '../../str';
+import {
+    encodeBool,
+    decodeBool,
+    encodeBigInt,
+    decodeBigInt,
+    encodeStrCompact,
+    decodeStrCompact,
+} from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
 import { encodeVec, decodeVec } from '../vec';
 import { EnumSchema, EnumCodec } from '../enum';

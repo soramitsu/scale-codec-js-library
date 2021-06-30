@@ -1,6 +1,6 @@
 // import BN from 'bn.js';
 import JSBI from 'jsbi';
-import { decodeBigInt } from '../int';
+import { decodeBigInt } from '../primitives';
 
 /**
  * Retrievs the offset and encoded length from a compact-prefixed value

@@ -1,7 +1,7 @@
 import JSBI from 'jsbi';
 import { TextEncoder, TextDecoder } from 'web-encoding';
-import { compactAddLength, retrieveOffsetAndEncodedLength } from './compact';
-import { DecodeResult } from './types';
+import { compactAddLength, retrieveOffsetAndEncodedLength } from '../compact';
+import { DecodeResult } from '../types';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder('utf-8', {

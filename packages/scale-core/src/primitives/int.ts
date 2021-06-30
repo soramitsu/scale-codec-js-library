@@ -1,7 +1,7 @@
 import JSBI from 'jsbi';
 import BN from 'bn.js';
 import { bytesToHex } from 'hada';
-import { DecodeResult } from './types';
+import { DecodeResult } from '../types';
 
 /**
  * Little-Endian (`le`) or Big-Endian (`be`)
