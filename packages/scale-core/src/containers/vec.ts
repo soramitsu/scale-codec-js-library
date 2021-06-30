@@ -4,7 +4,7 @@ import { Decode, DecodeResult } from '../types';
 import { retrieveOffsetAndEncodedLength, encodeBigIntCompact } from '../compact';
 import { decodeIteratively } from './utils';
 
-export function decodeArrayContainer<T>(bytes: Uint8Array, arrayItemDecoder: Decode<T>): DecodeResult<T[]> {
+export function decodeVec<T>(bytes: Uint8Array, arrayItemDecoder: Decode<T>): DecodeResult<T[]> {
     const [offset, length] = retrieveOffsetAndEncodedLength(bytes);
     const iterableDecoders = yieldNTimes(arrayItemDecoder, JSBI.toNumber(length));
 
@@ -13,6 +13,6 @@ export function decodeArrayContainer<T>(bytes: Uint8Array, arrayItemDecoder: Dec
     return [decoded, offset + decodedBytes];
 }
 
-export function encodeArrayContainer<T>(items: T[], encoder: (item: T) => Uint8Array): Uint8Array {
+export function encodeVec<T>(items: T[], encoder: (item: T) => Uint8Array): Uint8Array {
     return concatUint8Arrays([encodeBigIntCompact(JSBI.BigInt(items.length)), ...yieldMapped(items, encoder)]);
 }

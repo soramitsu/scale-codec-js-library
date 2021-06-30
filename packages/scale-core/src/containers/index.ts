@@ -1,4 +1,4 @@
-export * from './array';
+export * from './vec';
 export * from './tuple';
 export * from './map';
 export * from './struct';

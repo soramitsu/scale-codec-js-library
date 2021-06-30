@@ -1,13 +1,13 @@
-import { decodeArrayContainer, encodeArrayContainer } from '@scale-codec/core';
+import { decodeVec, encodeVec } from '@scale-codec/core';
 import { ContextSensitiveCodec } from '../types';
 
-export function defVec<N, K extends keyof N>(valueRef: K): ContextSensitiveCodec<N[K][], N> {
+export function defVec<N, K extends keyof N>(itemRef: K): ContextSensitiveCodec<N[K][], N> {
     return {
         setup({ dynCodec }) {
-            const Item = dynCodec(valueRef);
+            const Item = dynCodec(itemRef);
             return {
-                encode: (v) => encodeArrayContainer(v, Item.encode),
-                decode: (b) => decodeArrayContainer(b, Item.decode),
+                encode: (v) => encodeVec(v, Item.encode),
+                decode: (b) => decodeVec(b, Item.decode),
             };
         },
     };
