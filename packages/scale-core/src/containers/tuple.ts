@@ -2,21 +2,23 @@ import { concatUint8Arrays } from '@scale-codec/util';
 import { decodeIteratively } from './utils';
 import { Decode, DecodeResult, Encode } from '../types';
 
-export function decodeTuple<T extends any[]>(
-    bytes: Uint8Array,
-    decoders: Iterable<Decode<T extends (infer V)[] ? V : never>>,
-): DecodeResult<T> {
+export type TupleEncoders<Tuple extends any[]> = Tuple extends [infer Head, ...infer Tail]
+    ? [Encode<Head>, ...TupleEncoders<Tail>]
+    : [];
+
+export type TupleDecoders<Tuple extends any[]> = Tuple extends [infer Head, ...infer Tail]
+    ? [Decode<Head>, ...TupleEncoders<Tail>]
+    : [];
+
+export function decodeTuple<T extends any[]>(bytes: Uint8Array, decoders: TupleDecoders<T>): DecodeResult<T> {
     return decodeIteratively(bytes, decoders) as any;
 }
 
-export function encodeTuple<T extends any[]>(
-    tuple: T,
-    encoders: Iterable<Encode<T extends (infer V)[] ? V : never>>,
-): Uint8Array {
+export function encodeTuple<T extends any[]>(tuple: T, encoders: TupleEncoders<T>): Uint8Array {
     function* parts(): Generator<Uint8Array> {
         let i = 0;
         for (const encode of encoders) {
-            yield encode(tuple[i++]);
+            yield (encode as Encode<any>)(tuple[i++]);
         }
     }
 

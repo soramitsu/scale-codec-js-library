@@ -6,23 +6,25 @@ import {
     GetValuableVariantValue,
     Result,
     GetEnumDef,
+    EnumCodec,
 } from '@scale-codec/core';
-import { ContextSensitiveCodec, CompatibleNamespaceKeys } from '../types';
-import { typedFromEntries, typedToEntries } from '../util';
+import { CompatibleNamespaceKeys, NamespaceCodec } from '../types';
 
-export function defEnum<Def, N>(
+export function defEnum<N, Def>(
     schema: EnumSchema<Def>,
-    dynCodecs: {
+    valuableVariantsRefs: {
         [K in ValuableVariants<Def>]: CompatibleNamespaceKeys<N, GetValuableVariantValue<Def[K]>>;
     },
-): ContextSensitiveCodec<Enum<Def>, N> {
+): NamespaceCodec<Enum<Def>, N> {
     return {
         setup({ dynCodec }) {
-            const codec = schema.createCodec(
-                typedFromEntries(typedToEntries(dynCodecs).map(([k, v]) => [k, dynCodec(v)])) as any,
+            const scale: EnumCodec<Def> = schema.createCodec(
+                Object.fromEntries(
+                    Object.entries(valuableVariantsRefs).map(([variant, ref]) => [variant, dynCodec(ref as any)]),
+                ) as any,
             );
 
-            return codec;
+            return scale;
         },
     };
 }
@@ -35,8 +37,8 @@ const OPTION_SCHEMA = new EnumSchema<GetEnumDef<Option<any>>>({
 /**
  * `Option<T>` enum definition shorthand
  */
-export function defOptionEnum<T, N>(someValueRef: CompatibleNamespaceKeys<N, T>): ContextSensitiveCodec<Option<T>, N> {
-    return defEnum(OPTION_SCHEMA, { Some: someValueRef });
+export function defOption<T, N>(someRef: CompatibleNamespaceKeys<N, T>): NamespaceCodec<Option<T>, N> {
+    return defEnum(OPTION_SCHEMA, { Some: someRef });
 }
 
 const RESULT_SCHEMA = new EnumSchema<GetEnumDef<Result<any, any>>>({
@@ -47,9 +49,9 @@ const RESULT_SCHEMA = new EnumSchema<GetEnumDef<Result<any, any>>>({
 /**
  * `Result<O, E>` enum definition shorthand
  */
-export function defResultEnum<O, E, N>(
-    okValueRef: CompatibleNamespaceKeys<N, O>,
-    errValueRef: CompatibleNamespaceKeys<N, E>,
-): ContextSensitiveCodec<Result<O, E>, N> {
-    return defEnum(RESULT_SCHEMA, { Ok: okValueRef, Err: errValueRef });
+export function defResult<O, E, N>(
+    okRef: CompatibleNamespaceKeys<N, O>,
+    errRef: CompatibleNamespaceKeys<N, E>,
+): NamespaceCodec<Result<O, E>, N> {
+    return defEnum(RESULT_SCHEMA, { Ok: okRef, Err: errRef });
 }

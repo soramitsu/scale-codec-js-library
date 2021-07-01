@@ -1,21 +1,30 @@
-import { encodeTuple, decodeTuple, Encode } from '@scale-codec/core';
-import { ContextSensitiveCodec, CompatibleNamespaceKeys } from '../types';
+import { encodeTuple, decodeTuple, Encode, Decode, Codec } from '@scale-codec/core';
+import { NamespaceCodec, CompatibleNamespaceKeys } from '../types';
 
-type ArrayValues<T extends any[]> = T extends (infer V)[] ? V : never;
+// mapping tuple to refs
+export type TupleNamespaceRefs<Tuple extends any[], N> = Tuple extends [infer Head, ...infer Tail]
+    ? [CompatibleNamespaceKeys<N, Head>, ...TupleNamespaceRefs<Tail, N>]
+    : [];
 
-export function defTuple<N, Values extends N[keyof N][]>(
-    types: CompatibleNamespaceKeys<N, ArrayValues<Values>>[],
-): ContextSensitiveCodec<Values, N> {
+export function defTuple<N, T extends any[]>(refs: TupleNamespaceRefs<T, N>): NamespaceCodec<T, N> {
     return {
         setup({ dynCodec }) {
-            const Types = types.map((name) => dynCodec(name));
-            const encoders = Types.map((x) => x.encode);
-            const decoders = Types.map((x) => x.decode);
+            const scaleEncoders: Encode<any>[] = [];
+            const scaleDecoders: Decode<any>[] = [];
 
-            return {
-                encode: (v) => encodeTuple(v, encoders as any[]),
-                decode: (b) => decodeTuple(b, decoders as any[]),
+            for (const ref of refs) {
+                const { encode, decode } = dynCodec(ref);
+
+                scaleEncoders.push(encode);
+                scaleDecoders.push(decode);
+            }
+
+            const scale: Codec<any> = {
+                encode: (v) => encodeTuple(v, scaleEncoders as any),
+                decode: (b) => decodeTuple(b, scaleDecoders as any),
             };
+
+            return scale;
         },
     };
 }
