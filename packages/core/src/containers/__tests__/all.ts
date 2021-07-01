@@ -17,6 +17,7 @@ import { EnumSchema, EnumCodec } from '../enum';
 import { encodeMap, decodeMap } from '../map';
 import { encodeStruct, decodeStruct } from '../struct';
 import { encodeTuple, decodeTuple } from '../tuple';
+import { decodeArray, encodeArray } from '../array';
 
 function hexifyBytes(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -350,6 +351,22 @@ describe('Map', () => {
 
         it('decode', () => {
             expect(decodeMap(encoded, decode, decode)).toEqual([map, encoded.length]);
+        });
+    });
+});
+
+describe('Array', () => {
+    describe('[u8; 7]', () => {
+        const nums = [5, 8, 1, 2, 8, 42, 129];
+        const arrU8 = nums.map(JSBI.BigInt);
+        const encoded = Uint8Array.from(nums);
+
+        test('encode', () => {
+            expect(encodeArray(arrU8, (v) => encodeBigInt(v, { bits: 8, isSigned: false }), 7)).toEqual(encoded);
+        });
+
+        test('decode', () => {
+            expect(decodeArray(encoded, (b) => decodeBigInt(b, { bits: 8, isSigned: false }), 7)).toEqual([arrU8, 7]);
         });
     });
 });
