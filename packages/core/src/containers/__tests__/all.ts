@@ -1,17 +1,23 @@
 /* eslint-disable max-nested-callbacks */
 
 import { yieldNTimes } from '@scale-codec/util';
-import { Enum, Valuable } from '@scale-codec/enum';
+import { Enum, Option, Valuable } from '@scale-codec/enum';
 import JSBI from 'jsbi';
-import { encodeBool, decodeBool } from '../../bool';
-import { encodeBigInt, decodeBigInt } from '../../int';
-import { encodeStrCompact, decodeStrCompact } from '../../str';
+import {
+    encodeBool,
+    decodeBool,
+    encodeBigInt,
+    decodeBigInt,
+    encodeStrCompact,
+    decodeStrCompact,
+} from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
-import { encodeArrayContainer, decodeArrayContainer } from '../array';
-import { EnumSchema, EnumCodec } from '../enum';
+import { encodeVec, decodeVec } from '../vec';
+import { EnumSchema, EnumCodec, OptionBoolCodec } from '../enum';
 import { encodeMap, decodeMap } from '../map';
 import { encodeStruct, decodeStruct } from '../struct';
 import { encodeTuple, decodeTuple } from '../tuple';
+import { decodeArray, encodeArray } from '../array';
 
 function hexifyBytes(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -53,7 +59,7 @@ describe('Vec', () => {
         it('encode', () => {
             const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 8 });
 
-            const encoded = encodeArrayContainer(numbers, numEncode);
+            const encoded = encodeVec(numbers, numEncode);
 
             expect(hexifyBytes(encoded)).toEqual(hex);
         });
@@ -62,7 +68,7 @@ describe('Vec', () => {
             const numDecode = (b: Uint8Array): [JSBI, number] => decodeBigInt(b, { bits: 8 });
             const encoded = prettyHexToBytes(hex);
 
-            const [decoded, len] = decodeArrayContainer(encoded, numDecode);
+            const [decoded, len] = decodeVec(encoded, numDecode);
 
             expect(decoded).toEqual(numbers);
             expect(len).toEqual(encoded.length);
@@ -77,10 +83,10 @@ describe('Vec', () => {
         const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 16, isSigned: true });
         const numDecode = (b: Uint8Array): [JSBI, number] => decodeBigInt(b, { bits: 16, isSigned: true });
 
-        const encoded = encodeArrayContainer(numbers, numEncode);
+        const encoded = encodeVec(numbers, numEncode);
         expect(hexifyBytes(encoded)).toEqual(hex);
 
-        const [decoded, len] = decodeArrayContainer(encoded, numDecode);
+        const [decoded, len] = decodeVec(encoded, numDecode);
         expect(decoded).toEqual(numbers);
         expect(len).toEqual(encoded.length);
     });
@@ -105,7 +111,7 @@ describe('Vec', () => {
             4,
         ]);
 
-        const [_decoded, len] = decodeArrayContainer(encoded, (bytes) => decodeBigInt(bytes, { bits: 8 }));
+        const [_decoded, len] = decodeVec(encoded, (bytes) => decodeBigInt(bytes, { bits: 8 }));
 
         expect(len).toEqual(actualVecBytesLen);
     });
@@ -122,10 +128,10 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
         const encode = (v: string) => encodeStrCompact(v);
         const decode = (b: Uint8Array) => decodeStrCompact(b);
 
-        const encoded = encodeArrayContainer(strings, encode);
+        const encoded = encodeVec(strings, encode);
         expect(hexifyBytes(encoded)).toEqual(hex);
 
-        const [decoded, len] = decodeArrayContainer(encoded, decode);
+        const [decoded, len] = decodeVec(encoded, decode);
         expect(decoded).toEqual(strings);
         expect(len).toEqual(encoded.length);
     });
@@ -144,11 +150,11 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
         const hex = '0c 01 01 01 ff 00';
 
         it('encode', () => {
-            expect(hexifyBytes(encodeArrayContainer(vec, codec.encode))).toEqual(hex);
+            expect(hexifyBytes(encodeVec(vec, codec.encode))).toEqual(hex);
         });
 
         it('decode', () => {
-            expect(decodeArrayContainer(prettyHexToBytes(hex), codec.decode)).toEqual([vec, 6]);
+            expect(decodeVec(prettyHexToBytes(hex), codec.decode)).toEqual([vec, 6]);
         });
     });
 
@@ -165,7 +171,7 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
 
         it('encode', () => {
             expect(
-                encodeArrayContainer(
+                encodeVec(
                     vec,
                     (item) =>
                         new Uint8Array([
@@ -180,7 +186,7 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
 
         it('decode', () => {
             expect(
-                decodeArrayContainer(prettyHexToBytes(hex), (bytes): DecodeResult<Enum<OptionDef<boolean>>> => {
+                decodeVec(prettyHexToBytes(hex), (bytes): DecodeResult<Enum<OptionDef<boolean>>> => {
                     switch (bytes[0]) {
                         case 0:
                             return [Enum.create('None'), 1];
@@ -219,14 +225,11 @@ describe('Tuple', () => {
             (b) => decodeBigInt(b, { bits: 8, isSigned: true }),
         ];
         const u64Codec: Codec<JSBI> = [(n) => encodeBigInt(n, { bits: 64 }), (b) => decodeBigInt(b, { bits: 64 })];
-        const veci8Codec: Codec<JSBI[]> = [
-            (arr) => encodeArrayContainer(arr, i8Codec[0]),
-            (b) => decodeArrayContainer(b, i8Codec[1]),
-        ];
+        const veci8Codec: Codec<JSBI[]> = [(arr) => encodeVec(arr, i8Codec[0]), (b) => decodeVec(b, i8Codec[1])];
         const boolCodec: Codec<boolean> = [encodeBool, decodeBool];
         const i32TupleCodec: Codec<[JSBI, JSBI]> = [
-            (v) => encodeTuple(v, yieldNTimes(i32Codec[0], 2)),
-            (b) => decodeTuple(b, yieldNTimes(i32Codec[1], 2)),
+            (v) => encodeTuple(v, yieldNTimes(i32Codec[0], 2) as any),
+            (b) => decodeTuple(b, yieldNTimes(i32Codec[1], 2) as any),
         ];
 
         const TUPLE_CODECS = [u64Codec, strCodec, veci8Codec, i32TupleCodec, boolCodec];
@@ -349,5 +352,46 @@ describe('Map', () => {
         it('decode', () => {
             expect(decodeMap(encoded, decode, decode)).toEqual([map, encoded.length]);
         });
+    });
+});
+
+describe('Array', () => {
+    describe('[u8; 7]', () => {
+        const nums = [5, 8, 1, 2, 8, 42, 129];
+        const arrU8 = nums.map(JSBI.BigInt);
+        const encoded = Uint8Array.from(nums);
+
+        test('encode', () => {
+            expect(encodeArray(arrU8, (v) => encodeBigInt(v, { bits: 8, isSigned: false }), 7)).toEqual(encoded);
+        });
+
+        test('decode', () => {
+            expect(decodeArray(encoded, (b) => decodeBigInt(b, { bits: 8, isSigned: false }), 7)).toEqual([arrU8, 7]);
+        });
+    });
+});
+
+describe('OptionBool', () => {
+    function pretty(val: Option<boolean>): string {
+        return val.match({
+            None: () => 'None',
+            Some: (x) => `Some(${x})`,
+        });
+    }
+
+    function testCase(val: Option<boolean>, encoded: number): [string, Option<boolean>, number] {
+        return [pretty(val), val, encoded];
+    }
+
+    test.each([
+        testCase(Enum.create('None'), 0),
+        testCase(Enum.create('Some', true), 1),
+        testCase(Enum.create('Some', false), 2),
+    ])('encode/decode %s', (_label, item, byte) => {
+        const { encode, decode } = OptionBoolCodec;
+        const bytes = Uint8Array.from([byte]);
+
+        expect(encode(item)).toEqual(bytes);
+        expect(decode(bytes)).toEqual([item, 1]);
     });
 });

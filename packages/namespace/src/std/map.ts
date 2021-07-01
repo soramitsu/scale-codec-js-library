@@ -1,10 +1,10 @@
 import { decodeMap, encodeMap } from '@scale-codec/core';
-import { ContextSensitiveCodec } from '../types';
+import { NamespaceCodec } from '../types';
 
 export function defMap<N extends {}, K extends keyof N, V extends keyof N>(
     keyRef: K,
     valueRef: V,
-): ContextSensitiveCodec<Map<N[K], N[V]>, N> {
+): NamespaceCodec<Map<N[K], N[V]>, N> {
     return {
         setup({ dynCodec }) {
             const KeyCodec = dynCodec(keyRef);

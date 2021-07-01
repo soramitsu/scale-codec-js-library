@@ -1,4 +1,4 @@
-import { DecodeResult } from './types';
+import { DecodeResult } from '../types';
 
 export function decodeBool(bytes: Uint8Array): DecodeResult<boolean> {
     return [bytes[0] === 1, 1];

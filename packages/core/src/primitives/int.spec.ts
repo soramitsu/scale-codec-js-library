@@ -41,6 +41,12 @@ describe('encodeBigInt()', (): void => {
             new Uint8Array([46, 251, 255, 255]),
         );
     });
+
+    it('converts negative numbers (another)', () => {
+        expect(encodeBigInt(JSBI.BigInt(-4123), { bits: 32, isSigned: true })).toEqual(
+            new Uint8Array([229, 239, 255, 255]),
+        );
+    });
 });
 
 describe('decodeBigInt', (): void => {

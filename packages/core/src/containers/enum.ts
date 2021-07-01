@@ -1,20 +1,20 @@
 import { concatUint8Arrays } from '@scale-codec/util';
-import { EmptyVariants, Enum, Valuable, ValuableVariants } from '@scale-codec/enum';
+import { EmptyVariants, Enum, Option, Valuable, ValuableVariants } from '@scale-codec/enum';
 import { Codec, DecodeResult } from '../types';
 
-export type EnumSchemaDef<V> = {
-    [K in keyof V]: { discriminant: number };
+export type EnumSchemaDef<Def> = {
+    [K in keyof Def]: { discriminant: number };
 };
 
-export class EnumSchema<V> {
-    private readonly def: EnumSchemaDef<V>;
+export class EnumSchema<Def> {
+    private readonly def: EnumSchemaDef<Def>;
 
-    private readonly disVarMap: Record<number, keyof V>;
+    private readonly disVarMap: Record<number, keyof Def>;
 
-    public constructor(def: EnumSchemaDef<V>) {
+    public constructor(def: EnumSchemaDef<Def>) {
         this.def = def;
         this.disVarMap = Object.fromEntries(
-            (Object.entries(def) as [keyof V, { discriminant: number }][]).map(([variant, { discriminant }]) => [
+            (Object.entries(def) as [keyof Def, { discriminant: number }][]).map(([variant, { discriminant }]) => [
                 discriminant,
                 variant,
             ]),
@@ -25,15 +25,15 @@ export class EnumSchema<V> {
         this.createCodec = this.createCodec.bind(this);
     }
 
-    public getVariantDiscriminant(variant: keyof V): number {
+    public getVariantDiscriminant(variant: keyof Def): number {
         return this.def[variant].discriminant;
     }
 
-    public getDiscriminantVariant(discriminant: number): keyof V {
+    public getDiscriminantVariant(discriminant: number): keyof Def {
         return this.disVarMap[discriminant];
     }
 
-    public createCodec(codecs: EnumCodecsMap<V>): EnumCodec<V> {
+    public createCodec(codecs: EnumCodecsMap<Def>): EnumCodec<Def> {
         return new EnumCodec(this, codecs);
     }
 }
@@ -88,5 +88,32 @@ export class EnumCodec<Def> implements Codec<Enum<Def>> {
 
     private codecByVariant(variant: keyof Def): Codec<unknown> | null {
         return variant in this.codecs ? this.codecs[variant as keyof EnumCodecsMap<Def>] : null;
+    }
+}
+
+/**
+ * Special codec for "OptionBool" type from Rust's parity_scale_codec
+ */
+export const OptionBoolCodec: Codec<Option<boolean>> = {
+    encode: (item) =>
+        new Uint8Array([
+            item.match({
+                None: () => 0,
+                Some: (val) => (val ? 1 : 2),
+            }),
+        ]),
+    decode: ([byte]) => [optBoolByteToEnum(byte), 1],
+};
+
+function optBoolByteToEnum(byte: number): Option<boolean> {
+    switch (byte) {
+        case 0:
+            return Enum.create('None');
+        case 1:
+            return Enum.create('Some', true);
+        case 2:
+            return Enum.create('Some', false);
+        default:
+            throw new Error('unreachable?');
     }
 }

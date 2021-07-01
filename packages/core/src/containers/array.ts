@@ -1,18 +1,12 @@
-import { yieldNTimes, concatUint8Arrays, yieldMapped } from '@scale-codec/util';
-import JSBI from 'jsbi';
-import { Decode, DecodeResult } from '../types';
-import { retrieveOffsetAndEncodedLength, encodeBigIntCompact } from '../compact';
+import { assert, concatUint8Arrays, yieldMapped, yieldNTimes } from '@scale-codec/util';
+import { Decode, DecodeResult, Encode } from '../types';
 import { decodeIteratively } from './utils';
 
-export function decodeArrayContainer<T>(bytes: Uint8Array, arrayItemDecoder: Decode<T>): DecodeResult<T[]> {
-    const [offset, length] = retrieveOffsetAndEncodedLength(bytes);
-    const iterableDecoders = yieldNTimes(arrayItemDecoder, JSBI.toNumber(length));
-
-    const [decoded, decodedBytes] = decodeIteratively(bytes.subarray(offset), iterableDecoders);
-
-    return [decoded, offset + decodedBytes];
+export function encodeArray<T>(items: T[], itemEncoder: Encode<T>, len: number): Uint8Array {
+    assert(items.length === len, `expected array len: ${len}; found: ${items.length}`);
+    return concatUint8Arrays(yieldMapped(items, itemEncoder));
 }
 
-export function encodeArrayContainer<T>(items: T[], encoder: (item: T) => Uint8Array): Uint8Array {
-    return concatUint8Arrays([encodeBigIntCompact(JSBI.BigInt(items.length)), ...yieldMapped(items, encoder)]);
+export function decodeArray<T>(bytes: Uint8Array, itemDecoder: Decode<T>, len: number): DecodeResult<T[]> {
+    return decodeIteratively(bytes, yieldNTimes(itemDecoder, len));
 }

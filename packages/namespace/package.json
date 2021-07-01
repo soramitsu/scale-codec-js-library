@@ -2,9 +2,9 @@
     "name": "@scale-codec/namespace",
     "version": "0.1.0",
     "description": "",
-    "main": "index.js",
     "scripts": {
-        "test": "ts-eager ./src/test.ts"
+        "test": "jest",
+        "debug": "ts-eager ./src/test.ts"
     },
     "keywords": [],
     "author": "",

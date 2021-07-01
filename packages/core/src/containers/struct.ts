@@ -2,9 +2,13 @@ import { concatUint8Arrays } from '@scale-codec/util';
 import { decodeIteratively } from './utils';
 import { Encode, Decode, DecodeResult } from '../types';
 
-export function encodeStruct<T extends {}, C extends { [K in keyof T & string]: Encode<T[K]> }>(
+export type StructEncoders<T> = { [K in keyof T & string]: Encode<T[K]> };
+
+export type StructDecoders<T> = { [K in keyof T & string]: Decode<T[K]> };
+
+export function encodeStruct<T extends {}>(
     struct: T,
-    encoders: C,
+    encoders: StructEncoders<T>,
     order: (keyof T & string)[],
 ): Uint8Array {
     function* parts(): Generator<Uint8Array> {
@@ -17,9 +21,9 @@ export function encodeStruct<T extends {}, C extends { [K in keyof T & string]: 
     return concatUint8Arrays(parts());
 }
 
-export function decodeStruct<T extends {}, C extends { [K in keyof T & string]: Decode<T[K]> }>(
+export function decodeStruct<T extends {}>(
     bytes: Uint8Array,
-    decoders: C,
+    decoders: StructDecoders<T>,
     order: (keyof T & string)[],
 ): DecodeResult<T> {
     function* decodersIter(): Generator<Decode<unknown>> {
