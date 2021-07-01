@@ -227,8 +227,8 @@ describe('Tuple', () => {
         const veci8Codec: Codec<JSBI[]> = [(arr) => encodeVec(arr, i8Codec[0]), (b) => decodeVec(b, i8Codec[1])];
         const boolCodec: Codec<boolean> = [encodeBool, decodeBool];
         const i32TupleCodec: Codec<[JSBI, JSBI]> = [
-            (v) => encodeTuple(v, yieldNTimes(i32Codec[0], 2)),
-            (b) => decodeTuple(b, yieldNTimes(i32Codec[1], 2)),
+            (v) => encodeTuple(v, yieldNTimes(i32Codec[0], 2) as any),
+            (b) => decodeTuple(b, yieldNTimes(i32Codec[1], 2) as any),
         ];
 
         const TUPLE_CODECS = [u64Codec, strCodec, veci8Codec, i32TupleCodec, boolCodec];

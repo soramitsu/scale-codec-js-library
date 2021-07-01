@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "main": "src/lib.ts",
     "scripts": {
-        "test": "jest"
+        "test": "jest --passWithNoTests"
     },
     "devDependencies": {
         "@jest/types": "^27.0.2",
