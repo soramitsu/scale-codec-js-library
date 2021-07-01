@@ -1,5 +1,5 @@
 import { concatUint8Arrays } from '@scale-codec/util';
-import { EmptyVariants, Enum, Valuable, ValuableVariants } from '@scale-codec/enum';
+import { EmptyVariants, Enum, Option, Valuable, ValuableVariants } from '@scale-codec/enum';
 import { Codec, DecodeResult } from '../types';
 
 export type EnumSchemaDef<Def> = {
@@ -88,5 +88,32 @@ export class EnumCodec<Def> implements Codec<Enum<Def>> {
 
     private codecByVariant(variant: keyof Def): Codec<unknown> | null {
         return variant in this.codecs ? this.codecs[variant as keyof EnumCodecsMap<Def>] : null;
+    }
+}
+
+/**
+ * Special codec for "OptionBool" type from Rust's parity_scale_codec
+ */
+export const OptionBoolCodec: Codec<Option<boolean>> = {
+    encode: (item) =>
+        new Uint8Array([
+            item.match({
+                None: () => 0,
+                Some: (val) => (val ? 1 : 2),
+            }),
+        ]),
+    decode: ([byte]) => [optBoolByteToEnum(byte), 1],
+};
+
+function optBoolByteToEnum(byte: number): Option<boolean> {
+    switch (byte) {
+        case 0:
+            return Enum.create('None');
+        case 1:
+            return Enum.create('Some', true);
+        case 2:
+            return Enum.create('Some', false);
+        default:
+            throw new Error('unreachable?');
     }
 }

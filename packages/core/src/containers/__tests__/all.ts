@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 
 import { yieldNTimes } from '@scale-codec/util';
-import { Enum, Valuable } from '@scale-codec/enum';
+import { Enum, Option, Valuable } from '@scale-codec/enum';
 import JSBI from 'jsbi';
 import {
     encodeBool,
@@ -13,7 +13,7 @@ import {
 } from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
 import { encodeVec, decodeVec } from '../vec';
-import { EnumSchema, EnumCodec } from '../enum';
+import { EnumSchema, EnumCodec, OptionBoolCodec } from '../enum';
 import { encodeMap, decodeMap } from '../map';
 import { encodeStruct, decodeStruct } from '../struct';
 import { encodeTuple, decodeTuple } from '../tuple';
@@ -368,5 +368,30 @@ describe('Array', () => {
         test('decode', () => {
             expect(decodeArray(encoded, (b) => decodeBigInt(b, { bits: 8, isSigned: false }), 7)).toEqual([arrU8, 7]);
         });
+    });
+});
+
+describe('OptionBool', () => {
+    function pretty(val: Option<boolean>): string {
+        return val.match({
+            None: () => 'None',
+            Some: (x) => `Some(${x})`,
+        });
+    }
+
+    function testCase(val: Option<boolean>, encoded: number): [string, Option<boolean>, number] {
+        return [pretty(val), val, encoded];
+    }
+
+    test.each([
+        testCase(Enum.create('None'), 0),
+        testCase(Enum.create('Some', true), 1),
+        testCase(Enum.create('Some', false), 2),
+    ])('encode/decode %s', (_label, item, byte) => {
+        const { encode, decode } = OptionBoolCodec;
+        const bytes = Uint8Array.from([byte]);
+
+        expect(encode(item)).toEqual(bytes);
+        expect(decode(bytes)).toEqual([item, 1]);
     });
 });
