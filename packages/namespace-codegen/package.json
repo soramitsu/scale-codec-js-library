@@ -1,9 +1,14 @@
 {
     "name": "@scale-codec/namespace-codegen",
     "version": "0.1.0",
+    "main": "src/lib.ts",
     "scripts": {
-        "test": "jest",
-        "morph": "ts-eager src/morph"
+        "test": "jest"
+    },
+    "dependencies": {
+        "@scale-codec/enum": "workspace:^0.1.0",
+        "@scale-codec/namespace": "workspace:^0.1.0",
+        "@scale-codec/util": "workspace:^0.1.0"
     },
     "devDependencies": {
         "@jest/types": "^27.0.2",
@@ -26,11 +31,5 @@
         "extends": [
             "@scale-codec/eslint-config"
         ]
-    },
-    "dependencies": {
-        "@scale-codec/enum": "workspace:^0.1.0",
-        "@scale-codec/namespace": "workspace:^0.1.0",
-        "@scale-codec/util": "workspace:^0.1.0",
-        "ts-morph": "^11.0.0"
     }
 }

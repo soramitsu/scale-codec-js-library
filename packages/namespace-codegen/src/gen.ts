@@ -2,7 +2,7 @@ import { NamespaceCodegenDefinition } from './types';
 import { DefEnum, typeDefToEnum } from './def-enum';
 import { assert } from '@scale-codec/util';
 import { StdCodecs } from '@scale-codec/namespace';
-// import { Result } from '@scale-codec/enum'
+import { createImportsCounter, getImportsCounterState, ImportsCounter } from './imports-counter';
 
 export interface GenerateOptions {
     namespaceTypeName: string;
@@ -11,56 +11,11 @@ export interface GenerateOptions {
     structPropsCamelCase?: boolean;
 }
 
-// export interface GenerateResult {
-//     stdImports: Set<string>;
-
-// }
-
 type DefMap = Map<string, DefEnum>;
 
 const STD_KEYS = new Set<string>(Object.keys(StdCodecs));
 
 const DEFAULT_STD_IMPORTS = new Set(['StdTypes', 'StdCodecs', 'defNamespace']);
-
-const StdDefHelpers = {
-    Valuable: 'Valuable',
-    defAlias: 'defAlias',
-    defEnum: 'defEnum',
-    defOption: 'defOption',
-    defResult: 'defResult',
-    defMap: 'defMap',
-    defStruct: 'defStruct',
-    defTuple: 'defTuple',
-    defVec: 'defVec',
-    defArray: 'defArray',
-    EnumSchema: 'EnumSchema',
-    Enum: 'Enum',
-    Option: 'Option',
-    Result: 'Result',
-};
-
-const HelpersCounterStateSym = Symbol('CounterState');
-
-type ImportsCounter = typeof StdDefHelpers & { [HelpersCounterStateSym]: { used: Set<string> } };
-
-function createImportsCounter(): ImportsCounter {
-    const used = new Set<string>();
-
-    return new Proxy(StdDefHelpers as any, {
-        get: (target, key) => {
-            if (key === HelpersCounterStateSym) {
-                return { used };
-            }
-            if (!(key in target)) throw new Error('wtf?');
-            used.add(key as string);
-            return target[key];
-        },
-    }) as any;
-}
-
-function getImportsCounterState(counter: ImportsCounter): { used: Set<string> } {
-    return counter[HelpersCounterStateSym];
-}
 
 /**
  * TODO batch all validation errors and throw once?
