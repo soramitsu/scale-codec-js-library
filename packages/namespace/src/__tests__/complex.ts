@@ -2,6 +2,7 @@ import { Enum, EnumSchema, Option, Valuable } from '@scale-codec/core';
 import { defEnum, defOption, defStruct, defTuple, StdCodecs, StdTypes } from '../std';
 import JSBI from 'jsbi';
 import { defNamespace } from '../namespace';
+import { defAlias } from '../alias';
 
 describe('complex namespace', () => {
     type Namespace = StdTypes & {
@@ -16,6 +17,8 @@ describe('complex namespace', () => {
         }>;
         '(string,i32)': [string, JSBI];
         '(u64,bool,(string,i32))': [JSBI, boolean, [string, JSBI]];
+        // alias
+        String: string;
     };
 
     const ns = defNamespace<Namespace>({
@@ -36,6 +39,7 @@ describe('complex namespace', () => {
                 Two: '(u64,bool,(string,i32))',
             },
         ),
+        String: defAlias('str'),
     });
 
     const { encode, decode } = ns;
@@ -97,5 +101,9 @@ describe('complex namespace', () => {
     ])('encode/decode %s', (ref, decoded, encoded) => {
         expect(encode(ref, decoded)).toEqual(encoded);
         expect(decode(ref, encoded)).toEqual(decoded);
+    });
+
+    test('alias', () => {
+        expect(encode('str', 'boop')).toEqual(encode('String', 'boop'));
     });
 });

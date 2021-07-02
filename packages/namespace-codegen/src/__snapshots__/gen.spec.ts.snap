@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`generate() complex definition 1`] = `
+"import {
+    Enum,
+    EnumSchema,
+    Option,
+    Result,
+    StdCodecs,
+    StdTypes,
+    Valuable,
+    defAlias,
+    defEnum,
+    defMap,
+    defNamespace,
+    defOption,
+    defResult,
+    defTuple,
+} from '@scale-codec/namespace';
+
+export type Complex = StdTypes & {
+    String: Complex['str'];
+    '(u64, u32)': [Complex['u64'], Complex['u32']];
+    'BTreeMap<String, bool>': Map<Complex['String'], Complex['bool']>;
+    'Option<(u64, u32)>': Option<Complex['(u64, u32)']>;
+    'Result<String, String>': Result<Complex['String'], Complex['String']>;
+    'Result<(), str>': Result<Complex['()'], Complex['str']>;
+    IpAddr: Enum<{
+        V4: Valuable<Complex['u8']>;
+        V6: Valuable<Complex['u16']>;
+        Invalid: null;
+    }>;
+};
+
+export const complex = defNamespace<Complex>({
+    ...StdCodecs,
+    String: defAlias('str'),
+    '(u64, u32)': defTuple(['u64', 'u32']),
+    'BTreeMap<String, bool>': defMap('String', 'bool'),
+    'Option<(u64, u32)>': defOption('(u64, u32)'),
+    'Result<String, String>': defResult('String', 'String'),
+    'Result<(), str>': defResult('()', 'str'),
+    IpAddr: defEnum(
+        new EnumSchema({
+            V4: { discriminant: 0 },
+            V6: { discriminant: 1 },
+            Invalid: { discriminant: 3 },
+        }),
+        {
+            V4: 'u8',
+            V6: 'u16',
+        },
+    ),
+});
+"
+`;
+
+exports[`generate() definition with struct 1`] = `
+"import { StdCodecs, StdTypes, defNamespace, defStruct } from 'my-scale';
+
+export type WithId = StdTypes & {
+    Id: {
+        id: WithId['str'];
+    };
+};
+
+export const withId = defNamespace<WithId>({
+    ...StdCodecs,
+    Id: defStruct([['id', 'str']]),
+});
+"
+`;

@@ -22,5 +22,5 @@ export interface CodecSetupContext<N> {
 }
 
 export type CompatibleNamespaceKeys<N, T> = {
-    [K in keyof N]: N[K] extends T ? K : never;
+    [K in keyof N]: T extends N[K] ? K : never;
 }[keyof N];
