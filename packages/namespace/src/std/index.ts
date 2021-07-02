@@ -26,6 +26,7 @@ export type StdTypes = {
     i32: JSBI;
     i64: JSBI;
     i128: JSBI;
+    '()': undefined;
 };
 
 type AsCodecs<T> = {
@@ -45,4 +46,8 @@ export const StdCodecs: AsCodecs<StdTypes> = {
     i64,
     u128,
     i128,
+    '()': {
+        encode: () => new Uint8Array([]),
+        decode: () => [undefined, 0],
+    },
 };

@@ -23,7 +23,7 @@ export function defNamespace<N>(codecs: NamespaceDefinitions<N>): Namespace<N> {
     typedToEntries(codecs).forEach(([codecName, universalCodec]) => {
         const normalized: Codec<any> = isContextSensitiveCodec(universalCodec)
             ? universalCodec.setup(ctx)
-            : universalCodec;
+            : (universalCodec as Codec<any>);
         codecsMap.set(codecName, normalized);
     });
 

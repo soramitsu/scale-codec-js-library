@@ -1,7 +1,7 @@
 {
     "name": "@scale-codec/namespace",
     "version": "0.1.0",
-    "description": "",
+    "main": "src/lib.ts",
     "scripts": {
         "test": "jest",
         "debug": "ts-eager ./src/test.ts"
