@@ -6,6 +6,7 @@ export * from './struct';
 export * from './tuple';
 export * from './vec';
 export * from './map';
+export * from './array';
 
 import JSBI from 'jsbi';
 import { Codec } from '@scale-codec/core';
@@ -26,7 +27,7 @@ export type StdTypes = {
     i32: JSBI;
     i64: JSBI;
     i128: JSBI;
-    '()': undefined;
+    '()': null;
 };
 
 type AsCodecs<T> = {
@@ -48,6 +49,6 @@ export const StdCodecs: AsCodecs<StdTypes> = {
     i128,
     '()': {
         encode: () => new Uint8Array([]),
-        decode: () => [undefined, 0],
+        decode: () => [null, 0],
     },
 };

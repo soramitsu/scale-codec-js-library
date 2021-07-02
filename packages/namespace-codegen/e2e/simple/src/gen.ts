@@ -11,4 +11,7 @@ import path from 'path';
     });
 
     await fs.writeFile(path.join(__dirname, 'ns.ts'), code);
-})();
+})().catch((err) => {
+    console.error('Generation failed', err);
+    process.exit(1);
+});

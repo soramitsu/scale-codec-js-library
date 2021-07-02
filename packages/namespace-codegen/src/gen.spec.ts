@@ -151,4 +151,29 @@ describe('generate()', () => {
             ),
         ).toThrow();
     });
+
+    test('error if duplicated enum discriminants', () => {
+        expect(() => {
+            generate(
+                {
+                    SomeEnum: {
+                        t: 'enum',
+                        variants: [
+                            {
+                                name: 'one',
+                                discriminant: 0,
+                                ref: null,
+                            },
+                            {
+                                name: 'two',
+                                discriminant: 0,
+                                ref: null,
+                            },
+                        ],
+                    },
+                },
+                { namespaceTypeName: 'test', namespaceValueName: 'test', importLib: 'test' },
+            );
+        }).toThrow();
+    });
 });

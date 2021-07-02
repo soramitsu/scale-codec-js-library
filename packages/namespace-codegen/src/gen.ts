@@ -49,6 +49,8 @@ function validate(defmap: DefMap) {
                 fields.forEach(({ name, ref }, i) => {
                     assert(!namesEncountered.has(name), `Duplicated field "${name}" in struct "${typeName}", pos ${i}`);
                     assertReference(ref, `${typeName}.${name} (struct)`);
+
+                    namesEncountered.add(name);
                 });
             },
             Map({ key, value }) {
@@ -77,6 +79,9 @@ function validate(defmap: DefMap) {
                         `Duplicated discriminant ${discriminant} in enum, "${typeName}::${variant}", pos ${i}`,
                     );
                     ref && assertReference(ref, `${typeName}::${variant} (enum)`);
+
+                    variantsEncountered.add(variant);
+                    discriminantsEncountered.add(discriminant);
                 });
             },
             EnumOption({ some }) {
@@ -193,7 +198,8 @@ function genNamespaceValue(
                 return `${imports.defArray}('${item}', ${len})`;
             },
             Tuple({ items }) {
-                return `${imports.defTuple}(${items.map((x) => `'${x}'`).join(', ')})`;
+                const itemsJoined: string = items.map((x) => `'${x}'`).join(', ');
+                return `${imports.defTuple}([${itemsJoined}])`;
             },
             Struct({ fields }) {
                 const fieldsAsTuples = fields.map(({ name, ref }) => `['${name}', '${ref}']`).join(',\n');

@@ -10,10 +10,18 @@ function isContextSensitiveCodec<T, N>(item: NamespaceCodec<T, N>): item is Cont
 export function defNamespace<N>(codecs: NamespaceDefinitions<N>): Namespace<N> {
     const codecsMap = new Map<keyof N, Codec<any>>();
 
+    function encode(ref: keyof N, value: any): Uint8Array {
+        return mapGetUnwrap(codecsMap, ref).encode(value);
+    }
+
+    function decode(ref: keyof N, bytes: Uint8Array): DecodeResult<any> {
+        return mapGetUnwrap(codecsMap, ref).decode(bytes);
+    }
+
     function dynCodec<K extends keyof N>(ref: K): Codec<N[K]> {
         return {
-            encode: (v) => mapGetUnwrap(codecsMap, ref).encode(v),
-            decode: (b) => mapGetUnwrap(codecsMap, ref).decode(b) as DecodeResult<N[K]>,
+            encode: (v) => encode(ref, v),
+            decode: (b) => decode(ref, b),
         };
     }
 
@@ -28,7 +36,7 @@ export function defNamespace<N>(codecs: NamespaceDefinitions<N>): Namespace<N> {
     });
 
     return {
-        encode: (ref, value) => mapGetUnwrap(codecsMap, ref).encode(value),
-        decode: <K extends keyof N>(ref: K, bytes: Uint8Array) => mapGetUnwrap(codecsMap, ref).decode(bytes)[0] as N[K],
+        encode: (ref, value) => encode(ref, value),
+        decode: (ref, value) => decode(ref, value)[0],
     };
 }

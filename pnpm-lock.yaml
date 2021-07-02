@@ -192,6 +192,7 @@ importers:
       '@types/jest': ^26.0.23
       eslint: ^7.29.0
       jest: ^27.0.6
+      jsbi: 3.1.4
       prettier: ^2.3.2
       prettier-eslint: ^12.0.0
       prettier-eslint-cli: ^5.0.1
@@ -202,6 +203,7 @@ importers:
       yarn: ^1.22.10
     dependencies:
       '@scale-codec/namespace': link:../../../namespace
+      jsbi: 3.1.4
     devDependencies:
       '@jest/types': 27.0.6
       '@scale-codec/eslint-config': link:../../../config-eslint

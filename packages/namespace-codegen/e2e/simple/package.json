@@ -3,14 +3,15 @@
     "version": "1.0.0",
     "scripts": {
         "test": "yarn step:clean && yarn step:gen && yarn step:lint && yarn step:test",
-        "step:clean": "rm src/ns.ts",
+        "step:clean": "rm -f src/ns.ts",
         "step:gen": "ts-eager src/gen.ts",
         "step:lint": "prettier-eslint \"src/ns.ts\" --write",
         "step:test": "jest"
     },
     "license": "ISC",
     "dependencies": {
-        "@scale-codec/namespace": "link:../../../namespace"
+        "@scale-codec/namespace": "link:../../../namespace",
+        "jsbi": "3.1.4"
     },
     "devDependencies": {
         "@jest/types": "^27.0.6",

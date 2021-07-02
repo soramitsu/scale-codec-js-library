@@ -35,7 +35,7 @@ export type Complex = StdTypes & {
 export const complex = defNamespace<Complex>({
     ...StdCodecs,
     String: defAlias('str'),
-    '(u64, u32)': defTuple('u64', 'u32'),
+    '(u64, u32)': defTuple(['u64', 'u32']),
     'BTreeMap<String, bool>': defMap('String', 'bool'),
     'Option<(u64, u32)>': defOption('(u64, u32)'),
     'Result<String, String>': defResult('String', 'String'),
