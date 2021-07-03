@@ -3,11 +3,24 @@ import { DefEnum, typeDefToEnum } from './def-enum';
 import { assert } from '@scale-codec/util';
 import { StdCodecs } from '@scale-codec/namespace';
 import { createImportsCounter, getImportsCounterState, ImportsCounter } from './imports-counter';
+import { camel } from 'case';
 
 export interface GenerateOptions {
+    /**
+     * Which name use for general namespace type with all types
+     */
     namespaceTypeName: string;
+    /**
+     * Which name use for runtime namespace of codecs
+     */
     namespaceValueName: string;
+    /**
+     * Name of '@scale-codec/namespace' library, which will be inserted as import
+     */
     importLib: string;
+    /**
+     * Use `camelCase` for struct fields
+     */
     structPropsCamelCase?: boolean;
 }
 
@@ -107,6 +120,7 @@ function genNamespaceDeclaration(
     imports: ImportsCounter,
     opts: {
         namespaceName: string;
+        transformStructProps?: (name: string) => string;
     },
 ): string {
     const NAMESPACE_NAME = opts.namespaceName;
@@ -136,7 +150,7 @@ function genNamespaceDeclaration(
             Struct({ fields }) {
                 const fieldsAsEntries: string[] = fields.map(
                     // TODO camelCase?
-                    ({ name, ref }) => `${name}: ${nsItem(ref)}`,
+                    ({ name, ref }) => `${opts.transformStructProps?.(name) ?? name}: ${nsItem(ref)}`,
                 );
 
                 return `{\n${fieldsAsEntries.join(';\n')} }`;
@@ -173,6 +187,7 @@ function genNamespaceValue(
     opts: {
         namespaceType: string;
         namespaceValue: string;
+        transformStructProps?: (name: string) => string;
     },
 ): string {
     // const additionalStdImports = new Set<string>();
@@ -202,7 +217,9 @@ function genNamespaceValue(
                 return `${imports.defTuple}([${itemsJoined}])`;
             },
             Struct({ fields }) {
-                const fieldsAsTuples = fields.map(({ name, ref }) => `['${name}', '${ref}']`).join(',\n');
+                const fieldsAsTuples = fields
+                    .map(({ name, ref }) => `['${opts.transformStructProps?.(name) ?? name}', '${ref}']`)
+                    .join(',\n');
 
                 return `${imports.defStruct}([\n${fieldsAsTuples}])`;
             },
@@ -245,6 +262,8 @@ export function generate(definition: NamespaceCodegenDefinition, opts: GenerateO
     // references are valid and report friendly errors
     // then generate namespace actual declaration
 
+    const transformStructProps: ((name: string) => string) | undefined = opts.structPropsCamelCase ? camel : undefined;
+
     const definitionMap: DefMap = new Map(Object.entries(definition).map(([key, def]) => [key, typeDefToEnum(def)]));
     const importsCounter = createImportsCounter();
 
@@ -252,11 +271,13 @@ export function generate(definition: NamespaceCodegenDefinition, opts: GenerateO
 
     const typeDec = genNamespaceDeclaration(definitionMap, importsCounter, {
         namespaceName: opts.namespaceTypeName,
+        transformStructProps,
     });
 
     const valDef = genNamespaceValue(definitionMap, importsCounter, {
         namespaceValue: opts.namespaceValueName,
         namespaceType: opts.namespaceTypeName,
+        transformStructProps,
     });
 
     const { used: additionalStdImports } = getImportsCounterState(importsCounter);

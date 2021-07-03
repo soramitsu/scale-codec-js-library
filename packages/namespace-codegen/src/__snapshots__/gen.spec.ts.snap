@@ -70,3 +70,23 @@ export const withId = defNamespace<WithId>({
 });
 "
 `;
+
+exports[`generate() struct props camelCased if related option is provided 1`] = `
+"import { StdCodecs, StdTypes, defNamespace, defStruct } from 'test';
+
+export type test = StdTypes & {
+    Example: {
+        fooBarBaz: test['u64'];
+        anotherSnake: test['u32'];
+    };
+};
+
+export const test = defNamespace<test>({
+    ...StdCodecs,
+    Example: defStruct([
+        ['fooBarBaz', 'u64'],
+        ['anotherSnake', 'u32'],
+    ]),
+});
+"
+`;

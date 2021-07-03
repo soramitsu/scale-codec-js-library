@@ -176,4 +176,33 @@ describe('generate()', () => {
             );
         }).toThrow();
     });
+
+    test.todo('other validation errors');
+
+    test('struct props camelCased if related option is provided', () => {
+        shouldMatchSnapshot(
+            {
+                Example: {
+                    t: 'struct',
+                    fields: [
+                        {
+                            name: 'foo_bar_baz',
+                            ref: 'u64',
+                        },
+                        {
+                            name: 'another_snake',
+                            ref: 'u32',
+                        },
+                    ],
+                },
+            },
+            {
+                namespaceTypeName: 'test',
+                namespaceValueName: 'test',
+                importLib: 'test',
+
+                structPropsCamelCase: true,
+            },
+        );
+    });
 });
