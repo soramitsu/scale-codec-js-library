@@ -11,8 +11,6 @@
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.0",
         "@scale-codec/util": "workspace:^0.1.0",
-        "bn.js": "^5.2.0",
-        "hada": "^0.0.8",
         "jsbi": "^3.1.4",
         "web-encoding": "^1.1.5"
     },
@@ -25,6 +23,7 @@
         "@typescript-eslint/eslint-plugin": "^4.26.0",
         "@typescript-eslint/parser": "^4.26.0",
         "eslint": "^7.27.0",
+        "hada": "^0.0.8",
         "http-server": "^0.12.3",
         "jest": "^27.0.4",
         "prettier": "^2.3.0",
