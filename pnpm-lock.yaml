@@ -48,20 +48,20 @@ importers:
       '@scale-codec/util': workspace:^0.1.0
       hada: ^0.0.8
       http-server: ^0.12.3
-      jsbi: ^3.1.4
+      jsbi: ^3.1.5
       type-fest: ^1.2.0
       typedoc: ^0.20.36
       web-encoding: ^1.1.5
     dependencies:
       '@scale-codec/enum': link:../enum
       '@scale-codec/util': link:../util
-      jsbi: 3.1.4
       web-encoding: 1.1.5
     devDependencies:
       hada: 0.0.8
       http-server: 0.12.3
+      jsbi: 3.1.5
       type-fest: 1.2.0
-      typedoc: 0.20.36
+      typedoc: 0.20.36_typescript@4.3.5
 
   packages/enum:
     specifiers: {}
@@ -70,20 +70,20 @@ importers:
     specifiers:
       '@scale-codec/core': workspace:^0.1.0
       '@scale-codec/util': workspace:^0.1.0
-      jsbi: ^3.1.4
+      jsbi: ^3.1.5
       type-fest: ^1.2.0
     dependencies:
       '@scale-codec/core': link:../core
       '@scale-codec/util': link:../util
-      jsbi: 3.1.4
     devDependencies:
+      jsbi: 3.1.5
       type-fest: 1.2.0
 
   packages/namespace-codegen:
     specifiers:
-      '@scale-codec/enum': workspace:^0.1.0
-      '@scale-codec/namespace': workspace:^0.1.0
-      '@scale-codec/util': workspace:^0.1.0
+      '@scale-codec/enum': ^0.1.0
+      '@scale-codec/namespace': ^0.1.0
+      '@scale-codec/util': ^0.1.0
       case: ^1.6.3
       zx: ^1.14.2
     dependencies:
@@ -101,14 +101,14 @@ importers:
       '@scale-codec/namespace-codegen': link:../..
       '@types/jest': ^26.0.23
       jest: ^27.0.6
-      jsbi: 3.1.4
+      jsbi: 3.1.5
       ts-eager: ^2.0.2
       ts-jest: ^27.0.3
       ts-node: ^10.0.0
       typescript: ^4.3.5
     dependencies:
       '@scale-codec/namespace': link:../../../namespace
-      jsbi: 3.1.4
+      jsbi: 3.1.5
     devDependencies:
       '@jest/types': 27.0.6
       '@scale-codec/namespace-codegen': link:../..
@@ -3050,9 +3050,8 @@ packages:
       esprima: 4.0.1
     dev: true
 
-  /jsbi/3.1.4:
-    resolution: {integrity: sha512-52QRRFSsi9impURE8ZUbzAMCLjPm4THO7H2fcuIvaaeFTbSysvkodbQQXIVsNgq/ypDbq6dJiuGKL0vZ/i9hUg==}
-    dev: false
+  /jsbi/3.1.5:
+    resolution: {integrity: sha512-w2BY0VOYC1ahe+w6Qhl4SFoPvPsZ9NPHY4bwass+LCgU7RK3PBoVQlQ3G1s7vI8W3CYyJiEXcbKF7FIM/L8q3Q==}
 
   /jsdom/16.6.0:
     resolution: {integrity: sha512-Ty1vmF4NHJkolaEmdjtxTfSfkdb8Ywarwf63f+F8/mDD1uLSSWDxDuMiZxiPhwunLrn9LOSVItWj4bLYsLN3Dg==}
@@ -4157,7 +4156,7 @@ packages:
     engines: {node: '>= 8'}
     dev: true
 
-  /typedoc/0.20.36:
+  /typedoc/0.20.36_typescript@4.3.5:
     resolution: {integrity: sha512-qFU+DWMV/hifQ9ZAlTjdFO9wbUIHuUBpNXzv68ZyURAP9pInjZiO4+jCPeAzHVcaBCHER9WL/+YzzTt6ZlN/Nw==}
     engines: {node: '>= 10.8.0'}
     hasBin: true
@@ -4175,6 +4174,7 @@ packages:
       shelljs: 0.8.4
       shiki: 0.9.3
       typedoc-default-themes: 0.12.10
+      typescript: 4.3.5
     dev: true
 
   /typescript/3.9.10:

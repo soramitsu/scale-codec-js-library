@@ -22,13 +22,16 @@
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.0",
         "@scale-codec/util": "workspace:^0.1.0",
-        "jsbi": "^3.1.4",
         "web-encoding": "^1.1.5"
     },
     "devDependencies": {
         "hada": "^0.0.8",
         "http-server": "^0.12.3",
+        "jsbi": "^3.1.5",
         "type-fest": "^1.2.0",
         "typedoc": "^0.20.36"
+    },
+    "peerDependencies": {
+        "jsbi": "^3.1.5"
     }
 }

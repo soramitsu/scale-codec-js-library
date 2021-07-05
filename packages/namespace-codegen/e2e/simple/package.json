@@ -9,12 +9,12 @@
     "license": "ISC",
     "dependencies": {
         "@scale-codec/namespace": "link:../../../namespace",
-        "jsbi": "3.1.4"
+        "jsbi": "3.1.5"
     },
     "devDependencies": {
         "@jest/types": "^27.0.6",
-        "@types/jest": "^26.0.23",
         "@scale-codec/namespace-codegen": "link:../..",
+        "@types/jest": "^26.0.23",
         "jest": "^27.0.6",
         "ts-eager": "^2.0.2",
         "ts-jest": "^27.0.3",
