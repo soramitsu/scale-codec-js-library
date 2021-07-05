@@ -1,9 +1,10 @@
-import { Enum } from '@scale-codec/enum';
-import { e2eNamespace, Namespace } from './ns';
+import { Namespace, types } from './namespace';
+import { Enum, Result } from '@scale-codec/enum';
+import deepEqual from 'fast-deep-equal';
 import JSBI from 'jsbi';
 
-describe('testing inside of e2e', () => {
-    test('encode/decode really complex structure', () => {
+export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
+    try {
         const data: Namespace['[Vec<HashMap<str, Id>>; 8]'] = [
             [
                 new Map([
@@ -38,8 +39,15 @@ describe('testing inside of e2e', () => {
             [],
         ];
 
-        const encoded = e2eNamespace.encode('[Vec<HashMap<str, Id>>; 8]', data);
+        const encoded = types.encode('[Vec<HashMap<str, Id>>; 8]', data);
+        const decoded = types.decode('[Vec<HashMap<str, Id>>; 8]', encoded);
 
-        expect(e2eNamespace.decode('[Vec<HashMap<str, Id>>; 8]', encoded)).toEqual(data);
-    });
-});
+        if (!deepEqual(data, decoded)) {
+            throw new Error('Not equals >:(');
+        }
+
+        return Enum.create('Ok', null);
+    } catch (err) {
+        return Enum.create('Err', err);
+    }
+}

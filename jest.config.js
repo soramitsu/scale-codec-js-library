@@ -1,7 +1,7 @@
 module.exports = {
     preset: 'ts-jest',
     testEnvironment: 'node',
-    testMatch: ['**/packages/**/*.spec.ts', '**/packages/**/__tests__/**/*.ts', '!**/namespace-codegen/e2e/**/*'],
+    testMatch: ['**/packages/**/*.spec.ts', '**/packages/**/__tests__/**/*.ts'],
     roots: ['<rootDir>/packages'],
     testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     modulePathIgnorePatterns: ['/dist/'],
