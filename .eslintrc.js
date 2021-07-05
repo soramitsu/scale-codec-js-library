@@ -5,7 +5,7 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['**/*.spec.ts', '**/__tests__/*.ts'],
+            files: ['**/packages/**/*.spec.ts', '**/packages/**/__tests__/*.ts'],
             env: {
                 jest: true,
             },

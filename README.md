@@ -2,14 +2,18 @@
 
 Monorepo with [SCALE codec](https://substrate.dev/docs/en/knowledgebase/advanced/codec) implementation in JavaScript.
 
-### Run tests
+### Install packages
+
+Install `pnpm` if you do not have it installed:
 
 ```sh
-# run unit tests in all packages
-pnpm test:unit
+npm i -g pnpm
+```
 
-# run e2e test in namespace-codegen package
-pnpm test:e2e
+Then install packages
+
+```sh
+pnpm i
 ```
 
 ### Build
@@ -19,6 +23,36 @@ pnpm build
 ```
 
 This will emit `dist` directories in every package that should be published to npm.
+
+### Clean builds
+
+```sh
+pnpm clean
+```
+
+### Test
+
+#### Unit
+
+It will run all unit tests in all packages:
+
+```sh
+# Run all unit tests in all packages
+pnpm test:unit
+
+# You can pass any options to jest directly
+pnpm test:unit -- packages/core
+```
+
+#### e2e
+
+**Before running e2e test you should to build all packages.**
+
+```sh
+pnpm test:e2e
+```
+
+Description of how it works in `e2e-spa` directory.
 
 ### Publish
 
@@ -44,5 +78,4 @@ pnpm publish \
 ### TODO
 
 -   [ ] Rename "namespace" package to some more general?
--   [ ] Find way to remove e2e test package from workspace, isolate it from anything
 -   [ ] Auto-docs for every package? Where to publish?

@@ -16,10 +16,13 @@
     ],
     "dependencies": {
         "@scale-codec/core": "workspace:^0.1.0",
-        "@scale-codec/util": "workspace:^0.1.0",
-        "jsbi": "^3.1.4"
+        "@scale-codec/util": "workspace:^0.1.0"
     },
     "devDependencies": {
+        "jsbi": "^3.1.5",
         "type-fest": "^1.2.0"
+    },
+    "peerDependencies": {
+        "jsbi": "^3.1.5"
     }
 }

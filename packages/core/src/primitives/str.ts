@@ -1,5 +1,4 @@
 import JSBI from 'jsbi';
-import { TextEncoder, TextDecoder } from 'web-encoding';
 import { compactAddLength, retrieveOffsetAndEncodedLength } from '../compact';
 import { DecodeResult } from '../types';
 
