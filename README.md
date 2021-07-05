@@ -45,3 +45,4 @@ pnpm publish \
 
 -   [ ] Rename "namespace" package to some more general?
 -   [ ] Find way to remove e2e test package from workspace, isolate it from anything
+-   [ ] Auto-docs for every package? Where to publish?
