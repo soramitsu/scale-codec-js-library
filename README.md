@@ -20,6 +20,12 @@ pnpm build
 
 This will emit `dist` directories in every package that should be published to npm.
 
+### Clean builds
+
+```sh
+pnpm clean
+```
+
 ### Publish
 
 It is necessary to use `pnpm` for publishing too, because it will resolve actual monorepo packages versions instead of special `workspace:` protocol in `package.json`s.
