@@ -11,9 +11,9 @@
         },
         "./*": "./*"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "files": [
+        "dist"
+    ],
     "dependencies": {
         "@scale-codec/core": "workspace:^0.1.0",
         "@scale-codec/util": "workspace:^0.1.0",

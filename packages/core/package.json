@@ -12,6 +12,9 @@
         },
         "./*": "./*"
     },
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "docs:build": "typedoc --out docs ./src/lib.ts",
         "docs:serve": "http-server ./docs"

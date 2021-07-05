@@ -11,18 +11,20 @@
         },
         "./*": "./*"
     },
-    "license": "MIT",
-    "scripts": {
-        "test": "jest",
-        "test:e2e": "zx e2e/index.mjs"
-    },
+    "files": [
+        "dist"
+    ],
     "dependencies": {
-        "@scale-codec/enum": "workspace:^0.1.0",
-        "@scale-codec/namespace": "workspace:^0.1.0",
-        "@scale-codec/util": "workspace:^0.1.0",
+        "@scale-codec/enum": "^0.1.0",
+        "@scale-codec/namespace": "^0.1.0",
+        "@scale-codec/util": "^0.1.0",
         "case": "^1.6.3"
     },
     "devDependencies": {
         "zx": "^1.14.2"
+    },
+    "scripts": {
+        "test": "jest",
+        "test:e2e": "zx e2e/index.mjs"
     }
 }

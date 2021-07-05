@@ -10,5 +10,8 @@
             "require": "./dist/lib.cjs.js"
         },
         "./*": "./*"
-    }
+    },
+    "files": [
+        "dist"
+    ]
 }
