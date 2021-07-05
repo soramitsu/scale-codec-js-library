@@ -1,9 +1,0 @@
-{
-    "name": "@scale-codec/prettier-config",
-    "version": "1.0.0",
-    "main": ".prettierrc.js",
-    "types": "index.d.ts",
-    "dependencies": {
-        "prettier": "^2.3.2"
-    }
-}

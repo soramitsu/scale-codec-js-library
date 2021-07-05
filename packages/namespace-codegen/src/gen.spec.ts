@@ -1,11 +1,11 @@
 import prettier from 'prettier';
-import prettierConfig from '@scale-codec/prettier-config';
+import prettierConfig from '../../../.prettierrc.js';
 import { NamespaceCodegenDefinition } from './types';
 import { generate, GenerateOptions } from './gen';
 
 function format(tsCode: string): string {
     return prettier.format(tsCode, {
-        ...prettierConfig,
+        ...(prettierConfig as any),
         parser: 'typescript',
     });
 }
@@ -175,5 +175,34 @@ describe('generate()', () => {
                 { namespaceTypeName: 'test', namespaceValueName: 'test', importLib: 'test' },
             );
         }).toThrow();
+    });
+
+    test.todo('other validation errors');
+
+    test('struct props camelCased if related option is provided', () => {
+        shouldMatchSnapshot(
+            {
+                Example: {
+                    t: 'struct',
+                    fields: [
+                        {
+                            name: 'foo_bar_baz',
+                            ref: 'u64',
+                        },
+                        {
+                            name: 'another_snake',
+                            ref: 'u32',
+                        },
+                    ],
+                },
+            },
+            {
+                namespaceTypeName: 'test',
+                namespaceValueName: 'test',
+                importLib: 'test',
+
+                structPropsCamelCase: true,
+            },
+        );
     });
 });

@@ -57,7 +57,7 @@ describe('Vec', () => {
         const hex = '28 00 01 01 02 03 05 08 0d 15 22';
 
         it('encode', () => {
-            const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 8 });
+            const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 8, signed: false, endianness: 'le' });
 
             const encoded = encodeVec(numbers, numEncode);
 
@@ -65,7 +65,8 @@ describe('Vec', () => {
         });
 
         it('decode', () => {
-            const numDecode = (b: Uint8Array): [JSBI, number] => decodeBigInt(b, { bits: 8 });
+            const numDecode = (b: Uint8Array): [JSBI, number] =>
+                decodeBigInt(b, { bits: 8, signed: false, endianness: 'le' });
             const encoded = prettyHexToBytes(hex);
 
             const [decoded, len] = decodeVec(encoded, numDecode);
@@ -80,8 +81,9 @@ describe('Vec', () => {
         const numbers = [0, 1, -1, 2, -2, 3, -3].map((x) => JSBI.BigInt(x));
         const hex = '1c 00 00 01 00 ff ff 02 00 fe ff 03 00 fd ff';
 
-        const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 16, isSigned: true });
-        const numDecode = (b: Uint8Array): [JSBI, number] => decodeBigInt(b, { bits: 16, isSigned: true });
+        const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 16, signed: true, endianness: 'le' });
+        const numDecode = (b: Uint8Array): [JSBI, number] =>
+            decodeBigInt(b, { bits: 16, signed: true, endianness: 'le' });
 
         const encoded = encodeVec(numbers, numEncode);
         expect(hexifyBytes(encoded)).toEqual(hex);
@@ -111,7 +113,9 @@ describe('Vec', () => {
             4,
         ]);
 
-        const [_decoded, len] = decodeVec(encoded, (bytes) => decodeBigInt(bytes, { bits: 8 }));
+        const [_decoded, len] = decodeVec(encoded, (bytes) =>
+            decodeBigInt(bytes, { bits: 8, endianness: 'le', signed: false }),
+        );
 
         expect(len).toEqual(actualVecBytesLen);
     });
@@ -139,8 +143,8 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     // https://github.com/paritytech/parity-scale-codec/blob/master/src/codec.rs#L1336
     describe('vec of option int encoded as expected', () => {
         const { codec } = createOptionSchema<JSBI>(
-            (v) => encodeBigInt(v, { bits: 8, isSigned: true }),
-            (b) => decodeBigInt(b, { bits: 8, isSigned: true }),
+            (v) => encodeBigInt(v, { bits: 8, signed: true, endianness: 'le' }),
+            (b) => decodeBigInt(b, { bits: 8, signed: true, endianness: 'le' }),
         );
         const vec: Enum<OptionDef<JSBI>>[] = [
             Enum.create('Some', JSBI.BigInt(1)),
@@ -217,14 +221,17 @@ describe('Tuple', () => {
 
         const strCodec: Codec<string> = [encodeStrCompact, decodeStrCompact];
         const i32Codec: Codec<JSBI> = [
-            (n) => encodeBigInt(n, { bits: 32, isSigned: true }),
-            (b) => decodeBigInt(b, { bits: 32, isSigned: true }),
+            (n) => encodeBigInt(n, { bits: 32, signed: true, endianness: 'le' }),
+            (b) => decodeBigInt(b, { bits: 32, signed: true, endianness: 'le' }),
         ];
         const i8Codec: Codec<JSBI> = [
-            (n) => encodeBigInt(n, { bits: 8, isSigned: true }),
-            (b) => decodeBigInt(b, { bits: 8, isSigned: true }),
+            (n) => encodeBigInt(n, { bits: 8, signed: true, endianness: 'le' }),
+            (b) => decodeBigInt(b, { bits: 8, signed: true, endianness: 'le' }),
         ];
-        const u64Codec: Codec<JSBI> = [(n) => encodeBigInt(n, { bits: 64 }), (b) => decodeBigInt(b, { bits: 64 })];
+        const u64Codec: Codec<JSBI> = [
+            (n) => encodeBigInt(n, { bits: 64, signed: true, endianness: 'le' }),
+            (b) => decodeBigInt(b, { bits: 64, signed: true, endianness: 'le' }),
+        ];
         const veci8Codec: Codec<JSBI[]> = [(arr) => encodeVec(arr, i8Codec[0]), (b) => decodeVec(b, i8Codec[1])];
         const boolCodec: Codec<boolean> = [encodeBool, decodeBool];
         const i32TupleCodec: Codec<[JSBI, JSBI]> = [
@@ -266,7 +273,7 @@ describe('Struct', () => {
         it('encode', () => {
             const encoders = {
                 foo: encodeStrCompact,
-                bar: (v: JSBI) => encodeBigInt(v, { bits: 32 }),
+                bar: (v: JSBI) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' }),
             };
 
             const encoded = encodeStruct(STRUCT, encoders, ORDER);
@@ -277,7 +284,7 @@ describe('Struct', () => {
         it('decode', () => {
             const decoders: { [K in keyof typeof STRUCT]: Decode<typeof STRUCT[K]> } = {
                 foo: decodeStrCompact,
-                bar: (buff: Uint8Array) => decodeBigInt(buff, { bits: 32 }),
+                bar: (buff: Uint8Array) => decodeBigInt(buff, { bits: 32, signed: true, endianness: 'le' }),
             };
 
             const [decoded, len] = decodeStruct(ENCODED, decoders, ORDER);
@@ -318,14 +325,17 @@ describe('Map', () => {
         const encoded = Uint8Array.from([4, 28, 98, 97, 122, 122, 105, 110, 103, 69, 0, 0, 0]);
 
         it('encode', () => {
-            expect(encodeMap(map, encodeStrCompact, (v) => encodeBigInt(v, { bits: 32 }))).toEqual(encoded);
+            expect(
+                encodeMap(map, encodeStrCompact, (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
+            ).toEqual(encoded);
         });
 
         it('decode', () => {
-            expect(decodeMap(encoded, decodeStrCompact, (v) => decodeBigInt(v, { bits: 32 }))).toEqual([
-                map,
-                encoded.length,
-            ]);
+            expect(
+                decodeMap(encoded, decodeStrCompact, (v) =>
+                    decodeBigInt(v, { bits: 32, signed: true, endianness: 'le' }),
+                ),
+            ).toEqual([map, encoded.length]);
         });
     });
 
@@ -342,8 +352,8 @@ describe('Map', () => {
             16, 1, 0, 0, 0, 2, 0, 0, 0, 23, 0, 0, 0, 24, 0, 0, 0, 28, 0, 0, 0, 30, 0, 0, 0, 45, 0, 0, 0, 80, 0, 0, 0,
         ]);
 
-        const encode: Encode<JSBI> = (v) => encodeBigInt(v, { bits: 32 });
-        const decode: Decode<JSBI> = (b) => decodeBigInt(b, { bits: 32 });
+        const encode: Encode<JSBI> = (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' });
+        const decode: Decode<JSBI> = (b) => decodeBigInt(b, { bits: 32, signed: true, endianness: 'le' });
 
         it('encode', () => {
             expect(encodeMap(map, encode, encode)).toEqual(encoded);
@@ -362,11 +372,15 @@ describe('Array', () => {
         const encoded = Uint8Array.from(nums);
 
         test('encode', () => {
-            expect(encodeArray(arrU8, (v) => encodeBigInt(v, { bits: 8, isSigned: false }), 7)).toEqual(encoded);
+            expect(encodeArray(arrU8, (v) => encodeBigInt(v, { bits: 8, signed: false, endianness: 'le' }), 7)).toEqual(
+                encoded,
+            );
         });
 
         test('decode', () => {
-            expect(decodeArray(encoded, (b) => decodeBigInt(b, { bits: 8, isSigned: false }), 7)).toEqual([arrU8, 7]);
+            expect(
+                decodeArray(encoded, (b) => decodeBigInt(b, { bits: 8, signed: false, endianness: 'le' }), 7),
+            ).toEqual([arrU8, 7]);
         });
     });
 });

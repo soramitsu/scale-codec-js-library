@@ -4,10 +4,10 @@ import JSBI from 'jsbi';
 export type SupportedNumberBitLength = 8 | 16 | 32 | 64 | 128;
 
 // FIXME convert to class?
-export function defIntUint(bits: SupportedNumberBitLength, isSigned: boolean): Codec<JSBI> {
+export function defIntUint(bits: SupportedNumberBitLength, signed: boolean): Codec<JSBI> {
     return {
-        decode: (buff) => decodeBigInt(buff, { bits, isSigned }),
-        encode: (num) => encodeBigInt(num, { bits, isSigned }),
+        decode: (buff) => decodeBigInt(buff, { bits, signed, endianness: 'le' }),
+        encode: (num) => encodeBigInt(num, { bits, signed, endianness: 'le' }),
     };
 }
 
