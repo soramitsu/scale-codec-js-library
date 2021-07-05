@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { encodeBigInt } from '../primitives';
+import { encodeBigInt } from '../primitives/int';
 import { MAX_U16, MAX_U32, MAX_U8 } from '../consts';
 import { assert, concatUint8Arrays } from '@scale-codec/util';
 

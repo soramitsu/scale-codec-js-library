@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { AllowedBits, decodeBigInt } from '../primitives';
+import { AllowedBits, decodeBigInt } from '../primitives/int';
 
 /**
  * Retrievs the offset and encoded length from a compact-prefixed value

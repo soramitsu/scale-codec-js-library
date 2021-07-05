@@ -1,11 +1,11 @@
 import prettier from 'prettier';
-import prettierConfig from '@scale-codec/prettier-config';
+import prettierConfig from '../../../.prettierrc.js';
 import { NamespaceCodegenDefinition } from './types';
 import { generate, GenerateOptions } from './gen';
 
 function format(tsCode: string): string {
     return prettier.format(tsCode, {
-        ...prettierConfig,
+        ...(prettierConfig as any),
         parser: 'typescript',
     });
 }
