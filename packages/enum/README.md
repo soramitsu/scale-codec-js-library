@@ -16,6 +16,8 @@ enum Roko {
 You can define it in JS like this:
 
 ```ts
+import { Enum, Valuable } from '@scale-codec/enum';
+
 type Roko = Enum<{
     // Empty variant accepts any types except of `{ value: any }` - it is reserved for valuable variants
     // for consistence you can use `undefined` or `null`
@@ -23,7 +25,7 @@ type Roko = Enum<{
     // Valuable variants should be defined specially with helper type or directly
     // like `{ value: T }`
     // Such definition style eliminates ambiguity for TypeScript between empty and non-empty variants
-    Yool: ValuableVariant<number>; // equivalent to { value: number }
+    Yool: Valuable<number>; // equivalent to { value: number }
 }>;
 
 const foo: Roko = Enum.create('Tupa');
@@ -42,9 +44,9 @@ const c: Roko = Enum.create('Yool', '._.'); // error, number expected, not strin
 
 ```ts
 interface VariantsDefinition {
-    Pam: ValuableVariant<number>;
-    Param: ValuableVariant<[number, boolean]>;
-    Papam: ValuableVariant<{ value: string }>;
+    Pam: Valuable<number>;
+    Param: Valuable<[number, boolean]>;
+    Papam: Valuable<{ value: string }>;
 }
 
 const items: Enum<VariantsDefinition>[] = [/* ... */];
@@ -81,15 +83,12 @@ for (const item of items) {
 
 ### Common enums - Option and Result
 
-> Draft, will be deleted?
-
-There are defined to most common Rust's enums - `Option<T>` for defining the presense or absense of some content, and `Result<Ok, Err>` for defining results of operations that can be failed. `Option` and `Result` are classes that extends base `Enum` and introduce some helpfull methods:
+They are exposed from package only as types for convenient inference. It can be used like this:
 
 ```ts
-const maybeNumber: Option<number> = Option.Some(929);
-const maybeBool: Option<boolean> = Option.None();
+const opt1: Option<number> = Enum.create('None');
+const opt2: Option<number> = Enum.create('Some', 5);
+
+const res1: Result<null, Error> = Enum.create('Ok', null);
+const res2: Result<null, Error> = Enum.create('Err', new Error('boom'));
 ```
-
-**TODO**: add more helper methods like in Rust.
-
-**TODO**: more examples
