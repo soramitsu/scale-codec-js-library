@@ -1,6 +1,6 @@
 import JSBI from 'jsbi';
 import { DecodeResult } from '../types';
-import { assert } from '../../../util/src/lib';
+import { assert } from '@scale-codec/util';
 
 /**
  * Little-Endian (`le`) or Big-Endian (`be`)
