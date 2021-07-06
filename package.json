@@ -14,7 +14,7 @@
     },
     "homepage": "https://github.com/soramitsu/scale-codec-js-library#readme",
     "scripts": {
-        "test:all": "pnpm test:unit && pnpm build && test:e2e",
+        "test:all": "pnpm test:unit && pnpm build && pnpm test:e2e",
         "test:unit": "jest",
         "test:e2e": "ts-eager ./scripts/test-e2e",
         "build": "rollup -c",

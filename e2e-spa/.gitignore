@@ -6,3 +6,4 @@ dist-ssr
 
 cypress/*
 !cypress/integration
+src/namespace/index.ts
