@@ -4,6 +4,9 @@
     "scripts": {
         "run-dev": "node -r esbuild-register src/main.ts"
     },
+    "bin": {
+        "generate-scale-namespace": "dist/main.js"
+    },
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.0",
         "@scale-codec/namespace-codegen": "workspace:^0.1.0",
@@ -12,7 +15,9 @@
         "consola": "^2.15.3",
         "esbuild-register": "^2.6.0",
         "path-exists": "^4.0.0",
-        "prettier": "^2.3.2",
-        "yesno": "^0.3.1"
+        "prompts": "^2.4.1"
+    },
+    "devDependencies": {
+        "@types/prompts": "^2.0.14"
     }
 }
