@@ -13,7 +13,7 @@ import packageJson from '../package.json';
 import { OptionsRaw, parseRawOptions } from './opts';
 import { normalizeRelativePath } from './util';
 
-const cli = cac();
+const cli = cac('generate-scale-namespace');
 
 cli.command('', 'Generate namespace from definition')
     .option(
