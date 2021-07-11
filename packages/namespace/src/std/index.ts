@@ -7,6 +7,7 @@ export * from './tuple';
 export * from './vec';
 export * from './map';
 export * from './array';
+export * from './set';
 
 import JSBI from 'jsbi';
 import { Codec } from '@scale-codec/core';

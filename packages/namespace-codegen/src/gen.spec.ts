@@ -205,4 +205,20 @@ describe('generate()', () => {
             },
         );
     });
+
+    test('using set', () => {
+        shouldMatchSnapshot(
+            {
+                'BTreeSet<str>': {
+                    t: 'set',
+                    entry: 'str',
+                },
+            },
+            {
+                namespaceTypeName: 'test',
+                namespaceValueName: 'test',
+                importLib: 'test',
+            },
+        );
+    });
 });

@@ -25,6 +25,10 @@ export type MapDef = {
     value: string;
 };
 
+export type SetDef = {
+    entry: string;
+};
+
 export type EnumDef = {
     variants: {
         name: string;
@@ -53,6 +57,7 @@ export type TypeDef =
     | WithTMark<TupleDef, 'tuple'>
     | WithTMark<StructDef, 'struct'>
     | WithTMark<MapDef, 'map'>
+    | WithTMark<SetDef, 'set'>
     | WithTMark<EnumDef, 'enum'>
     | WithTMark<OptionDef, 'option'>
     | WithTMark<ResultDef, 'result'>;
