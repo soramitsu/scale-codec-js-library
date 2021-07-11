@@ -271,5 +271,110 @@
     "signed": true,
     "le": "2e fb ff ff",
     "be": "ff ff fb 2e"
+  },
+  {
+    "decimal": "255",
+    "bits": 8,
+    "signed": false,
+    "le": "ff",
+    "be": "ff"
+  },
+  {
+    "decimal": "65535",
+    "bits": 16,
+    "signed": false,
+    "le": "ff ff",
+    "be": "ff ff"
+  },
+  {
+    "decimal": "4294967295",
+    "bits": 32,
+    "signed": false,
+    "le": "ff ff ff ff",
+    "be": "ff ff ff ff"
+  },
+  {
+    "decimal": "18446744073709551615",
+    "bits": 64,
+    "signed": false,
+    "le": "ff ff ff ff ff ff ff ff",
+    "be": "ff ff ff ff ff ff ff ff"
+  },
+  {
+    "decimal": "340282366920938463463374607431768211455",
+    "bits": 128,
+    "signed": false,
+    "le": "ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff",
+    "be": "ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff"
+  },
+  {
+    "decimal": "127",
+    "bits": 8,
+    "signed": true,
+    "le": "7f",
+    "be": "7f"
+  },
+  {
+    "decimal": "32767",
+    "bits": 16,
+    "signed": true,
+    "le": "ff 7f",
+    "be": "7f ff"
+  },
+  {
+    "decimal": "2147483647",
+    "bits": 32,
+    "signed": true,
+    "le": "ff ff ff 7f",
+    "be": "7f ff ff ff"
+  },
+  {
+    "decimal": "9223372036854775807",
+    "bits": 64,
+    "signed": true,
+    "le": "ff ff ff ff ff ff ff 7f",
+    "be": "7f ff ff ff ff ff ff ff"
+  },
+  {
+    "decimal": "170141183460469231731687303715884105727",
+    "bits": 128,
+    "signed": true,
+    "le": "ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 7f",
+    "be": "7f ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff"
+  },
+  {
+    "decimal": "-128",
+    "bits": 8,
+    "signed": true,
+    "le": "80",
+    "be": "80"
+  },
+  {
+    "decimal": "-32768",
+    "bits": 16,
+    "signed": true,
+    "le": "00 80",
+    "be": "80 00"
+  },
+  {
+    "decimal": "-2147483648",
+    "bits": 32,
+    "signed": true,
+    "le": "00 00 00 80",
+    "be": "80 00 00 00"
+  },
+  {
+    "decimal": "-9223372036854775808",
+    "bits": 64,
+    "signed": true,
+    "le": "00 00 00 00 00 00 00 80",
+    "be": "80 00 00 00 00 00 00 00"
+  },
+  {
+    "decimal": "-170141183460469231731687303715884105728",
+    "bits": 128,
+    "signed": true,
+    "le": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80",
+    "be": "80 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
   }
 ]
