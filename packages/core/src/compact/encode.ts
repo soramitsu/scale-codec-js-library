@@ -6,7 +6,7 @@ import { assert, concatUint8Arrays } from '@scale-codec/util';
 /**
  * @describe Encodes a number into a compact representation
  */
-export function encodeBigIntCompact(bn: JSBI): Uint8Array {
+export function encodeCompact(bn: JSBI): Uint8Array {
     if (JSBI.lessThanOrEqual(bn, MAX_U8)) {
         return new Uint8Array([JSBI.toNumber(bn) << 2]);
     } else if (JSBI.lessThanOrEqual(bn, MAX_U16)) {

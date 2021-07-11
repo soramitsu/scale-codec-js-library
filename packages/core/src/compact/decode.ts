@@ -1,17 +1,17 @@
+import { DecodeResult } from '../types';
 import JSBI from 'jsbi';
 import { AllowedBits, decodeBigInt } from '../primitives/int';
 
 /**
  * Retrievs the offset and encoded length from a compact-prefixed value
  */
-export function retrieveOffsetAndEncodedLength(bytes: Uint8Array): [number, JSBI] {
+export function decodeCompact(bytes: Uint8Array): DecodeResult<JSBI> {
     const flag = bytes[0] & 0b11;
 
     if (flag === 0b00) {
-        return [1, JSBI.signedRightShift(JSBI.BigInt(bytes[0]), JSBI.BigInt(2))];
+        return [JSBI.signedRightShift(JSBI.BigInt(bytes[0]), JSBI.BigInt(2)), 1];
     } else if (flag === 0b01) {
         return [
-            2,
             JSBI.signedRightShift(
                 decodeBigInt(bytes, {
                     bits: 16,
@@ -20,10 +20,10 @@ export function retrieveOffsetAndEncodedLength(bytes: Uint8Array): [number, JSBI
                 })[0],
                 JSBI.BigInt(2),
             ),
+            2,
         ];
     } else if (flag === 0b10) {
         return [
-            4,
             JSBI.signedRightShift(
                 decodeBigInt(bytes, {
                     signed: false,
@@ -32,6 +32,7 @@ export function retrieveOffsetAndEncodedLength(bytes: Uint8Array): [number, JSBI
                 })[0],
                 JSBI.BigInt(2),
             ),
+            4,
         ];
     }
 
@@ -42,11 +43,11 @@ export function retrieveOffsetAndEncodedLength(bytes: Uint8Array): [number, JSBI
     const offset = 1 + bigIntBytesCount;
 
     return [
-        offset,
         decodeBigInt(bytes.subarray(1, offset), {
             bits: (bigIntBytesCount * 8) as AllowedBits,
             endianness: 'le',
             signed: false,
         })[0],
+        offset,
     ];
 }
