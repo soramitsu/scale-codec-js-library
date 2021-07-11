@@ -15,8 +15,8 @@ describe('complex namespace', () => {
             One: null;
             Two: Valuable<Namespace['(u64,bool,(string,i32))']>;
         }>;
-        '(string,i32)': [string, JSBI];
-        '(u64,bool,(string,i32))': [JSBI, boolean, [string, JSBI]];
+        '(string,i32)': [string, number];
+        '(u64,bool,(string,i32))': [JSBI, boolean, [string, number]];
         // alias
         String: string;
     };
@@ -59,14 +59,14 @@ describe('complex namespace', () => {
     test.each([
         testCase('bool', false, bytes(0)),
         testCase('bool', true, bytes(1)),
-        testCase('u8', JSBI.BigInt(15), bytes(15)),
-        testCase('u16', JSBI.BigInt(5812), bytes(180, 22)),
-        testCase('u32', JSBI.BigInt(420923), bytes(59, 108, 6, 0)),
+        testCase('u8', 15, bytes(15)),
+        testCase('u16', 5812, bytes(180, 22)),
+        testCase('u32', 420923, bytes(59, 108, 6, 0)),
         testCase('u64', JSBI.BigInt(41029823098), bytes(122, 106, 145, 141, 9, 0, 0, 0)),
         testCase('u128', JSBI.BigInt(40000820398404), bytes(68, 201, 176, 106, 97, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
-        testCase('i8', JSBI.BigInt(-80), bytes(176)),
-        testCase('i16', JSBI.BigInt(5812), bytes(180, 22)),
-        testCase('i32', JSBI.BigInt(-420923), bytes(197, 147, 249, 255)),
+        testCase('i8', -80, bytes(176)),
+        testCase('i16', 5812, bytes(180, 22)),
+        testCase('i32', -420923, bytes(197, 147, 249, 255)),
         testCase('i64', JSBI.BigInt(41029823098), bytes(122, 106, 145, 141, 9, 0, 0, 0)),
         testCase(
             'i128',
@@ -84,18 +84,18 @@ describe('complex namespace', () => {
         ),
         testCase(
             '(string,i32)',
-            ['something', JSBI.BigInt(5_000_441)],
+            ['something', 5_000_441],
             bytes(36, 115, 111, 109, 101, 116, 104, 105, 110, 103, 249, 76, 76, 0),
         ),
         testCase(
             '(u64,bool,(string,i32))',
-            [JSBI.BigInt(15), false, ['--___--', JSBI.BigInt(-4123)]],
+            [JSBI.BigInt(15), false, ['--___--', -4123]],
             bytes(15, 0, 0, 0, 0, 0, 0, 0, 0, 28, 45, 45, 95, 95, 95, 45, 45, 229, 239, 255, 255),
         ),
         testCase('CustomEnum', Enum.create('One'), bytes(0)),
         testCase(
             'CustomEnum',
-            Enum.create('Two', [JSBI.BigInt(15), false, ['--___--', JSBI.BigInt(-4123)]]),
+            Enum.create('Two', [JSBI.BigInt(15), false, ['--___--', -4123]]),
             bytes(1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 28, 45, 45, 95, 95, 95, 45, 45, 229, 239, 255, 255),
         ),
     ])('encode/decode %s', (ref, decoded, encoded) => {

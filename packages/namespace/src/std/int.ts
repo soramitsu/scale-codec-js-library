@@ -1,17 +1,32 @@
-import { Codec, bigIntCodec, AllowedBits } from '@scale-codec/core';
+import { Codec, bigIntCodec, AllowedBits, encodeBigInt, decodeBigInt, BigIntCodecOptions } from '@scale-codec/core';
 import JSBI from 'jsbi';
 
-function codec(bits: AllowedBits, signed: boolean): Codec<JSBI> {
+function codecBigInt(bits: AllowedBits, signed: boolean): Codec<JSBI> {
     return bigIntCodec({ bits, signed, endianness: 'le' });
 }
 
-export const i8 = codec(8, true);
-export const i16 = codec(16, true);
-export const i32 = codec(32, true);
-export const i64 = codec(64, true);
-export const i128 = codec(128, true);
-export const u8 = codec(8, false);
-export const u16 = codec(16, false);
-export const u32 = codec(32, false);
-export const u64 = codec(64, false);
-export const u128 = codec(128, false);
+/**
+ * Optimal codec for integers that compatible with native JS numbers (which are f64)
+ */
+function codecJsNum(bits: Exclude<AllowedBits, 64 | 128>, signed: boolean): Codec<number> {
+    const opts: BigIntCodecOptions = { bits, signed, endianness: 'le' };
+
+    return {
+        encode: (v) => encodeBigInt(JSBI.BigInt(v), opts),
+        decode: (b) => {
+            const [bn, count] = decodeBigInt(b, opts);
+            return [JSBI.toNumber(bn), count];
+        },
+    };
+}
+
+export const i8 = codecJsNum(8, true);
+export const i16 = codecJsNum(16, true);
+export const i32 = codecJsNum(32, true);
+export const i64 = codecBigInt(64, true);
+export const i128 = codecBigInt(128, true);
+export const u8 = codecJsNum(8, false);
+export const u16 = codecJsNum(16, false);
+export const u32 = codecJsNum(32, false);
+export const u64 = codecBigInt(64, false);
+export const u128 = codecBigInt(128, false);
