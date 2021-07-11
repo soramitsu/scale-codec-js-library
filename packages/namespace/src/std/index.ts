@@ -10,7 +10,7 @@ export * from './array';
 export * from './set';
 
 import JSBI from 'jsbi';
-import { Codec } from '@scale-codec/core';
+import { Codec, decodeCompact, encodeCompact } from '@scale-codec/core';
 import { bool } from './bool';
 import { i16, i32, i64, i8, u16, u32, u64, u8, i128, u128 } from './int';
 import { str } from './string';
@@ -28,6 +28,7 @@ export type StdTypes = {
     i32: JSBI;
     i64: JSBI;
     i128: JSBI;
+    compact: JSBI;
     '()': null;
 };
 
@@ -48,6 +49,11 @@ export const StdCodecs: AsCodecs<StdTypes> = {
     i64,
     u128,
     i128,
+    compact: {
+        encode: encodeCompact,
+        decode: decodeCompact,
+    },
+    // no zero-cost abstractions here т_т
     '()': {
         encode: () => new Uint8Array([]),
         decode: () => [null, 0],
