@@ -1,6 +1,7 @@
 import { Enum, Valuable } from '@scale-codec/enum';
 import {
     ArrayDef,
+    BytesArrayDef,
     EnumDef,
     MapDef,
     OptionDef,
@@ -16,6 +17,7 @@ import {
 export type DefEnum = Enum<{
     Alias: Valuable<string>;
     Array: Valuable<ArrayDef>;
+    ArrayBytes: Valuable<BytesArrayDef>;
     Vec: Valuable<VecDef>;
     Tuple: Valuable<TupleDef>;
     Struct: Valuable<StructDef>;
@@ -37,6 +39,9 @@ export function typeDefToEnum(def: TypeDef): DefEnum {
     }
     if (def.t === 'array') {
         return Enum.create('Array', delMark(def));
+    }
+    if (def.t === 'bytes-array') {
+        return Enum.create('ArrayBytes', delMark(def));
     }
     if (def.t === 'vec') {
         return Enum.create('Vec', delMark(def));

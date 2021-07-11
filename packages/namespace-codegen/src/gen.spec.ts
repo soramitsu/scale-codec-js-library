@@ -221,4 +221,20 @@ describe('generate()', () => {
             },
         );
     });
+
+    test('array of bytes', () => {
+        shouldMatchSnapshot(
+            {
+                '[u8; 512]': {
+                    t: 'bytes-array',
+                    len: 512,
+                },
+            },
+            {
+                namespaceTypeName: 'TYPE',
+                namespaceValueName: 'VALUE',
+                importLib: 'test',
+            },
+        );
+    });
 });

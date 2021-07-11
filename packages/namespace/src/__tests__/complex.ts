@@ -1,8 +1,9 @@
 import { Enum, EnumSchema, Option, Valuable } from '@scale-codec/core';
-import { defEnum, defOption, defStruct, defTuple, StdCodecs, StdTypes } from '../std';
+import { defBytesArray, defEnum, defOption, defStruct, defTuple, StdCodecs, StdTypes } from '../std';
 import JSBI from 'jsbi';
 import { defNamespace } from '../namespace';
 import { defAlias } from '../alias';
+import { yieldNTimes } from '@scale-codec/util';
 
 describe('complex namespace', () => {
     type Namespace = StdTypes & {
@@ -19,6 +20,8 @@ describe('complex namespace', () => {
         '(u64,bool,(string,i32))': [JSBI, boolean, [string, number]];
         // alias
         String: string;
+        // bytes fixed
+        '[u8, 5]': Uint8Array;
     };
 
     const ns = defNamespace<Namespace>({
@@ -40,6 +43,7 @@ describe('complex namespace', () => {
             },
         ),
         String: defAlias('str'),
+        '[u8, 5]': defBytesArray(5),
     });
 
     const { encode, decode } = ns;
@@ -98,6 +102,10 @@ describe('complex namespace', () => {
             Enum.create('Two', [JSBI.BigInt(15), false, ['--___--', -4123]]),
             bytes(1, 15, 0, 0, 0, 0, 0, 0, 0, 0, 28, 45, 45, 95, 95, 95, 45, 45, 229, 239, 255, 255),
         ),
+        // array of bytes should equals to it's encoded representation
+        testCase('[u8, 5]', bytes(1, 2, 3, 4, 5), bytes(1, 2, 3, 4, 5)),
+        // vec of bytes
+        testCase('Vec<u8>', bytes(1, 2, 3, 4, 5), bytes(20, 1, 2, 3, 4, 5)),
     ])('encode/decode %s', (ref, decoded, encoded) => {
         expect(encode(ref, decoded)).toEqual(encoded);
         expect(decode(ref, encoded)).toEqual(decoded);

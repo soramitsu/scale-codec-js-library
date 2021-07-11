@@ -12,6 +12,7 @@ export const StdDefHelpers = {
     defTuple: 'defTuple',
     defVec: 'defVec',
     defArray: 'defArray',
+    defBytesArray: 'defBytesArray',
     EnumSchema: 'EnumSchema',
     Enum: 'Enum',
     Option: 'Option',
