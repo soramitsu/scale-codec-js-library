@@ -17,7 +17,8 @@
         "test:all": "pnpm test:unit && pnpm build && pnpm test:e2e",
         "test:unit": "jest",
         "test:e2e": "ts-eager ./scripts/test-e2e",
-        "build": "rollup -c",
+        "build": "pnpm type-check && rollup -c",
+        "type-check": "tsc --noEmit",
         "clean": "rimraf packages/*/dist"
     },
     "devDependencies": {
