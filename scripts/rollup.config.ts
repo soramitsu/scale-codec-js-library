@@ -1,5 +1,5 @@
 import { RollupOptions } from 'rollup';
-import typescript from 'rollup-plugin-typescript2';
+import esbuild from 'rollup-plugin-esbuild';
 import dts from 'rollup-plugin-dts';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 
@@ -45,12 +45,8 @@ for (const { dir, external } of packages) {
             },
         ],
         plugins: [
-            typescript({
-                tsconfigOverride: {
-                    compilerOptions: {
-                        declaration: false,
-                    },
-                },
+            esbuild({
+                minify: false,
             }),
             nodeResolve(),
         ],
