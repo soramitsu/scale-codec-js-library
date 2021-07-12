@@ -16,6 +16,12 @@ Then install packages
 pnpm i
 ```
 
+### Type-checking
+
+```sh
+pnpm type-check
+```
+
 ### Build
 
 ```sh
@@ -31,6 +37,12 @@ pnpm clean
 ```
 
 ### Test
+
+Test all (in CI):
+
+```sh
+pnpm test:all
+```
 
 #### Unit
 
