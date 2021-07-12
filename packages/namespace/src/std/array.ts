@@ -3,15 +3,13 @@ import { assert } from '@scale-codec/util';
 import { NamespaceCodec } from '../types';
 
 export function defArray<N, K extends keyof N>(itemRef: K, len: number): NamespaceCodec<N[K][], N> {
-    return {
-        setup({ dynCodec }) {
-            const { encode, decode } = dynCodec(itemRef);
+    return ({ dynCodec }) => {
+        const { encode, decode } = dynCodec(itemRef);
 
-            return {
-                encode: (v) => encodeArray(v, encode, len),
-                decode: (b) => decodeArray(b, decode, len),
-            };
-        },
+        return {
+            encode: (v) => encodeArray(v, encode, len),
+            decode: (b) => decodeArray(b, decode, len),
+        };
     };
 }
 

@@ -4,15 +4,13 @@ import { NamespaceCodec } from '../types';
 import JSBI from 'jsbi';
 
 export function defVec<N, K extends keyof N>(itemRef: K): NamespaceCodec<N[K][], N> {
-    return {
-        setup({ dynCodec }) {
-            const { encode, decode } = dynCodec(itemRef);
+    return ({ dynCodec }) => {
+        const { encode, decode } = dynCodec(itemRef);
 
-            return {
-                encode: (v) => encodeVec(v, encode),
-                decode: (b) => decodeVec(b, decode),
-            };
-        },
+        return {
+            encode: (v) => encodeVec(v, encode),
+            decode: (b) => decodeVec(b, decode),
+        };
     };
 }
 
