@@ -4,7 +4,7 @@ exports[`generate() array of bytes 1`] = `
 "import { StdCodecs, StdTypes, defBytesArray, defNamespace } from 'test';
 
 export type TYPE = StdTypes & {
-    '[u8; 512]': UInt8Array;
+    '[u8; 512]': Uint8Array;
 };
 
 export const VALUE = defNamespace<TYPE>({

@@ -147,7 +147,7 @@ function genNamespaceDeclaration(
                 return `${nsItem(item)}[]`;
             },
             ArrayBytes() {
-                return 'UInt8Array';
+                return 'Uint8Array';
             },
             Tuple({ items }) {
                 const mapped = items.map(nsItem);
