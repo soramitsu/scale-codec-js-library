@@ -10,7 +10,7 @@
         "clean": "rimraf packages/*/dist",
         "publish:all": "esno scripts/publish-all",
         "lint": "eslint . --ext js,ts",
-        "husky:pre-commit": "esno scripts/pre-commit"
+        "check-code-integrity": "esno scripts/check-code-integrity"
     },
     "devDependencies": {
         "@jest/types": "^27.0.6",
