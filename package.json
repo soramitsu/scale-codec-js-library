@@ -8,7 +8,9 @@
         "build": "pnpm type-check && rollup -c",
         "type-check": "tsc --noEmit",
         "clean": "rimraf packages/*/dist",
-        "publish:all": "esno scripts/publish-all"
+        "publish:all": "esno scripts/publish-all",
+        "lint": "eslint . --ext js,ts",
+        "husky:pre-commit": "esno scripts/pre-commit"
     },
     "devDependencies": {
         "@jest/types": "^27.0.6",
@@ -17,12 +19,15 @@
         "@typescript-eslint/eslint-plugin": "^4.28.1",
         "@typescript-eslint/parser": "^4.28.1",
         "chalk": "^4.1.1",
+        "concurrently": "^6.2.0",
         "consola": "^2.15.3",
         "esbuild-register": "^2.6.0",
         "eslint": "^7.30.0",
         "eslint-config-alloy": "^4.1.0",
+        "eslint-plugin-cypress": "^2.11.3",
         "esno": "^0.7.3",
         "execa": "^5.1.1",
+        "husky": "^7.0.1",
         "jest": "^27.0.6",
         "path-exists": "^4.0.0",
         "prettier": "^2.3.2",

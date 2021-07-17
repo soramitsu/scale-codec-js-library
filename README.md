@@ -16,6 +16,15 @@ Then install packages
 pnpm i
 ```
 
+### Lint
+
+```sh
+pnpm lint
+
+# fix-in-place
+pnpm lint -- --fix
+```
+
 ### Type-checking
 
 ```sh
