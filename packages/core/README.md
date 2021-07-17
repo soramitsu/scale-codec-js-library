@@ -2,6 +2,13 @@
 
 Codecs for primitives and main containers according to the SCALE specification.
 
+## Install
+
+```sh
+# Use your favorite PM
+npm install @scale-codec/core jsbi
+```
+
 ### Supported types
 
 Primitive:
@@ -18,6 +25,7 @@ Containers:
 -   [x] Maps (any key-value sized data)
 -   [x] Structs
 -   [x] Enums
+-   [x] Sets
 
 ### Docs
 

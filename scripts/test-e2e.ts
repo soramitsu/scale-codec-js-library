@@ -1,12 +1,8 @@
-import execa from 'execa';
 import consola from 'consola';
 import path from 'path';
 import chalk from 'chalk';
 import pathExists from 'path-exists';
-
-async function $(file: string, args?: string[]) {
-    return execa(file, args, { stdio: 'inherit' });
-}
+import { runAsyncMain, $ } from './util';
 
 async function arePackagesBuilt(): Promise<boolean> {
     const existense = await Promise.all(
@@ -18,7 +14,7 @@ async function arePackagesBuilt(): Promise<boolean> {
     return existense.every((x) => !!x);
 }
 
-async function main() {
+runAsyncMain(async () => {
     if (!(await arePackagesBuilt())) {
         consola.warn(chalk`Run {bold.blue pnpm build} in the root of workspace before running e2e test`);
         process.exit(1);
@@ -43,9 +39,4 @@ async function main() {
     await $('pnpm', ['test:cy']);
 
     consola.success('e2e passed ^_^');
-}
-
-main().catch((err) => {
-    consola.fatal(err);
-    process.exit(1);
 });
