@@ -2,9 +2,9 @@ import { runAsyncMain, $ } from './util';
 import consola from 'consola';
 import chalk from 'chalk';
 
-runAsyncMain(async () => {
-    const PACKAGES = ['enum', 'util', 'core', 'namespace', 'namespace-codegen'];
+const PACKAGES = ['enum', 'util', 'core', 'namespace', 'namespace-codegen'];
 
+runAsyncMain(async () => {
     for (const pkg of PACKAGES) {
         const pkgFullName = `@scale-codec/${pkg}`;
 

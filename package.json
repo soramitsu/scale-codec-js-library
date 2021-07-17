@@ -5,7 +5,7 @@
         "test:all": "pnpm test:unit && pnpm build && pnpm test:e2e",
         "test:unit": "jest",
         "test:e2e": "esno ./scripts/test-e2e",
-        "build": "pnpm type-check && rollup -c",
+        "build": "rollup -c",
         "type-check": "tsc --noEmit",
         "clean": "rimraf packages/*/dist",
         "publish:all": "esno scripts/publish-all",
