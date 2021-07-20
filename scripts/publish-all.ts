@@ -9,7 +9,7 @@ runAsyncMain(async () => {
         const pkgFullName = `@scale-codec/${pkg}`;
 
         consola.info(chalk`Publishing {blue.bold ${pkgFullName}}`);
-        await $('pnpm', ['publish', '--filter', pkgFullName, '--dry-run', '--no-git-checks']);
+        await $('pnpm', ['publish', '--filter', pkgFullName]);
 
         consola.success(chalk`{blue.bold ${pkgFullName}} published`);
         process.stdout.write('\n');
