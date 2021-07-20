@@ -2,7 +2,7 @@
     "version": "0.0.0",
     "scripts": {
         "dev": "vite --port 4444 --clearScreen false",
-        "generate-namespace": "ts-eager ./scripts/gen",
+        "generate-namespace": "generate-scale-namespace -f -i src/namespace/def.ts -o src/namespace/index.ts --genNamespaceValue types --genNamespaceType Namespace",
         "clean": "rimraf ./src/namespace/index.ts",
         "test:node": "jest",
         "test:cy": "start-server-and-test dev http-get://localhost:4444 cy:run",
@@ -17,7 +17,7 @@
     },
     "devDependencies": {
         "@jest/types": "^27.0.6",
-        "@scale-codec/namespace-codegen": "link:../packages/namespace-codegen",
+        "@scale-codec/namespace-codegen-cli": "link:../packages/namespace-codegen-cli",
         "@types/jest": "^26.0.23",
         "@vitejs/plugin-vue": "^1.2.4",
         "@vue/compiler-sfc": "^3.1.4",
@@ -25,7 +25,6 @@
         "jest": "^27.0.6",
         "rimraf": "^3.0.2",
         "start-server-and-test": "^1.12.5",
-        "ts-eager": "^2.0.2",
         "ts-jest": "^27.0.3",
         "ts-node": "^10.0.0",
         "typescript": "^4.3.5",
