@@ -1,0 +1,17 @@
+{
+    "name": "@scale-codec/util",
+    "version": "0.1.0",
+    "main": "./dist/lib.cjs.js",
+    "module": "./dist/lib.esm.js",
+    "types": "./dist/lib.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/lib.esm.js",
+            "require": "./dist/lib.cjs.js"
+        },
+        "./*": "./*"
+    },
+    "files": [
+        "dist"
+    ]
+}

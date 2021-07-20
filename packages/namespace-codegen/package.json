@@ -1,0 +1,23 @@
+{
+    "name": "@scale-codec/namespace-codegen",
+    "version": "0.1.0",
+    "main": "./dist/lib.cjs.js",
+    "module": "./dist/lib.esm.js",
+    "types": "./dist/lib.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/lib.esm.js",
+            "require": "./dist/lib.cjs.js"
+        },
+        "./*": "./*"
+    },
+    "files": [
+        "dist"
+    ],
+    "dependencies": {
+        "@scale-codec/enum": "^0.1.0",
+        "@scale-codec/namespace": "^0.1.0",
+        "@scale-codec/util": "^0.1.0",
+        "case": "^1.6.3"
+    }
+}

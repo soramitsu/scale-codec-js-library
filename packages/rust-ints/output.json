@@ -1,0 +1,275 @@
+[
+  {
+    "decimal": "0",
+    "bits": 8,
+    "signed": false,
+    "le": "00",
+    "be": "00"
+  },
+  {
+    "decimal": "0",
+    "bits": 16,
+    "signed": false,
+    "le": "00 00",
+    "be": "00 00"
+  },
+  {
+    "decimal": "0",
+    "bits": 32,
+    "signed": false,
+    "le": "00 00 00 00",
+    "be": "00 00 00 00"
+  },
+  {
+    "decimal": "0",
+    "bits": 64,
+    "signed": false,
+    "le": "00 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 00"
+  },
+  {
+    "decimal": "0",
+    "bits": 128,
+    "signed": false,
+    "le": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+  },
+  {
+    "decimal": "0",
+    "bits": 8,
+    "signed": true,
+    "le": "00",
+    "be": "00"
+  },
+  {
+    "decimal": "0",
+    "bits": 16,
+    "signed": true,
+    "le": "00 00",
+    "be": "00 00"
+  },
+  {
+    "decimal": "0",
+    "bits": 32,
+    "signed": true,
+    "le": "00 00 00 00",
+    "be": "00 00 00 00"
+  },
+  {
+    "decimal": "0",
+    "bits": 64,
+    "signed": true,
+    "le": "00 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 00"
+  },
+  {
+    "decimal": "0",
+    "bits": 128,
+    "signed": true,
+    "le": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+  },
+  {
+    "decimal": "-1",
+    "bits": 8,
+    "signed": true,
+    "le": "ff",
+    "be": "ff"
+  },
+  {
+    "decimal": "-1",
+    "bits": 16,
+    "signed": true,
+    "le": "ff ff",
+    "be": "ff ff"
+  },
+  {
+    "decimal": "-1",
+    "bits": 32,
+    "signed": true,
+    "le": "ff ff ff ff",
+    "be": "ff ff ff ff"
+  },
+  {
+    "decimal": "-1",
+    "bits": 64,
+    "signed": true,
+    "le": "ff ff ff ff ff ff ff ff",
+    "be": "ff ff ff ff ff ff ff ff"
+  },
+  {
+    "decimal": "-1",
+    "bits": 128,
+    "signed": true,
+    "le": "ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff",
+    "be": "ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 8,
+    "signed": false,
+    "le": "ff",
+    "be": "ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 16,
+    "signed": false,
+    "le": "ff 00",
+    "be": "00 ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 32,
+    "signed": false,
+    "le": "ff 00 00 00",
+    "be": "00 00 00 ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 64,
+    "signed": false,
+    "le": "ff 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 128,
+    "signed": false,
+    "le": "ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff"
+  },
+  {
+    "decimal": "127",
+    "bits": 8,
+    "signed": true,
+    "le": "7f",
+    "be": "7f"
+  },
+  {
+    "decimal": "255",
+    "bits": 16,
+    "signed": true,
+    "le": "ff 00",
+    "be": "00 ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 32,
+    "signed": true,
+    "le": "ff 00 00 00",
+    "be": "00 00 00 ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 64,
+    "signed": true,
+    "le": "ff 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 ff"
+  },
+  {
+    "decimal": "255",
+    "bits": 128,
+    "signed": true,
+    "le": "ff 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ff"
+  },
+  {
+    "decimal": "67",
+    "bits": 8,
+    "signed": false,
+    "le": "43",
+    "be": "43"
+  },
+  {
+    "decimal": "67",
+    "bits": 16,
+    "signed": false,
+    "le": "43 00",
+    "be": "00 43"
+  },
+  {
+    "decimal": "67",
+    "bits": 32,
+    "signed": false,
+    "le": "43 00 00 00",
+    "be": "00 00 00 43"
+  },
+  {
+    "decimal": "67",
+    "bits": 128,
+    "signed": false,
+    "le": "43 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00",
+    "be": "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 43"
+  },
+  {
+    "decimal": "305419896",
+    "bits": 32,
+    "signed": false,
+    "le": "78 56 34 12",
+    "be": "12 34 56 78"
+  },
+  {
+    "decimal": "305419896",
+    "bits": 32,
+    "signed": true,
+    "le": "78 56 34 12",
+    "be": "12 34 56 78"
+  },
+  {
+    "decimal": "-305419896",
+    "bits": 32,
+    "signed": true,
+    "le": "88 a9 cb ed",
+    "be": "ed cb a9 88"
+  },
+  {
+    "decimal": "305419896",
+    "bits": 64,
+    "signed": false,
+    "le": "78 56 34 12 00 00 00 00",
+    "be": "00 00 00 00 12 34 56 78"
+  },
+  {
+    "decimal": "-512",
+    "bits": 32,
+    "signed": true,
+    "le": "00 fe ff ff",
+    "be": "ff ff fe 00"
+  },
+  {
+    "decimal": "-226123",
+    "bits": 32,
+    "signed": true,
+    "le": "b5 8c fc ff",
+    "be": "ff fc 8c b5"
+  },
+  {
+    "decimal": "256",
+    "bits": 16,
+    "signed": false,
+    "le": "00 01",
+    "be": "01 00"
+  },
+  {
+    "decimal": "256",
+    "bits": 16,
+    "signed": true,
+    "le": "00 01",
+    "be": "01 00"
+  },
+  {
+    "decimal": "1234",
+    "bits": 32,
+    "signed": false,
+    "le": "d2 04 00 00",
+    "be": "00 00 04 d2"
+  },
+  {
+    "decimal": "-1234",
+    "bits": 32,
+    "signed": true,
+    "le": "2e fb ff ff",
+    "be": "ff ff fb 2e"
+  }
+]

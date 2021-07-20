@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+      "target": "esnext",
+      "module": "esnext",
+      "lib": [
+          "esnext",
+          "DOM",
+      ],
+      "esModuleInterop": true,
+      // "declaration": true,
+      // "removeComments": false,
+      // "stripInternal": true,
+      // since 2.3
+      // "strict": true,
+      "alwaysStrict": true,
+      "noImplicitAny": true,
+      "noImplicitThis": true,
+      "strictNullChecks": true,
+      "moduleResolution": "node",
+      "skipLibCheck": true,
+      "resolveJsonModule": true,
+      "paths": {
+        "@scale-codec/enum": ["./packages/enum/src/lib.ts"],
+        "@scale-codec/util": ["./packages/util/src/lib.ts"],
+        "@scale-codec/core": ["./packages/core/src/lib.ts"],
+        "@scale-codec/namespace": ["./packages/namespace/src/lib.ts"],
+      }
+  },
+  "include": [
+    "packages"
+  ],
+  "exclude": [
+    "**/dist"
+  ]
+}
