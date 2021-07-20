@@ -10,6 +10,7 @@ import {
     decodeBigInt,
     encodeStrCompact,
     decodeStrCompact,
+    bigIntCodec,
 } from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
 import { encodeVec, decodeVec } from '../vec';
@@ -18,6 +19,7 @@ import { encodeMap, decodeMap } from '../map';
 import { encodeStruct, decodeStruct } from '../struct';
 import { encodeTuple, decodeTuple } from '../tuple';
 import { decodeArray, encodeArray } from '../array';
+import { decodeSet, encodeSet } from '../set';
 
 function hexifyBytes(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -407,5 +409,41 @@ describe('OptionBool', () => {
 
         expect(encode(item)).toEqual(bytes);
         expect(decode(bytes)).toEqual([item, 1]);
+    });
+});
+
+describe('Set', () => {
+    interface TestCase<T> {
+        js: T[];
+        bytes: number[];
+        encode: Encode<T>;
+        decode: Decode<T>;
+    }
+
+    function defCase<T>(v: TestCase<T>): TestCase<T> {
+        return v;
+    }
+
+    test.each([
+        defCase({
+            js: [2, 24, 30, 80].map((x) => JSBI.BigInt(x)),
+            bytes: [16, 2, 0, 0, 0, 24, 0, 0, 0, 30, 0, 0, 0, 80, 0, 0, 0],
+            ...bigIntCodec({ bits: 32, signed: false, endianness: 'le' }),
+        }),
+        defCase({
+            js: ['one', '©∆˙©∫∫∫'],
+            bytes: [
+                8, 12, 111, 110, 101, 72, 194, 169, 226, 136, 134, 203, 153, 194, 169, 226, 136, 171, 226, 136, 171,
+                226, 136, 171,
+            ],
+            encode: encodeStrCompact,
+            decode: decodeStrCompact,
+        }),
+    ])('encode/decode set of $js', ({ js, bytes, encode, decode }: TestCase<unknown>) => {
+        const set = new Set(js);
+        const arr = new Uint8Array(bytes);
+
+        expect(encodeSet(set, encode)).toEqual(arr);
+        expect(decodeSet(arr, decode)).toEqual([set, bytes.length]);
     });
 });

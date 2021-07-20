@@ -90,3 +90,17 @@ export const test = defNamespace<test>({
 });
 "
 `;
+
+exports[`generate() using set 1`] = `
+"import { StdCodecs, StdTypes, defNamespace, defSet } from 'test';
+
+export type test = StdTypes & {
+    'BTreeSet<str>': Set<test['str']>;
+};
+
+export const test = defNamespace<test>({
+    ...StdCodecs,
+    'BTreeSet<str>': defSet('str'),
+});
+"
+`;

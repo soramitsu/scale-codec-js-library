@@ -5,6 +5,7 @@ import {
     MapDef,
     OptionDef,
     ResultDef,
+    SetDef,
     StructDef,
     TupleDef,
     TypeDef,
@@ -19,6 +20,7 @@ export type DefEnum = Enum<{
     Tuple: Valuable<TupleDef>;
     Struct: Valuable<StructDef>;
     Map: Valuable<MapDef>;
+    Set: Valuable<SetDef>;
     Enum: Valuable<EnumDef>;
     EnumOption: Valuable<OptionDef>;
     EnumResult: Valuable<ResultDef>;
@@ -53,6 +55,9 @@ export function typeDefToEnum(def: TypeDef): DefEnum {
     }
     if (def.t === 'option') {
         return Enum.create('EnumOption', delMark(def));
+    }
+    if (def.t === 'set') {
+        return Enum.create('Set', delMark(def));
     }
     return Enum.create('EnumResult', delMark(def));
 }

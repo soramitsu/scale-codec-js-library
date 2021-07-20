@@ -7,6 +7,7 @@ export const StdDefHelpers = {
     defOption: 'defOption',
     defResult: 'defResult',
     defMap: 'defMap',
+    defSet: 'defSet',
     defStruct: 'defStruct',
     defTuple: 'defTuple',
     defVec: 'defVec',

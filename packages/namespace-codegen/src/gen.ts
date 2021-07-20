@@ -70,6 +70,9 @@ function validate(defmap: DefMap) {
                 assertReference(key, `${typeName} (map key)`);
                 assertReference(value, `${typeName} (map value)`);
             },
+            Set({ entry }) {
+                assertReference(entry, `${typeName} (set entry)`);
+            },
             Enum({ variants }) {
                 // check no discriminant collisions
                 // check no name collisions
@@ -158,6 +161,9 @@ function genNamespaceDeclaration(
             Map({ key, value }) {
                 return `Map<${nsItem(key)}, ${nsItem(value)}>`;
             },
+            Set({ entry }) {
+                return `Set<${nsItem(entry)}>`;
+            },
             Enum({ variants }) {
                 const tsVariants: string[] = variants.map(
                     ({ name, ref }) => `${name}: ${ref && `${imports.Valuable}<${nsItem(ref)}>`}`,
@@ -225,6 +231,9 @@ function genNamespaceValue(
             },
             Map({ key, value }) {
                 return `${imports.defMap}('${key}', '${value}')`;
+            },
+            Set({ entry }) {
+                return `${imports.defSet}('${entry}')`;
             },
             Enum({ variants }) {
                 const variantsWithDiscriminants = variants
