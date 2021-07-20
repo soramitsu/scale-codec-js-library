@@ -1,0 +1,23 @@
+{
+    "name": "@scale-codec/namespace-codegen-cli",
+    "version": "0.1.0",
+    "scripts": {
+        "run-dev": "node -r esbuild-register src/main.ts"
+    },
+    "bin": {
+        "generate-scale-namespace": "dist/main.js"
+    },
+    "dependencies": {
+        "@scale-codec/enum": "workspace:^0.1.0",
+        "@scale-codec/namespace-codegen": "workspace:^0.1.0",
+        "cac": "^6.7.3",
+        "chalk": "^4.1.1",
+        "consola": "^2.15.3",
+        "esbuild-register": "^2.6.0",
+        "path-exists": "^4.0.0",
+        "prompts": "^2.4.1"
+    },
+    "devDependencies": {
+        "@types/prompts": "^2.0.14"
+    }
+}
