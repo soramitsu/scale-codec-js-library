@@ -2,6 +2,13 @@
 
 This library provides tools for creating complex namespaces whose types need to be encoded and decoded through SCALE and which can depend on each other.
 
+## Install
+
+```sh
+# Use your favorite PM
+npm install @scale-codec/namespace jsbi
+```
+
 ## Example
 
 Rust source code:

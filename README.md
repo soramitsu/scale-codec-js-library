@@ -16,6 +16,15 @@ Then install packages
 pnpm i
 ```
 
+### Lint
+
+```sh
+pnpm lint
+
+# fix-in-place
+pnpm lint -- --fix
+```
+
 ### Type-checking
 
 ```sh
@@ -68,23 +77,8 @@ Description of how it works in `e2e-spa` directory.
 
 ### Publish
 
-It is necessary to use `pnpm` for publishing too, because it will resolve actual monorepo packages versions instead of special `workspace:` protocol in `package.json`s.
-
-To publish `@scale-codec/enum`, for example, run this:
-
 ```sh
-pnpm publish --filter @scale-codec/enum
-```
-
-You **can not** just run `pnpm publish --recursive`, because it will affect not only necessary packages (e.g. test e2e package in `namespace-codegen`). So to publish all, run this:
-
-```sh
-pnpm publish \
---filter @scale-codec/enum \
---filter @scale-codec/util \
---filter @scale-codec/core \
---filter @scale-codec/namespace \
---filter @scale-codec/namespace-codegen
+pnpm publish:all
 ```
 
 ### TODO
