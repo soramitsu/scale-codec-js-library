@@ -4,13 +4,13 @@
     "scripts": {
         "test:all": "pnpm test:unit && pnpm build && pnpm test:e2e",
         "test:unit": "jest",
-        "test:e2e": "esno ./scripts/test-e2e",
+        "test:e2e": "node -r esbuild-register ./scripts/test-e2e",
         "build": "rollup -c",
         "type-check": "tsc --noEmit",
         "clean": "rimraf packages/*/dist",
-        "publish:all": "esno scripts/publish-all",
+        "publish:all": "node -r esbuild-register scripts/publish-all",
         "lint": "eslint . --ext js,ts",
-        "check-code-integrity": "esno scripts/check-code-integrity"
+        "check-code-integrity": "node -r esbuild-register scripts/check-code-integrity"
     },
     "devDependencies": {
         "@jest/types": "^27.0.6",
@@ -27,7 +27,6 @@
         "eslint": "^7.30.0",
         "eslint-config-alloy": "^4.1.0",
         "eslint-plugin-cypress": "^2.11.3",
-        "esno": "^0.7.3",
         "execa": "^5.1.1",
         "husky": "^7.0.1",
         "jest": "^27.0.6",
