@@ -2,7 +2,7 @@ import { runAsyncMain, $ } from './util';
 import consola from 'consola';
 import chalk from 'chalk';
 
-const PACKAGES = ['enum', 'util', 'core', 'namespace', 'namespace-codegen'];
+const PACKAGES = ['enum', 'util', 'core', 'namespace', 'namespace-codegen', 'namespace-codegen-cli'];
 
 runAsyncMain(async () => {
     for (const pkg of PACKAGES) {

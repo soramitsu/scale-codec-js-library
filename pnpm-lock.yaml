@@ -18,7 +18,6 @@ importers:
       eslint: ^7.30.0
       eslint-config-alloy: ^4.1.0
       eslint-plugin-cypress: ^2.11.3
-      esno: ^0.7.3
       execa: ^5.1.1
       husky: ^7.0.1
       jest: ^27.0.6
@@ -47,7 +46,6 @@ importers:
       eslint: 7.30.0
       eslint-config-alloy: 4.1.0
       eslint-plugin-cypress: 2.11.3_eslint@7.30.0
-      esno: 0.7.3
       execa: 5.1.1
       husky: 7.0.1
       jest: 27.0.6_ts-node@10.0.0
@@ -2214,12 +2212,6 @@ packages:
       is-arrayish: 0.2.1
     dev: true
 
-  /esbuild-node-loader/0.1.1:
-    resolution: {integrity: sha512-n24xYzMfKmPupUZgs0QYBr52HUSh1M1vDtBfkEVa6pdENqo5+U5WP+zaj4Iw2MinuYk1axLW8+NVutrBCkrdmA==}
-    dependencies:
-      esbuild: 0.12.15
-    dev: true
-
   /esbuild-register/2.6.0:
     resolution: {integrity: sha512-2u4AtnCXP5nivtIxZryiZOUcEQkOzFS7UhAqibUEmaTAThJ48gDLYTBF/Fsz+5r0hbV1jrFE6PQvPDUrKZNt/Q==}
     dependencies:
@@ -2365,16 +2357,6 @@ packages:
       v8-compile-cache: 2.3.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
-
-  /esno/0.7.3:
-    resolution: {integrity: sha512-ONTHZLBipMC9uK9oqASzqYGCrjcqp/N0NXt/Q0WpYw/Ikm9he+rYER2ATx6czaFcMvwrbIXBlNe9hSEiTrNKow==}
-    hasBin: true
-    dependencies:
-      cross-spawn: 7.0.3
-      esbuild: 0.12.15
-      esbuild-node-loader: 0.1.1
-      esbuild-register: 2.6.0
     dev: true
 
   /espree/6.2.1:
