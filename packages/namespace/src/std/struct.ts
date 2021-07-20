@@ -7,25 +7,23 @@ type StructDefinition<N, S> = {
 }[StrKeys<S>][];
 
 export function defStruct<N, S>(defs: StructDefinition<N, S>): NamespaceCodec<S, N> {
-    return {
-        setup({ dynCodec }) {
-            const scaleEncoders: Record<string, Encode<any>> = {};
-            const scaleDecoders: Record<string, Decode<any>> = {};
+    return ({ dynCodec }) => {
+        const scaleEncoders: Record<string, Encode<any>> = {};
+        const scaleDecoders: Record<string, Decode<any>> = {};
 
-            const order: StrKeys<S>[] = [];
+        const order: StrKeys<S>[] = [];
 
-            for (const [prop, ref] of defs) {
-                ({ encode: scaleEncoders[prop], decode: scaleDecoders[prop] } = dynCodec(ref));
+        for (const [prop, ref] of defs) {
+            ({ encode: scaleEncoders[prop], decode: scaleDecoders[prop] } = dynCodec(ref));
 
-                order.push(prop);
-            }
+            order.push(prop);
+        }
 
-            const scale: Codec<S> = {
-                encode: (v) => encodeStruct<any>(v, scaleEncoders, order),
-                decode: (b) => decodeStruct<any>(b, scaleDecoders, order),
-            };
+        const scale: Codec<S> = {
+            encode: (v) => encodeStruct<any>(v, scaleEncoders, order),
+            decode: (b) => decodeStruct<any>(b, scaleDecoders, order),
+        };
 
-            return scale;
-        },
+        return scale;
     };
 }

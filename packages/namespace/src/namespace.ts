@@ -4,7 +4,7 @@ import { NamespaceCodec, Namespace, NamespaceDefinitions, ContextSensitiveCodec,
 import { typedToEntries } from './util';
 
 function isContextSensitiveCodec<T, N>(item: NamespaceCodec<T, N>): item is ContextSensitiveCodec<T, N> {
-    return !!(item as ContextSensitiveCodec<T, N>).setup;
+    return typeof item === 'function';
 }
 
 export function defNamespace<N>(codecs: NamespaceDefinitions<N>): Namespace<N> {
@@ -30,7 +30,7 @@ export function defNamespace<N>(codecs: NamespaceDefinitions<N>): Namespace<N> {
     // codecs setup
     typedToEntries(codecs).forEach(([codecName, universalCodec]) => {
         const normalized: Codec<any> = isContextSensitiveCodec(universalCodec)
-            ? universalCodec.setup(ctx)
+            ? universalCodec(ctx)
             : (universalCodec as Codec<any>);
         codecsMap.set(codecName, normalized);
     });

@@ -5,6 +5,10 @@ export type ArrayDef = {
     len: number;
 };
 
+export type BytesArrayDef = {
+    len: number;
+};
+
 export type VecDef = {
     item: string;
 };
@@ -53,6 +57,7 @@ export type WithTMark<T, M extends string> = T & {
 export type TypeDef =
     | string
     | WithTMark<ArrayDef, 'array'>
+    | WithTMark<BytesArrayDef, 'bytes-array'>
     | WithTMark<VecDef, 'vec'>
     | WithTMark<TupleDef, 'tuple'>
     | WithTMark<StructDef, 'struct'>

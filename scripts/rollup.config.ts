@@ -1,5 +1,5 @@
 import { RollupOptions } from 'rollup';
-import typescript from 'rollup-plugin-typescript2';
+import esbuild from 'rollup-plugin-esbuild';
 import dts from 'rollup-plugin-dts';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import json from '@rollup/plugin-json';
@@ -48,12 +48,8 @@ for (const { dir, external } of packages) {
                 },
             ],
             plugins: [
-                typescript({
-                    tsconfigOverride: {
-                        compilerOptions: {
-                            declaration: false,
-                        },
-                    },
+                esbuild({
+                    minify: false,
                 }),
                 nodeResolve(),
             ],
@@ -79,18 +75,7 @@ configs.push({
         file: 'packages/namespace-codegen-cli/dist/main.js',
         format: 'cjs',
     },
-    plugins: [
-        typescript({
-            tsconfigOverride: {
-                compilerOptions: {
-                    declaration: false,
-                },
-            },
-        }),
-        nodeResolve({ preferBuiltins: true }),
-        json(),
-        commonjs(),
-    ],
+    plugins: [esbuild({ minify: false }), nodeResolve({ preferBuiltins: true }), json(), commonjs()],
     external: ['fs/promises'],
 });
 

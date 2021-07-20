@@ -1,5 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`generate() array of bytes 1`] = `
+"import { StdCodecs, StdTypes, defBytesArray, defNamespace } from 'test';
+
+export type TYPE = StdTypes & {
+    '[u8; 512]': Uint8Array;
+};
+
+export const VALUE = defNamespace<TYPE>({
+    ...StdCodecs,
+    '[u8; 512]': defBytesArray(512),
+});
+"
+`;
+
 exports[`generate() complex definition 1`] = `
 "import {
     Enum,

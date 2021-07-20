@@ -16,6 +16,12 @@ Then install packages
 pnpm i
 ```
 
+### Type-checking
+
+```sh
+pnpm type-check
+```
+
 ### Build
 
 ```sh
@@ -31,6 +37,12 @@ pnpm clean
 ```
 
 ### Test
+
+Test all (in CI):
+
+```sh
+pnpm test:all
+```
 
 #### Unit
 
@@ -79,4 +91,4 @@ pnpm publish \
 
 -   [ ] Rename "namespace" package to some more general?
 -   [ ] Auto-docs for every package? Where to publish?
--   [ ] Make special codecs to make work with `Vec<u8>` or `[u8; 32]` more convenient. These types, for example, looks great to convert it into `UInt8Array` than `JSBI[]`
+-   [ ] Maybe create some helper/inspector for debugging of encode and decode? It might be useful to see how actual data mapped to final bytes.

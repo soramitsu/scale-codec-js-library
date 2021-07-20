@@ -51,6 +51,7 @@ function validate(defmap: DefMap) {
             Array({ item }) {
                 assertReference(item, `${typeName} (array)`);
             },
+            ArrayBytes() {},
             Tuple({ items }) {
                 items.forEach((ref, i) => {
                     assertReference(ref, `${typeName}[${i}] (tuple)`);
@@ -145,6 +146,9 @@ function genNamespaceDeclaration(
             Array({ item }) {
                 return `${nsItem(item)}[]`;
             },
+            ArrayBytes() {
+                return 'Uint8Array';
+            },
             Tuple({ items }) {
                 const mapped = items.map(nsItem);
 
@@ -217,6 +221,9 @@ function genNamespaceValue(
             },
             Array({ item, len }) {
                 return `${imports.defArray}('${item}', ${len})`;
+            },
+            ArrayBytes({ len }) {
+                return `${imports.defBytesArray}(${len})`;
             },
             Tuple({ items }) {
                 const itemsJoined: string = items.map((x) => `'${x}'`).join(', ');
