@@ -1,5 +1,3 @@
-// export type Codec<V, N = any> = CodecPrimitive<V> | CodecComplex<V, N>;
-
 import { Codec } from '@scale-codec/core';
 
 export type NamespaceDefinitions<N> = {
@@ -13,9 +11,7 @@ export interface Namespace<N> {
     decode: <K extends keyof N>(ref: K, bytes: Uint8Array) => N[K];
 }
 
-export interface ContextSensitiveCodec<T, N> {
-    setup: (ctx: CodecSetupContext<N>) => Codec<T>;
-}
+export type ContextSensitiveCodec<T, N> = (ctx: CodecSetupContext<N>) => Codec<T>;
 
 export interface CodecSetupContext<N> {
     dynCodec: <K extends keyof N>(ref: K) => Codec<N[K]>;

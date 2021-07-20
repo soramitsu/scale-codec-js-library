@@ -15,7 +15,7 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
                             second_name: Enum.create('None'),
                             domain: 'wonderland',
                             attempt: Enum.create('Err', 'Oh no!'),
-                            enum: Enum.create('Two', [JSBI.BigInt(4412), false, ['nope', JSBI.BigInt(2)]]),
+                            enum: Enum.create('Two', [JSBI.BigInt(4412), false, ['nope', 2]]),
                         },
                     ],
                     [

@@ -205,4 +205,36 @@ describe('generate()', () => {
             },
         );
     });
+
+    test('using set', () => {
+        shouldMatchSnapshot(
+            {
+                'BTreeSet<str>': {
+                    t: 'set',
+                    entry: 'str',
+                },
+            },
+            {
+                namespaceTypeName: 'test',
+                namespaceValueName: 'test',
+                importLib: 'test',
+            },
+        );
+    });
+
+    test('array of bytes', () => {
+        shouldMatchSnapshot(
+            {
+                '[u8; 512]': {
+                    t: 'bytes-array',
+                    len: 512,
+                },
+            },
+            {
+                namespaceTypeName: 'TYPE',
+                namespaceValueName: 'VALUE',
+                importLib: 'test',
+            },
+        );
+    });
 });

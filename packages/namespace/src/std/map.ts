@@ -5,15 +5,13 @@ export function defMap<N extends {}, K extends keyof N, V extends keyof N>(
     keyRef: K,
     valueRef: V,
 ): NamespaceCodec<Map<N[K], N[V]>, N> {
-    return {
-        setup({ dynCodec }) {
-            const KeyCodec = dynCodec(keyRef);
-            const ValueCodec = dynCodec(valueRef);
+    return ({ dynCodec }) => {
+        const KeyCodec = dynCodec(keyRef);
+        const ValueCodec = dynCodec(valueRef);
 
-            return {
-                encode: (map) => encodeMap(map, KeyCodec.encode, ValueCodec.encode),
-                decode: (bytes) => decodeMap(bytes, KeyCodec.decode, ValueCodec.decode),
-            };
-        },
+        return {
+            encode: (map) => encodeMap(map, KeyCodec.encode, ValueCodec.encode),
+            decode: (bytes) => decodeMap(bytes, KeyCodec.decode, ValueCodec.decode),
+        };
     };
 }

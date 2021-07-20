@@ -1,17 +1,19 @@
 import { concatUint8Arrays, yieldCycleNTimes } from '@scale-codec/util';
 import JSBI from 'jsbi';
-import { encodeBigIntCompact, retrieveOffsetAndEncodedLength } from '../compact';
+import { decodeCompact, encodeCompact } from '../compact';
 import { decodeIteratively } from './utils';
 import { Encode, Decode, DecodeResult } from '../types';
 
 export function encodeMap<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Uint8Array {
-    const parts = [encodeBigIntCompact(JSBI.BigInt(map.size))];
-
-    for (const [key, value] of map.entries()) {
-        parts.push(KeyEncoder(key), ValueEncoder(value));
-    }
-
-    return concatUint8Arrays(parts);
+    return concatUint8Arrays(
+        Array.from(map).reduce<Uint8Array[]>(
+            (parts, [key, value]) => {
+                parts.push(KeyEncoder(key), ValueEncoder(value));
+                return parts;
+            },
+            [encodeCompact(JSBI.BigInt(map.size))],
+        ),
+    );
 }
 
 export function decodeMap<K, V>(
@@ -19,7 +21,7 @@ export function decodeMap<K, V>(
     KeyDecoder: Decode<K>,
     ValueDecoder: Decode<V>,
 ): DecodeResult<Map<K, V>> {
-    const [offset, length] = retrieveOffsetAndEncodedLength(bytes);
+    const [length, offset] = decodeCompact(bytes);
 
     const decoders = yieldCycleNTimes<Decode<K | V>>([KeyDecoder, ValueDecoder], JSBI.toNumber(length));
     const [decodedKeyValuesSequence, kvDecodedBytes] = decodeIteratively(bytes.subarray(offset), decoders);

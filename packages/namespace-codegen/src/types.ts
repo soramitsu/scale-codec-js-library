@@ -5,6 +5,10 @@ export type ArrayDef = {
     len: number;
 };
 
+export type BytesArrayDef = {
+    len: number;
+};
+
 export type VecDef = {
     item: string;
 };
@@ -23,6 +27,10 @@ export type StructDef = {
 export type MapDef = {
     key: string;
     value: string;
+};
+
+export type SetDef = {
+    entry: string;
 };
 
 export type EnumDef = {
@@ -49,10 +57,12 @@ export type WithTMark<T, M extends string> = T & {
 export type TypeDef =
     | string
     | WithTMark<ArrayDef, 'array'>
+    | WithTMark<BytesArrayDef, 'bytes-array'>
     | WithTMark<VecDef, 'vec'>
     | WithTMark<TupleDef, 'tuple'>
     | WithTMark<StructDef, 'struct'>
     | WithTMark<MapDef, 'map'>
+    | WithTMark<SetDef, 'set'>
     | WithTMark<EnumDef, 'enum'>
     | WithTMark<OptionDef, 'option'>
     | WithTMark<ResultDef, 'result'>;

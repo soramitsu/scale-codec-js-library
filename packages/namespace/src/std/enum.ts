@@ -16,16 +16,14 @@ export function defEnum<N, Def>(
         [K in ValuableVariants<Def>]: CompatibleNamespaceKeys<N, GetValuableVariantValue<Def[K]>>;
     },
 ): NamespaceCodec<Enum<Def>, N> {
-    return {
-        setup({ dynCodec }) {
-            const scale: EnumCodec<Def> = schema.createCodec(
-                Object.fromEntries(
-                    Object.entries(valuableVariantsRefs).map(([variant, ref]) => [variant, dynCodec(ref as any)]),
-                ) as any,
-            );
+    return ({ dynCodec }) => {
+        const scale: EnumCodec<Def> = schema.createCodec(
+            Object.fromEntries(
+                Object.entries(valuableVariantsRefs).map(([variant, ref]) => [variant, dynCodec(ref as any)]),
+            ) as any,
+        );
 
-            return scale;
-        },
+        return scale;
     };
 }
 

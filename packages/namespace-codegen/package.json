@@ -1,6 +1,16 @@
 {
     "name": "@scale-codec/namespace-codegen",
     "version": "0.1.0",
+    "description": "Tool for automatization of SCALE-namespace generation",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+    },
+    "bugs": {
+        "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
+    },
+    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/namespace-codegen#readme",
     "main": "./dist/lib.cjs.js",
     "module": "./dist/lib.esm.js",
     "types": "./dist/lib.d.ts",

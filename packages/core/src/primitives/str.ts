@@ -1,5 +1,6 @@
+import { concatUint8Arrays } from '@scale-codec/util';
 import JSBI from 'jsbi';
-import { compactAddLength, retrieveOffsetAndEncodedLength } from '../compact';
+import { encodeCompact, decodeCompact } from '../compact';
 import { DecodeResult } from '../types';
 
 const encoder = new TextEncoder();
@@ -8,6 +9,9 @@ const decoder = new TextDecoder('utf-8', {
     fatal: true,
 });
 
+/**
+ * note: this method uses WHOLE received buffer for decoding
+ */
 export function decodeStr(bytes: Uint8Array): string {
     return decoder.decode(bytes);
 }
@@ -17,7 +21,7 @@ export function encodeStr(str: string): Uint8Array {
 }
 
 export function decodeStrCompact(buff: Uint8Array): DecodeResult<string> {
-    const [offset, length] = retrieveOffsetAndEncodedLength(buff);
+    const [length, offset] = decodeCompact(buff);
     const lenNum = JSBI.toNumber(length);
     const total = offset + lenNum;
 
@@ -29,5 +33,5 @@ export function decodeStrCompact(buff: Uint8Array): DecodeResult<string> {
 
 export function encodeStrCompact(str: string): Uint8Array {
     const encoded = encodeStr(str);
-    return compactAddLength(encoded);
+    return concatUint8Arrays([encodeCompact(JSBI.BigInt(encoded.length)), encoded]);
 }

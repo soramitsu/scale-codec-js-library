@@ -51,6 +51,7 @@ function validate(defmap: DefMap) {
             Array({ item }) {
                 assertReference(item, `${typeName} (array)`);
             },
+            ArrayBytes() {},
             Tuple({ items }) {
                 items.forEach((ref, i) => {
                     assertReference(ref, `${typeName}[${i}] (tuple)`);
@@ -69,6 +70,9 @@ function validate(defmap: DefMap) {
             Map({ key, value }) {
                 assertReference(key, `${typeName} (map key)`);
                 assertReference(value, `${typeName} (map value)`);
+            },
+            Set({ entry }) {
+                assertReference(entry, `${typeName} (set entry)`);
             },
             Enum({ variants }) {
                 // check no discriminant collisions
@@ -142,6 +146,9 @@ function genNamespaceDeclaration(
             Array({ item }) {
                 return `${nsItem(item)}[]`;
             },
+            ArrayBytes() {
+                return 'Uint8Array';
+            },
             Tuple({ items }) {
                 const mapped = items.map(nsItem);
 
@@ -157,6 +164,9 @@ function genNamespaceDeclaration(
             },
             Map({ key, value }) {
                 return `Map<${nsItem(key)}, ${nsItem(value)}>`;
+            },
+            Set({ entry }) {
+                return `Set<${nsItem(entry)}>`;
             },
             Enum({ variants }) {
                 const tsVariants: string[] = variants.map(
@@ -212,6 +222,9 @@ function genNamespaceValue(
             Array({ item, len }) {
                 return `${imports.defArray}('${item}', ${len})`;
             },
+            ArrayBytes({ len }) {
+                return `${imports.defBytesArray}(${len})`;
+            },
             Tuple({ items }) {
                 const itemsJoined: string = items.map((x) => `'${x}'`).join(', ');
                 return `${imports.defTuple}([${itemsJoined}])`;
@@ -225,6 +238,9 @@ function genNamespaceValue(
             },
             Map({ key, value }) {
                 return `${imports.defMap}('${key}', '${value}')`;
+            },
+            Set({ entry }) {
+                return `${imports.defSet}('${entry}')`;
             },
             Enum({ variants }) {
                 const variantsWithDiscriminants = variants

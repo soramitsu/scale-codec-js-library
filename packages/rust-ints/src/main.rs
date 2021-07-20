@@ -56,7 +56,22 @@ fn main() {
         256u16,
         256i16,
         1234u32,
-        -1234i32
+        -1234i32,
+        u8::MAX,
+        u16::MAX,
+        u32::MAX,
+        u64::MAX,
+        u128::MAX,
+        i8::MAX,
+        i16::MAX,
+        i32::MAX,
+        i64::MAX,
+        i128::MAX,
+        i8::MIN,
+        i16::MIN,
+        i32::MIN,
+        i64::MIN,
+        i128::MIN
     ];
 
     println!("{}", serde_json::to_string_pretty(&nums).unwrap());
