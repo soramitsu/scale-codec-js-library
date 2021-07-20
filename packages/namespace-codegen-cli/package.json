@@ -5,7 +5,7 @@
         "run-dev": "node -r esbuild-register src/main.ts"
     },
     "bin": {
-        "generate-scale-namespace": "dist/main.js"
+        "generate-scale-namespace": "bin/main.js"
     },
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.0",
