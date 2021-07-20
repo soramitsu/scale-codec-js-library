@@ -1,6 +1,20 @@
 {
     "name": "@scale-codec/namespace-codegen-cli",
     "version": "0.1.0",
+    "description": "CLI for @scale-codec/namespace-codegen",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+    },
+    "bugs": {
+        "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
+    },
+    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/namespace-codegen-cli#readme",
+    "files": [
+        "dist",
+        "bin"
+    ],
     "scripts": {
         "run-dev": "node -r esbuild-register src/main.ts"
     },
