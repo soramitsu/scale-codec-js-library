@@ -16,7 +16,7 @@ export type Encode<T> = (value: T) => Uint8Array;
 /**
  * Codec is an object that contains an encoder and a decoder of some value `T`
  */
-export interface Codec<T> {
-    encode: Encode<T>;
-    decode: Decode<T>;
+export interface Codec<D, E = D> {
+    encode: Encode<E>;
+    decode: Decode<D>;
 }
