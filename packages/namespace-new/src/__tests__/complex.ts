@@ -1,4 +1,6 @@
-import { Valuable, Enum, Codec, Encode } from '@scale-codec/namespace';
+/* eslint-disable @typescript-eslint/no-namespace */
+
+import { Valuable, Enum, Codec } from '@scale-codec/namespace';
 import {
     intCodec,
     bigintCodec,
@@ -15,13 +17,13 @@ import {
     VOID_CODEC,
     BOOL_CODEC,
     bytesArrayCodec,
+    StructEncodable,
+    EnumDefEncodable,
 } from '../codecs';
-import { StructEncodable, EnumDefEncodable } from '../encodables';
 import { EncodeSkippable, skipEncode } from '../skippable';
 import JSBI from 'jsbi';
 import { wrapOnce } from '../util';
 
-/* eslint-disable @typescript-eslint/no-namespace */
 namespace Example {
     // primitives start
 

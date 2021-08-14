@@ -27,7 +27,7 @@ import {
     decodeBool,
     encodeBool,
 } from '@scale-codec/core';
-import { Enum } from '@scale-codec/enum';
+import { Enum, Valuable } from '@scale-codec/enum';
 import { assert, concatUint8Arrays } from '@scale-codec/util';
 import { wrapSkippableEncode, EncodeSkippable, respectSkip } from './skippable';
 import JSBI from 'jsbi';
@@ -187,6 +187,10 @@ export function bigintCodec(opts: BigIntCodecOptions): Codec<JSBI, JSBI> {
 
 // should be tested with higher attention!
 export type EnumCodecSchema = Record<string, { d: number; codec?: Codec<any, any> }>;
+
+export type EnumDefEncodable<Def> = {
+    [K in keyof Def]: Def[K] extends Valuable<infer V> ? Valuable<V | EncodeSkippable> : Def[K];
+};
 
 export class EnumCodec<DefD, DefE> implements Codec<Enum<DefD>, Enum<DefE>> {
     private variantMap: EnumCodecSchema;
