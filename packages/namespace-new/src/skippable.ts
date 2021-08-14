@@ -1,6 +1,6 @@
 import { Encode } from '@scale-codec/core';
 
-const EncodeSkipBrand = Symbol('asd');
+const EncodeSkipBrand = Symbol('Skippable encode part');
 
 export type EncodeSkippable = {
     readonly [EncodeSkipBrand]: true;
