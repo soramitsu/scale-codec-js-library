@@ -175,6 +175,7 @@ importers:
     specifiers:
       '@scale-codec/core': workspace:^0.1.0
       '@scale-codec/enum': workspace:^0.1.0
+      '@scale-codec/util': workspace:^0.1.0
       esno: ^0.8.0
       jsbi: 3.1.5
       map-obj: ^4.2.1
@@ -183,6 +184,7 @@ importers:
     dependencies:
       '@scale-codec/core': link:../core
       '@scale-codec/enum': link:../enum
+      '@scale-codec/util': link:../util
       esno: 0.8.0
       jsbi: 3.1.5
       map-obj: 4.2.1

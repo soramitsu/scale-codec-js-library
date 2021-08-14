@@ -22,8 +22,6 @@ import {
     decodeStruct,
     Valuable,
     Enum,
-    EnumSchema,
-    EnumCodec,
     Encode,
     Decode,
     Codec,
@@ -37,29 +35,27 @@ import {
     TupleEncoders,
     encodeVec,
     decodeVec,
-    StructEncoders,
-    StructDecoders,
     encodeArray,
     decodeArray,
     encodeBool,
     decodeBool,
-    encodeStr,
     BigIntCodecOptions,
-    EmptyVariants,
 } from '@scale-codec/core';
+import { concatUint8Arrays } from '@scale-codec/util';
 import { EncodeSkippable, respectSkip, wrapSkippableEncode } from './skip';
-import { EnumDefEncodable, respectSkippableStructFields, StructEncodable, StructEncodersSkippable } from './encodables';
+import { EnumDefEncodable, StructEncodable } from './encodables';
 import JSBI from 'jsbi';
+import mapObj from 'map-obj';
 
 // type DefinitionInNamespace<D, E> = {
 //     encode: Encode<E>;
 //     decode: Decode<D>;
 // };
 
-function _bindThisCodecMethods(self: Codec<any, any>) {
-    self.encode = self.encode.bind(self);
-    self.decode = self.decode.bind(self);
-}
+// function _bindThisCodecMethods(self: Codec<any, any>) {
+//     self.encode = self.encode.bind(self);
+//     self.decode = self.decode.bind(self);
+// }
 
 type StructFieldsCodec<D, E> = {
     [K in keyof D & keyof E]: Codec<D[K], E[K]>;
@@ -99,92 +95,131 @@ function mapCodec<KDe, KEn, VDe, VEn>(
     };
 }
 
-class SetCodec<D, E> implements Codec<Set<D>, Set<E | EncodeSkippable>> {
-    private encoder: Encode<E | EncodeSkippable>;
-    private decoder: Decode<D>;
+function setCodec<D, E>(entryCodec: Codec<D, E>): Codec<Set<D>, Set<E | EncodeSkippable>> {
+    const [encode, decode] = [wrapSkippableEncode(entryCodec.encode), entryCodec.decode];
 
-    public constructor(entryCodec: Codec<D, E>) {
-        this.encoder = wrapSkippableEncode(entryCodec.encode);
-        this.decoder = entryCodec.decode;
-
-        _bindThisCodecMethods(this);
-    }
-
-    public encode(set: Set<E | EncodeSkippable>): Uint8Array {
-        return encodeSet(set, this.encoder);
-    }
-
-    public decode(bytes: Uint8Array): DecodeResult<Set<D>> {
-        return decodeSet(bytes, this.decoder);
-    }
+    return {
+        encode: (v) => encodeSet(v, encode),
+        decode: (b) => decodeSet(b, decode),
+    };
 }
 
 type TupleWithSkippables<Tuple extends any[]> = Tuple extends [infer Head, ...infer Tail]
     ? [Head | EncodeSkippable, ...TupleWithSkippables<Tail>]
     : [];
 
-class TupleCodec<D extends any[], E extends any[]> implements Codec<D, TupleWithSkippables<E>> {
-    private encoders: Encode<any>[];
-    private decoders: Decode<any>[];
+/**
+ * TODO what is more efficient - to unwrap all operations like mapping and extracting encoders/decoders
+ * from codecs, or to minimize code size? Or make it optionally? Perf
+ */
+function tupleCodec<D extends any[], E extends any[]>(
+    encoders: TupleEncoders<E>,
+    decoders: TupleDecoders<D>,
+): Codec<D, TupleWithSkippables<E>> {
+    const encodersWrapped = encoders.map(wrapSkippableEncode);
 
-    public constructor(encoders: TupleEncoders<E>, decoders: TupleDecoders<D>) {
-        [this.encoders, this.decoders] = [encoders.map(wrapSkippableEncode), decoders];
-
-        _bindThisCodecMethods(this);
-    }
-
-    public encode(tuple: TupleWithSkippables<E>): Uint8Array {
-        return encodeTuple(tuple, this.encoders as any);
-    }
-
-    public decode(bytes: Uint8Array): DecodeResult<D> {
-        return decodeTuple(bytes, this.decoders as any);
-    }
+    return {
+        encode: (v) => encodeTuple(v, encodersWrapped as any),
+        decode: (b) => decodeTuple(b, decoders),
+    };
 }
 
-class VecCodec<D, E> implements Codec<D[], (E | EncodeSkippable)[]> {
-    private encoder: Encode<E | EncodeSkippable>;
-    private decoder: Decode<D>;
+type CodecOfSomeArray<D, E> = Codec<D[], (E | EncodeSkippable)[]>;
 
-    public constructor(itemCodec: Codec<D, E>) {
-        [this.encoder, this.decoder] = [wrapSkippableEncode(itemCodec.encode), itemCodec.decode];
+function vecCodec<D, E>(itemCodec: Codec<D, E>): CodecOfSomeArray<D, E> {
+    const [encode, decode] = [wrapSkippableEncode(itemCodec.encode), itemCodec.decode];
 
-        _bindThisCodecMethods(this);
-    }
-
-    public encode(arr: (E | EncodeSkippable)[]): Uint8Array {
-        return encodeVec(arr, this.encoder);
-    }
-
-    public decode(bytes: Uint8Array): DecodeResult<D[]> {
-        return decodeVec(bytes, this.decoder);
-    }
+    return {
+        encode: (v) => encodeVec(v, encode),
+        decode: (b) => decodeVec(b, decode),
+    };
 }
 
-class ArrayCodec<D, E> implements Codec<D[], (E | EncodeSkippable)[]> {
-    public readonly encode: Encode<(E | EncodeSkippable)[]>;
-    public readonly decode: Decode<D[]>;
+function arrayCodec<D, E>(itemCodec: Codec<D, E>, len: number): CodecOfSomeArray<D, E> {
+    const [encode, decode] = [wrapSkippableEncode(itemCodec.encode), itemCodec.decode];
 
-    public constructor(itemCodec: Codec<D, E>, len: number) {
-        const [encode, decode] = [wrapSkippableEncode(itemCodec.encode), itemCodec.decode];
-        // const encode = wrapSkippableEncode(itemCodec.encode);
-        // const
-
-        this.encode = (arr) => encodeArray(arr, encode, len);
-        this.decode = (bytes) => decodeArray(bytes, decode, len);
-    }
+    return {
+        encode: (v) => encodeArray(v, encode, len),
+        decode: (b) => decodeArray(b, decode, len),
+    };
 }
 
-function _intCodec(opts: BigIntCodecOptions): Codec<number, number | EncodeSkippable> {}
+function mapBigIntDecodeResultToNum([bi, count]: DecodeResult<JSBI>): DecodeResult<number> {
+    return [JSBI.toNumber(bi), count];
+}
 
-function _bigintCodec(opts: BigIntCodecOptions): Codec<JSBI, JSBI | EncodeSkippable> {}
+function intCodec(opts: BigIntCodecOptions): Codec<number, number | EncodeSkippable> {
+    return {
+        encode: wrapSkippableEncode((v) => encodeBigInt(JSBI.BigInt(v), opts)),
+        decode: (b) => mapBigIntDecodeResultToNum(decodeBigInt(b, opts)),
+    };
+}
+
+function bigintCodec(opts: BigIntCodecOptions): Codec<JSBI, JSBI | EncodeSkippable> {
+    return {
+        encode: wrapSkippableEncode((v) => encodeBigInt(v, opts)),
+        decode: (b) => decodeBigInt(b, opts),
+    };
+}
 
 // should be tested with higher attention!
-type EnumCodecEncodableParams = Record<string, { d: number; codec?: Codec<any, any> }>;
+type EnumCodecSchema = Record<string, { d: number; codec?: Codec<any, any> }>;
 
-function _enumCodec<DefPure, DefEncodable>(
-    params: EnumCodecEncodableParams,
-): Codec<Enum<DefPure>, Enum<DefEncodable>> {}
+export class EnumCodec<DefD, DefE> implements Codec<Enum<DefD>, Enum<DefE>> {
+    private variantMap: EnumCodecSchema;
+    private discriminantMap: Record<
+        number,
+        {
+            variant: string;
+            codec?: Codec<any, any>;
+        }
+    >;
+
+    public constructor(schema: EnumCodecSchema) {
+        this.variantMap = schema;
+        this.discriminantMap = mapObj(schema, (variant, { d, codec }) => [d as any, { variant, codec }]);
+
+        this.encode = this.encode.bind(this);
+        this.decode = this.decode.bind(this);
+    }
+
+    public encode(val: Enum<DefE>): Uint8Array {
+        const { variant, content } = val as {
+            variant: string;
+            content: null | { value: unknown };
+        };
+        const schemaInfo = this.variantMap[variant];
+        const discriminant = schemaInfo.d;
+        const encode = schemaInfo.codec?.encode;
+
+        const arrs: Uint8Array[] = [new Uint8Array([discriminant])];
+        if (encode) {
+            if (!content) throw new Error(`Codec for variant "${variant}" defined, but there is no content`);
+            arrs.push(respectSkip(content.value, encode));
+        }
+
+        return concatUint8Arrays(arrs);
+    }
+
+    public decode(bytes: Uint8Array): DecodeResult<Enum<DefD>> {
+        const DISCRIMINANT_BYTES_COUNT = 1;
+        const discriminant = bytes[0];
+        const schemaInfo = this.discriminantMap[discriminant];
+        const [variant, decode] = [schemaInfo.variant, schemaInfo.codec?.decode];
+
+        if (decode) {
+            const [decoded, decodedLen] = decode(bytes.subarray(1));
+
+            return [Enum.create<any, any>(variant, decoded as any), DISCRIMINANT_BYTES_COUNT + decodedLen];
+        }
+
+        return [Enum.create<any, any>(variant), DISCRIMINANT_BYTES_COUNT];
+    }
+}
+
+function enumCodec<DefPure, DefEncodable>(params: EnumCodecSchema): Codec<Enum<DefPure>, Enum<DefEncodable>> {
+    return new EnumCodec(params);
+}
 
 export namespace Example {
     // primitives start
@@ -217,7 +252,7 @@ export namespace Example {
         export type Pure = number;
         export type Encodable = number | EncodeSkippable;
 
-        export const { encode, decode } = _intCodec({
+        export const { encode, decode } = intCodec({
             bits: 8,
             signed: false,
             endianness: 'le',
@@ -228,7 +263,7 @@ export namespace Example {
         export type Pure = JSBI;
         export type Encodable = number | EncodeSkippable;
 
-        export const { encode, decode } = _bigintCodec({
+        export const { encode, decode } = bigintCodec({
             bits: 64,
             signed: true,
             endianness: 'le',
@@ -286,7 +321,7 @@ export namespace Example {
         export type Pure = Set<Example.Person.Pure>;
         export type Encodable = Set<Example.Person.Encodable | EncodeSkippable>;
 
-        export const { encode, decode } = new SetCodec(Example.Person);
+        export const { encode, decode } = setCodec(Example.Person);
     }
 
     // Tuple sample
@@ -295,7 +330,7 @@ export namespace Example {
         type TupleEncodables = [Example.Map_u8_Person.Encodable, Example.Set_Person.Encodable];
         export type Encodable = TupleWithSkippables<TupleEncodables>;
 
-        export const { encode, decode } = new TupleCodec<Decoded, TupleEncodables>(
+        export const { encode, decode } = tupleCodec<Decoded, TupleEncodables>(
             [Example.Map_u8_Person.encode, Example.Set_Person.encode],
             [Example.Map_u8_Person.decode, Example.Set_Person.decode],
         );
@@ -306,7 +341,7 @@ export namespace Example {
         export type Decoded = Example.Person.Pure[];
         export type Encodable = (Decoded | EncodeSkippable)[];
 
-        export const { encode, decode } = new VecCodec(Example.Person);
+        export const { encode, decode } = vecCodec(Example.Person);
     }
 
     // Array sample
@@ -316,7 +351,7 @@ export namespace Example {
 
         export const LEN = 32;
 
-        export const { encode, decode } = new ArrayCodec(Example.str, LEN);
+        export const { encode, decode } = arrayCodec(Example.str, LEN);
     }
 
     // Bytes array example
@@ -358,12 +393,12 @@ export namespace Example {
             };
         }
 
-        export const { encode, decode } = _enumCodec<DefPure, DefEncodable>({
+        export const { encode, decode } = enumCodec<DefPure, DefEncodable>({
             Received: {
                 d: 0,
             },
             Message: {
-                d: 0,
+                d: 1,
                 codec: Example.str,
             },
         });
