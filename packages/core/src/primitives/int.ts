@@ -25,7 +25,7 @@ class BytesRepr {
 
         if (source) {
             assert(source.length >= bytes, () => `expected at least ${bytes} bytes, received: ${source.length}`);
-            this.arr = source.subarray(0, bytes);
+            this.arr = source.slice(0, bytes);
         } else {
             this.arr = new Uint8Array(bytes);
         }
