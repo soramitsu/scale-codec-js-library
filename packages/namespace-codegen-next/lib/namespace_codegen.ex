@@ -3,16 +3,7 @@ defmodule NamespaceCodegen do
   Documentation for `NamespaceCodegen`.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> NamespaceCodegen.hello()
-      :world
-
-  """
-  def hello do
-    :world
+  def generate_with_schema(schema) do
+    :unimplemented
   end
 end
