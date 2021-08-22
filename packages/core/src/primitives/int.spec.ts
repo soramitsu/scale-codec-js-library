@@ -1,6 +1,7 @@
 import JSBI from 'jsbi';
 import {
     AllowedBits,
+    BigIntCodecOptions,
     decodeBigInt,
     encodeBigInt,
     // encodeBigIntBigEndian,
@@ -61,6 +62,42 @@ describe('int/uint', () => {
             ).toEqual([num, bits / 8]);
         });
     }
+
+    test.only('Uint8Array is reusable after decoding', () => {
+        // Arrange
+        const num = JSBI.BigInt(-123);
+        const opts: BigIntCodecOptions = {
+            bits: 64,
+            signed: true,
+            endianness: 'le',
+        };
+        const SOURCE_ARRAY = new Uint8Array([
+            // noise
+            5,
+            12,
+            42,
+
+            // num
+            ...encodeBigInt(num, opts),
+
+            // noise again
+            51,
+            255,
+            1,
+        ]);
+        const SOURCE_COPY = new Uint8Array([...SOURCE_ARRAY]);
+        // taking subarray - not copy
+        const DECODE_SUBARRAY = SOURCE_COPY.subarray(3, 3 + 8);
+
+        // Act
+        const firstResult = decodeBigInt(DECODE_SUBARRAY, opts);
+        const secondResult = decodeBigInt(DECODE_SUBARRAY, opts);
+
+        // Assert
+        expect(SOURCE_COPY).toEqual(SOURCE_ARRAY);
+        expect(firstResult).toEqual(secondResult);
+        expect(firstResult).toEqual([num, 8]);
+    });
 });
 
 // describe('encodeBigInt()', (): void => {
