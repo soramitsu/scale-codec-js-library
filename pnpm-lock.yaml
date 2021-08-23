@@ -173,6 +173,12 @@ importers:
     devDependencies:
       '@types/prompts': 2.0.14
 
+  packages/namespace-codegen-next:
+    specifiers:
+      immutable: ^4.0.0-rc.14
+    dependencies:
+      immutable: 4.0.0-rc.14
+
   packages/namespace-new:
     specifiers:
       '@scale-codec/core': workspace:^0.1.0
@@ -3737,6 +3743,10 @@ packages:
     resolution: {integrity: sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==}
     engines: {node: '>= 4'}
     dev: true
+
+  /immutable/4.0.0-rc.14:
+    resolution: {integrity: sha512-pfkvmRKJSoW7JFx0QeYlAmT+kNYvn5j0u7bnpNq4N2RCvHSTlLT208G8jgaquNe+Q8kCPHKOSpxJkyvLDpYq0w==}
+    dev: false
 
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}

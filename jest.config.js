@@ -2,7 +2,7 @@ module.exports = {
     // preset: 'ts-jest',
     testEnvironment: 'node',
     transform: {
-        '^.+\\.ts$': 'esbuild-jest',
+        '^.+\\.ts$': ['esbuild-jest', { sourcemap: true }],
     },
     testMatch: ['**/packages/**/*.spec.ts', '**/packages/**/__tests__/**/*.ts'],
     roots: ['<rootDir>/packages'],

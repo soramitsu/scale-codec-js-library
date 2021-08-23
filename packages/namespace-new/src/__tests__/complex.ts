@@ -24,6 +24,22 @@ import { EncodeSkippable, skipEncode } from '../skippable';
 import JSBI from 'jsbi';
 import { wrapOnce } from '../util';
 
+export namespace str {
+    export type Pure = string;
+
+    export type Encodable = string;
+
+    export const { encode, decode } = STR_CODEC;
+}
+
+export namespace Vec_str {
+    export type Pure = str.Pure[];
+
+    export type Encodable = (str.Encodable | EncodeSkippable)[];
+
+    export const { encode, decode } = vecCodec(str);
+}
+
 namespace Example {
     // primitives start
 
@@ -40,6 +56,8 @@ namespace Example {
 
         export const { encode, decode } = STR_CODEC;
     }
+
+    // export type MyString =
 
     export namespace u8 {
         export type Pure = number;
@@ -127,10 +145,10 @@ namespace Example {
         type TupleEncodables = [Example.Map_i64_Person.Encodable, Example.Set_Person.Encodable];
         export type Encodable = TupleWithSkippables<TupleEncodables>;
 
-        export const { encode, decode } = tupleCodec<Pure, TupleEncodables>(
-            [Example.Map_i64_Person.encode, Example.Set_Person.encode],
-            [Example.Map_i64_Person.decode, Example.Set_Person.decode],
-        );
+        export const { encode, decode } = tupleCodec<Pure, TupleEncodables>([
+            Example.Map_i64_Person,
+            Example.Set_Person,
+        ]);
     }
 
     // Vec sample

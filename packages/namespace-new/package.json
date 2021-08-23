@@ -1,10 +1,10 @@
 {
-    "name": "namespace-new",
-    "version": "1.0.0",
+    "name": "@scale-codec/namespace-next",
+    "version": "0.1.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "example": "esno src/example-run",
+        "example": "esno example",
         "roll": "rollup -c rollup.config.js"
     },
     "keywords": [],

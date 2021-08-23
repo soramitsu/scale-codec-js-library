@@ -8,8 +8,6 @@ import {
     decodeMap,
     encodeSet,
     decodeSet,
-    TupleEncoders,
-    TupleDecoders,
     encodeTuple,
     decodeTuple,
     encodeVec,
@@ -27,7 +25,7 @@ import {
     decodeBool,
     encodeBool,
 } from '@scale-codec/core';
-import { Enum, Valuable } from '@scale-codec/enum';
+import { Enum, Option, Valuable } from '@scale-codec/enum';
 import { assert, concatUint8Arrays } from '@scale-codec/util';
 import { wrapSkippableEncode, EncodeSkippable, respectSkip } from './skippable';
 import JSBI from 'jsbi';
@@ -126,14 +124,22 @@ export type TupleWithSkippables<Tuple extends any[]> = Tuple extends [infer Head
  * from codecs, or to minimize code size? Or make it optionally? Perf
  */
 export function tupleCodec<D extends any[], E extends any[]>(
-    encoders: TupleEncoders<E>,
-    decoders: TupleDecoders<D>,
+    /**
+     * Type-safety responsibility on user
+     */
+    codecs: Codec<any, any>[],
 ): Codec<D, TupleWithSkippables<E>> {
-    const encodersWrapped = encoders.map(wrapSkippableEncode);
+    const encoders: Encode<any>[] = [];
+    const decoders: Decode<any>[] = [];
+
+    codecs.forEach(({ encode, decode }) => {
+        encoders.push(wrapSkippableEncode(encode));
+        decoders.push(decode);
+    });
 
     return {
-        encode: (v) => encodeTuple(v, encodersWrapped as any),
-        decode: (b) => decodeTuple(b, decoders),
+        encode: (v) => encodeTuple(v, encoders as any),
+        decode: (b) => decodeTuple(b, decoders as any),
     };
 }
 
@@ -246,4 +252,14 @@ export class EnumCodec<DefD, DefE> implements Codec<Enum<DefD>, Enum<DefE>> {
 
 export function enumCodec<DefPure, DefEncodable>(params: EnumCodecSchema): Codec<Enum<DefPure>, Enum<DefEncodable>> {
     return new EnumCodec(params);
+}
+
+export function optionCodec<D, E>(some: Codec<D, E>): Codec<Option<D>, Option<E | EncodeSkippable>> {
+    return new EnumCodec({
+        None: { d: 0 },
+        Some: {
+            d: 1,
+            codec: some,
+        },
+    });
 }
