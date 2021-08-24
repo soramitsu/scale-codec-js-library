@@ -1,5 +1,4 @@
 import {
-    Codec,
     Encode,
     Decode,
     encodeStruct,
@@ -18,51 +17,16 @@ import {
     BigIntCodecOptions,
     encodeBigInt,
     decodeBigInt,
-    decodeCompact,
-    encodeCompact,
-    decodeStrCompact,
-    encodeStrCompact,
-    decodeBool,
-    encodeBool,
+    encodeEnum,
+    decodeEnum,
+    EncodeEnumParams,
+    DecodeEnumParams,
 } from '@scale-codec/core';
-import { Enum, Option, Valuable } from '@scale-codec/enum';
-import { assert, concatUint8Arrays } from '@scale-codec/util';
-import { wrapSkippableEncode, EncodeSkippable, respectSkip } from './skippable';
+import { Enum, Option } from '@scale-codec/enum';
+import { assert } from '@scale-codec/util';
+import { wrapSkippableEncode, EncodeSkippable } from './skippable';
 import JSBI from 'jsbi';
-import mapObj from 'map-obj';
-
-export const STR_CODEC: Codec<string> = {
-    encode: encodeStrCompact,
-    decode: decodeStrCompact,
-};
-
-export const BOOL_CODEC: Codec<boolean> = {
-    encode: encodeBool,
-    decode: decodeBool,
-};
-
-/**
- * No zero-cost abstractions in JS :(
- */
-export const VOID_CODEC: Codec<null> = {
-    encode(val?: null): Uint8Array {
-        return new Uint8Array();
-    },
-    decode(bytes?: Uint8Array): DecodeResult<null> {
-        return [null, 0];
-    },
-};
-
-export const BYTES_VECTOR_CODEC: Codec<Uint8Array> = {
-    encode: (decoded) => {
-        return concatUint8Arrays([encodeCompact(JSBI.BigInt(decoded.length)), decoded]);
-    },
-    decode: (encoded) => {
-        const [lenBN, offset] = decodeCompact(encoded);
-        const len = JSBI.toNumber(lenBN);
-        return [encoded.subarray(offset, offset + len), offset + len];
-    },
-};
+import { Codec } from './types';
 
 export type StructFieldsCodec<D, E> = {
     [K in keyof D & keyof E]: Codec<D[K], E[K]>;
@@ -194,72 +158,31 @@ export function bigintCodec(opts: BigIntCodecOptions): Codec<JSBI, JSBI> {
 // should be tested with higher attention!
 export type EnumCodecSchema = Record<string, { d: number; codec?: Codec<any, any> }>;
 
-export type EnumDefEncodable<Def> = {
-    [K in keyof Def]: Def[K] extends Valuable<infer V> ? Valuable<V | EncodeSkippable> : Def[K];
-};
-
-export class EnumCodec<DefD, DefE> implements Codec<Enum<DefD>, Enum<DefE>> {
-    private variantMap: EnumCodecSchema;
-    private discriminantMap: Record<
-        number,
-        {
-            variant: string;
-            codec?: Codec<any, any>;
-        }
-    >;
-
-    public constructor(schema: EnumCodecSchema) {
-        this.variantMap = schema;
-        this.discriminantMap = mapObj(schema, (variant, { d, codec }) => [d as any, { variant, codec }]);
-
-        this.encode = this.encode.bind(this);
-        this.decode = this.decode.bind(this);
-    }
-
-    public encode(val: Enum<DefE>): Uint8Array {
-        const { variant, content } = val as {
-            variant: string;
-            content: null | { value: unknown };
-        };
-        const schemaInfo = this.variantMap[variant];
-        const discriminant = schemaInfo.d;
-        const encode = schemaInfo.codec?.encode;
-
-        const arrs: Uint8Array[] = [new Uint8Array([discriminant])];
-        if (encode) {
-            if (!content) throw new Error(`Codec for variant "${variant}" defined, but there is no content`);
-            arrs.push(respectSkip(content.value, encode));
-        }
-
-        return concatUint8Arrays(arrs);
-    }
-
-    public decode(bytes: Uint8Array): DecodeResult<Enum<DefD>> {
-        const DISCRIMINANT_BYTES_COUNT = 1;
-        const discriminant = bytes[0];
-        const schemaInfo = this.discriminantMap[discriminant];
-        const [variant, decode] = [schemaInfo.variant, schemaInfo.codec?.decode];
-
-        if (decode) {
-            const [decoded, decodedLen] = decode(bytes.subarray(1));
-
-            return [Enum.create<any, any>(variant, decoded as any), DISCRIMINANT_BYTES_COUNT + decodedLen];
-        }
-
-        return [Enum.create<any, any>(variant), DISCRIMINANT_BYTES_COUNT];
-    }
-}
-
 export function enumCodec<DefPure, DefEncodable>(params: EnumCodecSchema): Codec<Enum<DefPure>, Enum<DefEncodable>> {
-    return new EnumCodec(params);
+    const encodeParams: EncodeEnumParams = {};
+    const decodeParams: DecodeEnumParams = {};
+
+    for (const [v, { d, codec }] of Object.entries(params)) {
+        if (codec) {
+            const { encode, decode } = codec;
+
+            encodeParams[v] = { d, encode: wrapSkippableEncode(encode) };
+            decodeParams[d] = { v, decode };
+        } else {
+            encodeParams[v] = { d };
+            decodeParams[d] = { v };
+        }
+    }
+
+    return {
+        encode: (v) => encodeEnum(v, encodeParams),
+        decode: (b) => decodeEnum(b, decodeParams),
+    };
 }
 
 export function optionCodec<D, E>(some: Codec<D, E>): Codec<Option<D>, Option<E | EncodeSkippable>> {
-    return new EnumCodec({
+    return enumCodec({
         None: { d: 0 },
-        Some: {
-            d: 1,
-            codec: some,
-        },
+        Some: { d: 1, codec: some },
     });
 }

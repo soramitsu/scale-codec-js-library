@@ -21,6 +21,7 @@
             "@scale-codec/util": ["./packages/util/src/lib.ts"],
             "@scale-codec/core": ["./packages/core/src/lib.ts"],
             "@scale-codec/namespace": ["./packages/namespace/src/lib.ts"],
+            "@scale-codec/namespace-next": ["./packages/namespace-new/src/lib.ts"],
             "@scale-codec/namespace-codegen": ["./packages/namespace-codegen/src/lib.ts"]
         }
     },

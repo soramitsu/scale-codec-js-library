@@ -181,9 +181,11 @@ importers:
 
   packages/namespace-new:
     specifiers:
+      '@rollup/plugin-multi-entry': ^4.1.0
       '@scale-codec/core': workspace:^0.1.0
       '@scale-codec/enum': workspace:^0.1.0
       '@scale-codec/util': workspace:^0.1.0
+      esbuild-register: ^2.6.0
       esno: ^0.8.0
       jsbi: 3.1.5
       map-obj: ^4.2.1
@@ -198,6 +200,9 @@ importers:
       map-obj: 4.2.1
       rollup: 2.56.2
       rollup-plugin-esbuild: 4.5.0_rollup@2.56.2
+    devDependencies:
+      '@rollup/plugin-multi-entry': 4.1.0_rollup@2.56.2
+      esbuild-register: 2.6.0
 
   packages/util:
     specifiers: {}
@@ -1182,6 +1187,17 @@ packages:
       rollup: 2.52.7
     dev: true
 
+  /@rollup/plugin-multi-entry/4.1.0_rollup@2.56.2:
+    resolution: {integrity: sha512-nellK5pr50W0JA2+bDJbG8F79GBP802J40YRoC0wyfpTAeAn5mJ4eaFiB/MN+YoX9hgb/6RJoZl9leDjZnUFKw==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0 || ^2.0.0
+    dependencies:
+      '@rollup/plugin-virtual': 2.0.3_rollup@2.56.2
+      matched: 5.0.1
+      rollup: 2.56.2
+    dev: true
+
   /@rollup/plugin-node-resolve/13.0.0_rollup@2.52.7:
     resolution: {integrity: sha512-41X411HJ3oikIDivT5OKe9EZ6ud6DXudtfNrGbC4nniaxx2esiWjkLOzgnZsWq1IM8YIeL2rzRGLZLBjlhnZtQ==}
     engines: {node: '>= 10.0.0'}
@@ -1197,6 +1213,14 @@ packages:
       rollup: 2.52.7
     dev: true
 
+  /@rollup/plugin-virtual/2.0.3_rollup@2.56.2:
+    resolution: {integrity: sha512-pw6ziJcyjZtntQ//bkad9qXaBx665SgEL8C8KI5wO8G5iU5MPxvdWrQyVaAvjojGm9tJoS8M9Z/EEepbqieYmw==}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0
+    dependencies:
+      rollup: 2.56.2
+    dev: true
+
   /@rollup/pluginutils/3.1.0_rollup@2.52.7:
     resolution: {integrity: sha512-GksZ6pr6TpIjHm8h9lSQ8pi8BE9VeubNT0OMJ3B5uZJ8pz73NPiqOtCog/x2/QzM1ENChPKxMDhiQuRHsqc+lg==}
     engines: {node: '>= 8.0.0'}
@@ -1209,24 +1233,12 @@ packages:
       rollup: 2.52.7
     dev: true
 
-  /@rollup/pluginutils/4.1.0_rollup@2.52.7:
-    resolution: {integrity: sha512-TrBhfJkFxA+ER+ew2U2/fHbebhLT/l/2pRk0hfj9KusXUuRXd2v0R58AfaZK9VXDQ4TogOSEmICVrQAA3zFnHQ==}
-    engines: {node: '>= 8.0.0'}
-    peerDependencies:
-      rollup: ^1.20.0||^2.0.0
-    dependencies:
-      estree-walker: 2.0.2
-      picomatch: 2.3.0
-      rollup: 2.52.7
-    dev: true
-
   /@rollup/pluginutils/4.1.1:
     resolution: {integrity: sha512-clDjivHqWGXi7u+0d2r2sBi4Ie6VLEAzWMIkvJLnDmxoOhBYOTfzGbOQBA32THHm11/LiJbd01tJUpJsbshSWQ==}
     engines: {node: '>= 8.0.0'}
     dependencies:
       estree-walker: 2.0.2
       picomatch: 2.3.0
-    dev: false
 
   /@sideway/address/4.1.2:
     resolution: {integrity: sha512-idTz8ibqWFrPU8kMirL0CoPH/A29XOzzAzpyN3zQ4kAWnzmNfFmRaoMNN6VI8ske5M73HZyhIaW4OuSFIdM4oA==}
@@ -4935,6 +4947,14 @@ packages:
     hasBin: true
     dev: true
 
+  /matched/5.0.1:
+    resolution: {integrity: sha512-E1fhSTPRyhAlNaNvGXAgZQlq1hL0bgYMTk/6bktVlIhzUnX/SZs7296ACdVeNJE8xFNGSuvd9IpI7vSnmcqLvw==}
+    engines: {node: '>=10'}
+    dependencies:
+      glob: 7.1.7
+      picomatch: 2.3.0
+    dev: true
+
   /merge-source-map/1.1.0:
     resolution: {integrity: sha512-Qkcp7P2ygktpMPh2mCQZaf3jhN6D3Z/qVZHSdWvQ+2Ef5HgRAPBO57A77+ENm0CPx2+1Ce/MYKi3ymqdfuqibw==}
     dependencies:
@@ -5735,7 +5755,7 @@ packages:
       esbuild: '>=0.10.1'
       rollup: ^1.20.0 || ^2.0.0
     dependencies:
-      '@rollup/pluginutils': 4.1.0_rollup@2.52.7
+      '@rollup/pluginutils': 4.1.1
       joycon: 3.0.1
       jsonc-parser: 3.0.0
       rollup: 2.52.7
