@@ -100,10 +100,3 @@ export function decodeBigInt(
 
     return [valWithSign, bytes];
 }
-
-export function bigIntCodec(opts: BigIntCodecOptions): Codec<JSBI> {
-    return {
-        encode: (bi) => encodeBigInt(bi, opts),
-        decode: (bytes) => decodeBigInt(bytes, opts),
-    };
-}

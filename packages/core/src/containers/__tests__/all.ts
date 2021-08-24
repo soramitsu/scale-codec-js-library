@@ -10,16 +10,25 @@ import {
     decodeBigInt,
     encodeStrCompact,
     decodeStrCompact,
-    bigIntCodec,
+    BigIntCodecOptions,
 } from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
 import { encodeVec, decodeVec } from '../vec';
-import { EnumSchema, EnumCodec, OptionBoolCodec } from '../enum';
+import { encodeEnum, decodeEnum, encodeOptionBool, decodeOptionBool } from '../enum';
 import { encodeMap, decodeMap } from '../map';
 import { encodeStruct, decodeStruct } from '../struct';
 import { encodeTuple, decodeTuple } from '../tuple';
 import { decodeArray, encodeArray } from '../array';
 import { decodeSet, encodeSet } from '../set';
+
+type Codec<T> = { encode: Encode<T>; decode: Decode<T> };
+
+export function bigIntCodec(opts: BigIntCodecOptions): Codec<JSBI> {
+    return {
+        encode: (bi) => encodeBigInt(bi, opts),
+        decode: (bytes) => decodeBigInt(bytes, opts),
+    };
+}
 
 function hexifyBytes(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
@@ -34,23 +43,22 @@ interface OptionDef<T> {
     Some: Valuable<T>;
 }
 
-// type a = EnumCodecs<Option<T>>;
-
-function createOptionSchema<T>(
-    encode: Encode<T>,
-    decode: Decode<T>,
-): { schema: EnumSchema<OptionDef<T>>; codec: EnumCodec<OptionDef<T>> } {
-    const schema = new EnumSchema<OptionDef<T>>({
-        None: { discriminant: 0 },
-        Some: { discriminant: 1 },
-    });
-
-    const codec = schema.createCodec({
-        Some: { encode, decode },
-    });
-
-    return { schema, codec };
+function optionCodec<T>({ encode, decode }: Codec<T>): Codec<Option<T>> {
+    return {
+        encode: (v) =>
+            encodeEnum(v, {
+                None: { d: 0 },
+                Some: { d: 1, encode },
+            }),
+        decode: (b) =>
+            decodeEnum(b, {
+                0: { v: 'None' },
+                1: { v: 'Some', decode },
+            }),
+    };
 }
+
+// }
 
 describe('Vec', () => {
     // https://github.com/paritytech/parity-scale-codec/blob/166d748abc1e48d74c528e2456fefe6f3c48f256/src/codec.rs#L1320
@@ -144,10 +152,7 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
 
     // https://github.com/paritytech/parity-scale-codec/blob/master/src/codec.rs#L1336
     describe('vec of option int encoded as expected', () => {
-        const { codec } = createOptionSchema<JSBI>(
-            (v) => encodeBigInt(v, { bits: 8, signed: true, endianness: 'le' }),
-            (b) => decodeBigInt(b, { bits: 8, signed: true, endianness: 'le' }),
-        );
+        const { encode, decode } = optionCodec<JSBI>(bigIntCodec({ bits: 8, signed: true, endianness: 'le' }));
         const vec: Enum<OptionDef<JSBI>>[] = [
             Enum.create('Some', JSBI.BigInt(1)),
             Enum.create('Some', JSBI.BigInt(-1)),
@@ -156,11 +161,11 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
         const hex = '0c 01 01 01 ff 00';
 
         it('encode', () => {
-            expect(hexifyBytes(encodeVec(vec, codec.encode))).toEqual(hex);
+            expect(hexifyBytes(encodeVec(vec, encode))).toEqual(hex);
         });
 
         it('decode', () => {
-            expect(decodeVec(prettyHexToBytes(hex), codec.decode)).toEqual([vec, 6]);
+            expect(decodeVec(prettyHexToBytes(hex), decode)).toEqual([vec, 6]);
         });
     });
 
@@ -299,24 +304,24 @@ describe('Struct', () => {
 
 describe('Enum', () => {
     describe('Option<bool>', () => {
-        const { schema, codec } = createOptionSchema(encodeBool, decodeBool);
+        const { encode, decode } = optionCodec({ encode: encodeBool, decode: decodeBool });
 
         it('"None" encoded as expected', () => {
-            expect(codec.encode(Enum.create('None'))).toEqual(new Uint8Array([0]));
+            expect(encode(Enum.create('None'))).toEqual(new Uint8Array([0]));
         });
 
         it('"None" decoded as expected', () => {
             const none: Enum<OptionDef<boolean>> = Enum.create('None');
-            expect(codec.decode(new Uint8Array([0]))).toEqual([none, 1]);
+            expect(decode(new Uint8Array([0]))).toEqual([none, 1]);
         });
 
         it('"Some(false)" encoded as expected', () => {
-            expect(codec.encode(Enum.create('Some', false))).toEqual(new Uint8Array([1, 0]));
+            expect(encode(Enum.create('Some', false))).toEqual(new Uint8Array([1, 0]));
         });
 
         it('"Some(false)" decoded as expected', () => {
             const some: Enum<OptionDef<boolean>> = Enum.create('Some', false);
-            expect(codec.decode(new Uint8Array([1, 0]))).toEqual([some, 2]);
+            expect(decode(new Uint8Array([1, 0]))).toEqual([some, 2]);
         });
     });
 });
@@ -404,11 +409,10 @@ describe('OptionBool', () => {
         testCase(Enum.create('Some', true), 1),
         testCase(Enum.create('Some', false), 2),
     ])('encode/decode %s', (_label, item, byte) => {
-        const { encode, decode } = OptionBoolCodec;
         const bytes = Uint8Array.from([byte]);
 
-        expect(encode(item)).toEqual(bytes);
-        expect(decode(bytes)).toEqual([item, 1]);
+        expect(encodeOptionBool(item)).toEqual(bytes);
+        expect(decodeOptionBool(bytes)).toEqual([item, 1]);
     });
 });
 
