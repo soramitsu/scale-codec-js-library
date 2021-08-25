@@ -1,10 +1,9 @@
-import { Codec } from '@scale-codec/namespace-next';
+import { Encode, Decode } from '@scale-codec/core';
 
-export type Pure = null;
+export type Void_Decoded = null;
 
-export type Encodable = null;
+export type Void_Encodable = null;
 
-export const { encode, decode }: Codec<null> = {
-    encode: () => new Uint8Array(),
-    decode: () => [null, 0],
-};
+export const Void_encode: Encode<null> = () => new Uint8Array();
+
+export const Void_decode: Decode<null> = () => [null, 0];

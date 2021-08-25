@@ -1,7 +1,7 @@
-import { JSBI } from '@scale-codec/namespace-next';
+import JSBI from 'jsbi';
 
-export type Pure = JSBI;
+export type Compact_Decoded = JSBI;
 
-export type Encodable = JSBI;
+export type Compact_Encodable = JSBI;
 
-export { encodeCompact as encode, decodeCompact as decode } from '@scale-codec/namespace-next';
+export { encodeCompact as Compact_encode, decodeCompact as Compact_decode } from '@scale-codec/core';

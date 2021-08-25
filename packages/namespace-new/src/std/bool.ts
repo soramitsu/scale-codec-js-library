@@ -1,5 +1,5 @@
-export { decodeBool as decode, encodeBool as encode } from '@scale-codec/namespace-next';
+export { decodeBool as bool_decode, encodeBool as bool_encode } from '@scale-codec/core';
 
-export type Pure = boolean;
+export type bool_Decoded = boolean;
 
-export type Encodable = boolean;
+export type bool_Encodable = boolean;

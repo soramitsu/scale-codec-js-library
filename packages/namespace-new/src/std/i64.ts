@@ -1,11 +1,16 @@
-import { JSBI, bigintCodec } from '@scale-codec/namespace-next';
+import { encodeBigInt, decodeBigInt, BigIntCodecOptions, Encode, Decode } from '@scale-codec/core';
+import JSBI from 'jsbi';
 
-export type Pure = JSBI;
+export type i64_Decoded = JSBI;
 
-export type Encodable = JSBI;
+export type i64_Encodable = JSBI;
 
-export const { encode, decode } = bigintCodec({
+const opts: BigIntCodecOptions = {
     bits: 64,
     signed: true,
-    endianness: 'le',
-});
+    endianness: 'le'
+};
+
+export const i64_encode: Encode<JSBI> = (v) => encodeBigInt(v, opts);
+
+export const i64_decode: Decode<JSBI> = (b) => decodeBigInt(b, opts);

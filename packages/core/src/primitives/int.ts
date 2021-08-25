@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Codec, DecodeResult } from '../types';
+import { DecodeResult } from '../types';
 import { assert } from '@scale-codec/util';
 
 /**

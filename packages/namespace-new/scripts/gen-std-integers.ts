@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs/promises';
 
 const OUT_DIR = path.resolve(__dirname, '../src/std');
-const IMPORT_FROM = '@scale-codec/namespace-next';
+const IMPORT_FROM = '../codecs';
 
 function* items(): Generator<[number, boolean]> {
     for (const bits of [8, 16, 32, 64, 128]) {
@@ -15,15 +15,22 @@ function* items(): Generator<[number, boolean]> {
 function genCodeForInteger(bits: number, signed: boolean): string {
     const isBigint = bits >= 64;
 
-    const ty = isBigint ? 'JSBI' : 'number';
+    const ty = `${signed ? 'i' : 'u'}${bits}`;
+
+    // const codec = isBigint ? 'bigintCodec' : 'intCodec';
+    // const ty = isBigint ? 'JSBI' : 'number';
     const opts = [`bits: ${bits}`, `signed: ${signed}`, `endianness: 'le'`].map((x) => `    ${x}`).join(',\n');
 
     return [
-        `import { ${isBigint ? 'JSBI, bigintCodec' : 'intCodec'} } from '${IMPORT_FROM}';`,
-        `export type Pure = ${ty};`,
-        `export type Encodable = ${ty};`,
-        `export const { encode, decode } = ${isBigint ? 'bigintCodec' : 'intCodec'}({\n${opts}\n})`,
-    ].join('\n\n');
+        `import { encodeBigInt, decodeBigInt, BigIntCodecOptions, Encode, Decode } from '@scale-codec/core';\nimport JSBI from 'jsbi';`,
+        `export type ${ty}_Decoded = JSBI;`,
+        `export type ${ty}_Encodable = JSBI;`,
+        `const opts: BigIntCodecOptions = {\n${opts}\n};`,
+        `export const ${ty}_encode: Encode<JSBI> = (v) => encodeBigInt(v, opts);`,
+        `export const ${ty}_decode: Decode<JSBI> = (b) => decodeBigInt(b, opts);`,
+    ]
+        .filter((x) => !!x)
+        .join('\n\n');
 }
 
 function genFiles(): { path: string; content: string }[] {

@@ -1,5 +1,5 @@
-export { decodeStrCompact as encode, encodeStrCompact as decode } from '@scale-codec/namespace-next';
+export { decodeStrCompact as str_decode, encodeStrCompact as str_encode } from '@scale-codec/core';
 
-export type Pure = string;
+export type str_Decoded = string;
 
-export type Encodable = string;
+export type str_Encodable = string;
