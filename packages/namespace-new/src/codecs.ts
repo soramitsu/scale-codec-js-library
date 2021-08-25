@@ -1,188 +1,152 @@
 import {
-    Encode,
     Decode,
-    encodeStruct,
-    decodeStruct,
-    encodeMap,
-    decodeMap,
-    encodeSet,
-    decodeSet,
-    encodeTuple,
-    decodeTuple,
-    encodeVec,
-    decodeVec,
-    encodeArray,
     decodeArray,
-    DecodeResult,
-    BigIntCodecOptions,
-    encodeBigInt,
-    decodeBigInt,
-    encodeEnum,
     decodeEnum,
-    EncodeEnumParams,
     DecodeEnumParams,
+    decodeMap,
+    decodeSet,
+    decodeStruct,
+    decodeTuple,
+    decodeVec,
+    Encode,
+    encodeArray,
+    encodeEnum,
+    EncodeEnumParams,
+    encodeMap,
+    encodeSet,
+    encodeStruct,
+    encodeTuple,
+    encodeVec,
+    Enum,
+    Option,
+    StructDecoders,
+    StructEncoders,
 } from '@scale-codec/core';
-import { Enum, Option } from '@scale-codec/enum';
 import { assert } from '@scale-codec/util';
-import { wrapSkippableEncode, EncodeSkippable } from './skippable';
-import JSBI from 'jsbi';
-import { Codec } from './types';
+import { EncodeSkippable, wrapSkippableEncode } from './skippable';
 
-export type StructFieldsCodec<D, E> = {
-    [K in keyof D & keyof E]: Codec<D[K], E[K]>;
-};
+// map
 
-export type StructEncodable<T> = {
+export function createMapEncode<K, V>(
+    key: Encode<K>,
+    value: Encode<V>,
+): Encode<Map<K | EncodeSkippable, V | EncodeSkippable>> {
+    const k = wrapSkippableEncode(key);
+    const v = wrapSkippableEncode(value);
+    return (map) => encodeMap(map, k, v);
+}
+
+export function createMapDecode<K, V>(key: Decode<K>, value: Decode<V>): Decode<Map<K, V>> {
+    return (b) => decodeMap(b, key, value);
+}
+
+// set
+
+export function createSetEncode<T>(inner: Encode<T>): Encode<Set<T | EncodeSkippable>> {
+    const encode = wrapSkippableEncode(inner);
+    return (set) => encodeSet(set, encode);
+}
+
+export function createSetDecode<T>(inner: Decode<T>): Decode<Set<T>> {
+    return (b) => decodeSet(b, inner);
+}
+
+// vec
+
+export function createVecEncode<T>(itemEncode: Encode<T>): Encode<(T | EncodeSkippable)[]> {
+    const wrapped = wrapSkippableEncode(itemEncode);
+    return (v) => encodeVec(v, wrapped);
+}
+
+export function createVecDecode<T>(itemDecode: Decode<T>): Decode<T[]> {
+    return (b) => decodeVec(b, itemDecode);
+}
+
+// tuple - not type safe!
+
+export function createTupleEncode(encoders: Encode<any>[]): Encode<any[]> {
+    const wrapped = encoders.map(wrapSkippableEncode);
+    return (v) => encodeTuple(v, wrapped as any);
+}
+
+export function createTupleDecode(decoders: Decode<any>[]): Decode<any[]> {
+    return (b) => decodeTuple(b, decoders as any);
+}
+
+// array
+
+export function createArrayEncode<T>(itemEncode: Encode<T>, len: number): Encode<(T | EncodeSkippable)[]> {
+    const encode = wrapSkippableEncode(itemEncode);
+    return (arr) => encodeArray(arr, encode, len);
+}
+
+export function createArrayDecode<T>(itemDecode: Decode<T>, len: number): Decode<T[]> {
+    return (b) => decodeArray(b, itemDecode, len);
+}
+
+// bytes array
+
+export function createBytesArrayEncode(len: number): Encode<Uint8Array> {
+    return (bytes) => {
+        assert(bytes.length === len, () => `expected exactly ${len} bytes, found: ${bytes.length}`);
+        // copy to prevent unexpected mutations
+        return bytes.slice();
+    };
+}
+
+export function createBytesArrayDecode(len: number): Decode<Uint8Array> {
+    return (bytes) => [
+        // slice to prevent unexpected source mutations
+        bytes.slice(0, len),
+        len,
+    ];
+}
+
+// struct
+
+type StructWithSkippableFields<T> = {
     [K in keyof T]: T[K] | EncodeSkippable;
 };
 
-export function structCodec<D, E>(
-    fields: StructFieldsCodec<D, E>,
-    order: (keyof D & keyof E)[],
-): Codec<D, StructEncodable<E>> {
-    const encoders: Record<string, Encode<any>> = {};
-    const decoders: Record<string, Decode<any>> = {};
+export function createStructEncode<T>(
+    encoders: StructEncoders<T>,
+    order: (keyof T & string)[],
+): Encode<StructWithSkippableFields<T>> {
+    const encodersWrapped: StructEncoders<StructWithSkippableFields<T>> = {} as any;
 
-    for (const field of Object.keys(fields)) {
-        const codec = (fields as Record<string, Codec<any, any>>)[field];
-        encoders[field] = wrapSkippableEncode(codec.encode);
-        decoders[field] = codec.decode;
+    for (const prop of Object.keys(encoders) as (keyof T & string)[]) {
+        encodersWrapped[prop] = wrapSkippableEncode(encoders[prop]);
     }
 
-    return {
-        encode: (v) => encodeStruct(v, encoders as any, order as any),
-        decode: (b) => decodeStruct(b, decoders as any, order as any),
-    };
+    return (struct) => encodeStruct(struct, encodersWrapped, order);
 }
 
-export function mapCodec<KDe, KEn, VDe, VEn>(
-    key: Codec<KDe, KEn>,
-    val: Codec<VDe, VEn>,
-): Codec<Map<KDe, VDe>, Map<KEn | EncodeSkippable, VEn | EncodeSkippable>> {
-    const keyEncoder: Encode<KEn | EncodeSkippable> = wrapSkippableEncode(key.encode);
-    const valEncoder: Encode<VEn | EncodeSkippable> = wrapSkippableEncode(val.encode);
-    const keyDecoder: Decode<KDe> = key.decode;
-    const valDecoder: Decode<VDe> = val.decode;
-
-    return {
-        encode: (v) => encodeMap(v, keyEncoder, valEncoder),
-        decode: (b) => decodeMap(b, keyDecoder, valDecoder),
-    };
+export function createStructDecode<T>(decoders: StructDecoders<T>, order: (keyof T & string)[]): Decode<T> {
+    return (bytes) => decodeStruct(bytes, decoders, order);
 }
 
-export function setCodec<D, E>(entryCodec: Codec<D, E>): Codec<Set<D>, Set<E | EncodeSkippable>> {
-    const [encode, decode] = [wrapSkippableEncode(entryCodec.encode), entryCodec.decode];
+// enum - not type safe!
 
-    return {
-        encode: (v) => encodeSet(v, encode),
-        decode: (b) => decodeSet(b, decode),
-    };
+export function createEnumEncode(encodersMap: EncodeEnumParams): Encode<Enum<any>> {
+    return (en) => encodeEnum(en, encodersMap);
 }
 
-export type TupleWithSkippables<Tuple extends any[]> = Tuple extends [infer Head, ...infer Tail]
-    ? [Head | EncodeSkippable, ...TupleWithSkippables<Tail>]
-    : [];
-
-/**
- * TODO what is more efficient - to unwrap all operations like mapping and extracting encoders/decoders
- * from codecs, or to minimize code size? Or make it optionally? Perf
- */
-export function tupleCodec<D extends any[], E extends any[]>(
-    /**
-     * Type-safety responsibility on user
-     */
-    codecs: Codec<any, any>[],
-): Codec<D, TupleWithSkippables<E>> {
-    const encoders: Encode<any>[] = [];
-    const decoders: Decode<any>[] = [];
-
-    codecs.forEach(({ encode, decode }) => {
-        encoders.push(wrapSkippableEncode(encode));
-        decoders.push(decode);
-    });
-
-    return {
-        encode: (v) => encodeTuple(v, encoders as any),
-        decode: (b) => decodeTuple(b, decoders as any),
-    };
+export function createEnumDecode(decodersMap: DecodeEnumParams): Decode<Enum<any>> {
+    return (b) => decodeEnum(b, decodersMap);
 }
 
-export type CodecOfSomeArray<D, E> = Codec<D[], (E | EncodeSkippable)[]>;
+// Option<T>
 
-export function vecCodec<D, E>(itemCodec: Codec<D, E>): CodecOfSomeArray<D, E> {
-    const [encode, decode] = [wrapSkippableEncode(itemCodec.encode), itemCodec.decode];
-
-    return {
-        encode: (v) => encodeVec(v, encode),
-        decode: (b) => decodeVec(b, decode),
-    };
-}
-
-export function arrayCodec<D, E>(itemCodec: Codec<D, E>, len: number): CodecOfSomeArray<D, E> {
-    const [encode, decode] = [wrapSkippableEncode(itemCodec.encode), itemCodec.decode];
-
-    return {
-        encode: (v) => encodeArray(v, encode, len),
-        decode: (b) => decodeArray(b, decode, len),
-    };
-}
-
-export function bytesArrayCodec(len: number): Codec<Uint8Array> {
-    return {
-        encode: (decoded) => {
-            assert(decoded.length === len, () => `expected exactly ${len} bytes, found: ${decoded.length}`);
-            return decoded;
-        },
-        decode: (encoded) => [encoded.subarray(0, len), len],
-    };
-}
-
-function mapBigIntDecodeResultToNum([bi, count]: DecodeResult<JSBI>): DecodeResult<number> {
-    return [JSBI.toNumber(bi), count];
-}
-
-export function intCodec(opts: BigIntCodecOptions): Codec<number, number> {
-    return {
-        encode: (v) => encodeBigInt(JSBI.BigInt(v), opts),
-        decode: (b) => mapBigIntDecodeResultToNum(decodeBigInt(b, opts)),
-    };
-}
-
-export function bigintCodec(opts: BigIntCodecOptions): Codec<JSBI, JSBI> {
-    return {
-        encode: (v) => encodeBigInt(v, opts),
-        decode: (b) => decodeBigInt(b, opts),
-    };
-}
-
-// should be tested with higher attention!
-export type EnumCodecSchema = Record<string, { d: number; codec?: Codec<any, any> }>;
-
-export function enumCodec<DefPure, DefEncodable>(params: EnumCodecSchema): Codec<Enum<DefPure>, Enum<DefEncodable>> {
-    const encodeParams: EncodeEnumParams = {};
-    const decodeParams: DecodeEnumParams = {};
-
-    for (const [v, { d, codec }] of Object.entries(params)) {
-        if (codec) {
-            const { encode, decode } = codec;
-
-            encodeParams[v] = { d, encode: wrapSkippableEncode(encode) };
-            decodeParams[d] = { v, decode };
-        } else {
-            encodeParams[v] = { d };
-            decodeParams[d] = { v };
-        }
-    }
-
-    return {
-        encode: (v) => encodeEnum(v, encodeParams),
-        decode: (b) => decodeEnum(b, decodeParams),
-    };
-}
-
-export function optionCodec<D, E>(some: Codec<D, E>): Codec<Option<D>, Option<E | EncodeSkippable>> {
-    return enumCodec({
+export function createOptionEncode<T>(encode: Encode<T>): Encode<Option<T>> {
+    return createEnumEncode({
         None: { d: 0 },
-        Some: { d: 1, codec: some },
+        Some: { d: 1, encode },
+    });
+}
+
+export function createOptionDecode<T>(decode: Decode<T>): Decode<Option<T>> {
+    return createEnumDecode({
+        0: { v: 'None' },
+        1: { v: 'Some', decode },
     });
 }
