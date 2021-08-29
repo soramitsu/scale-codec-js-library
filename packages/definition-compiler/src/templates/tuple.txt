@@ -1,0 +1,23 @@
+{{#>export-decoded~}}
+[
+{{~#join refs ', '~}}
+{{ref-decoded this}}
+{{~/join~}}
+]
+{{~/export-decoded}}\n
+
+{{#>export-encodable~}}
+[
+{{~#join refs ', ' ~}}
+{{ref-encodable this}} | {{core 'EncodeSkippable'}}
+{{~/join~}}
+]
+{{~/export-encodable}}\n
+
+const {{self}}_decoders = [ {{~#join refs ', '}} {{~ref-decode this~}} {{/join~}} ]
+const {{self}}_encoders = [ {{~#join refs ', '}} {{~ref-encode this~}} {{/join~}} ].map( {{~core
+'wrapSkippableEncode'~}} )
+
+{{#>export-decode}} return {{core 'decodeTuple'}}(bytes, {{self}}_decoders) {{~/export-decode}}
+
+{{#>export-encode}} return {{core 'encodeTuple'}}(encodable, {{self}}_encoders) {{~/export-encode}}
