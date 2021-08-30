@@ -38,9 +38,9 @@ export default defineComponent({
         <collector>
             <preamble :import-from="importLib" />
 
-            <w-s t="\n\n" />
 
             <template v-for="x in defsList" :key="x.tyName">
+                <w t="\n\n" />
                 <def-renderer v-bind="x" />
             </template>
         </collector>

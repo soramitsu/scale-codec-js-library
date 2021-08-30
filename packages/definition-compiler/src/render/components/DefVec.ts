@@ -1,6 +1,7 @@
 import { defineComponent, compile } from 'vue';
 
 export default defineComponent({
+    name: 'DefVec',
     props: {
         item: {
             type: String,
@@ -14,7 +15,7 @@ export default defineComponent({
             </export>
         </with-def-part>
 
-        <w-s t="\n\n" />
+        <w t="\n\n" />
         
         <with-def-part part="ty-encodable">
             <export>
@@ -22,7 +23,7 @@ export default defineComponent({
             </export>
         </with-def-part>
 
-        <w-s t="\n\n" />
+        <w t="\n\n" />
 
         <with-def-part part="fn-decode">
             <export>
@@ -30,7 +31,7 @@ export default defineComponent({
             </export>
         </with-def-part>
 
-        <w-s t="\n\n" />
+        <w t="\n\n" />
 
         <with-def-part part="fn-encode">
             <export>

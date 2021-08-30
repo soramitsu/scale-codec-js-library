@@ -1,5 +1,84 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Renders struct + tuple 1`] = `
+"import {
+  EncodeSkippable,
+  bool_Decoded,
+  bool_Encodable,
+  bool_decode,
+  bool_encode,
+  decodeStruct,
+  decodeTuple,
+  encodeStruct,
+  encodeTuple,
+  i128_Decoded,
+  i128_Encodable,
+  i128_decode,
+  i128_encode,
+  u8_Decoded,
+  u8_Encodable,
+  u8_decode,
+  u8_encode,
+  wrapSkippableEncode,
+} from '@scale-codec/definition-compiler-runtime'
+
+// Structural
+
+export type Structural_Decoded = {
+  nums: Tuple_u8_i128_Decoded
+  mur: bool_Decoded
+}
+
+export type Structural_Encodable = {
+  nums: Tuple_u8_i128_Encodable | EncodeSkippable
+  mur: bool_Encodable | EncodeSkippable
+}
+
+// Structural struct tools
+
+const Structural_order = ['nums', 'mur']
+const Structural_decoders = {
+  nums: Tuple_u8_i128_decode,
+  mur: bool_decode,
+}
+const Structural_encoders = {
+  nums: wrapSkippableEncode(Tuple_u8_i128_encode),
+  mur: wrapSkippableEncode(bool_encode),
+}
+
+// Structural tools end
+
+export function Structural_decode(bytes: Uint8Array): Structural_Decoded {
+  return decodeStruct(bytes, Structural_decoders, Structural_order)
+}
+
+export function Structural_encode(encodable: Structural_Encodable): Uint8Array {
+  return encodeStruct(encodable, Structural_encoders, Structural_order)
+}
+
+// Tuple_u8_i128
+
+export type Tuple_u8_i128_Decoded = [u8_Decoded, i128_Decoded]
+
+export type Tuple_u8_i128_Encodable = [u8_Encodable | EncodeSkippable, i128_Encodable | EncodeSkippable]
+
+// Tuple_u8_i128 tuple-related tools
+
+const Tuple_u8_i128_decoders = [u8_decode, i128_decode]
+const Tuple_u8_i128_encoders = [u8_encode, i128_encode].wrap(wrapSkippableEncode)
+
+// Tuple_u8_i128 tools end
+
+export function Tuple_u8_i128_decode(bytes: Uint8Array): Tuple_u8_i128_Decoded {
+  return decodeTuple(bytes, Tuple_u8_i128_decoders)
+}
+
+export function Tuple_u8_i128_encode(encodable: Tuple_u8_i128_Encodable): Uint8Array {
+  return encodeTuple(encodable, Tuple_u8_i128_encoders)
+}
+"
+`;
+
 exports[`Renders vec 1`] = `
 "import {
   EncodeSkippable,

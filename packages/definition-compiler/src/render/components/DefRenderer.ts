@@ -1,6 +1,9 @@
 import { defineComponent, computed, PropType, compile } from 'vue';
 import { TypeDef } from '../../definitions';
+
 import DefVec from './DefVec';
+import DefTuple from './DefTuple';
+import DefStruct from './DefStruct';
 
 export default defineComponent({
     props: {
@@ -18,6 +21,8 @@ export default defineComponent({
             if (props.def.t === 'vec') {
                 return DefVec;
             }
+            if (props.def.t === 'tuple') return DefTuple;
+            if (props.def.t === 'struct') return DefStruct;
 
             throw new Error('unimplemented');
         });
@@ -35,7 +40,7 @@ export default defineComponent({
     render: compile(`
         // {{ tyName }}
 
-        <w-s t="\n\n"/>
+        <w t="\n\n"/>
 
         <with-current-type-name :name="tyName">
             <component :is="specific" v-bind="bindings" />

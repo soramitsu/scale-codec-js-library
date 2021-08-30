@@ -92,6 +92,7 @@ function renderNode(node: CodeNode): string {
         semi: false,
         tabWidth: 2,
         singleQuote: true,
+        printWidth: 120,
         parser: 'typescript',
     });
 
