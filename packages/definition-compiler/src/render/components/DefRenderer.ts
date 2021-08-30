@@ -1,11 +1,12 @@
 import { defineComponent, computed, PropType, compile } from 'vue';
-import { TypeDef } from '../../definitions';
+import { MapDef, TypeDef } from '../../definitions';
 
 import DefVec from './DefVec';
 import DefTuple from './DefTuple';
 import DefStruct from './DefStruct';
 import DefEnum from './DefEnum';
 import DefSet from './DefSet';
+import DefMap from './DefMap';
 
 export default defineComponent({
     props: {
@@ -20,17 +21,34 @@ export default defineComponent({
     },
     setup(props) {
         const specificRenderer = computed(() => {
-            if (props.def.t === 'vec') return DefVec;
-            if (props.def.t === 'tuple') return DefTuple;
-            if (props.def.t === 'struct') return DefStruct;
-            if (props.def.t === 'enum') return DefEnum;
-            if (props.def.t === 'set') return DefSet;
-
-            throw new Error('unimplemented');
+            switch (props.def.t) {
+                case 'vec':
+                    return DefVec;
+                case 'tuple':
+                    return DefTuple;
+                case 'struct':
+                    return DefStruct;
+                case 'enum':
+                    return DefEnum;
+                case 'set':
+                    return DefSet;
+                case 'map':
+                    return DefMap;
+                default:
+                    throw new Error('unimplemented');
+            }
         });
 
         const bindings = computed(() => {
             const { t, ...rest } = props.def;
+
+            if (t === 'map') {
+                return {
+                    keyRef: (rest as MapDef).key,
+                    valueRef: (rest as MapDef).value,
+                };
+            }
+
             return rest;
         });
 

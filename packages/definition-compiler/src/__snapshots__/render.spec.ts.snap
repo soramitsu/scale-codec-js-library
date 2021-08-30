@@ -48,6 +48,40 @@ export function Message_encode(encodable: Message_Encodable): Uint8Array {
 "
 `;
 
+exports[`Renders map 1`] = `
+"import {
+  EncodeSkippable,
+  decodeMap,
+  encodeMap,
+  str_Decoded,
+  str_Encodable,
+  str_decode,
+  str_encode,
+  wrapSkippableEncode,
+} from '@scale-codec/definition-compiler-runtime'
+
+// Map_str_Message
+
+export type Map_str_Message_Decoded = Map<str_Decoded, Message_Decoded>
+
+export type Map_str_Message_Encodable = Map<str_Encodable | EncodeSkippable, Message_Encodable | EncodeSkippable>
+
+// Map_str_Message map tools
+
+const [Map_str_Message_encode_key, Map_str_Message_encode_value] = [str_encode, Message_encode].map(wrapSkippableEncode)
+
+// Map_str_Message tools end
+
+export function Map_str_Message_decode(bytes: Uint8Array): Map_str_Message_Decoded {
+  return decodeMap(bytes, str_decode, Message_decode)
+}
+
+export function Map_str_Message_encode(encodable: Map_str_Message_Encodable): Uint8Array {
+  return encodeMap(encodable, Map_str_Message_encode_key, Map_str_Message_encode_value)
+}
+"
+`;
+
 exports[`Renders set 1`] = `
 "import { EncodeSkippable, decodeSet, encodeSet, wrapSkippableEncode } from '@scale-codec/definition-compiler-runtime'
 
@@ -59,7 +93,7 @@ export type Set_Message_Encodable = Set<Message_Encodable | EncodeSkippable>
 
 // Set_Message set tools
 
-const Set_Message_entry_encode = wrapSkippableEncode(Message_decode)
+const Set_Message_entry_encode = wrapSkippableEncode(Message_encode)
 
 // Set_Message tools end
 

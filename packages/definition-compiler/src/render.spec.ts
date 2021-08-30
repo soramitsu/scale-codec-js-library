@@ -66,3 +66,13 @@ it('Renders set', () => {
         },
     });
 });
+
+it('Renders map', () => {
+    return expectRenderToMatchSnapshot({
+        Map_str_Message: {
+            t: 'map',
+            key: 'str',
+            value: 'Message',
+        },
+    });
+});

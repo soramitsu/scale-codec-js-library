@@ -19,7 +19,7 @@ export default defineComponent({
         <w t="\n\n" />
         // <ty-name/> set tools
         <w t="\n\n" />
-        <with-def-part part="fn-decode">
+        <with-def-part part="fn-encode">
             const <ty-name/>_entry_encode = <core id="wrapSkippableEncode" />(<ref :to="entry" />)
         </with-def-part>
         <w t="\n\n" />
