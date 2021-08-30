@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Renders vec 1`] = `
+"import {
+  EncodeSkippable,
+  decodeVec,
+  encodeVec,
+  str_Decoded,
+  str_Encodable,
+  str_decode,
+  str_encode,
+} from '@scale-codec/definition-compiler-runtime'
+
+// Vec_str
+
+export type Vec_str_Decoded = str_Decoded[]
+
+export type Vec_str_Encodable = (str_Encodable | EncodeSkippable)[]
+
+export function Vec_str_decode(bytes: Uint8Array): Vec_str_Decoded {
+  return decodeVec(bytes, str_decode)
+}
+
+export function Vec_str_encode(encodable: Vec_str_Encodable): Uint8Array {
+  return encodeVec(encodable, str_encode)
+}
+"
+`;
