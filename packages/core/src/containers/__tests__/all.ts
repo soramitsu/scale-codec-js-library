@@ -13,12 +13,12 @@ import {
     BigIntCodecOptions,
 } from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
-import { encodeVec, decodeVec } from '../vec';
+import { encodeVec, decodeVec, encodeUint8Vec, decodeUint8Vec } from '../vec';
 import { encodeEnum, decodeEnum, encodeOptionBool, decodeOptionBool } from '../enum';
 import { encodeMap, decodeMap } from '../map';
 import { encodeStruct, decodeStruct } from '../struct';
 import { encodeTuple, decodeTuple } from '../tuple';
-import { decodeArray, encodeArray } from '../array';
+import { decodeArray, decodeUint8Array, encodeArray, encodeUint8Array } from '../array';
 import { decodeSet, encodeSet } from '../set';
 
 type Codec<T> = { encode: Encode<T>; decode: Decode<T> };
@@ -449,5 +449,93 @@ describe('Set', () => {
 
         expect(encodeSet(set, encode)).toEqual(arr);
         expect(decodeSet(arr, decode)).toEqual([set, bytes.length]);
+    });
+});
+
+describe('Uint8 Array ([u8; x])', () => {
+    test('Returns source bytes on encode', () => {
+        // Arrange
+        const LEN = 7;
+        const source = new Uint8Array([1, 5, 4, 1, 2, 6, 1]);
+
+        // Act
+        const encoded = encodeUint8Array(source, LEN);
+
+        // Assert
+        expect(encoded).toEqual(source);
+    });
+
+    test('Mutation on encoded does not affect the source', () => {
+        // Arrange
+        const source = new Uint8Array([0, 0, 0, 0, 0]);
+
+        // Act
+        const encoded = encodeUint8Array(source.subarray(3), 2);
+        encoded[0] = 1;
+
+        // Assert
+        expect(source).toEqual(new Uint8Array([0, 0, 0, 0, 0]));
+    });
+
+    test('Encoding throws if bytes length is not correct', () => {
+        expect(() => encodeUint8Array(new Uint8Array([5, 1, 2]), 1)).toThrowError();
+    });
+
+    test('Returns part of the source bytes on decode', () => {
+        expect(decodeUint8Array(new Uint8Array([65, 12, 43, 12, 43]), 3)).toEqual([new Uint8Array([65, 12, 43]), 3]);
+    });
+
+    test('Mutation of decoded part does not affect the source', () => {
+        // Arrange
+        const source = new Uint8Array(new Array(10).fill(0));
+
+        // Act
+        const [decoded] = decodeUint8Array(source.subarray(3), 2);
+        decoded[1] = 1;
+
+        // Assert
+        expect(source).toEqual(new Uint8Array(new Array(10).fill(0)));
+    });
+
+    test('Decoding throws if the source bytes length less than the array length', () => {
+        expect(() => decodeUint8Array(new Uint8Array(), 3)).toThrowError();
+    });
+});
+
+describe('Vec<u8>', () => {
+    const vec = [5, 1, 2, 61, 255];
+    const vecEncoded = [20, 5, 1, 2, 61, 255];
+
+    test('Encodes ok', () => {
+        expect(encodeUint8Vec(new Uint8Array(vec))).toEqual(new Uint8Array(vecEncoded));
+    });
+
+    test('Decodes ok', () => {
+        expect(decodeUint8Vec(new Uint8Array(vecEncoded))).toEqual([new Uint8Array(vec), vecEncoded.length]);
+    });
+
+    test('Mutation of the source does not affect the encode result', () => {
+        // Arrange
+        const source = new Uint8Array([1, 2, 3, 4]);
+
+        // Act
+        const encoded = encodeUint8Vec(source.subarray(1));
+        const encodedSaved = [...encoded];
+        source[2] = 15;
+
+        // Assert
+        expect(encoded).toEqual(new Uint8Array(encodedSaved));
+    });
+
+    test('Mutation of decoded bytes does not affect the source bytes', () => {
+        // Arrange
+        const encodedSource = new Uint8Array([16, 4, 3, 2, 1]);
+
+        // Act
+        const [decoded] = decodeUint8Vec(encodedSource.subarray(1));
+        decoded[1] = 255;
+
+        // Assert
+        expect(encodedSource).toEqual(new Uint8Array([16, 4, 3, 2, 1]));
     });
 });

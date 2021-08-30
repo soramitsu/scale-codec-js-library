@@ -10,7 +10,7 @@ export type EnumSchemaDef<Def> = {
  * Unsafe-typed params of enum encoding. It's a map with variant names as keys and discriminant + maybe encode fn as
  * values
  */
-export type EncodeEnumParams = Record<
+export type EnumEncoders = Record<
     string | number | symbol,
     {
         /**
@@ -21,7 +21,7 @@ export type EncodeEnumParams = Record<
     }
 >;
 
-export type DecodeEnumParams = Record<
+export type EnumDecoders = Record<
     number,
     {
         v: string | number | symbol;
@@ -31,7 +31,7 @@ export type DecodeEnumParams = Record<
 
 const DISCRIMINANT_BYTES_COUNT = 1;
 
-export function encodeEnum<Def>(val: Enum<Def>, params: EncodeEnumParams): Uint8Array {
+export function encodeEnum<Def>(val: Enum<Def>, params: EnumEncoders): Uint8Array {
     const { variant, content } = val;
     const { d, encode } = params[variant];
 
@@ -46,7 +46,7 @@ export function encodeEnum<Def>(val: Enum<Def>, params: EncodeEnumParams): Uint8
     return concatUint8Arrays(parts());
 }
 
-export function decodeEnum<Def>(bytes: Uint8Array, params: DecodeEnumParams): DecodeResult<Enum<Def>> {
+export function decodeEnum<Def>(bytes: Uint8Array, params: EnumDecoders): DecodeResult<Enum<Def>> {
     const d = bytes[0];
     const { v, decode } = params[d];
 
