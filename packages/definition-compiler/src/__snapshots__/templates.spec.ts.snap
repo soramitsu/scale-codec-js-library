@@ -1,5 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`renders enum 1`] = `
+"
+export type Message_Decoded =  @core(Enum)< {
+  Quit:  null 
+  Greeting:  {{core 'Valuable'}}<@ref(GreetingMsg)_Decoded> 
+} > 
+            "
+`;
+
 exports[`renders struct 1`] = `""`;
 
 exports[`renders tuple 1`] = `

@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders child components 1`] = `""`;
+
+exports[`renders just text 1`] = `""`;
