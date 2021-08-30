@@ -1,17 +1,9 @@
 {
     "name": "@scale-codec/definition-compiler",
     "version": "0.1.0",
-    "scripts": {
-        "test": "node -r ./src/index.js ./src/vue-code.ts"
-    },
     "dependencies": {
-        "esbuild-register": "^2.6.0",
-        "esno": "^0.8.0",
-        "handlebars": "^4.7.7",
+        "prettier": "^2.3.2",
         "sort-es": "^1.3.8",
         "vue": "^3.2.6"
-    },
-    "devDependencies": {
-        "prettier": "^2.3.2"
     }
 }

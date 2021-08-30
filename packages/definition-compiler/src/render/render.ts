@@ -1,12 +1,12 @@
 import { createApp, renderApp } from './vue-code';
-import { NamespaceDefinition } from './definitions';
-import App from './render/App';
-import { WithDefPart, AddPartSuffix } from './render/components/current-def-part';
-import { WithCurrentTypeName, TyName } from './render/components/current-type-name';
-import Whitespace from './render/components/Whitespace';
-import { TypeReference, Core } from './render/components/links';
-import TypeExport from './render/components/TypeExport';
-import Fields from './render/components/Fields';
+import { NamespaceDefinition } from '../definitions';
+import App from './App';
+import { WithDefPart, AddPartSuffix } from './components/current-def-part';
+import { WithCurrentTypeName, TyName } from './components/current-type-name';
+import Whitespace from './components/Whitespace';
+import { TypeReference, Core } from './components/links';
+import TypeExport from './components/TypeExport';
+import Fields from './components/Fields';
 
 export async function renderNamespaceDefinition(
     def: NamespaceDefinition,
