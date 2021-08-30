@@ -5,17 +5,9 @@
         "test": "node -r ./src/index.js ./src/vue-code.ts"
     },
     "dependencies": {
-        "@scale-codec/enum": "workspace:^0.1.0",
-        "@vitejs/plugin-vue-jsx": "^1.1.7",
-        "@vue/compiler-core": "^3.2.6",
-        "@vue/compiler-sfc": "^3.2.6",
-        "@vue/runtime-core": "^3.2.6",
-        "@vue/server-renderer": "^3.2.6",
         "esbuild-register": "^2.6.0",
         "esno": "^0.8.0",
         "handlebars": "^4.7.7",
-        "rollup": "^2.56.3",
-        "rollup-plugin-vue": "^6.0.0-beta.10",
         "sort-es": "^1.3.8",
         "vue": "^3.2.6"
     },
