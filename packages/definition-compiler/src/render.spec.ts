@@ -76,3 +76,22 @@ it('Renders map', () => {
         },
     });
 });
+
+it('Renders array', () => {
+    return expectRenderToMatchSnapshot({
+        Array_Item_15: {
+            t: 'array',
+            item: 'Item',
+            len: 15,
+        },
+    });
+});
+
+it('Renders bytes array', () => {
+    return expectRenderToMatchSnapshot({
+        Hash: {
+            t: 'bytes-array',
+            len: 64,
+        },
+    });
+});

@@ -1,5 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Renders array 1`] = `
+"import {
+  EncodeSkippable,
+  decodeArray,
+  encodeArray,
+  wrapSkippableEncode,
+} from '@scale-codec/definition-compiler-runtime'
+
+// Array_Item_15
+
+export type Array_Item_15_Decoded = Item_Decoded[]
+
+export type Array_Item_15_Encodable = (Item_Encodable | EncodeSkippable)[]
+
+const Array_Item_15_item_encode = wrapSkippableEncode(Item_encode)
+const Array_Item_15_len = 15
+
+export function Array_Item_15_decode(bytes: Uint8Array): Array_Item_15_Decoded {
+  return decodeArray(bytes, Item_decode, Array_Item_15_len)
+}
+
+export function Array_Item_15_encode(encodable: Array_Item_15_Encodable): Uint8Array {
+  return encodeArray(encodable, Array_Item_15_item_encode, Array_Item_15_len)
+}
+"
+`;
+
+exports[`Renders bytes array 1`] = `
+"import { decodeBytesArray, encodeBytesArray } from '@scale-codec/definition-compiler-runtime'
+
+// Hash
+
+export type Hash_Decoded = Uint8Array
+
+export type Hash_Encodable = Uint8Array
+
+const Hash_len = 64
+
+export function Hash_decode(bytes: Uint8Array): Hash_Decoded {
+  return decodeBytesArray(bytes, Hash_len)
+}
+
+export function Hash_encode(encodable: Hash_Encodable): Uint8Array {
+  return encodeBytesArray(encodable, Hash_len)
+}
+"
+`;
+
 exports[`Renders enum 1`] = `
 "import {
   EncodeSkippable,

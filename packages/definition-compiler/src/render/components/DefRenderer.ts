@@ -7,6 +7,8 @@ import DefStruct from './DefStruct';
 import DefEnum from './DefEnum';
 import DefSet from './DefSet';
 import DefMap from './DefMap';
+import DefArray from './DefArray';
+import DefBytesArray from './DefBytesArray';
 
 export default defineComponent({
     props: {
@@ -34,6 +36,10 @@ export default defineComponent({
                     return DefSet;
                 case 'map':
                     return DefMap;
+                case 'array':
+                    return DefArray;
+                case 'bytes-array':
+                    return DefBytesArray;
                 default:
                     throw new Error('unimplemented');
             }
