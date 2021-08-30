@@ -1,5 +1,53 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Renders enum 1`] = `
+"import {
+  EncodeSkippable,
+  Enum,
+  Valuable,
+  decodeEnum,
+  encodeEnum,
+  str_Decoded,
+  str_Encodable,
+  str_decode,
+  str_encode,
+} from '@scale-codec/definition-compiler-runtime'
+
+// Message
+
+export type Message_Decoded = Enum<{
+  Quit: null
+  Greeting: Valuable<str_Decoded>
+}>
+
+export type Message_Encodable = Enum<{
+  Quit: null
+  Greeting: Valuable<str_Encodable | EncodeSkippable>
+}>
+
+// Message enum tools
+
+const Message_decoders = {
+  0: { v: 'Quit' },
+  1: { v: 'Greeting', decode: str_decode },
+}
+const Message_encoders = {
+  Quit: { d: 0 },
+  Greeting: { d: 1, encode: str_encode },
+}
+
+// Message tools end
+
+export function Message_decode(bytes: Uint8Array): Message_Decoded {
+  return decodeEnum(bytes, Message_decoders)
+}
+
+export function Message_encode(encodable: Message_Encodable): Uint8Array {
+  return encodeEnum(encodable, Message_encoders)
+}
+"
+`;
+
 exports[`Renders struct + tuple 1`] = `
 "import {
   EncodeSkippable,

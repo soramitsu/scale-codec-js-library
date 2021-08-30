@@ -1,36 +1,7 @@
 import { defineComponent, compile, PropType } from 'vue';
 
-const Fields = defineComponent({
-    name: 'Fields',
-    props: {
-        items: {
-            type: Array,
-            required: true,
-        },
-        key: {
-            type: String,
-            default: 'name',
-        },
-        value: {
-            type: String,
-            default: 'ref',
-        },
-    },
-    render: compile(`
-        {
-            <w t="\n"/>
-            <template v-for="item in items">
-                <slot name="key" v-bind="{key: item[key]}">{{ item[key] }}</slot>: <slot name="value" v-bind="{value: item[value]}">{{ item[value] }}</slot>,
-            </template>
-        }
-    `),
-});
-
 export default defineComponent({
     name: 'DefStruct',
-    components: {
-        Fields,
-    },
     props: {
         fields: {
             type: Array as PropType<{ name: string; ref: string }[]>,

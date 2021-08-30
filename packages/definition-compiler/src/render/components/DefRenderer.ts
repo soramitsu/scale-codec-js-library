@@ -4,6 +4,7 @@ import { TypeDef } from '../../definitions';
 import DefVec from './DefVec';
 import DefTuple from './DefTuple';
 import DefStruct from './DefStruct';
+import DefEnum from './DefEnum';
 
 export default defineComponent({
     props: {
@@ -18,11 +19,10 @@ export default defineComponent({
     },
     setup(props) {
         const specificRenderer = computed(() => {
-            if (props.def.t === 'vec') {
-                return DefVec;
-            }
+            if (props.def.t === 'vec') return DefVec;
             if (props.def.t === 'tuple') return DefTuple;
             if (props.def.t === 'struct') return DefStruct;
+            if (props.def.t === 'enum') return DefEnum;
 
             throw new Error('unimplemented');
         });

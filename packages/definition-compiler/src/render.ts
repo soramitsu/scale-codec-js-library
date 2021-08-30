@@ -6,6 +6,7 @@ import { WithCurrentTypeName, TyName } from './render/components/current-type-na
 import Whitespace from './render/components/Whitespace';
 import { TypeReference, Core } from './render/components/links';
 import TypeExport from './render/components/TypeExport';
+import Fields from './render/components/Fields';
 
 export async function renderNamespaceDefinition(
     def: NamespaceDefinition,
@@ -20,6 +21,7 @@ export async function renderNamespaceDefinition(
         .component('Ref', TypeReference)
         .component('Core', Core)
         .component('W', Whitespace)
+        .component('Fields', Fields)
         .component('AddPartSuffix', AddPartSuffix)
         .component('Export', TypeExport);
 

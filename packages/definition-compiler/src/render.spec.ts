@@ -17,7 +17,7 @@ it('Renders vec', () => {
     });
 });
 
-it.only('Renders struct + tuple', () => {
+it('Renders struct + tuple', () => {
     return expectRenderToMatchSnapshot({
         Structural: {
             t: 'struct',
@@ -35,6 +35,25 @@ it.only('Renders struct + tuple', () => {
         Tuple_u8_i128: {
             t: 'tuple',
             items: ['u8', 'i128'],
+        },
+    });
+});
+
+it('Renders enum', () => {
+    return expectRenderToMatchSnapshot({
+        Message: {
+            t: 'enum',
+            variants: [
+                {
+                    name: 'Quit',
+                    discriminant: 0,
+                },
+                {
+                    name: 'Greeting',
+                    discriminant: 1,
+                    ref: 'str',
+                },
+            ],
         },
     });
 });

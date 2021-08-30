@@ -37,7 +37,7 @@ export type EnumDef = {
     variants: {
         name: string;
         discriminant: number;
-        ref: string | null;
+        ref?: string | null;
     }[];
 };
 
