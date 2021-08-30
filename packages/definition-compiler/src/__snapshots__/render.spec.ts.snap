@@ -52,6 +52,8 @@ exports[`Renders enum 1`] = `
 "import {
   EncodeSkippable,
   Enum,
+  EnumDecoders,
+  EnumEncoders,
   Valuable,
   decodeEnum,
   encodeEnum,
@@ -75,11 +77,11 @@ export type Message_Encodable = Enum<{
 
 // Message enum tools
 
-const Message_decoders = {
+const Message_decoders: EnumDecoders = {
   0: { v: 'Quit' },
   1: { v: 'Greeting', decode: str_decode },
 }
-const Message_encoders = {
+const Message_encoders: EnumEncoders = {
   Quit: { d: 0 },
   Greeting: { d: 1, encode: str_encode },
 }
@@ -126,6 +128,41 @@ export function Map_str_Message_decode(bytes: Uint8Array): Map_str_Message_Decod
 
 export function Map_str_Message_encode(encodable: Map_str_Message_Encodable): Uint8Array {
   return encodeMap(encodable, Map_str_Message_encode_key, Map_str_Message_encode_value)
+}
+"
+`;
+
+exports[`Renders option 1`] = `
+"import {
+  EncodeSkippable,
+  EnumDecoders,
+  EnumEncoders,
+  Option,
+  decodeEnum,
+  encodeEnum,
+} from '@scale-codec/definition-compiler-runtime'
+
+// OptionHash
+
+export type OptionHash_Decoded = Option<Hash_Decoded>
+
+export type OptionHash_Encodable = Option<Hash_Encodable | EncodeSkippable>
+
+const OptionHash_decoders: EnumDecoders = {
+  0: { v: 'None' },
+  1: { v: 'Some', decode: Hash_decode },
+}
+const OptionHash_encoders: EnumEncoders = {
+  None: { d: 0 },
+  Some: { d: 1, encode: Hash_encode },
+}
+
+export function OptionHash_decode(bytes: Uint8Array): OptionHash_Decoded {
+  return decodeEnum(bytes, OptionHash_decoders)
+}
+
+export function OptionHash_encode(encodable: OptionHash_Encodable): Uint8Array {
+  return encodeEnum(encodable, OptionHash_encoders)
 }
 "
 `;

@@ -95,3 +95,12 @@ it('Renders bytes array', () => {
         },
     });
 });
+
+it('Renders option', () => {
+    return expectRenderToMatchSnapshot({
+        OptionHash: {
+            t: 'option',
+            some: 'Hash',
+        },
+    });
+});

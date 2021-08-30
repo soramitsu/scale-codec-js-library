@@ -9,6 +9,7 @@ import DefSet from './DefSet';
 import DefMap from './DefMap';
 import DefArray from './DefArray';
 import DefBytesArray from './DefBytesArray';
+import DefOption from './DefOption';
 
 export default defineComponent({
     props: {
@@ -40,6 +41,8 @@ export default defineComponent({
                     return DefArray;
                 case 'bytes-array':
                     return DefBytesArray;
+                case 'option':
+                    return DefOption;
                 default:
                     throw new Error('unimplemented');
             }

@@ -34,11 +34,13 @@ export type SetDef = {
 };
 
 export type EnumDef = {
-    variants: {
-        name: string;
-        discriminant: number;
-        ref?: string | null;
-    }[];
+    variants: EnumVariantDef[];
+};
+
+export type EnumVariantDef = {
+    name: string;
+    discriminant: number;
+    ref?: string | null;
 };
 
 export type OptionDef = {

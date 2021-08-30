@@ -1,9 +1,7 @@
 import { defineComponent, compile, PropType } from 'vue';
-import { EnumDef } from '../../definitions';
+import { EnumVariantDef } from '../../definitions';
 
-type EnumVariantDef = EnumDef['variants'] extends Array<infer V> ? V : never;
-
-const Decoders = defineComponent({
+export const Decoders = defineComponent({
     props: {
         variants: {
             type: Array as PropType<EnumVariantDef[]>,
@@ -11,7 +9,7 @@ const Decoders = defineComponent({
         },
     },
     render: compile(`
-        <with-def-part part="fn-decode">
+        <slot />:  <core id="EnumDecoders"/> = <with-def-part part="fn-decode">
             <fields :items="variants" prop="discriminant">
                 <template #value="{ item: { ref, name } }">
                     { v: '{{ name }}'<template v-if="ref">, decode: <ref :to="ref" /></template> }
@@ -21,7 +19,7 @@ const Decoders = defineComponent({
     `),
 });
 
-const Encoders = defineComponent({
+export const Encoders = defineComponent({
     props: {
         variants: {
             type: Array as PropType<EnumVariantDef[]>,
@@ -29,7 +27,7 @@ const Encoders = defineComponent({
         },
     },
     render: compile(`
-        <with-def-part part="fn-encode">
+        <slot/>: <core id="EnumEncoders"/> = <with-def-part part="fn-encode">
             <fields :items="variants" prop="name">
                 <template #value="{ item: { ref, discriminant: d } }">
                     { d: {{ d }}<template v-if="ref">, encode: <ref :to="ref" /></template> }
@@ -94,9 +92,9 @@ export default defineComponent({
         // <ty-name/> enum tools
         <w t="\n\n" />
 
-        const <ty-name/>_decoders = <decoders v-bind="{ variants }" />
+        <decoders v-bind="{ variants }"> const <ty-name/>_decoders </decoders>
         <w t="\n" />
-        const <ty-name/>_encoders = <encoders v-bind="{ variants }" />
+        <encoders v-bind="{ variants }"> const <ty-name/>_encoders </encoders>
 
         <w t="\n\n" />
         // <ty-name/> tools end
