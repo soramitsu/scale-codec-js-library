@@ -1,6 +1,6 @@
 /* eslint-disable max-params */
 
-import { App, createRenderer } from 'vue';
+import { App, createRenderer, nextTick } from 'vue';
 import prettier from 'prettier';
 
 type CodeNode = CodeElement;
@@ -49,6 +49,8 @@ export const { createApp } = createRenderer<CodeNode, CodeElement>({
         elem.text = txt;
     },
     insert(el, parent, anchor) {
+        // console.log('insert %o', { parent, el, anchor });
+        el.parent = parent;
         if (anchor) {
             const index = parent.children.indexOf(anchor);
             if (index >= 0) {
@@ -56,7 +58,6 @@ export const { createApp } = createRenderer<CodeNode, CodeElement>({
                 return;
             }
         }
-        el.parent = parent;
         parent.children.push(el);
     },
     patchProp(el, key, prev, next, isSVG, prevChildren, parentComponent, parentSuspense, unmountChildren) {
@@ -65,9 +66,11 @@ export const { createApp } = createRenderer<CodeNode, CodeElement>({
     remove(el) {
         if (el.parent) {
             el.parent.children.splice(el.parent.children.indexOf(el), 1);
+            el.parent = null;
         }
     },
     nextSibling(node) {
+        // console.log('next', { node });
         if (node.parent) {
             const index = node.parent.children.indexOf(node);
             return node.parent.children[index + 1] ?? null;
@@ -88,15 +91,19 @@ function renderNode(node: CodeNode): string {
     const prettified = prettier.format(rendered, {
         semi: false,
         tabWidth: 2,
+        singleQuote: true,
         parser: 'typescript',
     });
 
     return prettified;
 }
 
-export function renderApp(app: App<CodeElement>): string {
+export async function renderApp(app: App<CodeElement>): Promise<string> {
     const root: CodeNode = new CodeElement({ name: 'root', children: [] });
     app.config.compilerOptions.whitespace = 'preserve';
     app.mount(root);
+
+    await nextTick();
+
     return renderNode(root);
 }
