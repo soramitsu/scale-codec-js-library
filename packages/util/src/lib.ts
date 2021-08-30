@@ -59,3 +59,5 @@ export function hexifyBytes(v: Uint8Array): string {
 export function prettyHexToBytes(hex: string): Uint8Array {
     return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)));
 }
+
+export * from './encode-as-is';
