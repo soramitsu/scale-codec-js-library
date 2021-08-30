@@ -5,6 +5,7 @@ import DefVec from './DefVec';
 import DefTuple from './DefTuple';
 import DefStruct from './DefStruct';
 import DefEnum from './DefEnum';
+import DefSet from './DefSet';
 
 export default defineComponent({
     props: {
@@ -23,6 +24,7 @@ export default defineComponent({
             if (props.def.t === 'tuple') return DefTuple;
             if (props.def.t === 'struct') return DefStruct;
             if (props.def.t === 'enum') return DefEnum;
+            if (props.def.t === 'set') return DefSet;
 
             throw new Error('unimplemented');
         });

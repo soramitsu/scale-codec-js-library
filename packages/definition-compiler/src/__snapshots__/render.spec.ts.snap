@@ -48,6 +48,31 @@ export function Message_encode(encodable: Message_Encodable): Uint8Array {
 "
 `;
 
+exports[`Renders set 1`] = `
+"import { EncodeSkippable, decodeSet, encodeSet, wrapSkippableEncode } from '@scale-codec/definition-compiler-runtime'
+
+// Set_Message
+
+export type Set_Message_Decoded = Set<Message_Decoded>
+
+export type Set_Message_Encodable = Set<Message_Encodable | EncodeSkippable>
+
+// Set_Message set tools
+
+const Set_Message_entry_encode = wrapSkippableEncode(Message_decode)
+
+// Set_Message tools end
+
+export function Set_Message_decode(bytes: Uint8Array): Set_Message_Decoded {
+  return decodeSet(bytes, Message_decode)
+}
+
+export function Set_Message_encode(encodable: Set_Message_Encodable): Uint8Array {
+  return encodeSet(encodable, Set_Message_entry_encode)
+}
+"
+`;
+
 exports[`Renders struct + tuple 1`] = `
 "import {
   EncodeSkippable,

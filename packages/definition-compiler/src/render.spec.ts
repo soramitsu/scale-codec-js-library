@@ -57,3 +57,12 @@ it('Renders enum', () => {
         },
     });
 });
+
+it('Renders set', () => {
+    return expectRenderToMatchSnapshot({
+        Set_Message: {
+            t: 'set',
+            entry: 'Message',
+        },
+    });
+});
