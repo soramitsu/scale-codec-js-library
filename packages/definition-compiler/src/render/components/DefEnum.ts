@@ -56,7 +56,7 @@ const EnumType = defineComponent({
                         <template v-if="ref">
                             <core id="Valuable" />&lt;<ref :to="ref" />
                                 <template v-if="which === 'encodable'">
-                                    | <core id="EncodeSkippable" />
+                                    | <core id="EncodeAsIs" />
                                 </template>
                             &gt;
                         </template>

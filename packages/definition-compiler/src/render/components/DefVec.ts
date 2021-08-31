@@ -19,7 +19,7 @@ export default defineComponent({
         
         <with-def-part part="ty-encodable">
             <export>
-                (<ref :to="item" /> | <core id="EncodeSkippable" />)[]
+                (<ref :to="item" /> | <core id="EncodeAsIs" />)[]
             </export>
         </with-def-part>
 

@@ -7,6 +7,8 @@ import Whitespace from './components/Whitespace';
 import { TypeReference, Core } from './components/links';
 import TypeExport from './components/TypeExport';
 import Fields from './components/Fields';
+import UseConfig from './components/UseConfig';
+import VoidAlias from './components/VoidAlias';
 
 export async function renderNamespaceDefinition(
     def: NamespaceDefinition,
@@ -23,6 +25,8 @@ export async function renderNamespaceDefinition(
         .component('W', Whitespace)
         .component('Fields', Fields)
         .component('AddPartSuffix', AddPartSuffix)
+        .component('UseConfig', UseConfig)
+        .component('VoidAlias', VoidAlias)
         .component('Export', TypeExport);
 
     return renderApp(app);

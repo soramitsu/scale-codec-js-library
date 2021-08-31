@@ -14,13 +14,13 @@ export default defineComponent({
         </with-def-part>
         <w t="\n\n" />
         <with-def-part part="ty-encodable">
-            <export> Set&lt;<ref :to="entry" /> | <core id="EncodeSkippable" />&gt; </export>
+            <export> Set&lt;<ref :to="entry" /> | <core id="EncodeAsIs" />&gt; </export>
         </with-def-part>
         <w t="\n\n" />
         // <ty-name/> set tools
         <w t="\n\n" />
         <with-def-part part="fn-encode">
-            const <ty-name/>_entry_encode = <core id="wrapSkippableEncode" />(<ref :to="entry" />)
+            const <ty-name/>_entry_encode = <core id="makeEncoderAsIsRespectable" />(<ref :to="entry" />)
         </with-def-part>
         <w t="\n\n" />
         // <ty-name/> tools end

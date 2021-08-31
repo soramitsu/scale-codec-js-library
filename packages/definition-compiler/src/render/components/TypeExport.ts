@@ -16,7 +16,7 @@ export default defineComponent({
         </template>
 
         <template v-else-if="part === 'fn-decode'">
-            export function <ty-name/>_decode(bytes: Uint8Array): <ty-name/>_Decoded { <slot /> }
+            export function <ty-name/>_decode(bytes: Uint8Array): <core id="DecodeResult"/>&lt;<ty-name/>_Decoded&gt; { <slot /> }
         </template>
 
         <template v-else>

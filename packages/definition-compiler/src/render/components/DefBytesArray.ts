@@ -23,7 +23,7 @@ export default defineComponent({
 
         <with-def-part part="fn-decode">
             <export>
-                return <core id="decodeBytesArray" />(bytes, <ty-name/>_len)
+                return <core id="decodeUint8Array" />(bytes, <ty-name/>_len)
             </export>
         </with-def-part>
 
@@ -31,7 +31,7 @@ export default defineComponent({
 
         <with-def-part part="fn-encode">
             <export>
-                return <core id="encodeBytesArray" />(encodable, <ty-name/>_len)
+                return <core id="encodeUint8Array" />(encodable, <ty-name/>_len)
             </export>
         </with-def-part>
     `),

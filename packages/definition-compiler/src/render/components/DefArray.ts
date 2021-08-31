@@ -23,14 +23,14 @@ export default defineComponent({
         
         <with-def-part part="ty-encodable">
             <export>
-                (<ref :to="item" /> | <core id="EncodeSkippable" />)[]
+                (<ref :to="item" /> | <core id="EncodeAsIs" />)[]
             </export>
         </with-def-part>
 
         <w t="\n\n" />
 
         <with-def-part part="fn-encode">
-            const <ty-name/>_item_encode = <core id="wrapSkippableEncode" />(<ref :to="item" />)
+            const <ty-name/>_item_encode = <core id="makeEncoderAsIsRespectable" />(<ref :to="item" />)
         </with-def-part>
         <w t="\n"/>
         const <ty-name/>_len = {{ len }}

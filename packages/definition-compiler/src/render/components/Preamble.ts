@@ -2,12 +2,6 @@ import { compile, computed, defineComponent } from 'vue';
 import { useCollectorAPI } from './Collector';
 
 export default defineComponent({
-    props: {
-        importFrom: {
-            type: String,
-            required: true,
-        },
-    },
     setup() {
         const collector = useCollectorAPI();
 
@@ -23,8 +17,14 @@ export default defineComponent({
         return { importsJoined };
     },
     render: compile(`
+        /* eslint-disable */
+
+        <w t="\n" />
+
         <template v-if="importsJoined">
-            import { {{importsJoined}} } from '{{importFrom}}' 
+            <use-config v-slot="{ importLib } ">
+                import { {{ importsJoined }} } from '{{ importLib }}' 
+            </use-config>
         </template>
     `),
 });

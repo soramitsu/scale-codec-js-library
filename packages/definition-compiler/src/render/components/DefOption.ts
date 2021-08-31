@@ -36,7 +36,7 @@ export default defineComponent({
 
         <w t="\n\n" />
         <with-def-part part="ty-encodable">
-            <export> <core id="Option"/>&lt;<ref :to="some" /> | <core id="EncodeSkippable" />&gt; </export>
+            <export> <core id="Option"/>&lt;<ref :to="some" /> | <core id="EncodeAsIs" />&gt; </export>
         </with-def-part>
 
         <w t="\n\n" />

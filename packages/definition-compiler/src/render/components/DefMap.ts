@@ -22,20 +22,22 @@ export default defineComponent({
         <with-def-part part="ty-encodable">
             <export>
                 Map&lt;<template v-for="i in [keyRef, valueRef]">
-                    <ref :to="i" /> | <core id="EncodeSkippable"/>,
+                    <ref :to="i" /> | <core id="EncodeAsIs"/>,
                 </template>&gt
             </export>
         </with-def-part>
         <w t="\n\n" />
-        // <ty-name/> map tools
-        <w t="\n\n" />
         <with-def-part part="fn-encode">
             const [<ty-name/>_encode_key, <ty-name/>_encode_value] = [
                 <template v-for="i in [keyRef, valueRef]"> <ref :to="i"/>, </template>
-            ].map(<core id="wrapSkippableEncode" />)
+            ].map(<core id="makeEncoderAsIsRespectable" />) as [
+                <with-def-part part="ty-encodable">
+                    <template v-for="i in [keyRef, valueRef]">
+                        <core id="Encode"/> &lt; <ref :to="i" /> | <core id="EncodeAsIs"/> &gt;,
+                    </template>
+                </with-def-part>
+            ]
         </with-def-part>
-        <w t="\n\n" />
-        // <ty-name/> tools end
         <w t="\n\n" />
         <with-def-part part="fn-decode">
             <export> return <core id="decodeMap"/>(bytes, <ref :to="keyRef" />, <ref :to="valueRef" />) </export>

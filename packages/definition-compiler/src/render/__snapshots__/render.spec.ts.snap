@@ -1,23 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Renders array 1`] = `
-"import {
-  EncodeSkippable,
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
   decodeArray,
   encodeArray,
-  wrapSkippableEncode,
+  makeEncoderAsIsRespectable,
 } from '@scale-codec/definition-compiler-runtime'
 
 // Array_Item_15
 
 export type Array_Item_15_Decoded = Item_Decoded[]
 
-export type Array_Item_15_Encodable = (Item_Encodable | EncodeSkippable)[]
+export type Array_Item_15_Encodable = (Item_Encodable | EncodeAsIs)[]
 
-const Array_Item_15_item_encode = wrapSkippableEncode(Item_encode)
+const Array_Item_15_item_encode = makeEncoderAsIsRespectable(Item_encode)
 const Array_Item_15_len = 15
 
-export function Array_Item_15_decode(bytes: Uint8Array): Array_Item_15_Decoded {
+export function Array_Item_15_decode(bytes: Uint8Array): DecodeResult<Array_Item_15_Decoded> {
   return decodeArray(bytes, Item_decode, Array_Item_15_len)
 }
 
@@ -28,7 +30,8 @@ export function Array_Item_15_encode(encodable: Array_Item_15_Encodable): Uint8A
 `;
 
 exports[`Renders bytes array 1`] = `
-"import { decodeBytesArray, encodeBytesArray } from '@scale-codec/definition-compiler-runtime'
+"/* eslint-disable */
+import { DecodeResult, decodeUint8Array, encodeUint8Array } from '@scale-codec/definition-compiler-runtime'
 
 // Hash
 
@@ -38,19 +41,57 @@ export type Hash_Encodable = Uint8Array
 
 const Hash_len = 64
 
-export function Hash_decode(bytes: Uint8Array): Hash_Decoded {
-  return decodeBytesArray(bytes, Hash_len)
+export function Hash_decode(bytes: Uint8Array): DecodeResult<Hash_Decoded> {
+  return decodeUint8Array(bytes, Hash_len)
 }
 
 export function Hash_encode(encodable: Hash_Encodable): Uint8Array {
-  return encodeBytesArray(encodable, Hash_len)
+  return encodeUint8Array(encodable, Hash_len)
 }
 "
 `;
 
+exports[`Renders empty struct as void alias 1`] = `
+"/* eslint-disable */
+
+// EmptyStruct
+
+// EmptyStruct is just a void alias
+
+import {
+  Void_Decoded as EmptyStruct_Decoded,
+  Void_Encodable as EmptyStruct_Encodable,
+  Void_decode as EmptyStruct_decode,
+  Void_encode as EmptyStruct_encode,
+} from '@scale-codec/definition-compiler-runtime'
+
+export { EmptyStruct_Decoded, EmptyStruct_Encodable, EmptyStruct_decode, EmptyStruct_encode }
+"
+`;
+
+exports[`Renders empty tuple as void alias 1`] = `
+"/* eslint-disable */
+
+// EmptyTuple
+
+// EmptyTuple is just a void alias
+
+import {
+  Void_Decoded as EmptyTuple_Decoded,
+  Void_Encodable as EmptyTuple_Encodable,
+  Void_decode as EmptyTuple_decode,
+  Void_encode as EmptyTuple_encode,
+} from '@scale-codec/definition-compiler-runtime'
+
+export { EmptyTuple_Decoded, EmptyTuple_Encodable, EmptyTuple_decode, EmptyTuple_encode }
+"
+`;
+
 exports[`Renders enum 1`] = `
-"import {
-  EncodeSkippable,
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
   Enum,
   EnumDecoders,
   EnumEncoders,
@@ -72,7 +113,7 @@ export type Message_Decoded = Enum<{
 
 export type Message_Encodable = Enum<{
   Quit: null
-  Greeting: Valuable<str_Encodable | EncodeSkippable>
+  Greeting: Valuable<str_Encodable | EncodeAsIs>
 }>
 
 // Message enum tools
@@ -88,7 +129,7 @@ const Message_encoders: EnumEncoders = {
 
 // Message tools end
 
-export function Message_decode(bytes: Uint8Array): Message_Decoded {
+export function Message_decode(bytes: Uint8Array): DecodeResult<Message_Decoded> {
   return decodeEnum(bytes, Message_decoders)
 }
 
@@ -99,30 +140,31 @@ export function Message_encode(encodable: Message_Encodable): Uint8Array {
 `;
 
 exports[`Renders map 1`] = `
-"import {
-  EncodeSkippable,
+"/* eslint-disable */
+import {
+  DecodeResult,
+  Encode,
+  EncodeAsIs,
   decodeMap,
   encodeMap,
+  makeEncoderAsIsRespectable,
   str_Decoded,
   str_Encodable,
   str_decode,
   str_encode,
-  wrapSkippableEncode,
 } from '@scale-codec/definition-compiler-runtime'
 
 // Map_str_Message
 
 export type Map_str_Message_Decoded = Map<str_Decoded, Message_Decoded>
 
-export type Map_str_Message_Encodable = Map<str_Encodable | EncodeSkippable, Message_Encodable | EncodeSkippable>
+export type Map_str_Message_Encodable = Map<str_Encodable | EncodeAsIs, Message_Encodable | EncodeAsIs>
 
-// Map_str_Message map tools
+const [Map_str_Message_encode_key, Map_str_Message_encode_value] = [str_encode, Message_encode].map(
+  makeEncoderAsIsRespectable
+) as [Encode<str_Encodable | EncodeAsIs>, Encode<Message_Encodable | EncodeAsIs>]
 
-const [Map_str_Message_encode_key, Map_str_Message_encode_value] = [str_encode, Message_encode].map(wrapSkippableEncode)
-
-// Map_str_Message tools end
-
-export function Map_str_Message_decode(bytes: Uint8Array): Map_str_Message_Decoded {
+export function Map_str_Message_decode(bytes: Uint8Array): DecodeResult<Map_str_Message_Decoded> {
   return decodeMap(bytes, str_decode, Message_decode)
 }
 
@@ -133,8 +175,10 @@ export function Map_str_Message_encode(encodable: Map_str_Message_Encodable): Ui
 `;
 
 exports[`Renders option 1`] = `
-"import {
-  EncodeSkippable,
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
   EnumDecoders,
   EnumEncoders,
   Option,
@@ -146,7 +190,7 @@ exports[`Renders option 1`] = `
 
 export type OptionHash_Decoded = Option<Hash_Decoded>
 
-export type OptionHash_Encodable = Option<Hash_Encodable | EncodeSkippable>
+export type OptionHash_Encodable = Option<Hash_Encodable | EncodeAsIs>
 
 const OptionHash_decoders: EnumDecoders = {
   0: { v: 'None' },
@@ -157,7 +201,7 @@ const OptionHash_encoders: EnumEncoders = {
   Some: { d: 1, encode: Hash_encode },
 }
 
-export function OptionHash_decode(bytes: Uint8Array): OptionHash_Decoded {
+export function OptionHash_decode(bytes: Uint8Array): DecodeResult<OptionHash_Decoded> {
   return decodeEnum(bytes, OptionHash_decoders)
 }
 
@@ -168,21 +212,28 @@ export function OptionHash_encode(encodable: OptionHash_Encodable): Uint8Array {
 `;
 
 exports[`Renders set 1`] = `
-"import { EncodeSkippable, decodeSet, encodeSet, wrapSkippableEncode } from '@scale-codec/definition-compiler-runtime'
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
+  decodeSet,
+  encodeSet,
+  makeEncoderAsIsRespectable,
+} from '@scale-codec/definition-compiler-runtime'
 
 // Set_Message
 
 export type Set_Message_Decoded = Set<Message_Decoded>
 
-export type Set_Message_Encodable = Set<Message_Encodable | EncodeSkippable>
+export type Set_Message_Encodable = Set<Message_Encodable | EncodeAsIs>
 
 // Set_Message set tools
 
-const Set_Message_entry_encode = wrapSkippableEncode(Message_encode)
+const Set_Message_entry_encode = makeEncoderAsIsRespectable(Message_encode)
 
 // Set_Message tools end
 
-export function Set_Message_decode(bytes: Uint8Array): Set_Message_Decoded {
+export function Set_Message_decode(bytes: Uint8Array): DecodeResult<Set_Message_Decoded> {
   return decodeSet(bytes, Message_decode)
 }
 
@@ -193,8 +244,10 @@ export function Set_Message_encode(encodable: Set_Message_Encodable): Uint8Array
 `;
 
 exports[`Renders struct + tuple 1`] = `
-"import {
-  EncodeSkippable,
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
   bool_Decoded,
   bool_Encodable,
   bool_decode,
@@ -207,11 +260,11 @@ exports[`Renders struct + tuple 1`] = `
   i128_Encodable,
   i128_decode,
   i128_encode,
+  makeEncoderAsIsRespectable,
   u8_Decoded,
   u8_Encodable,
   u8_decode,
   u8_encode,
-  wrapSkippableEncode,
 } from '@scale-codec/definition-compiler-runtime'
 
 // Structural
@@ -222,25 +275,21 @@ export type Structural_Decoded = {
 }
 
 export type Structural_Encodable = {
-  nums: Tuple_u8_i128_Encodable | EncodeSkippable
-  mur: bool_Encodable | EncodeSkippable
+  nums: Tuple_u8_i128_Encodable | EncodeAsIs
+  mur: bool_Encodable | EncodeAsIs
 }
 
-// Structural struct tools
-
-const Structural_order = ['nums', 'mur']
+const Structural_order: (keyof Structural_Decoded)[] = ['nums', 'mur']
 const Structural_decoders = {
   nums: Tuple_u8_i128_decode,
   mur: bool_decode,
 }
 const Structural_encoders = {
-  nums: wrapSkippableEncode(Tuple_u8_i128_encode),
-  mur: wrapSkippableEncode(bool_encode),
+  nums: makeEncoderAsIsRespectable(Tuple_u8_i128_encode),
+  mur: makeEncoderAsIsRespectable(bool_encode),
 }
 
-// Structural tools end
-
-export function Structural_decode(bytes: Uint8Array): Structural_Decoded {
+export function Structural_decode(bytes: Uint8Array): DecodeResult<Structural_Decoded> {
   return decodeStruct(bytes, Structural_decoders, Structural_order)
 }
 
@@ -252,28 +301,30 @@ export function Structural_encode(encodable: Structural_Encodable): Uint8Array {
 
 export type Tuple_u8_i128_Decoded = [u8_Decoded, i128_Decoded]
 
-export type Tuple_u8_i128_Encodable = [u8_Encodable | EncodeSkippable, i128_Encodable | EncodeSkippable]
+export type Tuple_u8_i128_Encodable = [u8_Encodable | EncodeAsIs, i128_Encodable | EncodeAsIs]
 
 // Tuple_u8_i128 tuple-related tools
 
 const Tuple_u8_i128_decoders = [u8_decode, i128_decode]
-const Tuple_u8_i128_encoders = [u8_encode, i128_encode].wrap(wrapSkippableEncode)
+const Tuple_u8_i128_encoders = [u8_encode, i128_encode].map(makeEncoderAsIsRespectable)
 
 // Tuple_u8_i128 tools end
 
-export function Tuple_u8_i128_decode(bytes: Uint8Array): Tuple_u8_i128_Decoded {
-  return decodeTuple(bytes, Tuple_u8_i128_decoders)
+export function Tuple_u8_i128_decode(bytes: Uint8Array): DecodeResult<Tuple_u8_i128_Decoded> {
+  return decodeTuple(bytes, Tuple_u8_i128_decoders as any)
 }
 
 export function Tuple_u8_i128_encode(encodable: Tuple_u8_i128_Encodable): Uint8Array {
-  return encodeTuple(encodable, Tuple_u8_i128_encoders)
+  return encodeTuple(encodable, Tuple_u8_i128_encoders as any)
 }
 "
 `;
 
 exports[`Renders vec 1`] = `
-"import {
-  EncodeSkippable,
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
   decodeVec,
   encodeVec,
   str_Decoded,
@@ -286,9 +337,9 @@ exports[`Renders vec 1`] = `
 
 export type Vec_str_Decoded = str_Decoded[]
 
-export type Vec_str_Encodable = (str_Encodable | EncodeSkippable)[]
+export type Vec_str_Encodable = (str_Encodable | EncodeAsIs)[]
 
-export function Vec_str_decode(bytes: Uint8Array): Vec_str_Decoded {
+export function Vec_str_decode(bytes: Uint8Array): DecodeResult<Vec_str_Decoded> {
   return decodeVec(bytes, str_decode)
 }
 

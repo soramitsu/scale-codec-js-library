@@ -104,3 +104,21 @@ it('Renders option', () => {
         },
     });
 });
+
+it('Renders empty struct as void alias', () => {
+    return expectRenderToMatchSnapshot({
+        EmptyStruct: {
+            t: 'struct',
+            fields: [],
+        },
+    });
+});
+
+it('Renders empty tuple as void alias', () => {
+    return expectRenderToMatchSnapshot({
+        EmptyTuple: {
+            t: 'tuple',
+            items: [],
+        },
+    });
+});

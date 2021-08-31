@@ -1,6 +1,7 @@
 import { defineComponent, PropType, computed, compile } from 'vue';
 import { NamespaceDefinition, TypeDef } from '../definitions';
 import { byValue, byString } from 'sort-es';
+import { provideConfig } from './config';
 
 import Collector from './components/Collector';
 import Preamble from './components/Preamble';
@@ -29,13 +30,17 @@ export default defineComponent({
             return items.map(([tyName, def]) => ({ tyName, def }));
         });
 
+        provideConfig({
+            importLib: props.importLib,
+        });
+
         return {
             defsList,
         };
     },
     render: compile(`
         <collector>
-            <preamble :import-from="importLib" />
+            <preamble />
 
 
             <template v-for="x in defsList" :key="x.tyName">
