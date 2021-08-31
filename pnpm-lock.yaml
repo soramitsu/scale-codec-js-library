@@ -19,6 +19,7 @@ importers:
       eslint: ^7.30.0
       eslint-config-alloy: ^4.1.0
       eslint-plugin-cypress: ^2.11.3
+      esno: ^0.8.0
       execa: ^5.1.1
       husky: ^7.0.1
       jest: ^27.0.6
@@ -49,6 +50,7 @@ importers:
       eslint: 7.30.0
       eslint-config-alloy: 4.1.0
       eslint-plugin-cypress: 2.11.3_eslint@7.30.0
+      esno: 0.8.0
       execa: 5.1.1
       husky: 7.0.1
       jest: 27.0.6_ts-node@10.0.0

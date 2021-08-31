@@ -41,6 +41,7 @@ const configs: RollupOptions[] = [];
 
 for (const { dir, external } of packages) {
     const input = `packages/${dir}/src/lib.ts`;
+    const inputDts = `.declaration/${dir}/src/lib.d.ts`;
 
     configs.push(
         {
@@ -63,15 +64,15 @@ for (const { dir, external } of packages) {
             ],
             external,
         },
-        // {
-        //     input,
-        //     output: {
-        //         file: `packages/${dir}/dist/lib.d.ts`,
-        //         format: 'es',
-        //     },
-        //     plugins: [dts()],
-        //     external,
-        // },
+        {
+            input: inputDts,
+            output: {
+                file: `packages/${dir}/dist/lib.d.ts`,
+                format: 'es',
+            },
+            plugins: [dts()],
+            external,
+        },
     );
 }
 
