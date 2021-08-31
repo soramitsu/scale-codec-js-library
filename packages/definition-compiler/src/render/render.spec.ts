@@ -1,4 +1,4 @@
-import { NamespaceDefinition } from './definitions';
+import { NamespaceDefinition } from '../definitions';
 import { renderNamespaceDefinition } from './render';
 
 async function expectRenderToMatchSnapshot(

@@ -1,5 +1,7 @@
 # @scale-codec/namespace
 
+**Not used anymore!**
+
 This library provides tools for creating complex namespaces whose types need to be encoded and decoded through SCALE and which can depend on each other.
 
 ## Install

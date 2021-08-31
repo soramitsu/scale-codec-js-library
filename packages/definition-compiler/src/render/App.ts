@@ -1,6 +1,5 @@
-import { TypeDef } from '@scale-codec/namespace-codegen';
 import { defineComponent, PropType, computed, compile } from 'vue';
-import { NamespaceDefinition } from '../definitions';
+import { NamespaceDefinition, TypeDef } from '../definitions';
 import { byValue, byString } from 'sort-es';
 
 import Collector from './components/Collector';
@@ -24,7 +23,7 @@ export default defineComponent({
         },
     },
     setup(props) {
-        const defsList = computed<{ tyName: String; def: TypeDef }>(() => {
+        const defsList = computed<{ tyName: String; def: TypeDef }[]>(() => {
             const items = Object.entries(props.defmap);
             items.sort(byValue((x) => x[0], byString()));
             return items.map(([tyName, def]) => ({ tyName, def }));

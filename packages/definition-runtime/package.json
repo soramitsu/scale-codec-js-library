@@ -1,0 +1,19 @@
+{
+    "name": "@scale-codec/definition-runtime",
+    "version": "0.1.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "compile-ints": "esno scripts/compile-ints"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@scale-codec/core": "workspace:^0.2.0"
+    },
+    "devDependencies": {
+        "esno": "^0.8.0",
+        "prettier": "^2.3.2"
+    }
+}
