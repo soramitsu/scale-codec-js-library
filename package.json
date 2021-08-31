@@ -9,7 +9,7 @@
         "type-check": "tsc --noEmit",
         "clean": "rimraf packages/*/dist",
         "publish:all": "node -r esbuild-register scripts/publish-all",
-        "lint": "prettier-eslint \"**/*.(ts|js)\" --write",
+        "lint": "prettier-eslint \"**/*.(ts|js)\"",
         "check-code-integrity": "node -r esbuild-register scripts/check-code-integrity"
     },
     "devDependencies": {
