@@ -10,7 +10,7 @@
     "bugs": {
         "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
     },
-    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/core#readme",
+    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/definition-runtime#readme",
     "main": "./dist/lib.cjs.js",
     "module": "./dist/lib.esm.js",
     "types": "./dist/lib.d.ts",
