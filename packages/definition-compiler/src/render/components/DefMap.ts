@@ -28,9 +28,9 @@ export default defineComponent({
         </with-def-part>
         <w t="\n\n" />
         <with-def-part part="fn-encode">
-            const [<ty-name/>_encode_key, <ty-name/>_encode_value] = [
+            const [<ty-name/>_encode_key, <ty-name/>_encode_value] = ([
                 <template v-for="i in [keyRef, valueRef]"> <ref :to="i"/>, </template>
-            ].map(<core id="makeEncoderAsIsRespectable" />) as [
+            ] as any).map(<core id="makeEncoderAsIsRespectable" />) as [
                 <with-def-part part="ty-encodable">
                     <template v-for="i in [keyRef, valueRef]">
                         <core id="Encode"/> &lt; <ref :to="i" /> | <core id="EncodeAsIs"/> &gt;,

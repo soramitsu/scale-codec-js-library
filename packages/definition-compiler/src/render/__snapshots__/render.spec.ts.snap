@@ -160,7 +160,7 @@ export type Map_str_Message_Decoded = Map<str_Decoded, Message_Decoded>
 
 export type Map_str_Message_Encodable = Map<str_Encodable | EncodeAsIs, Message_Encodable | EncodeAsIs>
 
-const [Map_str_Message_encode_key, Map_str_Message_encode_value] = [str_encode, Message_encode].map(
+const [Map_str_Message_encode_key, Map_str_Message_encode_value] = ([str_encode, Message_encode] as any).map(
   makeEncoderAsIsRespectable
 ) as [Encode<str_Encodable | EncodeAsIs>, Encode<Message_Encodable | EncodeAsIs>]
 
@@ -306,7 +306,7 @@ export type Tuple_u8_i128_Encodable = [u8_Encodable | EncodeAsIs, i128_Encodable
 // Tuple_u8_i128 tuple-related tools
 
 const Tuple_u8_i128_decoders = [u8_decode, i128_decode]
-const Tuple_u8_i128_encoders = [u8_encode, i128_encode].map(makeEncoderAsIsRespectable)
+const Tuple_u8_i128_encoders = ([u8_encode, i128_encode] as any).map(makeEncoderAsIsRespectable)
 
 // Tuple_u8_i128 tools end
 
@@ -327,6 +327,7 @@ import {
   EncodeAsIs,
   decodeVec,
   encodeVec,
+  makeEncoderAsIsRespectable,
   str_Decoded,
   str_Encodable,
   str_decode,
@@ -339,12 +340,14 @@ export type Vec_str_Decoded = str_Decoded[]
 
 export type Vec_str_Encodable = (str_Encodable | EncodeAsIs)[]
 
+const Vec_str_item_encode = makeEncoderAsIsRespectable(str_encode)
+
 export function Vec_str_decode(bytes: Uint8Array): DecodeResult<Vec_str_Decoded> {
   return decodeVec(bytes, str_decode)
 }
 
 export function Vec_str_encode(encodable: Vec_str_Encodable): Uint8Array {
-  return encodeVec(encodable, str_encode)
+  return encodeVec(encodable, Vec_str_item_encode)
 }
 "
 `;

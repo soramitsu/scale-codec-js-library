@@ -24,6 +24,10 @@ export default defineComponent({
         </with-def-part>
 
         <w t="\n\n" />
+        const <ty-name/>_item_encode = <core id="makeEncoderAsIsRespectable" />(
+            <with-def-part part="fn-encode"> <ref :to="item" /> </with-def-part>
+        )
+        <w t="\n\n" />
 
         <with-def-part part="fn-decode">
             <export>
@@ -35,7 +39,7 @@ export default defineComponent({
 
         <with-def-part part="fn-encode">
             <export>
-                return <core id="encodeVec" />(encodable, <ref :to="item" />)
+                return <core id="encodeVec" />(encodable, <ty-name/>_item_encode)
             </export>
         </with-def-part>
     `),

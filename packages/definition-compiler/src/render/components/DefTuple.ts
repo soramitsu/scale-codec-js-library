@@ -41,11 +41,11 @@ export default defineComponent({
                     <template v-for="x in items"> <ref :to="x" />, </template>
                 </with-def-part>
             ]<w t="\n" />
-            const <ty-name />_encoders = [
+            const <ty-name />_encoders = ([
                 <with-def-part part="fn-encode">
                     <template v-for="x in items"> <ref :to="x" />, </template>
                 </with-def-part>
-            ].map(<core id="makeEncoderAsIsRespectable" />)
+            ] as any).map(<core id="makeEncoderAsIsRespectable" />)
 
             <w t="\n\n" />
 
