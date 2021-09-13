@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
-import { Option, Enum, Result } from '@scale-codec/enum';
+import { Option, Enum, Result } from '@scale-codec/definition-runtime';
 import { encodeAndDecodeReallyComplexData } from './encode-decode';
 
 export default defineComponent({

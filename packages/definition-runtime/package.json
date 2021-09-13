@@ -1,0 +1,37 @@
+{
+    "name": "@scale-codec/definition-runtime",
+    "version": "0.1.0",
+    "description": "Runtime for compiled result from @scale-codec/definition-compiler",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+    },
+    "bugs": {
+        "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
+    },
+    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/definition-runtime#readme",
+    "main": "./dist/lib.cjs.js",
+    "module": "./dist/lib.esm.js",
+    "types": "./dist/lib.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/lib.esm.js",
+            "require": "./dist/lib.cjs.js"
+        },
+        "./*": "./*"
+    },
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "compile-ints": "esno scripts/compile-ints"
+    },
+    "dependencies": {
+        "@scale-codec/core": "workspace:^0.2.0"
+    },
+    "devDependencies": {
+        "esno": "^0.8.0",
+        "prettier": "^2.3.2"
+    }
+}

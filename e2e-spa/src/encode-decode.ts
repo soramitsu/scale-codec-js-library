@@ -1,11 +1,14 @@
-import { Namespace, types } from './namespace';
-import { Enum, Result } from '@scale-codec/enum';
+import {
+    Array_Vec_HashMap_str_Id_8_decode,
+    Array_Vec_HashMap_str_Id_8_Encodable,
+    Array_Vec_HashMap_str_Id_8_encode,
+} from './namespace';
+import { Enum, Result, JSBI } from '@scale-codec/definition-runtime';
 import deepEqual from 'fast-deep-equal';
-import JSBI from 'jsbi';
 
 export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
     try {
-        const data: Namespace['[Vec<HashMap<str, Id>>; 8]'] = [
+        const data: Array_Vec_HashMap_str_Id_8_Encodable = [
             [
                 new Map([
                     [
@@ -14,8 +17,7 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
                             name: 'Alice',
                             second_name: Enum.create('None'),
                             domain: 'wonderland',
-                            attempt: Enum.create('Err', 'Oh no!'),
-                            enum: Enum.create('Two', [JSBI.BigInt(4412), false, ['nope', 2]]),
+                            enum: Enum.create('Two', [JSBI.BigInt(4412), false, ['nope', JSBI.BigInt(2)]]),
                         },
                     ],
                     [
@@ -25,7 +27,6 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
                             second_name: Enum.create('Some', 'Watson'),
                             domain: 'netherland',
                             enum: Enum.create('One'),
-                            attempt: Enum.create('Ok', null),
                         },
                     ],
                 ]),
@@ -39,8 +40,8 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
             [],
         ];
 
-        const encoded = types.encode('[Vec<HashMap<str, Id>>; 8]', data);
-        const decoded = types.decode('[Vec<HashMap<str, Id>>; 8]', encoded);
+        const encoded = Array_Vec_HashMap_str_Id_8_encode(data);
+        const [decoded] = Array_Vec_HashMap_str_Id_8_decode(encoded);
 
         if (!deepEqual(data, decoded)) {
             throw new Error('Not equals >:(');
@@ -48,6 +49,7 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
 
         return Enum.create('Ok', null);
     } catch (err) {
+        // throw err;
         return Enum.create('Err', err);
     }
 }

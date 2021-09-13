@@ -1,5 +1,7 @@
 # @scale-codec/namespace-codegen
 
+**Not used anymore!**
+
 Automatization tool for `@scale-codec/namespace` definition code generation.
 
 ### Usage
