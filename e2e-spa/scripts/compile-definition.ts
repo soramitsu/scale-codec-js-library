@@ -4,7 +4,7 @@ import path from 'path';
 import consola from 'consola';
 import chalk from 'chalk';
 
-const OUTPUT_PATH = path.resolve(__dirname, '../src/namespace/index.ts');
+const OUTPUT_PATH = path.resolve(__dirname, '../src/namespace.ts');
 
 const definition: NamespaceDefinition = {
     Option_str: {
