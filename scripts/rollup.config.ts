@@ -20,19 +20,28 @@ const packages: {
         external: ['jsbi', '@scale-codec/enum', '@scale-codec/util'],
     },
     {
-        dir: 'namespace',
-        external: ['jsbi', '@scale-codec/core', '@scale-codec/util'],
+        dir: 'definition-compiler',
+        external: ['vue', 'prettier', '@scale-codec/core'],
     },
     {
-        dir: 'namespace-codegen',
-        external: ['case', '@scale-codec/namespace', '@scale-codec/enum', '@scale-codec/util'],
+        dir: 'definition-runtime',
+        external: ['@scale-codec/core'],
     },
+    // {
+    //     dir: 'namespace',
+    //     external: ['jsbi', '@scale-codec/core', '@scale-codec/util'],
+    // },
+    // {
+    //     dir: 'namespace-codegen',
+    //     external: ['case', '@scale-codec/namespace', '@scale-codec/enum', '@scale-codec/util'],
+    // },
 ];
 
 const configs: RollupOptions[] = [];
 
 for (const { dir, external } of packages) {
     const input = `packages/${dir}/src/lib.ts`;
+    const inputDts = `.declaration/${dir}/src/lib.d.ts`;
 
     configs.push(
         {
@@ -56,7 +65,7 @@ for (const { dir, external } of packages) {
             external,
         },
         {
-            input,
+            input: inputDts,
             output: {
                 file: `packages/${dir}/dist/lib.d.ts`,
                 format: 'es',
@@ -67,16 +76,16 @@ for (const { dir, external } of packages) {
     );
 }
 
-// codegen cli
+// // codegen cli
 
-configs.push({
-    input: 'packages/namespace-codegen-cli/src/main.ts',
-    output: {
-        file: 'packages/namespace-codegen-cli/dist/main.js',
-        format: 'cjs',
-    },
-    plugins: [esbuild({ minify: false }), nodeResolve({ preferBuiltins: true }), json(), commonjs()],
-    external: ['fs/promises'],
-});
+// configs.push({
+//     input: 'packages/namespace-codegen-cli/src/main.ts',
+//     output: {
+//         file: 'packages/namespace-codegen-cli/dist/main.js',
+//         format: 'cjs',
+//     },
+//     plugins: [esbuild({ minify: false }), nodeResolve({ preferBuiltins: true }), json(), commonjs()],
+//     external: ['fs/promises'],
+// });
 
 export default configs;

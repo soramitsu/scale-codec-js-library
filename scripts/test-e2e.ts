@@ -6,7 +6,7 @@ import { runAsyncMain, $ } from './util';
 
 async function arePackagesBuilt(): Promise<boolean> {
     const existense = await Promise.all(
-        ['enum', 'core', 'namespace', 'namespace-codegen', 'util']
+        ['enum', 'core', 'definition-compiler', 'definition-runtime', 'util']
             .map((x) => path.join(__dirname, '../packages', x, 'dist'))
             .map((x) => pathExists(x)),
     );
@@ -20,22 +20,25 @@ runAsyncMain(async () => {
         process.exit(1);
     }
 
-    consola.info('Running e2e test');
+    consola.log('Running e2e test');
     process.chdir(path.join(__dirname, '../e2e-spa'));
 
-    consola.info('Installing packages');
+    consola.log('Installing packages');
     await $('pnpm', ['install']);
 
-    consola.info('Cleanup');
+    consola.log('Cleaning up');
     await $('pnpm', ['clean']);
 
-    consola.info('Generate namespace from definition');
-    await $('pnpm', ['generate-namespace']);
+    consola.log('Compiling definition');
+    await $('pnpm', ['compile-definition']);
 
-    consola.info('Run unit tests in nodejs with jest');
+    consola.log('Checking types');
+    await $('pnpm', ['test:types']);
+
+    consola.log('Running unit tests in nodejs with jest');
     await $('pnpm', ['test:node']);
 
-    consola.info('Run e2e tests in browser with cypress');
+    consola.log('Running e2e tests in browser with cypress');
     await $('pnpm', ['test:cy']);
 
     consola.success('e2e passed ^_^');

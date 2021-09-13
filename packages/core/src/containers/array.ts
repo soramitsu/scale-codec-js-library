@@ -10,3 +10,24 @@ export function encodeArray<T>(items: T[], itemEncoder: Encode<T>, len: number):
 export function decodeArray<T>(bytes: Uint8Array, itemDecoder: Decode<T>, len: number): DecodeResult<T[]> {
     return decodeIteratively(bytes, yieldNTimes(itemDecoder, len));
 }
+
+/**
+ * Encode `[u8; x]` array directly from the native `Uint8Array`
+ */
+export function encodeUint8Array(bytes: Uint8Array, len: number): Uint8Array {
+    assert(bytes.length === len, () => `expected exactly ${len} bytes, found: ${bytes.length}`);
+    // copy to prevent unexpected mutations
+    return bytes.slice();
+}
+
+/**
+ * decode `[u8; x]` array directly into the native `Uint8Array`
+ */
+export function decodeUint8Array(bytes: Uint8Array, len: number): DecodeResult<Uint8Array> {
+    assert(bytes.length >= len, () => `expected >= ${len} bytes, found: ${bytes.length}`);
+    return [
+        // slice to prevent unexpected source mutations
+        bytes.slice(0, len),
+        len,
+    ];
+}

@@ -9,7 +9,7 @@ Test requirements:
 This test case checks:
 
 -   Namespace generation works without errors
--   In generated code there no type errors (thanks to `ts-jest`)
+-   In generated code there no type errors
 -   There is no runtime errors in nodejs environment, which means that `cjs` build is ok
 -   There is no runtime errors in browser environment, which means that `esm` build is ok
 -   Encoding and decoding works fine in both environments
@@ -21,7 +21,12 @@ Commands sequence:
 pnpm i
 
 pnpm clean
-pnpm generate-namespace
+pnpm compile-definition
+pnpm test:types
 pnpm test:node
 pnpm test:cy
 ```
+
+### TODO
+
+-   Test encoding as-is

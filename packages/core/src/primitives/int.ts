@@ -1,5 +1,5 @@
 import JSBI from 'jsbi';
-import { Codec, DecodeResult } from '../types';
+import { DecodeResult } from '../types';
 import { assert } from '@scale-codec/util';
 
 /**
@@ -25,7 +25,7 @@ class BytesRepr {
 
         if (source) {
             assert(source.length >= bytes, () => `expected at least ${bytes} bytes, received: ${source.length}`);
-            this.arr = source.subarray(0, bytes);
+            this.arr = source.slice(0, bytes);
         } else {
             this.arr = new Uint8Array(bytes);
         }
@@ -99,11 +99,4 @@ export function decodeBigInt(
     const valWithSign = negate ? JSBI.unaryMinus(valAcc) : valAcc;
 
     return [valWithSign, bytes];
-}
-
-export function bigIntCodec(opts: BigIntCodecOptions): Codec<JSBI> {
-    return {
-        encode: (bi) => encodeBigInt(bi, opts),
-        decode: (bytes) => decodeBigInt(bytes, opts),
-    };
 }

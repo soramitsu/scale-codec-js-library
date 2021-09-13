@@ -7,7 +7,7 @@ export type TupleEncoders<Tuple extends any[]> = Tuple extends [infer Head, ...i
     : [];
 
 export type TupleDecoders<Tuple extends any[]> = Tuple extends [infer Head, ...infer Tail]
-    ? [Decode<Head>, ...TupleEncoders<Tail>]
+    ? [Decode<Head>, ...TupleDecoders<Tail>]
     : [];
 
 export function decodeTuple<T extends any[]>(bytes: Uint8Array, decoders: TupleDecoders<T>): DecodeResult<T> {

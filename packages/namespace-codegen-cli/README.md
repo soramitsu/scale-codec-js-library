@@ -1,5 +1,7 @@
 # @scale-codec/namespace-codegen-cli
 
+**Not used anymore!**
+
 CLI for `@scale-codec/namespace-codegen`.
 
 ### Install
