@@ -1,12 +1,35 @@
 import JSBI from 'jsbi';
 import { encodeBigInt } from '../primitives/int';
-import { MAX_U16, MAX_U32, MAX_U8 } from '../consts';
 import { assert, concatUint8Arrays } from '@scale-codec/util';
+
+let cachedMaxU8: JSBI | undefined;
+let cachedMaxU16: JSBI | undefined;
+let cachedMaxU32: JSBI | undefined;
+
+function consts(): {
+    MAX_U8: JSBI;
+    MAX_U16: JSBI;
+    MAX_U32: JSBI;
+} {
+    cachedMaxU8 = cachedMaxU8 || JSBI.subtract(JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(8 - 2)), JSBI.BigInt(1));
+    cachedMaxU16 =
+        cachedMaxU16 || JSBI.subtract(JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(16 - 2)), JSBI.BigInt(1));
+    cachedMaxU32 =
+        cachedMaxU32 || JSBI.subtract(JSBI.exponentiate(JSBI.BigInt(2), JSBI.BigInt(32 - 2)), JSBI.BigInt(1));
+
+    return {
+        MAX_U8: cachedMaxU8,
+        MAX_U16: cachedMaxU16,
+        MAX_U32: cachedMaxU32,
+    };
+}
 
 /**
  * @describe Encodes a number into a compact representation
  */
 export function encodeCompact(bn: JSBI): Uint8Array {
+    const { MAX_U8, MAX_U32, MAX_U16 } = consts();
+
     if (JSBI.lessThanOrEqual(bn, MAX_U8)) {
         return new Uint8Array([JSBI.toNumber(bn) << 2]);
     } else if (JSBI.lessThanOrEqual(bn, MAX_U16)) {
