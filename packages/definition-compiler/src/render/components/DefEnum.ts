@@ -30,7 +30,7 @@ export const Encoders = defineComponent({
         <slot/>: <core id="EnumEncoders"/> = <with-def-part part="fn-encode">
             <fields :items="variants" prop="name">
                 <template #value="{ item: { ref, discriminant: d } }">
-                    { d: {{ d }}<template v-if="ref">, encode: <ref :to="ref" /></template> }
+                    { d: {{ d }}<template v-if="ref">, encode: <core id="makeEncoderAsIsRespectable"/>(<ref :to="ref" />) </template> }
                 </template>
             </fields>
         </with-def-part>
