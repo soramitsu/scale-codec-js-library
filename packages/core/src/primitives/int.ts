@@ -25,6 +25,9 @@ class BytesRepr {
 
         if (source) {
             assert(source.length >= bytes, () => `expected at least ${bytes} bytes, received: ${source.length}`);
+
+            // it is important to get slice copy of array, not a subarray of the source, because
+            // mutations on subarray will affect source.
             this.arr = source.slice(0, bytes);
         } else {
             this.arr = new Uint8Array(bytes);
