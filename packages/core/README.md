@@ -6,7 +6,7 @@ Codecs for primitives and main containers according to the SCALE specification.
 
 ```sh
 # Use your favorite PM
-npm install @scale-codec/core jsbi
+npm install @scale-codec/core
 ```
 
 ### Supported types
