@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/definition-runtime",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Runtime for compiled result from @scale-codec/definition-compiler",
     "license": "Apache-2.0",
     "repository": {
@@ -28,7 +28,7 @@
         "compile-ints": "esno scripts/compile-ints"
     },
     "dependencies": {
-        "@scale-codec/core": "workspace:^0.2.0"
+        "@scale-codec/core": "workspace:^0.2.1"
     },
     "devDependencies": {
         "esno": "^0.8.0",
