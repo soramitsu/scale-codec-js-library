@@ -8,7 +8,7 @@ module.exports = {
     roots: ['<rootDir>/packages'],
     testPathIgnorePatterns: ['/node_modules/', '/dist/', 'packages/namespace*'],
     modulePathIgnorePatterns: ['/dist/'],
-    moduleNameMapper: {
-        '^@scale-codec/(.*)$': '<rootDir>/packages/$1/src/lib.ts',
-    },
+    // moduleNameMapper: {
+    //     '^@scale-codec/(.*)$': '<rootDir>/packages/$1/src/lib.ts',
+    // },
 };
