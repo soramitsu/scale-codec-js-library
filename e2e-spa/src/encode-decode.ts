@@ -48,7 +48,7 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
         }
 
         return Enum.create('Ok', null);
-    } catch (err) {
+    } catch (err: any) {
         // throw err;
         return Enum.create('Err', err);
     }
