@@ -31,7 +31,7 @@
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.0",
         "@scale-codec/util": "workspace:^0.1.0",
-        "jsbi": "3.2.4"
+        "jsbi": "3.2.5"
     },
     "devDependencies": {
         "hada": "^0.0.8",

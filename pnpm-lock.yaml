@@ -109,18 +109,18 @@ importers:
       '@scale-codec/util': workspace:^0.1.0
       hada: ^0.0.8
       http-server: ^13.0.2
-      jsbi: 3.2.4
+      jsbi: 3.2.5
       type-fest: ^2.3.4
       typedoc: ^0.22.5
     dependencies:
       '@scale-codec/enum': link:../enum
       '@scale-codec/util': link:../util
-      jsbi: 3.2.4
+      jsbi: 3.2.5
     devDependencies:
       hada: 0.0.8
       http-server: 13.0.2
       type-fest: 2.3.4
-      typedoc: 0.22.5_typescript@4.4.3
+      typedoc: 0.22.5
 
   packages/definition-compiler:
     specifiers:
@@ -145,54 +145,6 @@ importers:
 
   packages/enum:
     specifiers: {}
-
-  packages/namespace:
-    specifiers:
-      '@scale-codec/core': 0.1.0
-      '@scale-codec/util': 0.1.0
-      jsbi: ^3.1.5
-      type-fest: ^1.2.0
-    dependencies:
-      '@scale-codec/core': 0.1.0_jsbi@3.1.5
-      '@scale-codec/util': link:../util
-    devDependencies:
-      jsbi: 3.1.5
-      type-fest: 1.4.0
-
-  packages/namespace-codegen:
-    specifiers:
-      '@scale-codec/enum': ^0.1.0
-      '@scale-codec/namespace': ^0.1.0
-      '@scale-codec/util': ^0.1.0
-      case: ^1.6.3
-    dependencies:
-      '@scale-codec/enum': link:../enum
-      '@scale-codec/namespace': link:../namespace
-      '@scale-codec/util': link:../util
-      case: 1.6.3
-
-  packages/namespace-codegen-cli:
-    specifiers:
-      '@scale-codec/enum': workspace:^0.1.0
-      '@scale-codec/namespace-codegen': workspace:^0.1.0
-      '@types/prompts': ^2.0.14
-      cac: ^6.7.3
-      chalk: ^4.1.1
-      consola: ^2.15.3
-      esbuild-register: ^2.6.0
-      path-exists: ^4.0.0
-      prompts: ^2.4.1
-    dependencies:
-      '@scale-codec/enum': link:../enum
-      '@scale-codec/namespace-codegen': link:../namespace-codegen
-      cac: 6.7.8
-      chalk: 4.1.2
-      consola: 2.15.3
-      esbuild-register: 2.6.0
-      path-exists: 4.0.0
-      prompts: 2.4.2
-    devDependencies:
-      '@types/prompts': 2.0.14
 
   packages/util:
     specifiers: {}
@@ -1282,24 +1234,6 @@ packages:
       picomatch: 2.3.0
     dev: true
 
-  /@scale-codec/core/0.1.0_jsbi@3.1.5:
-    resolution: {integrity: sha512-abDAEJAzR6SSPngMLsEWt0DctHS6cP0zt0VbICSQMxcNKFli1EyQ9RgysBK1MXpw4Mfe2qjiEAuglxAtwdAd/A==}
-    peerDependencies:
-      jsbi: ^3.1.5
-    dependencies:
-      '@scale-codec/enum': 0.1.0
-      '@scale-codec/util': 0.1.0
-      jsbi: 3.1.5
-    dev: false
-
-  /@scale-codec/enum/0.1.0:
-    resolution: {integrity: sha512-Wyb9yOyIQsWNQqZojc9/xesGOVV3Xc88LszTieBNWCYW3FLo6e0kWgryi0ZQOAdC+BGOBdcKj/dI8JSU1//3AQ==}
-    dev: false
-
-  /@scale-codec/util/0.1.0:
-    resolution: {integrity: sha512-S9PebFC2DWdgfqZnOC4O+dR4Ca80oQiNFOVwzzfib1gx5mXkqgygqAgc4WZUMvB8c1249lpYPyIqcI3/sbXVOA==}
-    dev: false
-
   /@sideway/address/4.1.2:
     resolution: {integrity: sha512-idTz8ibqWFrPU8kMirL0CoPH/A29XOzzAzpyN3zQ4kAWnzmNfFmRaoMNN6VI8ske5M73HZyhIaW4OuSFIdM4oA==}
     dependencies:
@@ -1435,22 +1369,12 @@ packages:
     resolution: {integrity: sha512-ho3Ruq+fFnBrZhUYI46n/bV2GjwzSkwuT4dTf0GkuNFmnb8nq4ny2z9JEVemFi6bdEJanHLlYfy9c6FN9B9McQ==}
     dev: true
 
-  /@types/node/16.3.1:
-    resolution: {integrity: sha512-N87VuQi7HEeRJkhzovao/JviiqKjDKMVKxKMfUvSKw+MbkbW8R0nA3fi/MQhhlxV2fQ+2ReM+/Nt4efdrJx3zA==}
-    dev: true
-
   /@types/node/16.6.1:
     resolution: {integrity: sha512-Sr7BhXEAer9xyGuCN3Ek9eg9xPviCF2gfu9kTfuU2HkTVAMYSDeX40fvpmo72n5nansg3nsBjuQBrsS28r+NUw==}
     dev: true
 
   /@types/prettier/2.4.1:
     resolution: {integrity: sha512-Fo79ojj3vdEZOHg3wR9ksAMRz4P3S5fDB5e/YWZiFnyFQI1WY2Vftu9XoXVVtJfxB7Bpce/QTqWSSntkz2Znrw==}
-    dev: true
-
-  /@types/prompts/2.0.14:
-    resolution: {integrity: sha512-HZBd99fKxRWpYCErtm2/yxUZv6/PBI9J7N4TNFffl5JbrYMHBwF25DjQGTW3b3jmXq+9P6/8fCIb2ee57BFfYA==}
-    dependencies:
-      '@types/node': 16.3.1
     dev: true
 
   /@types/resolve/1.17.1:
@@ -1984,6 +1908,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       color-convert: 2.0.1
+    dev: true
 
   /ansi-styles/5.2.0:
     resolution: {integrity: sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==}
@@ -2372,11 +2297,6 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /cac/6.7.8:
-    resolution: {integrity: sha512-EozC0vCN4aX3LbcVAzN0tW0qKeDFDXZ74xIAfCviLP2B6yzWPMaYLlMP0EHi2oZKvNqRgY35bOKQtWc5xQ0dDA==}
-    engines: {node: '>=8'}
-    dev: false
-
   /cache-base/1.0.1:
     resolution: {integrity: sha512-AKcdTnFSWATd5/GCPRxr2ChwIJ85CeyrEyjRHlKxQ56d4XJMGym0uAiKn0xbLOGOl3+yRpOTi484dVCEc5AUzQ==}
     engines: {node: '>=0.10.0'}
@@ -2443,11 +2363,6 @@ packages:
       rsvp: 4.8.5
     dev: true
 
-  /case/1.6.3:
-    resolution: {integrity: sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==}
-    engines: {node: '>= 0.8.0'}
-    dev: false
-
   /caseless/0.12.0:
     resolution: {integrity: sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=}
     dev: true
@@ -2486,6 +2401,7 @@ packages:
     dependencies:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
+    dev: true
 
   /char-regex/1.0.2:
     resolution: {integrity: sha512-kWWXztvZ5SBQV+eRgKFeh8q5sLuZY2+8WUIzlxWVTg+oGwY14qylx1KbKzHd8P6ZYkAg0xyIDU9JMHhyJMZ1jw==}
@@ -2608,6 +2524,7 @@ packages:
     engines: {node: '>=7.0.0'}
     dependencies:
       color-name: 1.1.4
+    dev: true
 
   /color-name/1.1.3:
     resolution: {integrity: sha1-p9BVi9icQveV3UIyj3QIMcpTvCU=}
@@ -2615,6 +2532,7 @@ packages:
 
   /color-name/1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+    dev: true
 
   /colorette/1.3.0:
     resolution: {integrity: sha512-ecORCqbSFP7Wm8Y6lyqMJjexBQqXSF7SSeaTyGGphogUjBlFP9m9o08wy86HL2uB7fMTxtOUzLMk7ogKcxMg1w==}
@@ -2675,6 +2593,7 @@ packages:
 
   /consola/2.15.3:
     resolution: {integrity: sha512-9vAdYbHj6x2fLKC4+oPH0kFzY/orMZyG2Aj+kNylHxKGJ/Ed4dpNyAQYwJOdqO4zdM7XpVHmyejQDcQHrnuXbw==}
+    dev: true
 
   /consolidate/0.16.0:
     resolution: {integrity: sha512-Nhl1wzCslqXYTJVDyJCu3ODohy9OfBMB5uD2BiBTzd7w+QY0lBzafkR8y8755yMYHAaMD4NuzbAw03/xzfw+eQ==}
@@ -3125,13 +3044,6 @@ packages:
     dev: true
     optional: true
 
-  /esbuild-register/2.6.0:
-    resolution: {integrity: sha512-2u4AtnCXP5nivtIxZryiZOUcEQkOzFS7UhAqibUEmaTAThJ48gDLYTBF/Fsz+5r0hbV1jrFE6PQvPDUrKZNt/Q==}
-    dependencies:
-      esbuild: 0.12.29
-      jsonc-parser: 3.0.0
-    dev: false
-
   /esbuild-register/3.0.0:
     resolution: {integrity: sha512-No7U3ZUd6gPrrC6gqdb3XFcf2lNqzn8nvQXcgcyOl8szMVuN6YUvOplnmakxWyogI9d8SiJMl0uzBzJck+Aoxw==}
     peerDependencies:
@@ -3180,12 +3092,6 @@ packages:
     requiresBuild: true
     dev: true
     optional: true
-
-  /esbuild/0.12.29:
-    resolution: {integrity: sha512-w/XuoBCSwepyiZtIRsKsetiLDUVGPVw1E/R3VTFSecIy8UR7Cq3SOtwKHJMFoVqqVG36aGkzh4e8BvpO1Fdc7g==}
-    hasBin: true
-    requiresBuild: true
-    dev: false
 
   /esbuild/0.13.4:
     resolution: {integrity: sha512-wMA5eUwpavTBiNl+It6j8OQuKVh69l6z4DKDLzoTIqC+gChnPpcmqdA8WNHptUHRnfyML+mKEQPlW7Mybj8gHg==}
@@ -4029,6 +3935,7 @@ packages:
   /has-flag/4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+    dev: true
 
   /has-symbols/1.0.2:
     resolution: {integrity: sha512-chXa79rL/UC2KlX17jo3vRGz0azaWEx5tGqZg5pO3NUyEJVB17dMruQlzCCOfUvElghKcm5194+BCRvi2Rv/Gw==}
@@ -5070,12 +4977,8 @@ packages:
       esprima: 4.0.1
     dev: true
 
-  /jsbi/3.1.5:
-    resolution: {integrity: sha512-w2BY0VOYC1ahe+w6Qhl4SFoPvPsZ9NPHY4bwass+LCgU7RK3PBoVQlQ3G1s7vI8W3CYyJiEXcbKF7FIM/L8q3Q==}
-    dev: true
-
-  /jsbi/3.2.4:
-    resolution: {integrity: sha512-iOygwxPzMYli5xrjfd83Vy4Wyu9Ovpw6wWWFy5Kj7XP+pZxPp7Cy72F92iAt2j+6tTDYunvLtC+2tH3xCX37ng==}
+  /jsbi/3.2.5:
+    resolution: {integrity: sha512-aBE4n43IPvjaddScbvWRA2YlTzKEynHzu7MqOyTipdHucf/VxS63ViCjxYRg86M8Rxwbt/GfzHl1kKERkt45fQ==}
     dev: false
 
   /jsbn/0.1.1:
@@ -5167,6 +5070,7 @@ packages:
 
   /jsonc-parser/3.0.0:
     resolution: {integrity: sha512-fQzRfAbIBnR0IQvftw9FJveWiHp72Fg20giDrHz6TdfB12UH/uue0D3hm57UB5KgAVuniLMCaS8P1IMj9NR7cA==}
+    dev: true
 
   /jsonfile/6.1.0:
     resolution: {integrity: sha512-5dgndWOriYSm5cnYaJNhalLNDKOqFwyDB/rr1E9ZsGciGvKPs8R2xYGCacuf3z6K1YKDz182fd+fY3cn3pMqXQ==}
@@ -5213,6 +5117,7 @@ packages:
   /kleur/3.0.3:
     resolution: {integrity: sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w==}
     engines: {node: '>=6'}
+    dev: true
 
   /lazy-ass/1.6.0:
     resolution: {integrity: sha1-eZllXoZGwX8In90YfRUNMyTVRRM=}
@@ -5797,6 +5702,7 @@ packages:
   /path-exists/4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
     engines: {node: '>=8'}
+    dev: true
 
   /path-is-absolute/1.0.1:
     resolution: {integrity: sha1-F0uSaHNVNP+8es5r9TpanhtcX18=}
@@ -6090,6 +5996,7 @@ packages:
     dependencies:
       kleur: 3.0.3
       sisteransi: 1.0.5
+    dev: true
 
   /proxy-from-env/1.0.0:
     resolution: {integrity: sha1-M8UDmPcOp+uW0h97gXYwpVeRx+4=}
@@ -6484,6 +6391,7 @@ packages:
 
   /sisteransi/1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
+    dev: true
 
   /slash/3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
@@ -6777,6 +6685,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       has-flag: 4.0.0
+    dev: true
 
   /supports-color/8.1.1:
     resolution: {integrity: sha512-MpUEN2OodtUzxvKQl72cUF7RQ5EiHsGvSsVG0ia9c5RbWGL2CI4C7EpPS8UTBIplnlzZiNuV56w+FuNxy3ty2Q==}
@@ -7002,11 +6911,6 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /type-fest/1.4.0:
-    resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
-    engines: {node: '>=10'}
-    dev: true
-
   /type-fest/2.3.4:
     resolution: {integrity: sha512-2UdQc7cx8F4Ky81Xj7NYQKPhZVtDFbtorrkairIW66rW7xQj5msAhioXa04HqEdP4MD4K2G6QAF7Zyiw/Hju1Q==}
     engines: {node: '>=12.20'}
@@ -7018,7 +6922,7 @@ packages:
       is-typedarray: 1.0.0
     dev: true
 
-  /typedoc/0.22.5_typescript@4.4.3:
+  /typedoc/0.22.5:
     resolution: {integrity: sha512-KFrWGU1iKiTGw0RcyjLNYDmhd7uICU14HgBNPmFKY/sT4Pm/fraaLyWyisst9vGTUAKxqibqoDITR7+ZcAkhHg==}
     engines: {node: '>= 12.10.0'}
     hasBin: true
@@ -7030,7 +6934,6 @@ packages:
       marked: 3.0.7
       minimatch: 3.0.4
       shiki: 0.9.11
-      typescript: 4.4.3
     dev: true
 
   /typescript/3.9.10:
