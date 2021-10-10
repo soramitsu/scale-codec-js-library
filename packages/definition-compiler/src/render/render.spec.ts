@@ -132,7 +132,7 @@ it('Renders an alias for some inner type', () => {
     });
 });
 
-it.only('Renders single tuple as alias in case when the related option is enabled', async () => {
+it('Renders single tuple as alias in case when the related option is enabled', async () => {
     expect(
         await renderNamespaceDefinition(
             {
