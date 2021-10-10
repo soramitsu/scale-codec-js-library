@@ -136,7 +136,7 @@ importers:
 
   packages/definition-runtime:
     specifiers:
-      '@scale-codec/core': workspace:^0.2.1
+      '@scale-codec/core': workspace:^0.2.2
       esno: ^0.10.1
       prettier: ^2.4.1
     dependencies:
@@ -147,8 +147,8 @@ importers:
 
   packages/definition-tests:
     specifiers:
-      '@scale-codec/definition-compiler': workspace:^0.1.1
-      '@scale-codec/definition-runtime': workspace:^0.1.1
+      '@scale-codec/definition-compiler': workspace:^0.2.0
+      '@scale-codec/definition-runtime': workspace:^0.1.2
       '@types/gulp': ^4.0.9
       chalk: ^4.1.2
       consola: ^2.15.3
