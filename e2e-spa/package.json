@@ -1,5 +1,7 @@
 {
+    "name": "@scale-codec/e2e-spa",
     "version": "0.0.0",
+    "private": true,
     "scripts": {
         "dev": "vite --port 4444 --clearScreen false",
         "compile-definition": "esno scripts/compile-definition",
