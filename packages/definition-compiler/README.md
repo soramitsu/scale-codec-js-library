@@ -133,28 +133,8 @@ All stds are exported from `@scale-codec/definition-runtime`
 
 ## TODO
 
--   [ ] Make a detailed description of definition schema. Note corner cases with empty structs and tuples.
+-   [ ] Make a detailed description of definition schema
 -   [ ] Generate factories for each enum variant?
--   [ ] Provide a possibility to write comments in definitions to insert them then into a rendered code?
--   [ ] Feature: define custom types via the import. For example, type in schema:
-
-```json
-{
-    "MyCustomType": {
-        "t": "custom",
-        "module_id": "./extend"
-    }
-}
-```
-
-Will output to:
-
-```ts
-import { MyCustomType_encode, MyCustomType_decode, MyCustomType_Encodable, MyCustomType_Decodable } from './extend';
-export { MyCustomType_encode, MyCustomType_decode, MyCustomType_Encodable, MyCustomType_Decodable } from './extend';
-```
-
--   [ ] Feature: reduce 1-element tuples into an alias to a single inner type
 
 ## Also
 
