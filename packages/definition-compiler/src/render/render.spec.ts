@@ -131,3 +131,18 @@ it('Renders an alias for some inner type', () => {
         },
     });
 });
+
+it.only('Renders single tuple as alias in case when the related option is enabled', async () => {
+    expect(
+        await renderNamespaceDefinition(
+            {
+                SingleTuple: { t: 'tuple', items: ['u128'] },
+                MultiTuple: { t: 'tuple', items: ['u8', 'bool'] },
+            },
+            {
+                importLib: '@scale-codec/definition-runtime',
+                rollupSingleTuplesIntoAliases: true,
+            },
+        ),
+    ).toMatchSnapshot();
+});

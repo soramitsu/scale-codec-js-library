@@ -4,6 +4,7 @@ const key: InjectionKey<Config> = Symbol('render config');
 
 export interface Config {
     importLib: string;
+    rollupSingleTuples: boolean;
 }
 
 export function useConfig(): Config {

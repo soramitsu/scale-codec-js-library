@@ -271,6 +271,65 @@ export function Set_Message_encode(encodable: Set_Message_Encodable): Uint8Array
 "
 `;
 
+exports[`Renders single tuple as alias in case when the related option is enabled 1`] = `
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
+  bool_Decoded,
+  bool_Encodable,
+  bool_decode,
+  bool_encode,
+  decodeTuple,
+  encodeTuple,
+  makeEncoderAsIsRespectable,
+  u128_Decoded,
+  u128_Encodable,
+  u128_decode,
+  u128_encode,
+  u8_Decoded,
+  u8_Encodable,
+  u8_decode,
+  u8_encode,
+} from '@scale-codec/definition-runtime'
+
+// MultiTuple
+
+export type MultiTuple_Decoded = [u8_Decoded, bool_Decoded]
+
+export type MultiTuple_Encodable = [u8_Encodable | EncodeAsIs, bool_Encodable | EncodeAsIs]
+
+// MultiTuple tuple-related tools
+
+const MultiTuple_decoders = [u8_decode, bool_decode]
+const MultiTuple_encoders = ([u8_encode, bool_encode] as any).map(makeEncoderAsIsRespectable)
+
+// MultiTuple tools end
+
+export function MultiTuple_decode(bytes: Uint8Array): DecodeResult<MultiTuple_Decoded> {
+  return decodeTuple(bytes, MultiTuple_decoders as any)
+}
+
+export function MultiTuple_encode(encodable: MultiTuple_Encodable): Uint8Array {
+  return encodeTuple(encodable, MultiTuple_encoders as any)
+}
+
+// SingleTuple
+
+export type SingleTuple_Decoded = u128_Decoded
+
+export type SingleTuple_Encodable = u128_Encodable
+
+export function SingleTuple_decode(bytes: Uint8Array): DecodeResult<SingleTuple_Decoded> {
+  return u128_decode(bytes)
+}
+
+export function SingleTuple_encode(encodable: SingleTuple_Encodable): Uint8Array {
+  return u128_encode(encodable)
+}
+"
+`;
+
 exports[`Renders struct + tuple 1`] = `
 "/* eslint-disable */
 import {
