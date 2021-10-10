@@ -20,8 +20,6 @@ export default defineComponent({
         const renderAlias: boolean = props.items.length === 1 && config.rollupSingleTuples;
         const aliasRef: string | null = renderAlias ? (props.items[0] as string) : null;
 
-        console.log({ props, renderVoid, renderAlias, aliasRef, config });
-
         return {
             renderVoid,
             renderAlias,
