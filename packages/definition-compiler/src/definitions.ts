@@ -1,5 +1,9 @@
 export type NamespaceDefinition = Record<string, TypeDef>;
 
+export type AliasDef = {
+    ref: string;
+};
+
 export type ArrayDef = {
     item: string;
     len: number;
@@ -57,7 +61,7 @@ export type WithTMark<T, M extends string> = T & {
 };
 
 export type TypeDef =
-    // | string
+    | WithTMark<AliasDef, 'alias'>
     | WithTMark<ArrayDef, 'array'>
     | WithTMark<BytesArrayDef, 'bytes-array'>
     | WithTMark<VecDef, 'vec'>

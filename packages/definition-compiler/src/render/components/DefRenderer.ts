@@ -1,5 +1,5 @@
 import { defineComponent, computed, PropType, compile } from 'vue';
-import { MapDef, TypeDef } from '../../definitions';
+import { AliasDef, MapDef, TypeDef } from '../../definitions';
 
 import DefVec from './DefVec';
 import DefTuple from './DefTuple';
@@ -10,8 +10,10 @@ import DefMap from './DefMap';
 import DefArray from './DefArray';
 import DefBytesArray from './DefBytesArray';
 import DefOption from './DefOption';
+import DefAlias from './DefAlias';
 
 export default defineComponent({
+    name: 'DefRenderer',
     props: {
         tyName: {
             type: String,
@@ -43,6 +45,8 @@ export default defineComponent({
                     return DefBytesArray;
                 case 'option':
                     return DefOption;
+                case 'alias':
+                    return DefAlias;
                 default:
                     throw new Error('unimplemented');
             }
@@ -55,6 +59,12 @@ export default defineComponent({
                 return {
                     keyRef: (rest as MapDef).key,
                     valueRef: (rest as MapDef).value,
+                };
+            }
+
+            if (t === 'alias') {
+                return {
+                    typeRef: (rest as AliasDef).ref,
                 };
             }
 

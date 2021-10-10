@@ -1,5 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Renders an alias for some inner type 1`] = `
+"/* eslint-disable */
+import {
+  DecodeResult,
+  str_Decoded,
+  str_Encodable,
+  str_decode,
+  str_encode,
+} from '@scale-codec/definition-compiler-runtime'
+
+// StringAlias
+
+export type StringAlias_Decoded = str_Decoded
+
+export type StringAlias_Encodable = str_Encodable
+
+export function StringAlias_decode(bytes: Uint8Array): DecodeResult<StringAlias_Decoded> {
+  return str_decode(bytes)
+}
+
+export function StringAlias_encode(encodable: StringAlias_Encodable): Uint8Array {
+  return str_encode(encodable)
+}
+"
+`;
+
 exports[`Renders array 1`] = `
 "/* eslint-disable */
 import {

@@ -122,3 +122,12 @@ it('Renders empty tuple as void alias', () => {
         },
     });
 });
+
+it('Renders an alias for some inner type', () => {
+    return expectRenderToMatchSnapshot({
+        StringAlias: {
+            t: 'alias',
+            ref: 'str',
+        },
+    });
+});

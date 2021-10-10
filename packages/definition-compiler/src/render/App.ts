@@ -42,7 +42,6 @@ export default defineComponent({
         <collector>
             <preamble />
 
-
             <template v-for="x in defsList" :key="x.tyName">
                 <w t="\n\n" />
                 <def-renderer v-bind="x" />
