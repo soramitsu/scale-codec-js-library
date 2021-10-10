@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Render import for the external type as expected 1`] = `
+"/* eslint-disable */
+
+// MyCustomExternal
+
+import {
+  MyCustomExternal_Decoded,
+  MyCustomExternal_Encodable,
+  MyCustomExternal_decode,
+  MyCustomExternal_encode,
+} from './module-with-externals'
+
+export { MyCustomExternal_Decoded, MyCustomExternal_Encodable, MyCustomExternal_decode, MyCustomExternal_encode }
+"
+`;
+
 exports[`Renders an alias for some inner type 1`] = `
 "/* eslint-disable */
 import {
@@ -163,6 +179,22 @@ export function Message_decode(bytes: Uint8Array): DecodeResult<Message_Decoded>
 export function Message_encode(encodable: Message_Encodable): Uint8Array {
   return encodeEnum(encodable, Message_encoders)
 }
+"
+`;
+
+exports[`Renders imports for the external type using the custom name if provided 1`] = `
+"/* eslint-disable */
+
+// ReExportMe
+
+import {
+  re_export_me_Decoded as ReExportMe_Decoded,
+  re_export_me_Encodable as ReExportMe_Encodable,
+  re_export_me_decode as ReExportMe_decode,
+  re_export_me_encode as ReExportMe_encode,
+} from 'some-package'
+
+export { ReExportMe_Decoded, ReExportMe_Encodable, ReExportMe_decode, ReExportMe_encode }
 "
 `;
 

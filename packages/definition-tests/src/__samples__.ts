@@ -16,3 +16,15 @@ export const aliases = defineSample({
     A: { t: 'alias', ref: 'B' },
     C: { t: 'tuple', items: ['B', 'u8'] },
 });
+
+export const externals = defineSample({
+    JustExternalInclusion: {
+        t: 'external',
+        module: '../externals-sample-help',
+    },
+    WithCustomExternalName: {
+        t: 'external',
+        module: '../externals-sample-help',
+        nameInModule: 'str',
+    },
+});

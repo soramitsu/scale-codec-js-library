@@ -11,6 +11,7 @@ import DefArray from './DefArray';
 import DefBytesArray from './DefBytesArray';
 import DefOption from './DefOption';
 import DefAlias from './DefAlias';
+import DefExternal from './DefExternal';
 
 export default defineComponent({
     name: 'DefRenderer',
@@ -47,6 +48,8 @@ export default defineComponent({
                     return DefOption;
                 case 'alias':
                     return DefAlias;
+                case 'external':
+                    return DefExternal;
                 default:
                     throw new Error('unimplemented');
             }
