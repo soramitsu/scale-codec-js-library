@@ -7,3 +7,5 @@ dist-ssr
 cypress/*
 !cypress/integration
 src/namespace.ts
+definition-compiler.tgz
+definition-runtime.tgz

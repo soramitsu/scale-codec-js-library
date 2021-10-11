@@ -1,10 +1,4 @@
-import { renderNamespaceDefinition, NamespaceDefinition } from '@scale-codec/definition-compiler';
-import fs from 'fs/promises';
-import path from 'path';
-import consola from 'consola';
-import chalk from 'chalk';
-
-const OUTPUT_PATH = path.resolve(__dirname, '../src/namespace.ts');
+import { NamespaceDefinition } from '@scale-codec/definition-compiler';
 
 const definition: NamespaceDefinition = {
     Option_str: {
@@ -77,17 +71,4 @@ const definition: NamespaceDefinition = {
     // },
 };
 
-async function main() {
-    consola.log('Rendering definition...');
-    const code = await renderNamespaceDefinition(definition, { importLib: '@scale-codec/definition-runtime' });
-
-    consola.log(chalk`Writing into {bold.blue ${OUTPUT_PATH}}`);
-    await fs.writeFile(OUTPUT_PATH, code, { encoding: 'utf-8' });
-
-    consola.success('Done!');
-}
-
-main().catch((err) => {
-    consola.fatal(err);
-    process.exit(1);
-});
+export default definition;
