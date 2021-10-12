@@ -67,7 +67,11 @@ export type ResultDef = {
 export type ExternalDef = {
     /**
      * Where to import from, path
-     * @example import { ... } from '<here is the module name>'
+     *
+     * @example
+     * ```ts
+     * import { ... } from '<here is the module name>'
+     * ```
      */
     module: string;
     /**
@@ -78,7 +82,7 @@ export type ExternalDef = {
     nameInModule?: string;
 };
 
-export type WithTMark<T, M extends string> = T & {
+type WithTMark<T, M extends string> = T & {
     t: M;
 };
 
