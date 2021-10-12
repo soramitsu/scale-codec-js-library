@@ -3,14 +3,60 @@ import del from 'del';
 import { series, parallel } from 'gulp';
 import consola from 'consola';
 import pathExists from 'path-exists';
+import { ExtractorConfig, Extractor } from '@microsoft/api-extractor';
+
+const ROOT = __dirname;
+
+const PUBLISH_PACKAGES = ['enum', 'util', 'core', 'definition-compiler', 'definition-runtime'];
+const DECLARATION_PACKAGES = [...PUBLISH_PACKAGES];
 
 async function clean() {
-    await del(['packages/*/dist', '.declaration'].map((x) => path.resolve(__dirname, x)));
+    await del(
+        ['packages/*/dist', '.declaration', 'packages/*/.declaration', 'temp', 'packages/docs/api'].map((x) =>
+            path.resolve(ROOT, x),
+        ),
+    );
 }
 
-async function buildDeclaration() {
-    const DIR = path.resolve(__dirname, '.declaration');
-    await $`pnpx tsc -p ./ --emitDeclarationOnly --declaration --declarationDir ${DIR}`;
+async function buildDeclarations() {
+    const overallDeclarationDir = path.resolve(ROOT, '.declaration');
+    await $`pnpx tsc -p ./ --emitDeclarationOnly --declaration --declarationDir ${overallDeclarationDir}`;
+
+    await Promise.all(
+        DECLARATION_PACKAGES.map(async (pkg) => {
+            const outDir = path.resolve(ROOT, 'packages', pkg, '.declaration');
+            await $`cp -r ${path.join(overallDeclarationDir, pkg, 'src')} ${outDir}`;
+        }),
+    );
+}
+
+async function extractPackageApis(unscopedPackageName: string): Promise<void> {
+    const extractorConfigFile = path.resolve(ROOT, 'packages', unscopedPackageName, 'api-extractor.json');
+    const config = ExtractorConfig.loadFileAndPrepare(extractorConfigFile);
+    const extractorResult = Extractor.invoke(config, {
+        localBuild: true,
+        showVerboseMessages: true,
+    });
+    if (extractorResult.succeeded) {
+        consola.success(chalk`API Extractor completed successfully (for {blue.bold ${unscopedPackageName}})`);
+    } else {
+        consola.fatal(
+            `API Extractor completed with ${extractorResult.errorCount} errors` +
+                ` and ${extractorResult.warningCount} warnings`,
+        );
+        process.exitCode = 1;
+    }
+}
+
+async function extractApis() {
+    await Promise.all(DECLARATION_PACKAGES.map((x) => extractPackageApis(x)));
+}
+
+/**
+ * Should be fired after {@link extractApis}
+ */
+async function documentApis() {
+    await $`pnpx api-documenter markdown -i api-extractor/temp -o packages/docs/api`;
 }
 
 async function rollup() {
@@ -30,9 +76,7 @@ function typeCheck() {
 }
 
 async function publishAll() {
-    const PACKAGES = ['enum', 'util', 'core', 'definition-compiler', 'definition-runtime'];
-
-    for (const pkg of PACKAGES) {
+    for (const pkg of PUBLISH_PACKAGES) {
         const pkgFullName = `@scale-codec/${pkg}`;
 
         consola.info(chalk`Publishing {blue.bold ${pkgFullName}}`);
@@ -48,7 +92,7 @@ async function publishAll() {
 async function arePackagesBuilt(): Promise<boolean> {
     const existense = await Promise.all(
         ['enum', 'core', 'definition-compiler', 'definition-runtime', 'util']
-            .map((x) => path.join(__dirname, 'packages', x, 'dist'))
+            .map((x) => path.join(ROOT, 'packages', x, 'dist'))
             .map((x) => pathExists(x)),
     );
 
@@ -63,15 +107,15 @@ async function checkBuild() {
 }
 
 async function runTestInE2eSpa() {
-    cd(path.resolve(__dirname, './e2e-spa'));
+    cd(path.resolve(ROOT, './e2e-spa'));
     await $`pnpm test`;
     cd(__dirname);
 }
 
 export const testE2e = series(checkBuild, runTestInE2eSpa);
 
-export const build = series(clean, buildDeclaration, rollup);
+export const build = series(clean, buildDeclarations, rollup);
 
 export const checkCodeIntegrity = series(parallel(unitTests, lint, typeCheck), build, testE2e);
 
-export { clean, buildDeclaration, publishAll };
+export { clean, buildDeclarations, publishAll, extractApis, documentApis };
