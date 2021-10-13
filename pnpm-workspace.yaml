@@ -2,3 +2,4 @@ packages:
   - "packages/**"
   - "e2e-spa"
   - "!packages/rust-ints/**"
+  - "!packages/namespace*"

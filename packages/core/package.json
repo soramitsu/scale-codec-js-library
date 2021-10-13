@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/core",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Implementations of core SCALE-codec primitives and data structures",
     "license": "Apache-2.0",
     "repository": {
@@ -11,15 +11,18 @@
         "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
     },
     "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/core#readme",
-    "main": "./dist/lib.cjs.js",
-    "module": "./dist/lib.esm.js",
-    "types": "./dist/lib.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/lib.esm.js",
-            "require": "./dist/lib.cjs.js"
-        },
-        "./*": "./*"
+    "main": "src/lib.ts",
+    "publishConfig": {
+        "main": "./dist/lib.cjs.js",
+        "module": "./dist/lib.esm.js",
+        "types": "./dist/lib.d.ts",
+        "exports": {
+            ".": {
+                "import": "./dist/lib.esm.js",
+                "require": "./dist/lib.cjs.js"
+            },
+            "./*": "./*"
+        }
     },
     "files": [
         "dist"
@@ -31,12 +34,12 @@
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.0",
         "@scale-codec/util": "workspace:^0.1.0",
-        "jsbi": "3.2.4"
+        "jsbi": "3.2.5"
     },
     "devDependencies": {
         "hada": "^0.0.8",
-        "http-server": "^0.12.3",
-        "type-fest": "^1.2.0",
-        "typedoc": "^0.20.36"
+        "http-server": "^13.0.2",
+        "type-fest": "^2.3.4",
+        "typedoc": "^0.22.5"
     }
 }

@@ -1,5 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Render import for the external type as expected 1`] = `
+"/* eslint-disable */
+
+// MyCustomExternal
+
+import {
+  MyCustomExternal_Decoded,
+  MyCustomExternal_Encodable,
+  MyCustomExternal_decode,
+  MyCustomExternal_encode,
+} from './module-with-externals'
+
+export { MyCustomExternal_Decoded, MyCustomExternal_Encodable, MyCustomExternal_decode, MyCustomExternal_encode }
+"
+`;
+
+exports[`Renders an alias for some inner type 1`] = `
+"/* eslint-disable */
+import {
+  DecodeResult,
+  str_Decoded,
+  str_Encodable,
+  str_decode,
+  str_encode,
+} from '@scale-codec/definition-compiler-runtime'
+
+// StringAlias
+
+export type StringAlias_Decoded = str_Decoded
+
+export type StringAlias_Encodable = str_Encodable
+
+export function StringAlias_decode(bytes: Uint8Array): DecodeResult<StringAlias_Decoded> {
+  return str_decode(bytes)
+}
+
+export function StringAlias_encode(encodable: StringAlias_Encodable): Uint8Array {
+  return str_encode(encodable)
+}
+"
+`;
+
 exports[`Renders array 1`] = `
 "/* eslint-disable */
 import {
@@ -140,6 +182,22 @@ export function Message_encode(encodable: Message_Encodable): Uint8Array {
 "
 `;
 
+exports[`Renders imports for the external type using the custom name if provided 1`] = `
+"/* eslint-disable */
+
+// ReExportMe
+
+import {
+  re_export_me_Decoded as ReExportMe_Decoded,
+  re_export_me_Encodable as ReExportMe_Encodable,
+  re_export_me_decode as ReExportMe_decode,
+  re_export_me_encode as ReExportMe_encode,
+} from 'some-package'
+
+export { ReExportMe_Decoded, ReExportMe_Encodable, ReExportMe_decode, ReExportMe_encode }
+"
+`;
+
 exports[`Renders map 1`] = `
 "/* eslint-disable */
 import {
@@ -241,6 +299,65 @@ export function Set_Message_decode(bytes: Uint8Array): DecodeResult<Set_Message_
 
 export function Set_Message_encode(encodable: Set_Message_Encodable): Uint8Array {
   return encodeSet(encodable, Set_Message_entry_encode)
+}
+"
+`;
+
+exports[`Renders single tuple as alias in case when the related option is enabled 1`] = `
+"/* eslint-disable */
+import {
+  DecodeResult,
+  EncodeAsIs,
+  bool_Decoded,
+  bool_Encodable,
+  bool_decode,
+  bool_encode,
+  decodeTuple,
+  encodeTuple,
+  makeEncoderAsIsRespectable,
+  u128_Decoded,
+  u128_Encodable,
+  u128_decode,
+  u128_encode,
+  u8_Decoded,
+  u8_Encodable,
+  u8_decode,
+  u8_encode,
+} from '@scale-codec/definition-runtime'
+
+// MultiTuple
+
+export type MultiTuple_Decoded = [u8_Decoded, bool_Decoded]
+
+export type MultiTuple_Encodable = [u8_Encodable | EncodeAsIs, bool_Encodable | EncodeAsIs]
+
+// MultiTuple tuple-related tools
+
+const MultiTuple_decoders = [u8_decode, bool_decode]
+const MultiTuple_encoders = ([u8_encode, bool_encode] as any).map(makeEncoderAsIsRespectable)
+
+// MultiTuple tools end
+
+export function MultiTuple_decode(bytes: Uint8Array): DecodeResult<MultiTuple_Decoded> {
+  return decodeTuple(bytes, MultiTuple_decoders as any)
+}
+
+export function MultiTuple_encode(encodable: MultiTuple_Encodable): Uint8Array {
+  return encodeTuple(encodable, MultiTuple_encoders as any)
+}
+
+// SingleTuple
+
+export type SingleTuple_Decoded = u128_Decoded
+
+export type SingleTuple_Encodable = u128_Encodable
+
+export function SingleTuple_decode(bytes: Uint8Array): DecodeResult<SingleTuple_Decoded> {
+  return u128_decode(bytes)
+}
+
+export function SingleTuple_encode(encodable: SingleTuple_Encodable): Uint8Array {
+  return u128_encode(encodable)
 }
 "
 `;
