@@ -1,10 +1,10 @@
 import { defineComponent, compile, PropType } from 'vue';
-import { EnumVariantDef } from '../../definitions';
+import { DefEnumVariant } from '../../definitions';
 
 export const Decoders = defineComponent({
     props: {
         variants: {
-            type: Array as PropType<EnumVariantDef[]>,
+            type: Array as PropType<DefEnumVariant[]>,
             required: true,
         },
     },
@@ -22,7 +22,7 @@ export const Decoders = defineComponent({
 export const Encoders = defineComponent({
     props: {
         variants: {
-            type: Array as PropType<EnumVariantDef[]>,
+            type: Array as PropType<DefEnumVariant[]>,
             required: true,
         },
     },
@@ -79,7 +79,7 @@ export default defineComponent({
     },
     props: {
         variants: {
-            type: Array as PropType<EnumVariantDef[]>,
+            type: Array as PropType<DefEnumVariant[]>,
             required: true,
         },
     },

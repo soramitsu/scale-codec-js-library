@@ -4,94 +4,104 @@
 
 ```ts
 
-// @public (undocumented)
-export type AliasDef = {
-    ref: string;
-};
-
-// @public (undocumented)
-export type ArrayDef = {
-    item: string;
-    len: number;
-};
-
-// @public (undocumented)
-export type BytesArrayDef = {
-    len: number;
-};
-
-// @public (undocumented)
-export type EnumDef = {
-    variants: EnumVariantDef[];
-};
-
-// @public (undocumented)
-export type EnumVariantDef = {
-    name: string;
-    discriminant: number;
-    ref?: string | null;
+// @public
+export type DefAlias = {
+    ref: TypeRef;
 };
 
 // @public
-export type ExternalDef = {
+export type DefArray = {
+    item: TypeRef;
+    len: number;
+};
+
+// @public
+export type DefBytesArray = {
+    len: number;
+};
+
+// @public
+export type DefEnum = {
+    variants: DefEnumVariant[];
+};
+
+// @public (undocumented)
+export type DefEnumVariant = {
+    name: string;
+    discriminant: number;
+    ref?: TypeRef | null;
+};
+
+// @public
+export type DefExternal = {
     module: string;
     nameInModule?: string;
 };
 
-// @public (undocumented)
-export type MapDef = {
-    key: string;
-    value: string;
+// @public
+export type DefMap = {
+    key: TypeRef;
+    value: TypeRef;
+};
+
+// @public
+export type DefOption = {
+    some: TypeRef;
+};
+
+// @public
+export type DefResult = {
+    ok: TypeRef;
+    err: TypeRef;
+};
+
+// @public
+export type DefSet = {
+    entry: TypeRef;
+};
+
+// @public
+export type DefStruct = {
+    fields: DefStructField[];
 };
 
 // @public (undocumented)
+export type DefStructField = {
+    name: string;
+    ref: TypeRef;
+};
+
+// @public
+export type DefTuple = {
+    items: TypeRef[];
+};
+
+// @public
+export type DefVec = {
+    item: TypeRef;
+};
+
+// @public
 export type NamespaceDefinition = Record<string, TypeDef>;
 
-// @public (undocumented)
-export type OptionDef = {
-    some: string;
-};
+// @public
+export function renderNamespaceDefinition(def: NamespaceDefinition, params: RenderNamespaceDefinitionParams): Promise<string>;
 
 // @public (undocumented)
-export function renderNamespaceDefinition(def: NamespaceDefinition, params: {
+export interface RenderNamespaceDefinitionParams {
     importLib: string;
     rollupSingleTuplesIntoAliases?: boolean;
-}): Promise<string>;
+}
 
-// @public (undocumented)
-export type ResultDef = {
-    ok: string;
-    err: string;
-};
-
-// @public (undocumented)
-export type SetDef = {
-    entry: string;
-};
-
-// @public (undocumented)
-export type StructDef = {
-    fields: {
-        name: string;
-        ref: string;
-    }[];
-};
-
-// @public (undocumented)
-export type TupleDef = {
-    items: string[];
-};
+// @public
+export type StdTypes = 'str' | 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'i8' | 'i16' | 'i32' | 'i64' | 'i128' | 'Void' | 'Compact' | 'BytesVec';
 
 // Warning: (ae-forgotten-export) The symbol "WithTMark" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export type TypeDef = WithTMark<AliasDef, 'alias'> | WithTMark<ArrayDef, 'array'> | WithTMark<BytesArrayDef, 'bytes-array'> | WithTMark<VecDef, 'vec'> | WithTMark<TupleDef, 'tuple'> | WithTMark<StructDef, 'struct'> | WithTMark<MapDef, 'map'> | WithTMark<SetDef, 'set'> | WithTMark<EnumDef, 'enum'> | WithTMark<OptionDef, 'option'> | WithTMark<ResultDef, 'result'> | WithTMark<ExternalDef, 'external'>;
+export type TypeDef = WithTMark<DefAlias, 'alias'> | WithTMark<DefArray, 'array'> | WithTMark<DefBytesArray, 'bytes-array'> | WithTMark<DefVec, 'vec'> | WithTMark<DefTuple, 'tuple'> | WithTMark<DefStruct, 'struct'> | WithTMark<DefMap, 'map'> | WithTMark<DefSet, 'set'> | WithTMark<DefEnum, 'enum'> | WithTMark<DefOption, 'option'> | WithTMark<DefResult, 'result'> | WithTMark<DefExternal, 'external'>;
 
 // @public (undocumented)
-export type VecDef = {
-    item: string;
-};
-
-// (No @packageDocumentation comment for this package)
+export type TypeRef = StdTypes | string;
 
 ```
