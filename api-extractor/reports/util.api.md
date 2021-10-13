@@ -10,24 +10,22 @@ export function assert(condition: unknown, message: string | (() => string)): as
 // @public
 export function concatUint8Arrays(iterable: Iterable<Uint8Array>): Uint8Array;
 
-// @public (undocumented)
+// @public
 export function hexifyBytes(v: Uint8Array): string;
 
-// @public (undocumented)
+// @public
 export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V;
 
-// @public (undocumented)
+// @public
 export function prettyHexToBytes(hex: string): Uint8Array;
 
-// @public (undocumented)
-export function yieldCycleNTimes<T>(items: T[], n: number): Generator<T, void>;
+// @public
+export function yieldCycleNTimes<T>(items: Iterable<T>, n: number): Generator<T, void>;
 
-// @public (undocumented)
+// @public
 export function yieldMapped<T, R>(items: Iterable<T>, mapFn: (item: T) => R): Generator<R, void>;
 
-// @public (undocumented)
-export function yieldNTimes<T>(item: T, n: number): Generator<T, void>;
-
-// (No @packageDocumentation comment for this package)
+// @public
+export function yieldNTimes<T>(value: T, n: number): Generator<T, void>;
 
 ```

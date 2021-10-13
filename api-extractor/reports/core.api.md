@@ -9,7 +9,7 @@ import { default as JSBI } from 'jsbi';
 import { default as JSBI_2 } from 'jsbi';
 import { Option as Option_2 } from '@scale-codec/enum';
 
-// @public (undocumented)
+// @public
 export type AllowedBits = 8 | 16 | 32 | 64 | 128;
 
 // @public (undocumented)
