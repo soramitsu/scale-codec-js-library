@@ -190,6 +190,4 @@ export { Void_encode }
 
 export * from "@scale-codec/core";
 
-// (No @packageDocumentation comment for this package)
-
 ```
