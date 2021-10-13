@@ -7,6 +7,9 @@ import { assert } from '@scale-codec/util';
  */
 export type Endianness = 'le' | 'be';
 
+/**
+ * Bits count supported by integer codecs
+ */
 export type AllowedBits = 8 | 16 | 32 | 64 | 128; // and so on, but let's be realistic
 
 export interface BigIntCodecOptions {

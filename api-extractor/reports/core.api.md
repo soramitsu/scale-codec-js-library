@@ -25,7 +25,7 @@ export interface BigIntCodecOptions {
 // @public
 export type Decode<T> = (bytes: Uint8Array) => DecodeResult<T>;
 
-// @public (undocumented)
+// @public
 export function decodeArray<T>(bytes: Uint8Array, itemDecoder: Decode<T>, len: number): DecodeResult<T[]>;
 
 // @public (undocumented)
@@ -38,7 +38,7 @@ export function decodeBool(bytes: Uint8Array): DecodeResult<boolean>;
 export function decodeCompact(bytes: Uint8Array): DecodeResult<JSBI_2>;
 
 // @public (undocumented)
-export function decodeEnum<Def>(bytes: Uint8Array, params: EnumDecoders): DecodeResult<Enum<Def>>;
+export function decodeEnum<Def>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<Enum<Def>>;
 
 // @public (undocumented)
 export function decodeMap<K, V>(bytes: Uint8Array, KeyDecoder: Decode<K>, ValueDecoder: Decode<V>): DecodeResult<Map<K, V>>;
@@ -55,7 +55,7 @@ export function decodeSet<T>(bytes: Uint8Array, entryDecoder: Decode<T>): Decode
 // @public
 export function decodeStr(bytes: Uint8Array): string;
 
-// @public (undocumented)
+// @public
 export function decodeStrCompact(buff: Uint8Array): DecodeResult<string>;
 
 // @public (undocumented)
@@ -73,13 +73,13 @@ export function decodeUint8Vec(bytes: Uint8Array): DecodeResult<Uint8Array>;
 // @public (undocumented)
 export function decodeVec<T>(bytes: Uint8Array, itemDecoder: Decode<T>): DecodeResult<T[]>;
 
-// @public (undocumented)
+// @public
 export function decodeVoid(bytes?: Uint8Array): DecodeResult<null>;
 
 // @public
 export type Encode<T> = (value: T) => Uint8Array;
 
-// @public (undocumented)
+// @public
 export function encodeArray<T>(items: T[], itemEncoder: Encode<T>, len: number): Uint8Array;
 
 // @public
@@ -101,7 +101,7 @@ export function encodeBool(bool: boolean): Uint8Array;
 export function encodeCompact(bn: JSBI_2): Uint8Array;
 
 // @public (undocumented)
-export function encodeEnum<Def>(val: Enum<Def>, params: EnumEncoders): Uint8Array;
+export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Array;
 
 // @public (undocumented)
 export function encodeMap<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Uint8Array;
@@ -112,10 +112,10 @@ export const encodeOptionBool: Encode<Option_2<boolean>>;
 // @public (undocumented)
 export function encodeSet<T>(set: Set<T>, entryEncoder: Encode<T>): Uint8Array;
 
-// @public (undocumented)
+// @public
 export function encodeStr(str: string): Uint8Array;
 
-// @public (undocumented)
+// @public
 export function encodeStrCompact(str: string): Uint8Array;
 
 // @public (undocumented)
@@ -133,13 +133,13 @@ export function encodeUint8Vec(vec: Uint8Array): Uint8Array;
 // @public (undocumented)
 export function encodeVec<T>(items: T[], itemEncoder: Encode<T>): Uint8Array;
 
-// @public (undocumented)
+// @public
 export function encodeVoid(voidValue?: null): Uint8Array;
 
 // @public
 export type Endianness = 'le' | 'be';
 
-// @public (undocumented)
+// @public
 export type EnumDecoders = Record<number, {
     v: string | number | symbol;
     decode?: Decode<any>;
@@ -187,7 +187,5 @@ export type TupleEncoders<Tuple extends any[]> = Tuple extends [infer Head, ...i
 
 
 export * from "@scale-codec/enum";
-
-// (No @packageDocumentation comment for this package)
 
 ```
