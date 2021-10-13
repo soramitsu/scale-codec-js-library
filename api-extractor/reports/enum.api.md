@@ -9,23 +9,17 @@ export type EmptyVariants<Def> = {
     [V in keyof Def]: Def[V] extends Valuable<any> ? never : V;
 }[keyof Def];
 
-// @public (undocumented)
+// @public
 export class Enum<Def> {
-    // (undocumented)
     as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends Valuable<infer T> ? T : never;
-    // (undocumented)
     readonly content: null | {
         value: unknown;
     };
-    // (undocumented)
     static create<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def>;
-    // (undocumented)
     static create<Def, V extends ValuableVariants<Def>>(variant: V, value: GetValuableVariantValue<Def[V]>): Enum<Def>;
-    // (undocumented)
     is<V extends keyof Def>(variant: V): boolean;
-    // (undocumented)
     match<R = any>(matchMap: EnumMatchMap<Def, R>): R;
-    // (undocumented)
+    // @internal (undocumented)
     toJSON(): {
         variant: keyof Def;
         value: unknown;
@@ -48,20 +42,20 @@ export type GetEnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : 
 // @public (undocumented)
 export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
 
-// @public (undocumented)
+// @public
 type Option_2<T> = Enum<{
     None: undefined;
     Some: Valuable<T>;
 }>;
 export { Option_2 as Option }
 
-// @public (undocumented)
+// @public
 export type Result<O, E> = Enum<{
     Ok: Valuable<O>;
     Err: Valuable<E>;
 }>;
 
-// @public (undocumented)
+// @public
 export interface Valuable<T> {
     // (undocumented)
     value: T;
@@ -71,7 +65,5 @@ export interface Valuable<T> {
 export type ValuableVariants<Def> = {
     [V in keyof Def]: Def[V] extends Valuable<any> ? V : never;
 }[keyof Def];
-
-// (No @packageDocumentation comment for this package)
 
 ```

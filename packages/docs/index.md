@@ -1,8 +1,4 @@
----
-sidebarDepth: 2
----
-
-# SCALE codec
+# Intro
 
 Here is the documentation for packages that implements SCALE codec in JavaScript.
 
@@ -17,3 +13,7 @@ More about SCALE itself: [Substrate SCALE Codec](https://substrate.dev/docs/en/k
 `@scale-codec/definition-compiler` is a tool that provides a way (one of possible) to compile complex namespaces into TypeScript with strict typing of decodable and encodable types and functions to encode and decode them. Goes in pair with `@scale-codec/definition-runtime` (you probably will not use it directly) that contains runtime helpers for the compiled output.
 
 `@scale-codec/util` contains common utils used all across the packages.
+
+## API
+
+[Explore API documentation](/api/)
