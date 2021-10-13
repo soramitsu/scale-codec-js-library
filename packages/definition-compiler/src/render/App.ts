@@ -22,6 +22,10 @@ export default defineComponent({
             type: String,
             default: 'sample',
         },
+        rollupSingleTuples: {
+            type: Boolean,
+            default: false,
+        },
     },
     setup(props) {
         const defsList = computed<{ tyName: String; def: TypeDef }[]>(() => {
@@ -32,6 +36,7 @@ export default defineComponent({
 
         provideConfig({
             importLib: props.importLib,
+            rollupSingleTuples: props.rollupSingleTuples,
         });
 
         return {
@@ -41,7 +46,6 @@ export default defineComponent({
     render: compile(`
         <collector>
             <preamble />
-
 
             <template v-for="x in defsList" :key="x.tyName">
                 <w t="\n\n" />

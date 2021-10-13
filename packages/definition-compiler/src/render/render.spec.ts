@@ -122,3 +122,46 @@ it('Renders empty tuple as void alias', () => {
         },
     });
 });
+
+it('Renders an alias for some inner type', () => {
+    return expectRenderToMatchSnapshot({
+        StringAlias: {
+            t: 'alias',
+            ref: 'str',
+        },
+    });
+});
+
+it('Renders single tuple as alias in case when the related option is enabled', async () => {
+    expect(
+        await renderNamespaceDefinition(
+            {
+                SingleTuple: { t: 'tuple', items: ['u128'] },
+                MultiTuple: { t: 'tuple', items: ['u8', 'bool'] },
+            },
+            {
+                importLib: '@scale-codec/definition-runtime',
+                rollupSingleTuplesIntoAliases: true,
+            },
+        ),
+    ).toMatchSnapshot();
+});
+
+it('Render import for the external type as expected', () => {
+    return expectRenderToMatchSnapshot({
+        MyCustomExternal: {
+            t: 'external',
+            module: './module-with-externals',
+        },
+    });
+});
+
+it('Renders imports for the external type using the custom name if provided', () => {
+    return expectRenderToMatchSnapshot({
+        ReExportMe: {
+            t: 'external',
+            module: 'some-package',
+            nameInModule: 're_export_me',
+        },
+    });
+});

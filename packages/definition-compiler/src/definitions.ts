@@ -1,5 +1,9 @@
 export type NamespaceDefinition = Record<string, TypeDef>;
 
+export type AliasDef = {
+    ref: string;
+};
+
 export type ArrayDef = {
     item: string;
     len: number;
@@ -52,12 +56,34 @@ export type ResultDef = {
     err: string;
 };
 
+/**
+ * Provides a possibility to define external types, e.g. to use some complex structure from another compiled namespace
+ * OR to define your own custom low-level codec for type that is not included into the SCALE codec spec by default.
+ *
+ * Note that the external module **should contain the whole type interface**, e.g. the definition name + each of codec
+ * prefixes: `External_encode`, `External_decode`, `External_Decoded` and `External_Encodable` (for the "External" type
+ * name)
+ */
+export type ExternalDef = {
+    /**
+     * Where to import from, path
+     * @example import { ... } from '<here is the module name>'
+     */
+    module: string;
+    /**
+     * Name of the type inside of the module. If this field is omitted, the own type name will be used
+     *
+     * @todo *define custom name for each import?*
+     */
+    nameInModule?: string;
+};
+
 export type WithTMark<T, M extends string> = T & {
     t: M;
 };
 
 export type TypeDef =
-    // | string
+    | WithTMark<AliasDef, 'alias'>
     | WithTMark<ArrayDef, 'array'>
     | WithTMark<BytesArrayDef, 'bytes-array'>
     | WithTMark<VecDef, 'vec'>
@@ -67,4 +93,5 @@ export type TypeDef =
     | WithTMark<SetDef, 'set'>
     | WithTMark<EnumDef, 'enum'>
     | WithTMark<OptionDef, 'option'>
-    | WithTMark<ResultDef, 'result'>;
+    | WithTMark<ResultDef, 'result'>
+    | WithTMark<ExternalDef, 'external'>;

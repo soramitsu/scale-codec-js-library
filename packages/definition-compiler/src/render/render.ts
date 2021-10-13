@@ -14,9 +14,18 @@ export async function renderNamespaceDefinition(
     def: NamespaceDefinition,
     params: {
         importLib: string;
+        /**
+         * Single tuples are always an arrays with a single element. It is possible to make final code cleaner
+         * (and a bit performant) if render such tuples just as aliases for the inner element. It is optional feature.
+         */
+        rollupSingleTuplesIntoAliases?: boolean;
     },
 ): Promise<string> {
-    const app = createApp(App, { defmap: def, importLib: params.importLib })
+    const app = createApp(App, {
+        defmap: def,
+        importLib: params.importLib,
+        rollupSingleTuples: params.rollupSingleTuplesIntoAliases ?? false,
+    })
         .component('WithDefPart', WithDefPart)
         .component('WithCurrentTypeName', WithCurrentTypeName)
         .component('TyName', TyName)

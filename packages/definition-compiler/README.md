@@ -133,9 +133,8 @@ All stds are exported from `@scale-codec/definition-runtime`
 
 ## TODO
 
--   Make a detailed description of definition schema. Note corner cases with empty structs and tuples.
--   Generate factories for each enum variant
--   Provide a possibility to write comments in definitions to insert them then into a rendered code?
+-   [ ] Make a detailed description of definition schema
+-   [ ] Generate factories for each enum variant?
 
 ## Also
 

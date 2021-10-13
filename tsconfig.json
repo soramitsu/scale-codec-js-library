@@ -15,12 +15,7 @@
         "strictNullChecks": true,
         "moduleResolution": "node",
         "skipLibCheck": true,
-        "resolveJsonModule": true,
-        "paths": {
-            "@scale-codec/enum": ["./packages/enum/src/lib.ts"],
-            "@scale-codec/util": ["./packages/util/src/lib.ts"],
-            "@scale-codec/core": ["./packages/core/src/lib.ts"]
-        }
+        "resolveJsonModule": true
     },
     "include": ["packages"],
     "exclude": ["**/dist", "packages/namespace*/**"]

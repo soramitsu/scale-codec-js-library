@@ -1,15 +1,35 @@
 import { defineComponent, compile } from 'vue';
+import { useConfig } from '../config';
+import DefAlias from './DefAlias';
 
 export default defineComponent({
     name: 'DefTuple',
+    components: {
+        DefAlias,
+    },
     props: {
         items: {
             type: Array,
             required: true,
         },
     },
+    setup(props) {
+        const config = useConfig();
+
+        const renderVoid = !props.items.length;
+        const renderAlias: boolean = props.items.length === 1 && config.rollupSingleTuples;
+        const aliasRef: string | null = renderAlias ? (props.items[0] as string) : null;
+
+        return {
+            renderVoid,
+            renderAlias,
+            aliasRef,
+        };
+    },
     render: compile(`
-        <void-alias v-if="items.length === 0" />
+        <void-alias v-if="renderVoid" />
+
+        <def-alias v-else-if="renderAlias" :type-ref="aliasRef" />
 
         <template v-else>
             <with-def-part part="ty-decoded">
