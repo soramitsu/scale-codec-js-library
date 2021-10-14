@@ -62,6 +62,10 @@ class BytesRepr {
 }
 
 export function encodeBigInt(value: JSBI, { bits, signed, endianness }: BigIntCodecOptions): Uint8Array {
+    if (!signed && JSBI.lessThan(value, JSBI.BigInt(0))) {
+        throw new Error('signed=false, but negative num is passed');
+    }
+
     const repr = new BytesRepr(bits, endianness);
 
     const truncated = signed ? JSBI.asIntN(bits, value) : JSBI.asUintN(bits, value);
