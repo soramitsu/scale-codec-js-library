@@ -13,3 +13,11 @@ Install packages (use [`pnpm`](https://pnpm.io/)):
 ```sh
 pnpm i
 ```
+
+## Changesets
+
+## Testing
+
+## IDE setup
+
+## Scripts

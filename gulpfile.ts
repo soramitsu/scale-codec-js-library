@@ -18,7 +18,7 @@ async function clean() {
     );
 }
 
-async function buildDeclarations() {
+async function buildDeclarationsOnly() {
     const overallDeclarationDir = path.resolve(ROOT, '.declaration');
     await $`pnpx tsc -p ./ --emitDeclarationOnly --declaration --declarationDir ${overallDeclarationDir}`;
 
@@ -114,8 +114,12 @@ async function runTestInE2eSpa() {
 
 export const testE2e = series(checkBuild, runTestInE2eSpa);
 
-export const build = series(clean, buildDeclarations, rollup);
+export const build = series(clean, buildDeclarationsOnly, rollup);
 
 export const checkCodeIntegrity = series(parallel(unitTests, lint, typeCheck), build, testE2e);
 
-export { clean, buildDeclarations, publishAll, extractApis, documentApis };
+export const buildDeclarations = series(clean, buildDeclarationsOnly);
+
+export const extractAndDocumentApis = series(extractApis, documentApis);
+
+export { clean, publishAll, extractApis, documentApis };

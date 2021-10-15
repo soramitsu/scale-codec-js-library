@@ -1,4 +1,8 @@
 import { defineConfig } from 'vitepress';
+import WindiCSS from 'vite-plugin-windicss';
+import path from 'path';
+
+const LIBS = ['core', 'enum', 'util', 'definition-compiler', 'definition-runtime'];
 
 interface SidebarLink {
     text: string;
@@ -9,23 +13,35 @@ interface SidebarLink {
 function guideSidebar(): SidebarLink[] {
     return [
         {
-            text: 'About the project',
-            link: '/',
-        },
-        {
-            text: 'Packages',
+            text: 'Guide',
             children: [
+                { text: 'About the project', link: '/' },
                 {
-                    text: '@scale-codec/core',
-                    link: '/lib/core',
-                },
-                {
-                    text: '@scale-codec/enum',
-                    link: '/lib/enum',
+                    text: 'Contribution',
+                    link: '/contribution',
                 },
             ],
         },
+        {
+            text: 'Libraries Guides',
+            children: LIBS.filter((x) => !/runtime|util/.test(x)).map((x) => ({
+                text: x,
+                link: `/lib/${x}`,
+            })),
+        },
+        {
+            text: 'API',
+            link: '/api/',
+            children: apiSidebar(),
+        },
     ];
+}
+
+function apiSidebar(): SidebarLink[] {
+    return LIBS.map((x) => ({
+        text: x,
+        link: `/api/${x}`,
+    }));
 }
 
 export default defineConfig({
@@ -40,24 +56,28 @@ export default defineConfig({
     },
     themeConfig: {
         nav: [
-            {
-                text: 'Guide',
-                link: '/',
-                activeMatch: '^/$',
-            },
-            {
-                text: 'API',
-                link: '/api/',
-                activeMatch: '^/api/',
-            },
+            // {
+            //     text: 'Guide',
+            //     link: '/',
+            //     activeMatch: '^/$',
+            // },
+            // {
+            //     text: 'API',
+            //     link: '/api/',
+            //     activeMatch: '^/api/',
+            // },
             {
                 text: 'GitHub',
                 link: 'https://github.com/soramitsu/scale-codec-js-library',
             },
         ],
         sidebar: {
+            // '/api/': apiSidebar(),
             '/': guideSidebar(),
         },
         // todo: convenient sidebar for API
+    },
+    vite: {
+        plugins: [WindiCSS({ config: path.resolve(__dirname, '../windi.config.ts') })],
     },
 });

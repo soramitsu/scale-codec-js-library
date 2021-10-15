@@ -6,15 +6,19 @@ sidebarDepth: 3
 
 Lightweight tool for working with Rust-style enums in JavaScript (with TypeScript support of course).
 
+## Contents
+
+[[toc]]
+
 ## The Why
 
-SCALE spec comes from Rust programming language that has [Enums](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html), so any implementation of this codec have to work with this concept. Obviously, JavaScript doesn't have any native tools to handle it. TypeScript's enums don't suit here neither because of the difference with Rust's ones (primarily because they don't have values associated with variants like it is in Rust). Thus, this library exists and tries to solve the problem of enums definition, creation and runtime-handling.
+SCALE spec comes from Rust programming language that has [Enums](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html), so any implementation of this codec has to work with this concept. Obviously, JavaScript doesn't have any native syntax/semantics to handle it. TypeScript's enums don't suit here neither because of the difference between them and Rust's ones (primarily because they don't have values associated with variants like in Rust). Thus, this library exists and tries to solve the problem of enums definition, creation and runtime-handling.
 
 ## Install
 
 The package is available via NPM Registry, so just use your favorite package manager:
 
-```sh
+```shell
 npm i @scale-codec/enum
 ```
 
@@ -29,7 +33,7 @@ import { Enum, Option /* and other */ } from '@scale-codec/core';
 
 ## Enums defininition and creation
 
-`Enum` in this package works very different from how it does in Rust. It's just a simple strongly-typed generic class with some variant name and its contents if it exists. Let's take a look at the sample Rust's enum:
+`Enum` in this package works a lot differently from how it does in Rust. It's just a simple strongly-typed generic class with some variant name and its contents if it exists. Let's take a look at the sample Rust's enum:
 
 ```rust
 enum Message {
@@ -97,9 +101,9 @@ So, for **valuable** variants you should specify `Valuable<T>` or `{ value: T }`
 
 :::
 
-## Work with created enums
+## Working with created enums
 
-There are a bit of usefull methods to work `Enum` instances:
+There are several usefull methods to work with `Enum` instances:
 
 ```ts
 import { Result, Option, Enum } from '@scale-codec/enum';
@@ -137,9 +141,9 @@ const mapped: Option<number> = result.match({
 ```
 
 ::: tip
-You can use `match` method just for side-effects, without returning anything from it.
+You can use `match` method just for side-effects without returning anything from it.
 :::
 
-## API
+## See also
 
-[Link](../api/enum)
+-   [API](../api/enum)
