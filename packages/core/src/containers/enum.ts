@@ -7,8 +7,8 @@ export type EnumSchemaDef<Def> = {
 };
 
 /**
- * Unsafe-typed params of enum encoding. It's a map with variant names as keys and discriminant + maybe encode fn as
- * values. Encode function is required for non-empty values, but it doesn't typed
+ * Unsafe-typed params for enum encoding. It defines relationships between variant names and their
+ * discriminants, as well as it defines encode functions for particular variants.
  *
  * @example
  *
@@ -36,8 +36,9 @@ export type EnumEncoders = Record<
 >;
 
 /**
- * Unsafe-type for enum decoding. Map from discriminants to variant names related to them and maybe decode function.
- * If function is specified, than non-empty enum will be created.
+ * Unsafe-type for enum decoding. It defines relationships between discriminants and their variant names,
+ * as well as it defines decode functions for particular variants. If function is specified,
+ * then a non-empty enum will be created.
  *
  * @example
  *

@@ -43,13 +43,13 @@ export type EnumMatchMap<V, R = any> = {
  */
 export class Enum<Def> {
     /**
-     * Create empty variant of enum with it
+     * Create an empty variant of enum with it
      * @param variant - Empty variant name
      */
     public static create<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def>;
 
     /**
-     * Create valuable variant of enum with it
+     * Create a valuable variant of enum with it
      * @param variant - Valuable variant name
      * @param value - Value associated with variant
      */
@@ -83,7 +83,7 @@ export class Enum<Def> {
     }
 
     /**
-     * Check whether enum instance has this variant name or not
+     * Check whether an enum instance has this variant name or not
      */
     public is<V extends keyof Def>(variant: V): boolean {
         return this.variant === variant;

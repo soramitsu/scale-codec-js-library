@@ -1,5 +1,5 @@
 /**
- * Core SCALE library with tools to encode to and decode from SCALE binaries. Includes implementations for
+ * Core SCALE library with tools to encode to and decode SCALE binaries. It includes implementations for
  * primitive types as well as for complex types.
  *
  * @packageDocumentation
