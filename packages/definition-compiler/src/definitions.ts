@@ -22,9 +22,10 @@
  */
 export type NamespaceDefinition = Record<string, TypeDef>;
 
+// #region stds
 /**
- * These type references will be interpreted as known and their codecs will be imported from
- * the runtime-library
+ * These type references will be interpreted as known and
+ * their codecs will be imported from the runtime-library
  */
 export type StdTypes =
     | 'str'
@@ -42,6 +43,7 @@ export type StdTypes =
     | 'Void'
     | 'Compact'
     | 'BytesVec';
+// #endregion stds
 
 export type TypeRef = StdTypes | string;
 

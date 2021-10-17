@@ -182,6 +182,6 @@ Output:
 
 <CompactPlayground class="mt-4" />
 
-## See also
+## Also
 
 -   [API](../api/core)

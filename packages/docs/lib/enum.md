@@ -144,6 +144,6 @@ const mapped: Option<number> = result.match({
 You can use `match` method just for side-effects without returning anything from it.
 :::
 
-## See also
+## Also
 
 -   [API](../api/enum)

@@ -7,8 +7,9 @@ import { useIntervalFn } from '@vueuse/core';
 const num = ref('');
 
 function setRandomNum() {
-    const random = ~~(Math.random() * 1e9);
-    num.value = String(random);
+    const digitsCount = 1 + ~~(Math.random() * 15);
+    const digits = Array.from({ length: digitsCount }, () => ~~(Math.random() * 10)).join('');
+    num.value = digits;
 }
 
 const { pause } = useIntervalFn(setRandomNum, 5_000, {

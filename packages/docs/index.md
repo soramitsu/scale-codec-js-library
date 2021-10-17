@@ -14,6 +14,10 @@ More about SCALE itself: [Substrate SCALE Codec](https://substrate.dev/docs/en/k
 
 `@scale-codec/util` contains common utils used all across the packages.
 
-## API
+## goto
 
-[Explore API documentation](/api/)
+-   Package-related guides:
+    -   [Core](/lib/core)
+    -   [Enum](/lib/enum)
+    -   [Definition Compiler](/lib/definition-compiler)
+-   [API](/api/) of all packages

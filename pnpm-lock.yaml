@@ -187,6 +187,7 @@ importers:
     specifiers:
       '@scale-codec/core': workspace:^0.2.2
       '@scale-codec/definition-compiler': workspace:^0.2.0
+      '@scale-codec/definition-runtime': workspace:^0.1.2
       '@scale-codec/util': workspace:^0.1.0
       '@types/object-inspect': ^1.8.1
       '@vueuse/core': ^6.5.3
@@ -203,6 +204,7 @@ importers:
       vue: 3.2.20
     devDependencies:
       '@scale-codec/definition-compiler': link:../definition-compiler
+      '@scale-codec/definition-runtime': link:../definition-runtime
       '@types/object-inspect': 1.8.1
       vite-plugin-windicss: 1.4.11
       vitepress: 0.20.0

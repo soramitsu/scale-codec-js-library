@@ -15,7 +15,7 @@ function guideSidebar(): SidebarLink[] {
         {
             text: 'Guide',
             children: [
-                { text: 'About the project', link: '/' },
+                { text: 'Intro', link: '/' },
                 {
                     text: 'Contribution',
                     link: '/contribution',
