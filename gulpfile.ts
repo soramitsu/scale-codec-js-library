@@ -12,9 +12,14 @@ const DECLARATION_PACKAGES = [...PUBLISH_PACKAGES];
 
 async function clean() {
     await del(
-        ['packages/*/dist', '.declaration', 'packages/*/.declaration', 'temp', 'packages/docs/api'].map((x) =>
-            path.resolve(ROOT, x),
-        ),
+        [
+            'packages/*/dist',
+            '.declaration',
+            'packages/*/.declaration',
+            'api-extractor/temp',
+            'packages/docs/api',
+            'e2e-spa/runtime-rollup',
+        ].map((x) => path.resolve(ROOT, x)),
     );
 }
 
@@ -114,12 +119,12 @@ async function runTestInE2eSpa() {
 
 export const testE2e = series(checkBuild, runTestInE2eSpa);
 
-export const build = series(clean, buildDeclarationsOnly, rollup);
+export const extractAndDocumentApis = series(extractApis, documentApis);
+
+export const build = series(clean, buildDeclarationsOnly, parallel(rollup, extractAndDocumentApis));
 
 export const checkCodeIntegrity = series(parallel(unitTests, lint, typeCheck), build, testE2e);
 
 export const buildDeclarations = series(clean, buildDeclarationsOnly);
-
-export const extractAndDocumentApis = series(extractApis, documentApis);
 
 export { clean, publishAll, extractApis, documentApis };

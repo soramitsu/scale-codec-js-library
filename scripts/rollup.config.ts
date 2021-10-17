@@ -1,56 +1,79 @@
-import { RollupOptions } from 'rollup';
+import { RollupOptions, defineConfig } from 'rollup';
 import esbuild from 'rollup-plugin-esbuild';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 
-const packages: {
-    dir: string;
-    external?: string[];
-}[] = [
-    {
-        dir: 'enum',
-    },
-    {
-        dir: 'util',
-    },
-    {
-        dir: 'core',
-        external: ['jsbi', '@scale-codec/enum', '@scale-codec/util'],
-    },
-    {
-        dir: 'definition-compiler',
-        external: ['vue', 'prettier', '@scale-codec/core'],
-    },
-    {
-        dir: 'definition-runtime',
-        external: ['@scale-codec/core'],
-    },
-];
+function* publishConfigs(): Generator<RollupOptions> {
+    const regularPublishRollups: {
+        unscopedPackageName: string;
+        external?: string | RegExp | (string | RegExp)[];
+    }[] = [
+        {
+            unscopedPackageName: 'enum',
+        },
+        {
+            unscopedPackageName: 'util',
+        },
+        {
+            unscopedPackageName: 'core',
+            external: ['jsbi', /^@scale-codec\./],
+        },
+        {
+            unscopedPackageName: 'definition-compiler',
+            external: ['vue', 'prettier', '@scale-codec/core'],
+        },
+        {
+            unscopedPackageName: 'definition-runtime',
+            external: ['@scale-codec/core'],
+        },
+    ];
 
-const configs: RollupOptions[] = [];
+    for (const { unscopedPackageName: dir, external } of regularPublishRollups) {
+        const input = `packages/${dir}/src/lib.ts`;
 
-for (const { dir, external } of packages) {
-    const input = `packages/${dir}/src/lib.ts`;
-
-    configs.push({
-        input,
-        output: [
-            {
-                file: `packages/${dir}/dist/lib.esm.js`,
-                format: 'es',
-            },
-            {
-                file: `packages/${dir}/dist/lib.cjs.js`,
-                format: 'cjs',
-            },
-        ],
-        plugins: [
-            esbuild({
-                minify: false,
-            }),
-            nodeResolve(),
-        ],
-        external,
-    });
+        yield {
+            input,
+            output: [
+                {
+                    file: `packages/${dir}/dist/lib.esm.js`,
+                    format: 'es',
+                },
+                {
+                    file: `packages/${dir}/dist/lib.cjs.js`,
+                    format: 'cjs',
+                },
+            ],
+            plugins: [
+                esbuild({
+                    minify: false,
+                }),
+                nodeResolve(),
+            ],
+            external,
+        };
+    }
 }
 
-export default configs;
+/**
+ * Makes all-in-one `@scale-codec/definition-runtime` rollup without any externals
+ * to test the whole runtime packages chain in e2e-spa
+ */
+function runtimeRollupForTest(): RollupOptions {
+    return {
+        input: 'packages/definition-runtime/src/lib.ts',
+        plugins: [esbuild(), nodeResolve()],
+        output: [
+            {
+                // for testing in Node.js
+                file: 'e2e-spa/runtime-rollup/index.cjs.js',
+                format: 'cjs',
+            },
+            {
+                // for testing in Browser with Vite + Cypress
+                file: 'e2e-spa/runtime-rollup/index.esm.js',
+                format: 'esm',
+            },
+        ],
+    };
+}
+
+export default defineConfig([...publishConfigs(), runtimeRollupForTest()]);

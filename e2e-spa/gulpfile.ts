@@ -3,8 +3,13 @@ import fs from 'fs/promises';
 import del from 'del';
 import consola from 'consola';
 import definition from './__definition__';
-import { renderNamespaceDefinition } from '@scale-codec/definition-compiler';
 import { series } from 'gulp';
+
+// doaing a typing trick to use actual CommonJS build
+// dist/lib.cjs is untyped
+import * as compilerLib from '@scale-codec/definition-compiler';
+import * as compilerLibCjs from '@scale-codec/definition-compiler/dist/lib.cjs';
+const { renderNamespaceDefinition } = compilerLibCjs as typeof compilerLib;
 
 async function clean() {
     await del('src/namespace.ts');
