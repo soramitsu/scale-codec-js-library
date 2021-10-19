@@ -2,8 +2,8 @@ import { RollupOptions } from 'rollup';
 import esbuild from 'rollup-plugin-esbuild';
 import dts from 'rollup-plugin-dts';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import json from '@rollup/plugin-json';
-import commonjs from '@rollup/plugin-commonjs';
+// import json from '@rollup/plugin-json';
+// import commonjs from '@rollup/plugin-commonjs';
 
 const packages: {
     dir: string;
