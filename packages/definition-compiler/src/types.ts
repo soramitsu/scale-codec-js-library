@@ -1,10 +1,28 @@
+export interface RenderNamespaceDefinitionParams {
+    /**
+     * Runtime library with STD codecs + reexports from the core library.
+     *
+     * Defaults to `@scale-codec/definition-runtime`
+     */
+    runtimeLib?: string;
+
+    /**
+     * Types available in the runtime library.
+     */
+    runtimeTypes?: Set<string>;
+
+    /**
+     * Single tuples are always an arrays with a single element. It is possible to make final code cleaner
+     * (and a bit performant) if render such tuples just as aliases for the inner element. It is optional feature.
+     */
+    rollupSingleTuplesIntoAliases?: boolean;
+}
+
 /**
  * The main map with all the definitions
  *
  * @remarks
  * Name of type should be **a valid JavaScript identifier name**, because it will be compiled to an identifier.
- *
- * See {@link StdTypes} for available type presets.
  *
  * @example
  * ```ts
@@ -22,30 +40,7 @@
  */
 export type NamespaceDefinition = Record<string, TypeDef>;
 
-// #region stds
-/**
- * These type references will be interpreted as known and
- * their codecs will be imported from the runtime-library
- */
-export type StdTypes =
-    | 'str'
-    | 'bool'
-    | 'u8'
-    | 'u16'
-    | 'u32'
-    | 'u64'
-    | 'u128'
-    | 'i8'
-    | 'i16'
-    | 'i32'
-    | 'i64'
-    | 'i128'
-    | 'Void'
-    | 'Compact'
-    | 'BytesVec';
-// #endregion stds
-
-export type TypeRef = StdTypes | string;
+export type TypeRef = string;
 
 /**
  * Just an alias to the inner type

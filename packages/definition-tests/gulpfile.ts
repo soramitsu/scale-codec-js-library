@@ -25,7 +25,7 @@ async function compileSamples() {
 
     await Promise.all(
         entries.map(async ([id, { def }]) => {
-            const code = await renderNamespaceDefinition(def, { importLib: '@scale-codec/definition-runtime' });
+            const code = renderNamespaceDefinition(def);
             const file = path.join(OUTPUT_DIR, `${id}.ts`);
             const fileRelative = path.relative(process.cwd(), file);
             await fs.writeFile(file, code);

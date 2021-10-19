@@ -1,15 +1,12 @@
-import { NamespaceDefinition } from '../definitions';
-import { renderNamespaceDefinition } from './render';
+import { renderNamespaceDefinition } from '..';
+import { NamespaceDefinition, RenderNamespaceDefinitionParams } from '../../types';
 
-async function expectRenderToMatchSnapshot(
-    def: NamespaceDefinition,
-    importLib = '@scale-codec/definition-compiler-runtime',
-) {
-    expect(await renderNamespaceDefinition(def, { importLib })).toMatchSnapshot();
+function matchSnapshot(def: NamespaceDefinition, params?: RenderNamespaceDefinitionParams) {
+    expect(renderNamespaceDefinition(def, params)).toMatchSnapshot();
 }
 
 it('Renders vec', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         Vec_str: {
             t: 'vec',
             item: 'str',
@@ -18,7 +15,7 @@ it('Renders vec', () => {
 });
 
 it('Renders struct + tuple', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         Structural: {
             t: 'struct',
             fields: [
@@ -40,7 +37,7 @@ it('Renders struct + tuple', () => {
 });
 
 it('Renders enum', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         Message: {
             t: 'enum',
             variants: [
@@ -59,7 +56,7 @@ it('Renders enum', () => {
 });
 
 it('Renders set', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         Set_Message: {
             t: 'set',
             entry: 'Message',
@@ -68,7 +65,7 @@ it('Renders set', () => {
 });
 
 it('Renders map', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         Map_str_Message: {
             t: 'map',
             key: 'str',
@@ -78,7 +75,7 @@ it('Renders map', () => {
 });
 
 it('Renders array', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         Array_Item_15: {
             t: 'array',
             item: 'Item',
@@ -88,7 +85,7 @@ it('Renders array', () => {
 });
 
 it('Renders bytes array', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         Hash: {
             t: 'bytes-array',
             len: 64,
@@ -97,7 +94,7 @@ it('Renders bytes array', () => {
 });
 
 it('Renders option', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         OptionHash: {
             t: 'option',
             some: 'Hash',
@@ -106,7 +103,7 @@ it('Renders option', () => {
 });
 
 it('Renders empty struct as void alias', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         EmptyStruct: {
             t: 'struct',
             fields: [],
@@ -115,7 +112,7 @@ it('Renders empty struct as void alias', () => {
 });
 
 it('Renders empty tuple as void alias', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         EmptyTuple: {
             t: 'tuple',
             items: [],
@@ -124,7 +121,7 @@ it('Renders empty tuple as void alias', () => {
 });
 
 it('Renders an alias for some inner type', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         StringAlias: {
             t: 'alias',
             ref: 'str',
@@ -133,22 +130,19 @@ it('Renders an alias for some inner type', () => {
 });
 
 it('Renders single tuple as alias in case when the related option is enabled', async () => {
-    expect(
-        await renderNamespaceDefinition(
-            {
-                SingleTuple: { t: 'tuple', items: ['u128'] },
-                MultiTuple: { t: 'tuple', items: ['u8', 'bool'] },
-            },
-            {
-                importLib: '@scale-codec/definition-runtime',
-                rollupSingleTuplesIntoAliases: true,
-            },
-        ),
-    ).toMatchSnapshot();
+    matchSnapshot(
+        {
+            SingleTuple: { t: 'tuple', items: ['u128'] },
+            MultiTuple: { t: 'tuple', items: ['u8', 'bool'] },
+        },
+        {
+            rollupSingleTuplesIntoAliases: true,
+        },
+    );
 });
 
 it('Render import for the external type as expected', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         MyCustomExternal: {
             t: 'external',
             module: './module-with-externals',
@@ -157,7 +151,7 @@ it('Render import for the external type as expected', () => {
 });
 
 it('Renders imports for the external type using the custom name if provided', () => {
-    return expectRenderToMatchSnapshot({
+    matchSnapshot({
         ReExportMe: {
             t: 'external',
             module: 'some-package',

@@ -3,7 +3,8 @@
     "private": true,
     "version": "0.0.2",
     "scripts": {
-        "recompile-samples": "gulp --require sucrase/register -f gulpfile.ts recompile_samples"
+        "recompile-samples": "gulp --require sucrase/register -f gulpfile.ts recompile_samples",
+        "postinstall": "pnpm recompile-samples"
     },
     "dependencies": {
         "@scale-codec/definition-compiler": "workspace:^0.3.0",

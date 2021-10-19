@@ -4,5 +4,5 @@
  * @packageDocumentation
  */
 
-export * from './render/render';
-export * from './definitions';
+export * from './render';
+export * from './types';

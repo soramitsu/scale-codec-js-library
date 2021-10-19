@@ -1,11 +1,17 @@
 # @scale-codec/definition-tests
 
-This package contains a set of samples compiled by `@scale-codec/definition-compiler`. It has 2 purposes:
+It tests teamwork of compiler & runtime. Check points:
 
--   Some unit tests by `jest` - it runs globally for the whole monorepo;
--   Type-check of the output - which runs, again, globally for the whole monorepo.
+-   Definitions are compiled without errors
+-   Compiled code doesn't contain any type errors
+-   Tests with compiled code are passed
 
-## Add new samples || update old
+Definitions are defined in the `src/__samples__.ts` file. You can add there new ones or edit existing ones.
 
-1. Edit `src/__samples__.ts`
-2. Run `pnpm recompile-samples`
+Recompile samples:
+
+```shell
+pnpm recompile-samples
+```
+
+> **Note**: compiled samples **are ignored** by git and samples compilation runs as `postinstall` hook

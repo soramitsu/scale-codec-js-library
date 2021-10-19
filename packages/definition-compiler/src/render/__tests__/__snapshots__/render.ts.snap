@@ -1,0 +1,332 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Render import for the external type as expected 1`] = `
+"/* eslint-disable */
+
+// MyCustomExternal
+
+import { MyCustomExternal_Decoded, MyCustomExternal_Encodable, MyCustomExternal_decode, MyCustomExternal_encode } from './module-with-externals'
+
+export { MyCustomExternal_Decoded, MyCustomExternal_Encodable, MyCustomExternal_decode, MyCustomExternal_encode }
+"
+`;
+
+exports[`Renders an alias for some inner type 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, str_Decoded, str_Encodable, str_decode, str_encode } from '@scale-codec/definition-runtime'
+
+// StringAlias
+
+export type StringAlias_Decoded = str_Decoded
+
+export type StringAlias_Encodable = str_Encodable
+
+export function StringAlias_decode(bytes: Uint8Array): DecodeResult<StringAlias_Decoded> {
+    return str_decode(bytes)
+}
+
+export function StringAlias_encode(encodable: StringAlias_Encodable): Uint8Array {
+    return str_encode(encodable)
+}
+"
+`;
+
+exports[`Renders array 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, decodeArray, encodeArray, makeEncoderAsIsRespectable } from '@scale-codec/definition-runtime'
+
+// Array_Item_15
+
+export type Array_Item_15_Decoded = Item_Decoded[]
+
+export type Array_Item_15_Encodable = (Item_Encodable | EncodeAsIs)[]
+
+const __hoisted_Array_Item_15_item_encode__ = makeEncoderAsIsRespectable(Item_encode)
+const __hoisted_Array_Item_15_len__ = 15
+
+export function Array_Item_15_decode(bytes: Uint8Array): DecodeResult<Array_Item_15_Decoded> {
+    return decodeArray(bytes, Item_decode, __hoisted_Array_Item_15_len__)
+}
+
+export function Array_Item_15_encode(encodable: Array_Item_15_Encodable): Uint8Array {
+    return encodeArray(encodable, __hoisted_Array_Item_15_item_encode__, __hoisted_Array_Item_15_len__)
+}
+"
+`;
+
+exports[`Renders bytes array 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, decodeUint8Array, encodeUint8Array } from '@scale-codec/definition-runtime'
+
+// Hash
+
+export type Hash_Decoded = Uint8Array
+
+export type Hash_Encodable = Uint8Array
+
+const __hoisted_Hash_len__ = 64
+
+export function Hash_decode(bytes: Uint8Array): DecodeResult<Hash_Decoded> {
+    return decodeUint8Array(bytes, __hoisted_Hash_len__)
+}
+
+export function Hash_encode(encodable: Hash_Encodable): Uint8Array {
+    return encodeUint8Array(encodable, __hoisted_Hash_len__)
+}
+"
+`;
+
+exports[`Renders empty struct as void alias 1`] = `
+"/* eslint-disable */
+
+// EmptyStruct
+
+import { Void_Decoded as EmptyStruct_Decoded, Void_Encodable as EmptyStruct_Encodable, Void_decode as EmptyStruct_decode, Void_encode as EmptyStruct_encode } from '@scale-codec/definition-runtime'
+
+export { EmptyStruct_Decoded, EmptyStruct_Encodable, EmptyStruct_decode, EmptyStruct_encode }
+"
+`;
+
+exports[`Renders empty tuple as void alias 1`] = `
+"/* eslint-disable */
+
+// EmptyTuple
+
+import { Void_Decoded as EmptyTuple_Decoded, Void_Encodable as EmptyTuple_Encodable, Void_decode as EmptyTuple_decode, Void_encode as EmptyTuple_encode } from '@scale-codec/definition-runtime'
+
+export { EmptyTuple_Decoded, EmptyTuple_Encodable, EmptyTuple_decode, EmptyTuple_encode }
+"
+`;
+
+exports[`Renders enum 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, Enum, HelperEnumDiscriminantVariantPair, Valuable, decodeEnum, encodeEnum, helperEnumDecoders, helperEnumEncoders, str_Decoded, str_Encodable, str_decode, str_encode } from '@scale-codec/definition-runtime'
+
+// Message
+
+export type Message_Decoded = Enum<{
+    Quit: null
+    Greeting: Valuable<str_Decoded>
+}>
+
+export type Message_Encodable = Enum<{
+    Quit: null
+    Greeting: Valuable<str_Encodable | EncodeAsIs>
+}>
+
+const __hoisted_Message_pairs__: HelperEnumDiscriminantVariantPair[] = [
+    [0, 'Quit'],
+    [1, 'Greeting']
+]
+const __hoisted_Message_decoders__ = helperEnumDecoders(__hoisted_Message_pairs__, {
+    1: str_decode
+})
+const __hoisted_Message_encoders__ = helperEnumEncoders(__hoisted_Message_pairs__, {
+    Greeting: str_encode
+})
+
+export function Message_decode(bytes: Uint8Array): DecodeResult<Message_Decoded> {
+    return decodeEnum(bytes, __hoisted_Message_decoders__)
+}
+
+export function Message_encode(encodable: Message_Encodable): Uint8Array {
+    return encodeEnum(encodable, __hoisted_Message_encoders__)
+}
+"
+`;
+
+exports[`Renders imports for the external type using the custom name if provided 1`] = `
+"/* eslint-disable */
+
+// ReExportMe
+
+import { re_export_me_Decoded as ReExportMe_Decoded, re_export_me_Encodable as ReExportMe_Encodable, re_export_me_decode as ReExportMe_decode, re_export_me_encode as ReExportMe_encode } from 'some-package'
+
+export { ReExportMe_Decoded, ReExportMe_Encodable, ReExportMe_decode, ReExportMe_encode }
+"
+`;
+
+exports[`Renders map 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, decodeMap, encodeMap, helperMapEncoders, str_Decoded, str_Encodable, str_decode, str_encode } from '@scale-codec/definition-runtime'
+
+// Map_str_Message
+
+export type Map_str_Message_Decoded = Map<str_Decoded, Message_Decoded>
+
+export type Map_str_Message_Encodable = Map<str_Encodable | EncodeAsIs, Message_Encodable | EncodeAsIs>
+
+const [__hoisted_Map_str_Message_encode_key__, __hoisted_Map_str_Message_encode_value__] = helperMapEncoders(str_encode, Message_encode)
+
+export function Map_str_Message_decode(bytes: Uint8Array): DecodeResult<Map_str_Message_Decoded> {
+    return decodeMap(bytes, str_decode, Message_decode)
+}
+
+export function Map_str_Message_encode(encodable: Map_str_Message_Encodable): Uint8Array {
+    return encodeMap(encodable, __hoisted_Map_str_Message_encode_key__, __hoisted_Map_str_Message_encode_value__)
+}
+"
+`;
+
+exports[`Renders option 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, HelperEnumDiscriminantVariantPair, Option, decodeEnum, encodeEnum, helperEnumDecoders, helperEnumEncoders } from '@scale-codec/definition-runtime'
+
+// OptionHash
+
+export type OptionHash_Decoded = Option<Hash_Decoded>
+
+export type OptionHash_Encodable = Option<Hash_Encodable | EncodeAsIs>
+
+const __hoisted_OptionHash_pairs__: HelperEnumDiscriminantVariantPair[] = [
+    [0, 'None'],
+    [1, 'Some']
+]
+const __hoisted_OptionHash_decoders__ = helperEnumDecoders(__hoisted_OptionHash_pairs__, {
+    1: Hash_decode
+})
+const __hoisted_OptionHash_encoders__ = helperEnumEncoders(__hoisted_OptionHash_pairs__, {
+    Some: Hash_encode
+})
+
+export function OptionHash_decode(bytes: Uint8Array): DecodeResult<OptionHash_Decoded> {
+    return decodeEnum(bytes, __hoisted_OptionHash_decoders__)
+}
+
+export function OptionHash_encode(encodable: OptionHash_Encodable): Uint8Array {
+    return encodeEnum(encodable, __hoisted_OptionHash_encoders__)
+}
+"
+`;
+
+exports[`Renders set 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, decodeSet, encodeSet, makeEncoderAsIsRespectable } from '@scale-codec/definition-runtime'
+
+// Set_Message
+
+export type Set_Message_Decoded = Set<Message_Decoded>
+
+export type Set_Message_Encodable = Set<Message_Encodable | EncodeAsIs>
+
+const Set_Message_item_encode = makeEncoderAsIsRespectable(Message_encode)
+
+export function Set_Message_decode(bytes: Uint8Array): DecodeResult<Set_Message_Decoded> {
+    return decodeSet(bytes, Message_decode)
+}
+
+export function Set_Message_encode(encodable: Set_Message_Encodable): Uint8Array {
+    return encodeSet(encodable, Set_Message_item_encode)
+}
+"
+`;
+
+exports[`Renders single tuple as alias in case when the related option is enabled 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, bool_Decoded, bool_Encodable, bool_decode, bool_encode, decodeTuple, encodeTuple, helperTupleEncoders, u128_Decoded, u128_Encodable, u128_decode, u128_encode, u8_Decoded, u8_Encodable, u8_decode, u8_encode } from '@scale-codec/definition-runtime'
+
+// MultiTuple
+
+export type MultiTuple_Decoded = [u8_Decoded, bool_Decoded]
+
+export type MultiTuple_Encodable = [u8_Encodable | EncodeAsIs, bool_Encodable | EncodeAsIs]
+
+const __hoisted_MultiTuple_decoders__ = [u8_decode, bool_decode]
+const __hoisted_MultiTuple_encoders__ = helperTupleEncoders<MultiTuple_Decoded>([u8_encode, bool_encode])
+
+export function MultiTuple_decode(bytes: Uint8Array): DecodeResult<MultiTuple_Decoded> {
+    return decodeTuple(bytes, __hoisted_MultiTuple_decoders__ as any)
+}
+
+export function MultiTuple_encode(encodable: MultiTuple_Encodable): Uint8Array {
+    return encodeTuple(encodable, __hoisted_MultiTuple_encoders__ as any)
+}
+
+// SingleTuple
+
+export type SingleTuple_Decoded = u128_Decoded
+
+export type SingleTuple_Encodable = u128_Encodable
+
+export function SingleTuple_decode(bytes: Uint8Array): DecodeResult<SingleTuple_Decoded> {
+    return u128_decode(bytes)
+}
+
+export function SingleTuple_encode(encodable: SingleTuple_Encodable): Uint8Array {
+    return u128_encode(encodable)
+}
+"
+`;
+
+exports[`Renders struct + tuple 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, bool_Decoded, bool_Encodable, bool_decode, bool_encode, decodeStruct, decodeTuple, encodeStruct, encodeTuple, helperStructEncoders, helperTupleEncoders, i128_Decoded, i128_Encodable, i128_decode, i128_encode, u8_Decoded, u8_Encodable, u8_decode, u8_encode } from '@scale-codec/definition-runtime'
+
+// Structural
+
+export type Structural_Decoded = { nums: Tuple_u8_i128_Decoded, mur: bool_Decoded }
+
+export type Structural_Encodable = { nums: Tuple_u8_i128_Encodable | EncodeAsIs, mur: bool_Encodable | EncodeAsIs }
+
+const __hoisted_Structural_order__: (keyof Structural_Decoded)[] = ['nums', 'mur']
+const __hoisted_Structural_decoders__ = { nums: Tuple_u8_i128_decode, mur: bool_decode }
+const __hoisted_Structural_encoders__ = helperStructEncoders({ nums: Tuple_u8_i128_encode, mur: bool_encode })
+
+export function Structural_decode(bytes: Uint8Array): DecodeResult<Structural_Decoded> {
+    return decodeStruct(bytes, __hoisted_Structural_decoders__, __hoisted_Structural_order__)
+}
+
+export function Structural_encode(encodable: Structural_Encodable): Uint8Array {
+    return encodeStruct(encodable, __hoisted_Structural_encoders__, __hoisted_Structural_order__)
+}
+
+// Tuple_u8_i128
+
+export type Tuple_u8_i128_Decoded = [u8_Decoded, i128_Decoded]
+
+export type Tuple_u8_i128_Encodable = [u8_Encodable | EncodeAsIs, i128_Encodable | EncodeAsIs]
+
+const __hoisted_Tuple_u8_i128_decoders__ = [u8_decode, i128_decode]
+const __hoisted_Tuple_u8_i128_encoders__ = helperTupleEncoders<Tuple_u8_i128_Decoded>([u8_encode, i128_encode])
+
+export function Tuple_u8_i128_decode(bytes: Uint8Array): DecodeResult<Tuple_u8_i128_Decoded> {
+    return decodeTuple(bytes, __hoisted_Tuple_u8_i128_decoders__ as any)
+}
+
+export function Tuple_u8_i128_encode(encodable: Tuple_u8_i128_Encodable): Uint8Array {
+    return encodeTuple(encodable, __hoisted_Tuple_u8_i128_encoders__ as any)
+}
+"
+`;
+
+exports[`Renders vec 1`] = `
+"/* eslint-disable */
+
+import { DecodeResult, EncodeAsIs, decodeVec, encodeVec, makeEncoderAsIsRespectable, str_Decoded, str_Encodable, str_decode, str_encode } from '@scale-codec/definition-runtime'
+
+// Vec_str
+
+export type Vec_str_Decoded = str_Decoded[]
+
+export type Vec_str_Encodable = (str_Encodable | EncodeAsIs)[]
+
+const __hoisted_Vec_str_item_encode__ = makeEncoderAsIsRespectable(str_encode)
+
+export function Vec_str_decode(bytes: Uint8Array): DecodeResult<Vec_str_Decoded> {
+    return decodeVec(bytes, str_decode)
+}
+
+export function Vec_str_encode(encodable: Vec_str_Encodable): Uint8Array {
+    return encodeVec(encodable, __hoisted_Vec_str_item_encode__)
+}
+"
+`;

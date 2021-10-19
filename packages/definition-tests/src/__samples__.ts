@@ -28,3 +28,40 @@ export const externals = defineSample({
         nameInModule: 'str',
     },
 });
+
+export const enums = defineSample({
+    Message: {
+        t: 'enum',
+        variants: [
+            {
+                discriminant: 0,
+                name: 'Quit',
+            },
+            {
+                discriminant: 1,
+                name: 'Greeting',
+                ref: 'str',
+            },
+        ],
+    },
+    OptionMessage: {
+        t: 'option',
+        some: 'Message',
+    },
+});
+
+export const struct = defineSample({
+    Character: {
+        t: 'struct',
+        fields: [
+            {
+                name: 'name',
+                ref: 'str',
+            },
+            {
+                name: 'age',
+                ref: 'u8',
+            },
+        ],
+    },
+});
