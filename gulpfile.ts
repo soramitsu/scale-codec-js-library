@@ -35,11 +35,11 @@ async function buildDeclarationsOnly() {
     );
 }
 
-async function extractPackageApis(unscopedPackageName: string): Promise<void> {
+async function extractPackageApis(unscopedPackageName: string, localBuild = false): Promise<void> {
     const extractorConfigFile = path.resolve(ROOT, 'packages', unscopedPackageName, 'api-extractor.json');
     const config = ExtractorConfig.loadFileAndPrepare(extractorConfigFile);
     const extractorResult = Extractor.invoke(config, {
-        localBuild: true,
+        localBuild,
         showVerboseMessages: true,
     });
     if (extractorResult.succeeded) {
@@ -53,8 +53,16 @@ async function extractPackageApis(unscopedPackageName: string): Promise<void> {
     }
 }
 
-async function extractApis() {
-    await Promise.all(DECLARATION_PACKAGES.map((x) => extractPackageApis(x)));
+async function extractApisParametrized(localBuild = false) {
+    await Promise.all(DECLARATION_PACKAGES.map((x) => extractPackageApis(x, localBuild)));
+}
+
+function extractApisLocalBuild() {
+    return extractApisParametrized(true);
+}
+
+function extractApis() {
+    return extractApisParametrized();
 }
 
 /**
@@ -121,10 +129,10 @@ export const testE2e = series(checkBuild, runTestInE2eSpa);
 
 export const extractAndDocumentApis = series(extractApis, documentApis);
 
-export const build = series(clean, buildDeclarationsOnly, parallel(rollup, extractAndDocumentApis));
+export const build = series(clean, buildDeclarationsOnly, extractApis, parallel(rollup, documentApis));
 
 export const checkCodeIntegrity = series(parallel(unitTests, lint, typeCheck), build, testE2e);
 
 export const buildDeclarations = series(clean, buildDeclarationsOnly);
 
-export { clean, publishAll, extractApis, documentApis };
+export { clean, publishAll, extractApis, documentApis, extractApisLocalBuild };

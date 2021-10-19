@@ -14,6 +14,7 @@
         "publish:all": "pnpm gulp-ts -- publishAll",
         "lint": "prettier-eslint \"**/*.(ts|js)\"",
         "check-code-integrity": "pnpm gulp-ts -- checkCodeIntegrity",
+        "api:extract-local": "pnpm gulp-ts -- extractApisLocalBuild",
         "api:extract": "pnpm gulp-ts -- extractApis",
         "api:docs": "pnpm gulp-ts -- documentApis",
         "api:all": "pnpm gulp-ts -- extractAndDocumentApis",

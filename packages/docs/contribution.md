@@ -59,6 +59,23 @@ pnpm check-code-integrity
 
 Useful in CI/CD.
 
+### Work with `api-extractor`
+
+```shell
+pnpm api:extract
+pnpm api:docs
+
+# extract + docs
+pnpm api:all
+
+# update reports (for local usage)
+pnpm api:extract-local
+```
+
+::: tip
+By default `api:extract` script fails if extracted API reports are not the same as existing ones. It is usefull for CI. To override API reports use `api:extract-local`.
+:::
+
 ### Build
 
 Cleans all, builds declarations and code roll-ups, extracts APIs to reports and generated doc files to `packages/docs/api/`.
