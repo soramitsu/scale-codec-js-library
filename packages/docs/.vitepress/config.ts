@@ -34,6 +34,10 @@ function guideSidebar(): SidebarLink[] {
             link: '/api/',
             children: apiSidebar(),
         },
+        {
+            text: 'To Do',
+            link: '/todo',
+        },
     ];
 }
 

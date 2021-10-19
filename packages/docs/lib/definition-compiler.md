@@ -5,7 +5,7 @@ The compiler design is still Work-In-Progress, as well as its implementation. Cu
 
 -   100% typed output
 -   Good TypeScript performance
--   Tree-shake-ability of compiled code
+-   Tree-shake ability of the compiled code
 -   Explicitness due to verbosity
 
 If you have some insigts/ideas how to make it better, you are welcome to create [an issue on GitHub](https://github.com/soramitsu/scale-codec-js-library/issues)!
@@ -18,7 +18,7 @@ This package goes arm-in-arm with `@scale-codec/definition-runtime` library.
 
 SCALE might (and should!) be used within huge types namespaces with structs, enums, tuples etc that reference to each other. This tool helps to define a namespace schema and compile it into a TypeScript code which represents ESModule.
 
-**It works only in Node.js yet :&lt;.**
+**It works only in Node.js yet :&lt;**
 
 ## Contents
 
@@ -46,7 +46,7 @@ interface Message_Decoded {
 }
 ```
 
--   `Message_Encodable` is an interface that defines **encodable** structure for this type. It is an extension of `*_Decoded` type usually with some additions to make possible skip already encoded parts for performance reasons. For `Message` it is:
+-   `Message_Encodable` is an interface that defines **encodable** structure for this type. It is an extension of `*_Decoded` type usually with some additions to make possible to skip already encoded parts for performance reasons. For `Message` it is:
 
 ```ts
 interface Message_Encodable {
@@ -59,7 +59,7 @@ interface Message_Encodable {
 Each complex type (tuple, enum, map, vec etc) has its own `Encodable` building approach.
 :::
 
--   `Message_decode` is an **decode function** for `Message` that accepts `Uint8Array` as the input and returns `DecodeResult<Message_Decoded>` as the output:
+-   `Message_decode` is a **decode function** for `Message` that accepts `Uint8Array` as the input and returns `DecodeResult<Message_Decoded>` as the output:
 
 ```ts
 declare function Message_decode(bytes: Uint8Array): DecodeResult<Message_Decoded>;
