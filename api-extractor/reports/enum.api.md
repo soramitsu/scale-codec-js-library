@@ -12,11 +12,8 @@ export type EmptyVariants<Def> = {
 // @public
 export class Enum<Def> {
     as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends Valuable<infer T> ? T : never;
-    readonly content: null | {
-        value: unknown;
-    };
-    static create<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def>;
-    static create<Def, V extends ValuableVariants<Def>>(variant: V, value: GetValuableVariantValue<Def[V]>): Enum<Def>;
+    readonly content: null | [some: unknown];
+    static empty<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def>;
     is<V extends keyof Def>(variant: V): boolean;
     match<R = any>(matchMap: EnumMatchMap<Def, R>): R;
     // @internal (undocumented)
@@ -27,6 +24,7 @@ export class Enum<Def> {
         variant: keyof Def;
         value?: undefined;
     };
+    static valuable<Def, V extends ValuableVariants<Def>>(variant: V, value: GetValuableVariantValue<Def[V]>): Enum<Def>;
     // (undocumented)
     readonly variant: keyof Def;
 }
