@@ -27,15 +27,8 @@
     "files": [
         "dist"
     ],
-    "scripts": {
-        "compile-ints": "esno scripts/compile-ints"
-    },
     "dependencies": {
         "@scale-codec/core": "workspace:^0.2.3",
         "@scale-codec/util": "workspace:^0.1.1"
-    },
-    "devDependencies": {
-        "esno": "^0.10.1",
-        "prettier": "^2.4.1"
     }
 }
