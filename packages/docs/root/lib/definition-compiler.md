@@ -18,8 +18,6 @@ This package goes arm-in-arm with `@scale-codec/definition-runtime` library.
 
 SCALE might (and should!) be used within huge types namespaces with structs, enums, tuples etc that reference to each other. This tool helps to define a namespace schema and compile it into a TypeScript code which represents ESModule.
 
-**It works only in Node.js yet :&lt;**
-
 ## Contents
 
 [[toc]]
@@ -128,11 +126,8 @@ Compilation code:
 import { renderNamespaceDefinition } from '@scale-codec/definition-compiler';
 import schema from './schema';
 
-renderNamespaceDefinition(schema, {
-    importLib: '@scale-codec/definition-runtime',
-}).then((x) => {
-    console.log(x);
-});
+const code = renderNamespaceDefinition(schema);
+console.log(code);
 ```
 
 <details>
@@ -162,9 +157,19 @@ npm i @scale-codec/definition-runtime
 It is not necessary to install runtime library in the same package where you install compiler - it is only necessary for the final runtime, where you are going to finally run the compiled code. It's even possible to define any other runtime and its module name in params of the compiler's render function.
 :::
 
-## Available STDs
+## Default available types
 
-<<< @/../definition-compiler/src/definitions.ts#stds
+<script setup>
+import DefaultTypes from './components/DefaultTypes.vue'
+</script>
+
+<DefaultTypes />
+
+"Default" means that these types **defined** at `@scale-codec/definition-runtime` and `@scale-codec/definition-compiler` **knows** about them. Anyway, you can customize both runtime lib and known types (see [rendering params at API section](/api/definition-compiler.rendernamespacedefinitionparams.html)).
+
+```ts
+import { Str } from '@scale-codec/definition-runtime';
+```
 
 ## Playground
 

@@ -6,11 +6,11 @@ const schema: NamespaceDefinition = {
         fields: [
             {
                 name: 'name',
-                ref: 'str',
+                ref: 'Str',
             },
             {
                 name: 'age',
-                ref: 'u8',
+                ref: 'U8',
             },
             {
                 name: 'document',
@@ -24,7 +24,7 @@ const schema: NamespaceDefinition = {
             {
                 name: 'Id',
                 discriminant: 0,
-                ref: 'u8',
+                ref: 'U8',
             },
             {
                 name: 'Passport',
@@ -35,11 +35,11 @@ const schema: NamespaceDefinition = {
     },
     Passport: {
         t: 'tuple',
-        items: ['u32', 'u32'],
+        items: ['U32', 'U32'],
     },
     PersonsMap: {
         t: 'map',
-        key: 'u8',
+        key: 'U8',
         value: 'Person',
     },
     PersonsVec: {
@@ -57,7 +57,7 @@ const schema: NamespaceDefinition = {
     },
     Array_u8_32: {
         t: 'array',
-        item: 'u8',
+        item: 'U8',
         len: 32,
     },
 };
