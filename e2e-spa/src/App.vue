@@ -11,7 +11,7 @@ import { encodeAndDecodeReallyComplexData } from './encode-decode';
 
 export default defineComponent({
     setup() {
-        const result = ref<Option<Result<null, Error>>>(Enum.create('None'));
+        const result = ref<Option<Result<null, Error>>>(Enum.empty('None'));
 
         const resultFormatted = computed<null | string>(() =>
             result.value.match({
@@ -25,7 +25,7 @@ export default defineComponent({
         );
 
         function act() {
-            result.value = Enum.create('Some', encodeAndDecodeReallyComplexData());
+            result.value = Enum.valuable('Some', encodeAndDecodeReallyComplexData());
         }
 
         return {

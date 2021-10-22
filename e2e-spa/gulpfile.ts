@@ -19,7 +19,7 @@ async function compileDefinition() {
     const OUTPUT_PATH = path.resolve(__dirname, 'src/namespace.ts');
 
     consola.log('Rendering definition...');
-    const code = await renderNamespaceDefinition(definition, { importLib: '@scale-codec/definition-runtime' });
+    const code = renderNamespaceDefinition(definition);
 
     consola.log(chalk`Writing into {bold.blue ${OUTPUT_PATH}}...`);
     await fs.writeFile(OUTPUT_PATH, code, { encoding: 'utf-8' });

@@ -3,26 +3,26 @@ import { NamespaceDefinition } from '@scale-codec/definition-compiler';
 const definition: NamespaceDefinition = {
     Option_str: {
         t: 'option',
-        some: 'str',
+        some: 'Str',
     },
     Tuple_str_i32: {
         t: 'tuple',
-        items: ['str', 'i32'],
+        items: ['Str', 'I32'],
     },
     Tuple_u64_bool_str_i32: {
         t: 'tuple',
-        items: ['u64', 'bool', 'Tuple_str_i32'],
+        items: ['U64', 'Bool', 'Tuple_str_i32'],
     },
     Id: {
         t: 'struct',
         fields: [
             {
                 name: 'name',
-                ref: 'str',
+                ref: 'Str',
             },
             {
                 name: 'domain',
-                ref: 'str',
+                ref: 'Str',
             },
             {
                 name: 'second_name',
@@ -51,7 +51,7 @@ const definition: NamespaceDefinition = {
     },
     HashMap_str_Id: {
         t: 'map',
-        key: 'str',
+        key: 'Str',
         value: 'Id',
     },
     Vec_HashMap_str_Id: {

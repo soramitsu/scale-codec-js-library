@@ -1,3 +1,4 @@
 dist
 packages/definition-compiler/tests/samples
 packages/docs/root/lib/snippets/namespace-schema-compiled.ts
+e2e-spa/src/namespace.ts
