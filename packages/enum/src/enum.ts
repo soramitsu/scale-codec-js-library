@@ -36,7 +36,8 @@ export type EnumMatchMap<V, R = any> = {
  * Then you could create enums with that definition type-safely:
  *
  * ```ts
- * const a: MyEnum = Enum.create('EmptyVariant')
+ * const val1: MyEnum = Enum.empty('EmptyVariant')
+ * const val2: MyEnum = Enum.valuable('VarWithBool', true)
  * ```
  *
  * Also look for {@link Valuable} helper
@@ -46,28 +47,20 @@ export class Enum<Def> {
      * Create an empty variant of enum with it
      * @param variant - Empty variant name
      */
-    public static create<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def>;
+    public static empty<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def> {
+        return new Enum(variant, null);
+    }
 
     /**
      * Create a valuable variant of enum with it
      * @param variant - Valuable variant name
      * @param value - Value associated with variant
      */
-    public static create<Def, V extends ValuableVariants<Def>>(
+    public static valuable<Def, V extends ValuableVariants<Def>>(
         variant: V,
-        // eslint-disable-next-line @typescript-eslint/unified-signatures
         value: GetValuableVariantValue<Def[V]>,
-    ): Enum<Def>;
-
-    public static create<Def, V extends keyof Def>(
-        variant: V,
-        value?: Def[V] extends Valuable<infer T> ? T : undefined,
     ): Enum<Def> {
-        return new Enum(
-            variant,
-            // so... we do not accept `undefined` as inner values, yes
-            value === undefined ? undefined : { value },
-        );
+        return new Enum(variant, [value]);
     }
 
     public readonly variant: keyof Def;
@@ -75,9 +68,9 @@ export class Enum<Def> {
     /**
      * Inner value is untyped and should be used with caution
      */
-    public readonly content: null | { value: unknown };
+    public readonly content: null | [some: unknown];
 
-    private constructor(variant: keyof Def, content?: { value: unknown }) {
+    private constructor(variant: keyof Def, content: null | [unknown]) {
         this.content = content ?? null;
         this.variant = variant;
     }
@@ -98,7 +91,7 @@ export class Enum<Def> {
      */
     public as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends Valuable<infer T> ? T : never {
         if (this.is(variant) && this.content) {
-            return this.content.value as Def[V];
+            return this.content[0] as Def[V];
         }
 
         throw new Error(`cast failed - enum is not the "${variant}"`);
@@ -110,7 +103,7 @@ export class Enum<Def> {
      * @example
      *
      * ```ts
-     * const file: Result<string, Error> = Enum.create('Err', new Error('Oops!'))
+     * const file: Result<string, Error> = Enum.valuable('Err', new Error('Oops!'))
      *
      * const fileContents = file.match({
      *     Ok: (txt) => txt,
@@ -123,7 +116,7 @@ export class Enum<Def> {
      */
     public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
         const fn = matchMap[this.variant] as (...args: any[]) => any;
-        return this.content ? fn(this.content.value) : fn();
+        return this.content ? fn(this.content[0]) : fn();
     }
 
     /**
@@ -131,6 +124,6 @@ export class Enum<Def> {
      */
     public toJSON() {
         const { variant, content } = this;
-        return content ? { variant, value: content.value } : { variant };
+        return content ? { variant, value: content[0] } : { variant };
     }
 }

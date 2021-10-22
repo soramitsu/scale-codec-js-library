@@ -32,7 +32,7 @@ import {
 } from '../samples/complexNamespace';
 
 function defineCase<T>(
-    builder: ScaleBuilder<T>,
+    builder: ScaleBuilder<T, any>,
     value: T,
     expectedBytes: Uint8Array,
 ): [ScaleBuilder<T>, T, Uint8Array] {
@@ -70,8 +70,8 @@ test.each([
         new Set([U8.fromValue(JSBI.BigInt(51)), U8.fromValue(JSBI.BigInt(5))]),
         encodeSetU8(new Set([JSBI.BigInt(51), JSBI.BigInt(5)])),
     ),
-    defineCase(Msg, Enum.create('Quit'), encodeMsgEnum(Enum.create('Quit'))),
-    defineCase(Msg, Enum.create('Greeting', Str.fromValue('Nya')), encodeMsgEnum(Enum.create('Greeting', 'Nya'))),
+    defineCase(Msg, Enum.empty('Quit'), encodeMsgEnum(Enum.empty('Quit'))),
+    defineCase(Msg, Enum.valuable('Greeting', Str.fromValue('Nya')), encodeMsgEnum(Enum.valuable('Greeting', 'Nya'))),
     defineCase(
         ArraySetU8l2,
         [SetU8.fromValue(new Set()), SetU8.fromValue(new Set([U8.fromValue(JSBI.BigInt('412341234'))]))],
@@ -81,17 +81,14 @@ test.each([
     defineCase(StrAlias, 'wow', encodeStrCompact('wow')),
     defineCase(
         TupleMsgMsg,
-        [Msg.fromValue(Enum.create('Quit')), Msg.fromValue(Enum.create('Quit'))],
-        encodeTuple<[RawMsgEnum, RawMsgEnum]>(
-            [Enum.create('Quit'), Enum.create('Quit')],
-            [encodeMsgEnum, encodeMsgEnum],
-        ),
+        [Msg.fromValue(Enum.empty('Quit')), Msg.fromValue(Enum.empty('Quit'))],
+        encodeTuple<[RawMsgEnum, RawMsgEnum]>([Enum.empty('Quit'), Enum.empty('Quit')], [encodeMsgEnum, encodeMsgEnum]),
     ),
-    defineCase(OptionMsg, Enum.create('None'), encodeOption(Enum.create('None'))),
+    defineCase(OptionMsg, Enum.empty('None'), encodeOption(Enum.empty('None'))),
     defineCase(
         OptionMsg,
-        Enum.create('Some', Msg.fromValue(Enum.create('Quit'))),
-        encodeOption(Enum.create('Some', Enum.create('Quit'))),
+        Enum.valuable('Some', Msg.fromValue(Enum.empty('Quit'))),
+        encodeOption(Enum.valuable('Some', Enum.empty('Quit'))),
     ),
 ])('Encode/decode with %p: %p', (builder, val, expectedBytes) => {
     const instance = builder.fromValue(val as any);

@@ -21,6 +21,7 @@ enum BaseType {
     Builder = 'ScaleBuilder',
     InstanceViaBuilder = 'InstanceViaBuilder',
     InnerValue = 'InnerValue',
+    UnwrappedValue = 'UnwrappedValue',
     Enum = 'Enum',
     Valuable = 'Valuable',
     Option = 'Option',
@@ -75,12 +76,11 @@ const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<
 
 // =========
 
-function renderBuilder(props: { valueTy: string; createHelper: string; createHelperArgs: string }): string {
+function renderBuilder(props: { valueTy: string | null; createHelper: string; createHelperArgs: string }): string {
     const ty = useCurrentTyName();
+    const helperGeneric = props.valueTy ? `<${props.valueTy}>` : '';
 
-    return `export var ${ty} = ${touchImport(props.createHelper)}<${props.valueTy}>('${ty}', ${
-        props.createHelperArgs
-    })`;
+    return `export var ${ty} = ${touchImport(props.createHelper)}${helperGeneric}('${ty}', ${props.createHelperArgs})`;
 }
 
 function touchRef(ref: string): string {
@@ -113,7 +113,9 @@ function linesJoin(lines: string[], joiner = '\n\n'): string {
 
 function renderAlias(to: string): string {
     return renderBuilder({
-        valueTy: `${touchBase(BaseType.InnerValue)}<typeof ${touchRef(to)}>`,
+        valueTy: [BaseType.InnerValue, BaseType.UnwrappedValue]
+            .map((x) => `${touchBase(x)}<typeof ${touchRef(to)}>`)
+            .join(', '),
         createHelper: 'createAliasBuilder',
         createHelperArgs: refFn(to),
     });
@@ -213,7 +215,7 @@ function renderArray(item: string, len: number): string {
 
 function renderBytesArray(len: number): string {
     return renderBuilder({
-        valueTy: `Uint8Array`,
+        valueTy: null,
         createHelper: 'createBytesArrayBuilder',
         createHelperArgs: `${len}`,
     });

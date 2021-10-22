@@ -5,7 +5,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: number };
-        }> = Enum.create('a');
+        }> = Enum.empty('a');
 
         expect(val.is('a')).toBe(true);
     });
@@ -14,7 +14,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: number };
-        }> = Enum.create('a');
+        }> = Enum.empty('a');
 
         expect(val.is('b')).toBe(false);
     });
@@ -23,7 +23,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: number };
-        }> = Enum.create('b', 111);
+        }> = Enum.valuable('b', 111);
 
         expect(val.as('b')).toBe(111);
     });
@@ -32,7 +32,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: number };
-        }> = Enum.create('a');
+        }> = Enum.empty('a');
 
         expect(() => val.as('b')).toThrow();
     });
@@ -49,7 +49,7 @@ describe('Enum', () => {
         };
         const other = variant === 'Double' ? 'Single' : 'Double';
 
-        Enum.create<Variants, keyof Variants>(variant).match(matchMap);
+        Enum.empty<Variants, keyof Variants>(variant).match(matchMap);
 
         expect(matchMap[variant]).toBeCalled();
         expect(matchMap[other]).not.toBeCalled();
@@ -59,7 +59,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: string };
-        }> = Enum.create('b', 'something');
+        }> = Enum.valuable('b', 'something');
         const spy = jest.fn();
 
         val.match({ a: () => {}, b: spy });
@@ -71,7 +71,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: string };
-        }> = Enum.create('a');
+        }> = Enum.empty('a');
         const spy = jest.fn();
 
         val.match({ a: spy, b: () => {} });
@@ -83,7 +83,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: string };
-        }> = Enum.create('a');
+        }> = Enum.empty('a');
 
         const result = val.match({ a: () => 'good', b: () => 'bad' });
 
@@ -94,7 +94,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: string };
-        }> = Enum.create('a');
+        }> = Enum.empty('a');
 
         expect(val.toJSON()).toEqual({ variant: 'a' });
     });
@@ -103,7 +103,7 @@ describe('Enum', () => {
         const val: Enum<{
             a: null;
             b: { value: string };
-        }> = Enum.create('b', 'bobobo');
+        }> = Enum.valuable('b', 'bobobo');
 
         expect(val.toJSON()).toEqual({ variant: 'b', value: 'bobobo' });
     });

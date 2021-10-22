@@ -7,9 +7,9 @@ export { MyCustomExternal }
 `;
 
 exports[`Renders an alias for some inner type 1`] = `
-"import { InnerValue, Str, createAliasBuilder } from '@scale-codec/definition-runtime'
+"import { InnerValue, Str, UnwrappedValue, createAliasBuilder } from '@scale-codec/definition-runtime'
 
-export var StringAlias = createAliasBuilder<InnerValue<typeof Str>>('StringAlias', () => Str)
+export var StringAlias = createAliasBuilder<InnerValue<typeof Str>, UnwrappedValue<typeof Str>>('StringAlias', () => Str)
 "
 `;
 
@@ -23,7 +23,7 @@ export var Array_Item_15 = createArrayBuilder<InstanceViaBuilder<typeof Item>[]>
 exports[`Renders bytes array 1`] = `
 "import { createBytesArrayBuilder } from '@scale-codec/definition-runtime'
 
-export var Hash = createBytesArrayBuilder<Uint8Array>('Hash', 64)
+export var Hash = createBytesArrayBuilder('Hash', 64)
 "
 `;
 
@@ -84,14 +84,14 @@ export var Set_Message = createSetBuilder<Set<InstanceViaBuilder<typeof Message>
 `;
 
 exports[`Renders single tuple as alias in case when the related option is enabled 1`] = `
-"import { Bool, InnerValue, InstanceViaBuilder, U128, U8, createAliasBuilder, createTupleBuilder } from '@scale-codec/definition-runtime'
+"import { Bool, InnerValue, InstanceViaBuilder, U128, U8, UnwrappedValue, createAliasBuilder, createTupleBuilder } from '@scale-codec/definition-runtime'
 
 export var MultiTuple = createTupleBuilder<[
     InstanceViaBuilder<typeof U8>,
     InstanceViaBuilder<typeof Bool>
 ]>('MultiTuple', [() => U8, () => Bool])
 
-export var SingleTuple = createAliasBuilder<InnerValue<typeof U128>>('SingleTuple', () => U128)
+export var SingleTuple = createAliasBuilder<InnerValue<typeof U128>, UnwrappedValue<typeof U128>>('SingleTuple', () => U128)
 "
 `;
 

@@ -154,9 +154,9 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     describe('vec of option int encoded as expected', () => {
         const { encode, decode } = optionCodec<JSBI>(bigIntCodec({ bits: 8, signed: true, endianness: 'le' }));
         const vec: Enum<OptionDef<JSBI>>[] = [
-            Enum.create('Some', JSBI.BigInt(1)),
-            Enum.create('Some', JSBI.BigInt(-1)),
-            Enum.create('None'),
+            Enum.valuable('Some', JSBI.BigInt(1)),
+            Enum.valuable('Some', JSBI.BigInt(-1)),
+            Enum.empty('None'),
         ];
         const hex = '0c 01 01 01 ff 00';
 
@@ -174,9 +174,9 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     // it encodes not like default enum
     describe('vec of option bool encoded as expected', () => {
         const vec: Enum<OptionDef<boolean>>[] = [
-            Enum.create('Some', true),
-            Enum.create('Some', false),
-            Enum.create('None'),
+            Enum.valuable('Some', true),
+            Enum.valuable('Some', false),
+            Enum.empty('None'),
         ];
         const hex = '0c 01 02 00';
 
@@ -200,11 +200,11 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
                 decodeVec(prettyHexToBytes(hex), (bytes): DecodeResult<Enum<OptionDef<boolean>>> => {
                     switch (bytes[0]) {
                         case 0:
-                            return [Enum.create('None'), 1];
+                            return [Enum.empty('None'), 1];
                         case 1:
-                            return [Enum.create('Some', true), 1];
+                            return [Enum.valuable('Some', true), 1];
                         case 2:
-                            return [Enum.create('Some', false), 1];
+                            return [Enum.valuable('Some', false), 1];
                         default:
                             throw new Error('unreachable?');
                     }
@@ -307,20 +307,20 @@ describe('Enum', () => {
         const { encode, decode } = optionCodec({ encode: encodeBool, decode: decodeBool });
 
         it('"None" encoded as expected', () => {
-            expect(encode(Enum.create('None'))).toEqual(new Uint8Array([0]));
+            expect(encode(Enum.empty('None'))).toEqual(new Uint8Array([0]));
         });
 
         it('"None" decoded as expected', () => {
-            const none: Enum<OptionDef<boolean>> = Enum.create('None');
+            const none: Enum<OptionDef<boolean>> = Enum.empty('None');
             expect(decode(new Uint8Array([0]))).toEqual([none, 1]);
         });
 
         it('"Some(false)" encoded as expected', () => {
-            expect(encode(Enum.create('Some', false))).toEqual(new Uint8Array([1, 0]));
+            expect(encode(Enum.valuable('Some', false))).toEqual(new Uint8Array([1, 0]));
         });
 
         it('"Some(false)" decoded as expected', () => {
-            const some: Enum<OptionDef<boolean>> = Enum.create('Some', false);
+            const some: Enum<OptionDef<boolean>> = Enum.valuable('Some', false);
             expect(decode(new Uint8Array([1, 0]))).toEqual([some, 2]);
         });
     });
@@ -405,9 +405,9 @@ describe('OptionBool', () => {
     }
 
     test.each([
-        testCase(Enum.create('None'), 0),
-        testCase(Enum.create('Some', true), 1),
-        testCase(Enum.create('Some', false), 2),
+        testCase(Enum.empty('None'), 0),
+        testCase(Enum.valuable('Some', true), 1),
+        testCase(Enum.valuable('Some', false), 2),
     ])('encode/decode %s', (_label, item, byte) => {
         const bytes = Uint8Array.from([byte]);
 

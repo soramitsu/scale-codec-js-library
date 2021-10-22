@@ -72,7 +72,7 @@ export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Ar
         yield new Uint8Array([d]);
         if (encode) {
             if (!content) throw new Error(`Codec for variant "${variant}" defined, but there is no content`);
-            yield encode(content.value);
+            yield encode(content[0]);
         }
     }
 
@@ -86,20 +86,20 @@ export function decodeEnum<Def>(bytes: Uint8Array, decoders: EnumDecoders): Deco
     if (decode) {
         const [decodedContent, contentBytes] = decode(bytes.subarray(1));
 
-        return [Enum.create(v as any, decodedContent), DISCRIMINANT_BYTES_COUNT + contentBytes];
+        return [Enum.valuable(v as any, decodedContent), DISCRIMINANT_BYTES_COUNT + contentBytes];
     }
 
-    return [Enum.create(v as any), DISCRIMINANT_BYTES_COUNT];
+    return [Enum.empty(v as any), DISCRIMINANT_BYTES_COUNT];
 }
 
 function optBoolByteToEnum(byte: number): Option<boolean> {
     switch (byte) {
         case 0:
-            return Enum.create('None');
+            return Enum.empty('None');
         case 1:
-            return Enum.create('Some', true);
+            return Enum.valuable('Some', true);
         case 2:
-            return Enum.create('Some', false);
+            return Enum.valuable('Some', false);
         default:
             throw new Error(`Failed to decode OptionBool - byte is ${byte}`);
     }
