@@ -31,12 +31,16 @@ import {
     VecBool,
 } from '../samples/complexNamespace';
 
-function defineCase<T>(
-    builder: ScaleBuilder<T, any>,
-    value: T,
-    expectedBytes: Uint8Array,
-): [ScaleBuilder<T>, T, Uint8Array] {
+type CaseWrapped<T> = [ScaleBuilder<T>, T, Uint8Array];
+
+function defineCaseWrapped<T>(builder: ScaleBuilder<T, any>, value: T, expectedBytes: Uint8Array): CaseWrapped<T> {
     return [builder, value, expectedBytes];
+}
+
+type CaseUnwrapped<T, U> = [ScaleBuilder<T, U>, U, Encode<U>];
+
+function defineCaseUnwrapped<T, U>(builder: ScaleBuilder<T, U>, unwrapped: U, encode: Encode<U>): CaseUnwrapped<T, U> {
+    return [builder, unwrapped, encode];
 }
 
 const encodeU8: Encode<JSBI> = (x) => encodeBigInt(x, { bits: 8, signed: false, endianness: 'le' });
@@ -54,43 +58,27 @@ const encodeOption: Encode<Option<RawMsgEnum>> = (val) =>
     encodeEnum(val, { None: { d: 0 }, Some: { d: 1, encode: encodeMsgEnum } });
 
 test.each([
-    defineCase(
+    defineCaseWrapped(
         MapStrU8,
         new Map([[Str.fromValue('Hey'), U8.fromValue(JSBI.BigInt(56))]]),
         encodeMap(new Map([['Hey', JSBI.BigInt(56)]]), encodeStrCompact, encodeU8),
     ),
-    defineCase(
+    defineCaseWrapped(
         Character,
         { name: Str.fromValue('Alice') },
         encodeStruct({ name: 'Alice' }, { name: encodeStrCompact }, ['name']),
     ),
-    defineCase(SetU8, new Set(), encodeSetU8(new Set())),
-    defineCase(
+    defineCaseWrapped(SetU8, new Set(), encodeSetU8(new Set())),
+    defineCaseWrapped(
         SetU8,
         new Set([U8.fromValue(JSBI.BigInt(51)), U8.fromValue(JSBI.BigInt(5))]),
         encodeSetU8(new Set([JSBI.BigInt(51), JSBI.BigInt(5)])),
     ),
-    defineCase(Msg, Enum.empty('Quit'), encodeMsgEnum(Enum.empty('Quit'))),
-    defineCase(Msg, Enum.valuable('Greeting', Str.fromValue('Nya')), encodeMsgEnum(Enum.valuable('Greeting', 'Nya'))),
-    defineCase(
-        ArraySetU8l2,
-        [SetU8.fromValue(new Set()), SetU8.fromValue(new Set([U8.fromValue(JSBI.BigInt('412341234'))]))],
-        encodeArray([new Set(), new Set([JSBI.BigInt('412341234')])], encodeSetU8, 2),
-    ),
-    defineCase(VecBool, [Bool.fromValue(false)], encodeVec([false], encodeBool)),
-    defineCase(StrAlias, 'wow', encodeStrCompact('wow')),
-    defineCase(
-        TupleMsgMsg,
-        [Msg.fromValue(Enum.empty('Quit')), Msg.fromValue(Enum.empty('Quit'))],
-        encodeTuple<[RawMsgEnum, RawMsgEnum]>([Enum.empty('Quit'), Enum.empty('Quit')], [encodeMsgEnum, encodeMsgEnum]),
-    ),
-    defineCase(OptionMsg, Enum.empty('None'), encodeOption(Enum.empty('None'))),
-    defineCase(
-        OptionMsg,
-        Enum.valuable('Some', Msg.fromValue(Enum.empty('Quit'))),
-        encodeOption(Enum.valuable('Some', Enum.empty('Quit'))),
-    ),
-])('Encode/decode with %p: %p', (builder, val, expectedBytes) => {
+    defineCaseWrapped(Msg, Enum.empty('Quit'), encodeMsgEnum(Enum.empty('Quit'))),
+    defineCaseWrapped(VecBool, [Bool.fromValue(false)], encodeVec([false], encodeBool)),
+    defineCaseWrapped(StrAlias, 'wow', encodeStrCompact('wow')),
+    defineCaseWrapped(OptionMsg, Enum.empty('None'), encodeOption(Enum.empty('None'))),
+])('Encode/decode hand-constructed data with %p: %p', (builder, val, expectedBytes) => {
     const instance = builder.fromValue(val as any);
     const bytes = instance.bytes;
 
@@ -99,4 +87,22 @@ test.each([
     const instanceBack = builder.fromBytes(bytes);
 
     expect(JSON.stringify(instance)).toEqual(JSON.stringify(instanceBack));
+});
+
+test.each([
+    defineCaseUnwrapped(Msg, Enum.valuable('Greeting', 'Nya'), encodeMsgEnum),
+    defineCaseUnwrapped(ArraySetU8l2, [new Set(), new Set([JSBI.BigInt('412341234')])], (x) =>
+        encodeArray(x, encodeSetU8, 2),
+    ),
+    defineCaseUnwrapped(TupleMsgMsg, [Enum.empty('Quit'), Enum.empty('Quit')] as [RawMsgEnum, RawMsgEnum], (x) =>
+        encodeTuple(x, [encodeMsgEnum, encodeMsgEnum]),
+    ),
+    defineCaseUnwrapped(OptionMsg, Enum.valuable('Some', Enum.empty('Quit')), encodeOption),
+])('Encode/decode unwapped data with %p: %p', (builder, unwrapped, encode) => {
+    const encoded = encode(unwrapped as any);
+
+    const wrapped = builder.wrap(unwrapped as any);
+
+    expect(wrapped.bytes).toEqual(encoded);
+    expect(wrapped.unwrap()).toEqual(unwrapped);
 });

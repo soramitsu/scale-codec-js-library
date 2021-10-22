@@ -49,7 +49,7 @@ describe('Enum', () => {
         };
         const other = variant === 'Double' ? 'Single' : 'Double';
 
-        Enum.empty<Variants, keyof Variants>(variant).match(matchMap);
+        Enum.empty<Variants>(variant).match(matchMap);
 
         expect(matchMap[variant]).toBeCalled();
         expect(matchMap[other]).not.toBeCalled();

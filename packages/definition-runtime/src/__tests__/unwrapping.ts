@@ -15,6 +15,10 @@ import { Bool, I128, Str } from '../unparametrized-builders';
 
 const Key = createStructBuilder<{ payload: ScaleInstance<JSBI> }>('Key', [['payload', () => I128]]);
 
+const StructWithKey = createStructBuilder<{
+    key: InstanceViaBuilder<typeof Key>;
+}>('', [['key', () => Key]]);
+
 const Msg = createEnumBuilder<
     Enum<{
         Quit: null;
@@ -25,99 +29,194 @@ const Msg = createEnumBuilder<
     [1, 'Greeting', () => Key],
 ]);
 
-test('Unwraps primitive (Str)', () => {
-    const text = 'Per aspera ad astra';
+const Bool2 = createArrayBuilder<ScaleInstance<boolean>[]>('Bool2', () => Bool, 2);
 
-    expect(Str.fromValue(text).unwrap()).toEqual(text);
-});
+const VecBool = createVecBuilder<ScaleInstance<boolean>[]>('VecBool', () => Bool);
 
-test('Unwraps struct', () => {
-    const num = JSBI.BigInt(999767262);
+const MAP = createMapBuilder<Map<ScaleInstance<boolean>, ScaleInstance<string>>>(
+    'Map',
+    () => Bool,
+    () => Str,
+);
 
-    const unwrapped = Key.fromValue({ payload: I128.fromValue(num) }).unwrap();
+const SET = createSetBuilder<Set<ScaleInstance<string>>>('Set', () => Str);
 
-    expect(unwrapped).toEqual({ payload: num });
-});
+const TUPLE = createTupleBuilder<[ScaleInstance<boolean>, ScaleInstance<string>]>('Tuple', [() => Bool, () => Str]);
 
-test("Unwraps enum's contents", () => {
-    const num = JSBI.BigInt(789123);
+type KeyValue = InnerValue<typeof Key>;
+type KeyUnwrapped = UnwrappedValue<typeof Key>;
 
-    const nonEmpty = Msg.fromValue(Enum.valuable('Greeting', Key.fromValue({ payload: I128.fromValue(num) })));
-    const unwrapped = nonEmpty.unwrap();
+const AliasA = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasA', () => Key);
+const AliasB = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasB', () => AliasA);
 
-    expect(unwrapped).toEqual(Enum.valuable<any, any>('Greeting', { payload: num }));
-});
+describe('Unwrapping', () => {
+    test('Unwraps primitive (Str)', () => {
+        const text = 'Per aspera ad astra';
 
-test('Unwraps empty enum', () => {
-    expect(Msg.fromValue(Enum.empty('Quit')).unwrap()).toEqual(Enum.empty<any, any>('Quit'));
-});
+        expect(Str.fromValue(text).unwrap()).toEqual(text);
+    });
 
-test('Unwraps Option', () => {
-    const SomeBool = createOptionBuilder<Option<ScaleInstance<boolean>>>('SomeBool', () => Bool);
+    test('Unwraps struct with primitive key', () => {
+        const num = JSBI.BigInt(999767262);
 
-    expect(SomeBool.fromValue(Enum.valuable('Some', Bool.fromValue(true))).unwrap()).toEqual(
-        Enum.valuable<any, any>('Some', true),
-    );
-});
+        const unwrapped = Key.fromValue({ payload: I128.fromValue(num) }).unwrap();
 
-test('Unwraps array', () => {
-    const Bool2 = createArrayBuilder<ScaleInstance<boolean>[]>('Bool2', () => Bool, 2);
+        expect(unwrapped).toEqual({ payload: num });
+    });
 
-    expect(Bool2.fromValue([Bool.fromValue(false), Bool.fromValue(false)]).unwrap()).toEqual([false, false]);
-});
+    test('Unwraps struct with non-primitive key', () => {
+        expect(
+            StructWithKey.fromValue({
+                key: Key.fromValue({
+                    payload: I128.fromValue(JSBI.BigInt(0)),
+                }),
+            }).unwrap(),
+        ).toEqual({ key: { payload: JSBI.BigInt(0) } });
+    });
 
-test('Unwraps vec', () => {
-    const VecBool = createVecBuilder<ScaleInstance<boolean>[]>('VecBool', () => Bool);
+    test("Unwraps enum's contents", () => {
+        const num = JSBI.BigInt(789123);
 
-    expect(VecBool.fromValue([Bool.fromValue(true)]).unwrap()).toEqual([true]);
-});
+        const nonEmpty = Msg.fromValue(Enum.valuable('Greeting', Key.fromValue({ payload: I128.fromValue(num) })));
+        const unwrapped = nonEmpty.unwrap();
 
-test('Unwraps Map', () => {
-    const MAP = createMapBuilder<Map<ScaleInstance<boolean>, ScaleInstance<string>>>(
-        'Map',
-        () => Bool,
-        () => Str,
-    );
+        expect(unwrapped).toEqual(Enum.valuable<any, any>('Greeting', { payload: num }));
+    });
 
-    expect(
-        MAP.fromValue(
+    test('Unwraps empty enum', () => {
+        expect(Msg.fromValue(Enum.empty('Quit')).unwrap()).toEqual(Enum.empty<any>('Quit'));
+    });
+
+    test('Unwraps array', () => {
+        expect(Bool2.fromValue([Bool.fromValue(false), Bool.fromValue(false)]).unwrap()).toEqual([false, false]);
+    });
+
+    test('Unwraps vec', () => {
+        expect(VecBool.fromValue([Bool.fromValue(true)]).unwrap()).toEqual([true]);
+    });
+
+    test('Unwraps Map', () => {
+        expect(
+            MAP.fromValue(
+                new Map([
+                    [Bool.fromValue(false), Str.fromValue('Nope')],
+                    [Bool.fromValue(true), Str.fromValue('Yep')],
+                ]),
+            ).unwrap(),
+        ).toEqual(
             new Map([
-                [Bool.fromValue(false), Str.fromValue('Nope')],
-                [Bool.fromValue(true), Str.fromValue('Yep')],
+                [false, 'Nope'],
+                [true, 'Yep'],
             ]),
-        ).unwrap(),
-    ).toEqual(
-        new Map([
-            [false, 'Nope'],
-            [true, 'Yep'],
-        ]),
-    );
+        );
+    });
+
+    test('Unwraps Set', () => {
+        expect(SET.fromValue(new Set([Str.fromValue('A'), Str.fromValue('B')])).unwrap()).toEqual(new Set(['A', 'B']));
+    });
+
+    test('Unwraps tuple', () => {
+        expect(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('._.')]).unwrap()).toEqual([false, '._.']);
+    });
+
+    test('Unwraps aliases chain', () => {
+        const num = JSBI.BigInt(111);
+
+        expect(
+            AliasB.fromValue({
+                payload: I128.fromValue(num),
+            }).unwrap(),
+        ).toEqual({ payload: num });
+    });
 });
 
-test('Unwraps Set', () => {
-    const SET = createSetBuilder<Set<ScaleInstance<string>>>('Set', () => Str);
+describe('Wrapping back', () => {
+    test('Wraps primitive (str)', () => {
+        expect(Str.wrap('kelti')).toEqual(Str.fromValue('kelti'));
+    });
 
-    expect(SET.fromValue(new Set([Str.fromValue('A'), Str.fromValue('B')])).unwrap()).toEqual(new Set(['A', 'B']));
-});
+    test('Wraps struct with struct with primitive', () => {
+        expect(
+            StructWithKey.wrap({
+                key: {
+                    payload: JSBI.BigInt(71),
+                },
+            }),
+        ).toEqual(
+            StructWithKey.fromValue({
+                key: Key.fromValue({
+                    payload: I128.fromValue(JSBI.BigInt(71)),
+                }),
+            }),
+        );
+    });
 
-test('Unwraps tuple', () => {
-    const TUPLE = createTupleBuilder<[ScaleInstance<boolean>, ScaleInstance<string>]>('Tuple', [() => Bool, () => Str]);
+    test("Wraps enum's contents", () => {
+        expect(
+            Msg.wrap(
+                Enum.valuable('Greeting', {
+                    payload: JSBI.BigInt(67),
+                }),
+            ),
+        ).toEqual(
+            Msg.fromValue(
+                Enum.valuable(
+                    'Greeting',
+                    Key.fromValue({
+                        payload: I128.fromValue(JSBI.BigInt(67)),
+                    }),
+                ),
+            ),
+        );
+    });
 
-    expect(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('._.')]).unwrap()).toEqual([false, '._.']);
-});
+    test('Wraps empty enum', () => {
+        expect(Msg.wrap(Enum.empty('Quit'))).toEqual(Msg.fromValue(Enum.empty('Quit')));
+    });
 
-test('Unwraps aliases chain', () => {
-    type KeyValue = InnerValue<typeof Key>;
-    type KeyUnwrapped = UnwrappedValue<typeof Key>;
+    test('Wraps array', () => {
+        expect(Bool2.wrap([false, true])).toEqual(Bool2.fromValue([Bool.fromValue(false), Bool.fromValue(true)]));
+    });
 
-    const AliasA = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasA', () => Key);
-    const AliasB = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasB', () => AliasA);
+    test('Wraps vec', () => {
+        expect(VecBool.wrap([true, true])).toEqual(VecBool.fromValue([Bool.fromValue(true), Bool.fromValue(true)]));
+    });
 
-    const num = JSBI.BigInt(111);
+    test('Wraps map', () => {
+        expect(
+            MAP.wrap(
+                new Map([
+                    [false, '4123'],
+                    [true, '00'],
+                ]),
+            ),
+        ).toEqual(
+            MAP.fromValue(
+                new Map([
+                    [Bool.fromValue(false), Str.fromValue('4123')],
+                    [Bool.fromValue(true), Str.fromValue('00')],
+                ]),
+            ),
+        );
+    });
 
-    expect(
-        AliasB.fromValue({
-            payload: I128.fromValue(num),
-        }).unwrap(),
-    ).toEqual({ payload: num });
+    test('Wraps set', () => {
+        expect(SET.wrap(new Set(['a', 'b']))).toEqual(SET.fromValue(new Set([Str.fromValue('a'), Str.fromValue('b')])));
+    });
+
+    test('Wraps tuple', () => {
+        expect(TUPLE.wrap([false, 'true'])).toEqual(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('true')]));
+    });
+
+    test('Wraps aliases chain', () => {
+        expect(
+            AliasB.wrap({
+                payload: JSBI.BigInt(787171),
+            }),
+        ).toEqual(
+            AliasB.fromValue({
+                payload: I128.fromValue(JSBI.BigInt(787171)),
+            }),
+        );
+    });
 });

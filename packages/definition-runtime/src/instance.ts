@@ -4,15 +4,26 @@ import { assert } from '@scale-codec/util';
 type OptionTupleSome<T> = [T];
 type OptionTuple<T> = null | OptionTupleSome<T>;
 
-function definePropHiddenWithValue(object: object, prop: PropertyKey, value: any) {
-    Reflect.defineProperty(object, prop, { enumerable: false, value, writable: true });
-}
-
-function definePropHidden(object: object, prop: PropertyKey) {
+function offPropEnumerability(object: object, prop: PropertyKey) {
     Reflect.defineProperty(object, prop, { enumerable: false });
 }
 
+function offPropEnumerabilityWithValue(object: object, prop: PropertyKey, value: any) {
+    Reflect.defineProperty(object, prop, { enumerable: false, value, writable: true });
+}
+
+function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => any) {
+    Reflect.defineProperty(object, prop, {
+        enumerable: true,
+        get,
+    });
+}
+
 export abstract class ScaleInstance<T, Unwrapped = T> {
+    public value: T;
+
+    public bytes: Uint8Array;
+
     private __value: null | OptionTuple<T>;
 
     private __bytes: null | Uint8Array;
@@ -24,11 +35,19 @@ export abstract class ScaleInstance<T, Unwrapped = T> {
     public constructor(value: null | OptionTuple<T>, bytes: null | Uint8Array) {
         if (!value && !bytes) throw new Error('ScaleInstance cannot be empty');
 
-        definePropHiddenWithValue(this, '__value', value);
-        definePropHiddenWithValue(this, '__bytes', bytes);
+        // Firstly gettere were on the class itself, but it turned out that under the hood
+        // they are defined with `{ enumerable: false }`; also not-own keys & getters aren't visible
+        // by default key-traversing ways, so to make these getters behave like regular props or
+        // computed getters, I decided to use this technique
+        defineReadonlyOwnGetter(this, 'bytes', this.getBytes.bind(this));
+        defineReadonlyOwnGetter(this, 'value', this.getValue.bind(this));
+
+        // implementation details
+        offPropEnumerabilityWithValue(this, '__value', value);
+        offPropEnumerabilityWithValue(this, '__bytes', bytes);
     }
 
-    public get value(): T {
+    private getValue(): T {
         if (!this.__value) {
             const bytes = this.__bytes!;
             const [val, len] = this.__decode(bytes);
@@ -38,15 +57,11 @@ export abstract class ScaleInstance<T, Unwrapped = T> {
         return this.__value[0];
     }
 
-    public get bytes(): Uint8Array {
+    private getBytes(): Uint8Array {
         if (!this.__bytes) {
             this.__bytes = this.__encode(this.__value![0]);
         }
         return this.__bytes;
-    }
-
-    public toJSON() {
-        return { value: this.value, bytes: this.bytes };
     }
 
     public abstract unwrap(): Unwrapped;
@@ -61,6 +76,7 @@ export interface ScaleBuilder<T, U = T> {
     fromValue: (value: T) => ScaleInstance<T, U>;
     fromBytes: (bytes: Uint8Array) => ScaleInstance<T, U>;
     fromBytesRaw: (bytes: Uint8Array) => DecodeResult<ScaleInstance<T, U>>;
+    wrap: (unwrappedValue: U) => ScaleInstance<T, U>;
 }
 
 export type InstanceViaBuilder<T extends ScaleBuilder<any>> = T extends ScaleBuilder<infer V, infer U>
@@ -99,12 +115,16 @@ function unwrapFallback<T>(scale: ScaleInstance<T, any>): any {
     return scale.value;
 }
 
+export type ScaleBuilderUnwrapper<T, U> = (self: ScaleInstance<T, U>) => U;
+export type ScaleBuilderWrapper<T, U> = (unwrapped: U) => T;
+
 // eslint-disable-next-line max-params
 export function createScaleBuilder<T, U = T>(
     name: string,
     encode: Encode<T>,
     decode: Decode<T>,
-    unwrap?: (self: ScaleInstance<T, U>) => U,
+    unwrap?: ScaleBuilderUnwrapper<T, U>,
+    wrap?: ScaleBuilderWrapper<T, U>,
 ): ScaleBuilder<T, U> {
     const ctor: ScaleBuilder<T, U> = class Self extends ScaleInstance<T, U> {
         public static fromValue(value: T): Self {
@@ -119,13 +139,19 @@ export function createScaleBuilder<T, U = T>(
             return decodeAndMemorize(bytes, decode, Self);
         }
 
+        public static wrap(unwrappedValue: U): Self {
+            return new Self([wrap ? wrap(unwrappedValue) : (unwrappedValue as any)], null);
+        }
+
         protected __encode = encode;
         protected __decode = decode;
 
         public constructor(value: null | OptionTuple<T>, bytes: null | Uint8Array) {
             super(value, bytes);
-            definePropHidden(this, '__encode');
-            definePropHidden(this, '__decode');
+
+            // implementation details
+            offPropEnumerability(this, '__encode');
+            offPropEnumerability(this, '__decode');
         }
 
         public unwrap(): U {

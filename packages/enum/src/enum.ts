@@ -5,9 +5,11 @@ export interface Valuable<T> {
     value: T;
 }
 
-export type EmptyVariants<Def> = { [V in keyof Def]: Def[V] extends Valuable<any> ? never : V }[keyof Def];
+export type EmptyVariants<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V }[keyof Def &
+    string];
 
-export type ValuableVariants<Def> = { [V in keyof Def]: Def[V] extends Valuable<any> ? V : never }[keyof Def];
+export type ValuableVariants<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never }[keyof Def &
+    string];
 
 export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
 
@@ -47,7 +49,7 @@ export class Enum<Def> {
      * Create an empty variant of enum with it
      * @param variant - Empty variant name
      */
-    public static empty<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def> {
+    public static empty<Def>(variant: EmptyVariants<Def>): Enum<Def> {
         return new Enum(variant, null);
     }
 
@@ -63,14 +65,14 @@ export class Enum<Def> {
         return new Enum(variant, [value]);
     }
 
-    public readonly variant: keyof Def;
+    public readonly variant: string;
 
     /**
      * Inner value is untyped and should be used with caution
      */
     public readonly content: null | [some: unknown];
 
-    private constructor(variant: keyof Def, content: null | [unknown]) {
+    private constructor(variant: string, content: null | [unknown]) {
         this.content = content ?? null;
         this.variant = variant;
     }
@@ -115,7 +117,7 @@ export class Enum<Def> {
      * ```
      */
     public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
-        const fn = matchMap[this.variant] as (...args: any[]) => any;
+        const fn = (matchMap as any)[this.variant] as (...args: any[]) => any;
         return this.content ? fn(this.content[0]) : fn();
     }
 
