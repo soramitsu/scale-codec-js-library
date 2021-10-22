@@ -4,6 +4,8 @@ import { series, parallel } from 'gulp';
 import consola from 'consola';
 import pathExists from 'path-exists';
 import { ExtractorConfig, Extractor } from '@microsoft/api-extractor';
+import compileDocsNamespace from './scripts/compile-docs-namespace';
+import compileCompilerSamples from './scripts/compile-compiler-samples';
 
 const ROOT = __dirname;
 
@@ -69,7 +71,7 @@ function extractApis() {
  * Should be fired after {@link extractApis}
  */
 async function documentApis() {
-    await $`pnpx api-documenter markdown -i api-extractor/temp -o packages/docs/api`;
+    await $`pnpx api-documenter markdown -i api-extractor/temp -o packages/docs/root/api`;
 }
 
 async function rollup() {
@@ -135,4 +137,12 @@ export const checkCodeIntegrity = series(parallel(unitTests, lint, typeCheck), b
 
 export const buildDeclarations = series(clean, buildDeclarationsOnly);
 
-export { clean, publishAll, extractApis, documentApis, extractApisLocalBuild };
+export {
+    clean,
+    publishAll,
+    extractApis,
+    documentApis,
+    extractApisLocalBuild,
+    compileDocsNamespace,
+    compileCompilerSamples,
+};

@@ -31,5 +31,8 @@
         "@scale-codec/util": "workspace:^0.1.0",
         "immutable": "^4.0.0",
         "sort-es": "^1.3.10"
+    },
+    "devDependencies": {
+        "@scale-codec/definition-runtime": "workspace:^0.1.3"
     }
 }

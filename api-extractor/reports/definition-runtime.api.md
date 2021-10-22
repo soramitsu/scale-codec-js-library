@@ -4,188 +4,160 @@
 
 ```ts
 
-import { decodeBool as bool_decode } from '@scale-codec/core';
-import { encodeBool as bool_encode } from '@scale-codec/core';
-import { decodeUint8Vec as BytesVec_decode } from '@scale-codec/core';
-import { encodeUint8Vec as BytesVec_encode } from '@scale-codec/core';
-import { decodeCompact as Compact_decode } from '@scale-codec/core';
-import { encodeCompact as Compact_encode } from '@scale-codec/core';
+import { AllowedBits } from '@scale-codec/core';
+import { Decode } from '@scale-codec/core';
 import { DecodeResult } from '@scale-codec/core';
+import { Encode } from '@scale-codec/core';
+import { Enum } from '@scale-codec/core';
 import { JSBI } from '@scale-codec/core';
-import { decodeStrCompact as str_decode } from '@scale-codec/core';
-import { encodeStrCompact as str_encode } from '@scale-codec/core';
-import { decodeVoid as Void_decode } from '@scale-codec/core';
-import { encodeVoid as Void_encode } from '@scale-codec/core';
-
-export { bool_decode }
+import { Option as Option_2 } from '@scale-codec/core';
+import { Result } from '@scale-codec/core';
 
 // @public (undocumented)
-export type bool_Decoded = boolean;
+export const Bool: ScaleBuilder<boolean>;
 
 // @public (undocumented)
-export type bool_Encodable = boolean;
-
-export { bool_encode }
-
-export { BytesVec_decode }
+export type BuilderFn<T> = () => ScaleBuilder<T>;
 
 // @public (undocumented)
-export type BytesVec_Decoded = Uint8Array;
+export type BuilderViaInstance<T extends ScaleInstance<any>> = T extends ScaleInstance<infer U> ? ScaleBuilder<U> : never;
 
 // @public (undocumented)
-export type BytesVec_Encodable = Uint8Array;
-
-export { BytesVec_encode }
-
-export { Compact_decode }
+export const BytesVec: ScaleBuilder<Uint8Array>;
 
 // @public (undocumented)
-export type Compact_Decoded = JSBI;
+export const Compact: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type Compact_Encodable = JSBI;
-
-export { Compact_encode }
+export function createAliasBuilder<T>(name: string, to: () => ScaleBuilder<T>): ScaleBuilder<T>;
 
 // @public (undocumented)
-export function i128_decode(bytes: Uint8Array): DecodeResult<i128_Decoded>;
+export function createArrayBuilder<T extends ScaleInstance<any>[]>(name: string, itemCodec: () => T extends ScaleInstance<infer V>[] ? ScaleBuilder<V> : never, len: number): ScaleBuilder<T>;
 
 // @public (undocumented)
-export type i128_Decoded = JSBI;
+export function createBigIntBuilder(name: string, bits: AllowedBits, signed: boolean): ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type i128_Encodable = JSBI;
+export function createBytesArrayBuilder(name: string, len: number): ScaleBuilder<Uint8Array>;
 
 // @public (undocumented)
-export function i128_encode(encodable: i128_Encodable): Uint8Array;
+export function createEnumBuilder<T extends Enum<any>>(name: string, schema: [discriminant: number, variantName: string, codec?: BuilderFn<any>][]): ScaleBuilder<T>;
+
+// Warning: (ae-forgotten-export) The symbol "MapKeyInner" needs to be exported by the entry point lib.d.ts
+// Warning: (ae-forgotten-export) The symbol "MapValueInner" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export function createMapBuilder<T extends Map<ScaleInstance<any>, ScaleInstance<any>>>(name: string, key: BuilderFn<MapKeyInner<T>>, value: BuilderFn<MapValueInner<T>>): ScaleBuilder<T>;
+
+// Warning: (ae-forgotten-export) The symbol "OptionInnerValue" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export function createOptionBuilder<T extends Option_2<ScaleInstance<any>>>(name: string, some: () => ScaleBuilder<OptionInnerValue<T>>): ScaleBuilder<T>;
+
+// Warning: (ae-forgotten-export) The symbol "ResultInnerOk" needs to be exported by the entry point lib.d.ts
+// Warning: (ae-forgotten-export) The symbol "ResultInnerErr" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export function createResultBuilder<T extends Result<ScaleInstance<any>, ScaleInstance<any>>>(name: string, ok: BuilderFn<ResultInnerOk<T>>, err: BuilderFn<ResultInnerErr<T>>): ScaleBuilder<T>;
 
 // @public (undocumented)
-export function i16_decode(bytes: Uint8Array): DecodeResult<i16_Decoded>;
+export function createScaleBuilder<T>(name: string, encode: Encode<T>, decode: Decode<T>): ScaleBuilder<T>;
 
 // @public (undocumented)
-export type i16_Decoded = JSBI;
+export function createSetBuilder<T extends Set<ScaleInstance<any>>>(name: string, itemCodec: () => ScaleBuilder<T extends Set<ScaleInstance<infer V>> ? V : never>): ScaleBuilder<T>;
 
 // @public (undocumented)
-export type i16_Encodable = JSBI;
+export function createStructBuilder<T>(name: string, schema: [fieldName: keyof T & string, builder: BuilderFn<any>][]): ScaleBuilder<T>;
 
 // @public (undocumented)
-export function i16_encode(encodable: i16_Encodable): Uint8Array;
+export function createTupleBuilder<T extends ScaleInstance<any>[]>(name: string, codecs: (() => ScaleBuilder<any>)[]): ScaleBuilder<T>;
 
 // @public (undocumented)
-export function i32_decode(bytes: Uint8Array): DecodeResult<i32_Decoded>;
+export function createVecBuilder<T extends ScaleInstance<any>[]>(name: string, itemCodec: () => T extends ScaleInstance<infer V>[] ? ScaleBuilder<V> : never): ScaleBuilder<T>;
 
 // @public (undocumented)
-export type i32_Decoded = JSBI;
+export const I128: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type i32_Encodable = JSBI;
+export const I16: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export function i32_encode(encodable: i32_Encodable): Uint8Array;
+export const I32: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export function i64_decode(bytes: Uint8Array): DecodeResult<i64_Decoded>;
+export const I64: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type i64_Decoded = JSBI;
+export const I8: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type i64_Encodable = JSBI;
+export type InnerValue<T extends ScaleInstance<any> | ScaleBuilder<any>> = T extends ScaleInstance<infer U> ? U : T extends ScaleBuilder<infer U> ? U : never;
 
 // @public (undocumented)
-export function i64_encode(encodable: i64_Encodable): Uint8Array;
+export type InstanceViaBuilder<T extends ScaleBuilder<any>> = T extends ScaleBuilder<infer U> ? ScaleInstance<U> : never;
 
 // @public (undocumented)
-export function i8_decode(bytes: Uint8Array): DecodeResult<i8_Decoded>;
+export interface ScaleBuilder<T> {
+    // (undocumented)
+    fromBytes: (bytes: Uint8Array) => ScaleInstance<T>;
+    // (undocumented)
+    fromBytesRaw: (bytes: Uint8Array) => DecodeResult<ScaleInstance<T>>;
+    // (undocumented)
+    fromValue: (value: T) => ScaleInstance<T>;
+}
 
 // @public (undocumented)
-export type i8_Decoded = JSBI;
+export abstract class ScaleInstance<T> {
+    // Warning: (ae-forgotten-export) The symbol "OptionTuple" needs to be exported by the entry point lib.d.ts
+    constructor(value: null | OptionTuple<T>, bytes: null | Uint8Array);
+    // (undocumented)
+    protected abstract __decode: Decode<T>;
+    // (undocumented)
+    protected abstract __encode: Encode<T>;
+    // (undocumented)
+    get bytes(): Uint8Array;
+    // (undocumented)
+    toJSON(): {
+        value: T;
+        bytes: Uint8Array;
+    };
+    // (undocumented)
+    get value(): T;
+}
 
 // @public (undocumented)
-export type i8_Encodable = JSBI;
+export type ScaleInstanceCtor<T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => ScaleInstance<T>;
 
 // @public (undocumented)
-export function i8_encode(encodable: i8_Encodable): Uint8Array;
-
-export { str_decode }
+export const Str: ScaleBuilder<string>;
 
 // @public (undocumented)
-export type str_Decoded = string;
+export const U128: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type str_Encodable = string;
-
-export { str_encode }
+export const U16: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export function u128_decode(bytes: Uint8Array): DecodeResult<u128_Decoded>;
+export const U32: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type u128_Decoded = JSBI;
+export const U64: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export type u128_Encodable = JSBI;
+export const U8: ScaleBuilder<JSBI>;
 
 // @public (undocumented)
-export function u128_encode(encodable: u128_Encodable): Uint8Array;
+export type UnwrapScaleInstance<T> = T extends ScaleInstance<any>[] ? UnwrapScaleInstanceTuple<T> : T extends Set<ScaleInstance<infer V>> ? Set<UnwrapScaleInstance<V>> : T extends Map<ScaleInstance<infer K>, ScaleInstance<infer V>> ? Map<UnwrapScaleInstance<K>, UnwrapScaleInstance<V>> : T extends {
+    [K in keyof T]: ScaleInstance<any>;
+} ? {
+    [K in keyof T]: UnwrapScaleInstance<T[K]>;
+} : T;
 
 // @public (undocumented)
-export function u16_decode(bytes: Uint8Array): DecodeResult<u16_Decoded>;
+export type UnwrapScaleInstanceTuple<T extends any[]> = T extends [infer Head, ...infer Tail] ? [UnwrapScaleInstance<Head>, ...UnwrapScaleInstanceTuple<Tail>] : [];
 
 // @public (undocumented)
-export type u16_Decoded = JSBI;
-
-// @public (undocumented)
-export type u16_Encodable = JSBI;
-
-// @public (undocumented)
-export function u16_encode(encodable: u16_Encodable): Uint8Array;
-
-// @public (undocumented)
-export function u32_decode(bytes: Uint8Array): DecodeResult<u32_Decoded>;
-
-// @public (undocumented)
-export type u32_Decoded = JSBI;
-
-// @public (undocumented)
-export type u32_Encodable = JSBI;
-
-// @public (undocumented)
-export function u32_encode(encodable: u32_Encodable): Uint8Array;
-
-// @public (undocumented)
-export function u64_decode(bytes: Uint8Array): DecodeResult<u64_Decoded>;
-
-// @public (undocumented)
-export type u64_Decoded = JSBI;
-
-// @public (undocumented)
-export type u64_Encodable = JSBI;
-
-// @public (undocumented)
-export function u64_encode(encodable: u64_Encodable): Uint8Array;
-
-// @public (undocumented)
-export function u8_decode(bytes: Uint8Array): DecodeResult<u8_Decoded>;
-
-// @public (undocumented)
-export type u8_Decoded = JSBI;
-
-// @public (undocumented)
-export type u8_Encodable = JSBI;
-
-// @public (undocumented)
-export function u8_encode(encodable: u8_Encodable): Uint8Array;
-
-export { Void_decode }
-
-// @public (undocumented)
-export type Void_Decoded = null;
-
-// @public (undocumented)
-export type Void_Encodable = null;
-
-export { Void_encode }
+export const Void: ScaleBuilder<null>;
 
 
 export * from "@scale-codec/core";

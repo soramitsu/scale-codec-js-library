@@ -6,9 +6,9 @@ import {
     DefStructField,
 } from '../types';
 import { Set as SetImmutable } from 'immutable';
-import { renderImports, createStateScope, ImportOptions, replaceDollarVar } from './util';
+import { renderImports, createStateScope } from './util';
 import { byValue, byString } from 'sort-es';
-import { RuntimeLibStds } from '../const';
+import { DefaultAvailableBuilders } from '../const';
 
 function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; def: TypeDef }[] {
     const items = Object.entries(val);
@@ -16,24 +16,15 @@ function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; 
     return items.map(([tyName, def]) => ({ tyName, def }));
 }
 
-enum TypeEntry {
-    TyDecoded,
-    TyEncodable,
-    FnDecode,
-    FnEncode,
-}
-
-const TypeEntryList: TypeEntry[] = [TypeEntry.TyDecoded, TypeEntry.TyEncodable, TypeEntry.FnDecode, TypeEntry.FnEncode];
-
-const CodecTypeSuffix: { [K in TypeEntry]: string } = {
-    [TypeEntry.TyDecoded]: '_Decoded',
-    [TypeEntry.TyEncodable]: '_Encodable',
-    [TypeEntry.FnDecode]: '_decode',
-    [TypeEntry.FnEncode]: '_encode',
-};
-
-function addSuffix(target: string, entry: TypeEntry): string {
-    return target + CodecTypeSuffix[entry];
+enum BaseType {
+    Instance = 'ScaleInstance',
+    Builder = 'ScaleBuilder',
+    InstanceViaBuilder = 'InstanceViaBuilder',
+    InnerValue = 'InnerValue',
+    Enum = 'Enum',
+    Valuable = 'Valuable',
+    Option = 'Option',
+    Result = 'Result',
 }
 
 // =========
@@ -50,22 +41,28 @@ const { within: withinRenderParams, use: useRenderParams } = createStateScope<Re
 
 interface ImportsCollector {
     collectRef: (ref: string) => void;
-    collectRuntime: (name: string) => void;
+    collectImport: (name: string) => void;
     getRuntimeLibImports: () => Set<string>;
 }
 
+function instanceViaBuilder(ref: string): string {
+    return `${touchBase(BaseType.InstanceViaBuilder)}<typeof ${touchRef(ref)}>`;
+}
+
 function createImportsCollector(): ImportsCollector {
-    let runtimes = SetImmutable<string>();
+    const { runtimeTypes } = useRenderParams();
+
+    let imports = SetImmutable<string>();
 
     return {
-        getRuntimeLibImports: () => new Set(runtimes),
+        getRuntimeLibImports: () => new Set(imports),
         collectRef: (ref) => {
-            if (RuntimeLibStds.has(ref)) {
-                runtimes = Object.values(CodecTypeSuffix).reduce((set, suffix) => set.add(`${ref}${suffix}`), runtimes);
+            if (runtimeTypes.has(ref)) {
+                imports = imports.add(ref);
             }
         },
-        collectRuntime: (name) => {
-            runtimes = runtimes.add(name);
+        collectImport: (name) => {
+            imports = imports.add(name);
         },
     };
 }
@@ -78,109 +75,48 @@ const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<
 
 // =========
 
-function renderCurrentTyExport(entry: TypeEntry, body: string): string {
+function renderBuilder(props: { valueTy: string; createHelper: string; createHelperArgs: string }): string {
     const ty = useCurrentTyName();
-    const tySuffixed = addSuffix(ty, entry);
 
-    switch (entry) {
-        case TypeEntry.TyDecoded:
-            return `export type ${tySuffixed} = ${body}`;
-        case TypeEntry.TyEncodable:
-            return `export type ${tySuffixed} = ${body}`;
-        case TypeEntry.FnDecode: {
-            const bodyFinal = replaceDollarVar(body, 'arg', 'bytes');
-
-            return `export function ${tySuffixed}(bytes: Uint8Array): ${runtimeDep('DecodeResult')}<${addSuffix(
-                ty,
-                TypeEntry.TyDecoded,
-            )}> {\n    ${bodyFinal}\n}`;
-        }
-        case TypeEntry.FnEncode: {
-            const bodyFinal = replaceDollarVar(body, 'arg', 'encodable');
-
-            return `export function ${tySuffixed}(encodable: ${addSuffix(
-                ty,
-                TypeEntry.TyEncodable,
-            )}): Uint8Array {\n    ${bodyFinal}\n}`;
-        }
-    }
+    return `export var ${ty} = ${touchImport(props.createHelper)}<${props.valueTy}>('${ty}', ${
+        props.createHelperArgs
+    })`;
 }
 
-function tyRef(ref: string, entry: TypeEntry): string {
+function touchRef(ref: string): string {
     useCollector().collectRef(ref);
-    return addSuffix(ref, entry);
+    return ref;
 }
 
-function runtimeDep(name: string): string {
-    useCollector().collectRuntime(name);
+function touchImport(name: string): string {
+    useCollector().collectImport(name);
     return name;
+}
+
+function touchBase(ty: BaseType): string {
+    useCollector().collectImport(ty);
+    return ty;
+}
+
+/**
+ * ref -> `() => ${ref}`
+ */
+function refFn(ref: string): string {
+    return `() => ${touchRef(ref)}`;
 }
 
 function linesJoin(lines: string[], joiner = '\n\n'): string {
     return lines.join(joiner);
 }
 
-function refEncodableOrAsIs(ref: string): string {
-    return `${tyRef(ref, TypeEntry.TyEncodable)} | ${runtimeDep('EncodeAsIs')}`;
-}
-
-function refEncodable(ref: string): string {
-    return tyRef(ref, TypeEntry.TyEncodable);
-}
-
-function refDecoded(ref: string): string {
-    return tyRef(ref, TypeEntry.TyDecoded);
-}
-
-function refEncode(ref: string) {
-    return tyRef(ref, TypeEntry.FnEncode);
-}
-
-function refDecode(ref: string) {
-    return tyRef(ref, TypeEntry.FnDecode);
-}
-
-function renderDecoded(body: string) {
-    return renderCurrentTyExport(TypeEntry.TyDecoded, body);
-}
-
-function renderEncodable(body: string) {
-    return renderCurrentTyExport(TypeEntry.TyEncodable, body);
-}
-
-function renderDecode(body: string) {
-    return renderCurrentTyExport(TypeEntry.FnDecode, body);
-}
-
-function renderEncode(body: string) {
-    return renderCurrentTyExport(TypeEntry.FnEncode, body);
-}
-
-function hoistVarName(id: string): string {
-    return `__hoisted_${useCurrentTyName()}_${id}__`;
-}
-
-function hoistConst(id: string, value: any): [varName: string, content: string] {
-    const varName = hoistVarName(id);
-    const content = `const ${varName} = ${value}`;
-    return [varName, content];
-}
-
-function hoistConstWithType(id: string, ty: string, value: any): [varName: string, content: string] {
-    const varName = hoistVarName(id);
-    const content = `const ${varName}: ${ty} = ${value}`;
-    return [varName, content];
-}
-
 // =========
 
 function renderAlias(to: string): string {
-    return linesJoin([
-        renderDecoded(refDecoded(to)),
-        renderEncodable(refEncodable(to)),
-        renderDecode(`return ${refDecode(to)}($arg)`),
-        renderEncode(`return ${refEncode(to)}($arg)`),
-    ]);
+    return renderBuilder({
+        valueTy: `${touchBase(BaseType.InnerValue)}<typeof ${touchRef(to)}>`,
+        createHelper: 'createAliasBuilder',
+        createHelperArgs: refFn(to),
+    });
 }
 
 function renderVoidAlias(): string {
@@ -190,22 +126,11 @@ function renderVoidAlias(): string {
 }
 
 function renderVec(item: string): string {
-    const [hoistedEncodeVar, hoistedEncode] = hoistConst(
-        'item_encode',
-        `${runtimeDep('makeEncoderAsIsRespectable')}(${refEncode(item)})`,
-    );
-
-    return linesJoin([
-        renderDecoded(`${refDecoded(item)}[]`),
-        renderEncodable(`(${refEncodableOrAsIs(item)})[]`),
-        hoistedEncode,
-        renderDecode(`return ${runtimeDep('decodeVec')}($arg, ${refDecode(item)})`),
-        renderEncode(`return ${runtimeDep('encodeVec')}($arg, ${hoistedEncodeVar})`),
-    ]);
-}
-
-function renderStructFields(fields: DefStructField[], mapFn: (ref: string) => string): string {
-    return fields.map(({ name, ref }) => `${name}: ${mapFn(ref)}`).join(', ');
+    return renderBuilder({
+        valueTy: `${instanceViaBuilder(item)}[]`,
+        createHelper: 'createVecBuilder',
+        createHelperArgs: refFn(item),
+    });
 }
 
 function renderStruct(fields: DefStructField[]): string {
@@ -213,40 +138,16 @@ function renderStruct(fields: DefStructField[]): string {
         return renderVoidAlias();
     }
 
-    const ty = useCurrentTyName();
+    const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${instanceViaBuilder(x.ref)}`);
 
-    const decodedFields = renderStructFields(fields, refDecoded);
-    const encodableFields = renderStructFields(fields, refEncodableOrAsIs);
+    const schemaItems = fields.map((x) => `['${x.name}', ${refFn(x.ref)}]`);
+    const schema = `[${schemaItems.join(', ')}]`;
 
-    const [hoistedOrderVar, hoistedOrder] = hoistConstWithType(
-        'order',
-        `(keyof ${addSuffix(ty, TypeEntry.TyDecoded)})[]`,
-        `[${fields.map(({ name }) => `'${name}'`).join(', ')}]`,
-    );
-
-    const [hoistedDecodersVar, hoistedDecoders] = hoistConst(
-        'decoders',
-        `{ ${renderStructFields(fields, (ref) => tyRef(ref, TypeEntry.FnDecode))} }`,
-    );
-
-    const [hoistedEncodersVar, hoistedEncoders] = hoistConst(
-        'encoders',
-        `${runtimeDep('helperStructEncoders')}({ ${renderStructFields(fields, (ref) =>
-            tyRef(ref, TypeEntry.FnEncode),
-        )} })`,
-    );
-
-    return linesJoin([
-        renderDecoded(`{ ${decodedFields} }`),
-        renderEncodable(`{ ${encodableFields} }`),
-        linesJoin([hoistedOrder, hoistedDecoders, hoistedEncoders], '\n'),
-        renderDecode(`return ${runtimeDep('decodeStruct')}($arg, ${hoistedDecodersVar}, ${hoistedOrderVar})`),
-        renderEncode(`return ${runtimeDep('encodeStruct')}($arg, ${hoistedEncodersVar}, ${hoistedOrderVar})`),
-    ]);
-}
-
-function renderTupleRefs(refs: string[], map: (ref: string) => string): string {
-    return refs.map(map).join(', ');
+    return renderBuilder({
+        valueTy: `{\n    ${valueTypeFields.join(',\n    ')}\n}`,
+        createHelper: 'createStructBuilder',
+        createHelperArgs: `${schema}`,
+    });
 }
 
 function renderTuple(refs: string[]): string {
@@ -257,144 +158,81 @@ function renderTuple(refs: string[]): string {
     const { rollupSingleTuples } = useRenderParams();
     if (rollupSingleTuples && refs.length === 1) return renderAlias(refs[0]);
 
-    const ty = useCurrentTyName();
+    const valueEntries: string[] = refs.map(instanceViaBuilder);
+    const codecs: string[] = refs.map(refFn);
 
-    const [hoistedDecodersVar, hoistedDecoders] = hoistConst('decoders', `[${renderTupleRefs(refs, refDecode)}]`);
-    const [hoistedEncodersVar, hoistedEncoders] = hoistConst(
-        'encoders',
-        `${runtimeDep('helperTupleEncoders')}<${tyRef(ty, TypeEntry.TyDecoded)}>([${renderTupleRefs(
-            refs,
-            refEncode,
-        )}])`,
-    );
-
-    return linesJoin([
-        renderDecoded(`[${renderTupleRefs(refs, refDecoded)}]`),
-        renderEncodable(`[${renderTupleRefs(refs, refEncodableOrAsIs)}]`),
-        linesJoin([hoistedDecoders, hoistedEncoders], '\n'),
-        renderDecode(`return ${runtimeDep('decodeTuple')}($arg, ${hoistedDecodersVar} as any)`),
-        renderEncode(`return ${runtimeDep('encodeTuple')}($arg, ${hoistedEncodersVar} as any)`),
-    ]);
-}
-
-function renderEnumType(variants: DefEnumVariant[], mapRef: (ref: string) => string): string {
-    const renderedVars = variants
-        .map((x) => `${x.name}: ${x.ref ? `${runtimeDep('Valuable')}<${mapRef(x.ref)}>` : 'null'}`)
-        .join('\n    ');
-
-    return `${runtimeDep('Enum')}<{\n    ${renderedVars}\n}>`;
-}
-
-function hoistEnumSchema(variants: DefEnumVariant[]): [decodersVar: String, encodersVar: string, hoistLine: string] {
-    const [hoistedPairsVar, hoistedPairs] = hoistConstWithType(
-        'pairs',
-        `${runtimeDep('HelperEnumDiscriminantVariantPair')}[]`,
-        `[\n    ${variants.map((x) => `[${x.discriminant}, '${x.name}']`).join(',\n    ')}\n]`,
-    );
-
-    const valuableVars = variants.filter((x) => !!x.ref);
-
-    const decodersMap = `{\n    ${valuableVars
-        .map((x) => `${x.discriminant}: ${refDecode(x.ref!)}`)
-        .join(',\n    ')}\n}`;
-    const [hoistedDecodersVar, hoistedDecoders] = hoistConst(
-        'decoders',
-        `${runtimeDep('helperEnumDecoders')}(${hoistedPairsVar}, ${decodersMap})`,
-    );
-
-    const encodersMap = `{\n    ${valuableVars.map((x) => `${x.name}: ${refEncode(x.ref!)}`).join(',\n    ')}\n}`;
-    const [hoistedEncodersVar, hoistedEncoders] = hoistConst(
-        'encoders',
-        `${runtimeDep('helperEnumEncoders')}(${hoistedPairsVar}, ${encodersMap})`,
-    );
-
-    return [hoistedDecodersVar, hoistedEncodersVar, linesJoin([hoistedPairs, hoistedDecoders, hoistedEncoders], '\n')];
+    return renderBuilder({
+        valueTy: `[\n    ${valueEntries.join(',\n    ')}\n]`,
+        createHelper: 'createTupleBuilder',
+        createHelperArgs: `[${codecs.join(', ')}]`,
+    });
 }
 
 function renderEnum(variants: DefEnumVariant[]): string {
-    const [hoistedDecodersVar, hoistedEncodersVar, hoistedSchema] = hoistEnumSchema(variants);
+    const definitionTyLines: string[] = variants.map((x) => {
+        const right = x.ref ? `${touchBase(BaseType.Valuable)}<${instanceViaBuilder(x.ref)}>` : 'null';
+        return `${x.name}: ${right}`;
+    });
 
-    return linesJoin([
-        renderDecoded(renderEnumType(variants, refDecoded)),
-        renderEncodable(renderEnumType(variants, refEncodableOrAsIs)),
-        hoistedSchema,
-        renderDecode(`return ${runtimeDep('decodeEnum')}($arg, ${hoistedDecodersVar})`),
-        renderEncode(`return ${runtimeDep('encodeEnum')}($arg, ${hoistedEncodersVar})`),
-    ]);
+    const schemaLines: string[] = variants.map((x) => {
+        const items = [x.discriminant, `'${x.name}'`];
+        x.ref && items.push(refFn(x.ref));
+        return `[${items.join(', ')}]`;
+    });
+
+    return renderBuilder({
+        valueTy: `${touchBase(BaseType.Enum)}<{\n    ${definitionTyLines.join(',\n    ')}\n}>`,
+        createHelper: 'createEnumBuilder',
+        createHelperArgs: `[${schemaLines.join(', ')}]`,
+    });
 }
 
 function renderSet(item: string): string {
-    const hoistedEncodeVar = useCurrentTyName() + '_item_encode';
-    const hoistedEncode = `const ${hoistedEncodeVar} = ${runtimeDep('makeEncoderAsIsRespectable')}(${refEncode(item)})`;
-
-    return linesJoin([
-        renderDecoded(`Set<${refDecoded(item)}>`),
-        renderEncodable(`Set<${refEncodableOrAsIs(item)}>`),
-        hoistedEncode,
-        renderDecode(`return ${runtimeDep('decodeSet')}($arg, ${refDecode(item)})`),
-        renderEncode(`return ${runtimeDep('encodeSet')}($arg, ${hoistedEncodeVar})`),
-    ]);
+    return renderBuilder({
+        valueTy: `Set<${instanceViaBuilder(item)}>`,
+        createHelper: 'createSetBuilder',
+        createHelperArgs: refFn(item),
+    });
 }
 
 function renderMap(key: string, value: string): string {
-    const hoistedEncoderKeyVar = hoistVarName('encode_key');
-    const hoistedEncoderValueVar = hoistVarName('encode_value');
-    const hoistedEncoders = `const [${hoistedEncoderKeyVar}, ${hoistedEncoderValueVar}] = ${runtimeDep(
-        'helperMapEncoders',
-    )}(${refEncode(key)}, ${refEncode(value)})`;
-
-    return linesJoin([
-        renderDecoded(`Map<${refDecoded(key)}, ${refDecoded(value)}>`),
-        renderEncodable(`Map<${refEncodableOrAsIs(key)}, ${refEncodableOrAsIs(value)}>`),
-        hoistedEncoders,
-        renderDecode(`return ${runtimeDep('decodeMap')}($arg, ${refDecode(key)}, ${refDecode(value)})`),
-        renderEncode(`return ${runtimeDep('encodeMap')}($arg, ${hoistedEncoderKeyVar}, ${hoistedEncoderValueVar})`),
-    ]);
+    return renderBuilder({
+        valueTy: `Map<${instanceViaBuilder(key)}, ${instanceViaBuilder(value)}>`,
+        createHelper: 'createMapBuilder',
+        createHelperArgs: [key, value].map(refFn).join(', '),
+    });
 }
 
 function renderArray(item: string, len: number): string {
-    const [hoistedLenVar, hoistedLen] = hoistConst('len', len);
-    const [hoistedEncodeVar, hoistedEncode] = hoistConst(
-        'item_encode',
-        `${runtimeDep('makeEncoderAsIsRespectable')}(${refEncode(item)})`,
-    );
-
-    return linesJoin([
-        renderDecoded(`${refDecoded(item)}[]`),
-        renderEncodable(`(${refEncodableOrAsIs(item)})[]`),
-        linesJoin([hoistedEncode, hoistedLen], '\n'),
-        renderDecode(`return ${runtimeDep('decodeArray')}($arg, ${refDecode(item)}, ${hoistedLenVar})`),
-        renderEncode(`return ${runtimeDep('encodeArray')}($arg, ${hoistedEncodeVar}, ${hoistedLenVar})`),
-    ]);
+    return renderBuilder({
+        valueTy: `${instanceViaBuilder(item)}[]`,
+        createHelper: `createArrayBuilder`,
+        createHelperArgs: `${refFn(item)}, ${len}`,
+    });
 }
 
 function renderBytesArray(len: number): string {
-    const [hoistedLenVar, hoistedLen] = hoistConst('len', len);
-
-    return linesJoin([
-        renderDecoded('Uint8Array'),
-        renderEncodable('Uint8Array'),
-        hoistedLen,
-        renderDecode(`return ${runtimeDep('decodeUint8Array')}($arg, ${hoistedLenVar})`),
-        renderEncode(`return ${runtimeDep('encodeUint8Array')}($arg, ${hoistedLenVar})`),
-    ]);
+    return renderBuilder({
+        valueTy: `Uint8Array`,
+        createHelper: 'createBytesArrayBuilder',
+        createHelperArgs: `${len}`,
+    });
 }
 
 function renderOption(some: string): string {
-    const opt = runtimeDep('Option');
+    return renderBuilder({
+        valueTy: `${touchBase(BaseType.Option)}<${instanceViaBuilder(some)}>`,
+        createHelper: 'createOptionBuilder',
+        createHelperArgs: refFn(some),
+    });
+}
 
-    const [hoistedDecodersVar, hoistedEncodersVar, hoistedSchema] = hoistEnumSchema([
-        { discriminant: 0, name: 'None' },
-        { discriminant: 1, name: 'Some', ref: some },
-    ]);
-
-    return linesJoin([
-        renderDecoded(`${opt}<${refDecoded(some)}>`),
-        renderEncodable(`${opt}<${refEncodableOrAsIs(some)}>`),
-        hoistedSchema,
-        renderDecode(`return ${runtimeDep('decodeEnum')}($arg, ${hoistedDecodersVar})`),
-        renderEncode(`return ${runtimeDep('encodeEnum')}($arg, ${hoistedEncodersVar})`),
-    ]);
+function renderResult(ok: string, err: string): string {
+    return renderBuilder({
+        valueTy: `${touchBase(BaseType.Result)}<${instanceViaBuilder(ok)}, ${instanceViaBuilder(err)}>`,
+        createHelper: 'createResultBuilder',
+        createHelperArgs: [ok, err].map(refFn).join(', '),
+    });
 }
 
 function renderExternal({
@@ -406,15 +244,10 @@ function renderExternal({
 }): string {
     const ty = useCurrentTyName();
 
-    const importsJoined = renderImports(
-        TypeEntryList.map<ImportOptions>((x) => {
-            return nameInModule ? { source: addSuffix(nameInModule, x), as: addSuffix(ty, x) } : addSuffix(ty, x);
-        }),
-        moduleName,
+    return linesJoin(
+        [renderImports([nameInModule ? { source: nameInModule, as: ty } : ty], moduleName), `export { ${ty} }`],
+        '\n',
     );
-    const exportsJoined = `export { ${TypeEntryList.map((x) => addSuffix(ty, x)).join(', ')} }`;
-
-    return linesJoin([importsJoined, exportsJoined]);
 }
 
 function renderParticularDef(tyName: string, def: TypeDef): string {
@@ -440,21 +273,25 @@ function renderParticularDef(tyName: string, def: TypeDef): string {
                 return renderBytesArray(def.len);
             case 'option':
                 return renderOption(def.some);
+            case 'result':
+                return renderResult(def.ok, def.err);
             case 'external':
                 return renderExternal(def);
-            default:
-                throw new Error(`Rendering is unimplemented for "${def.t}" type def`);
+            default: {
+                const uncovered: never = def;
+                throw new Error(`Undefined type definition: ${uncovered}`);
+            }
         }
     });
 
-    return [`// ${tyName}`, particularRendered].join('\n\n');
+    return particularRendered;
 }
 
 function renderPreamble(): string {
     const { runtimeLib } = useRenderParams();
     const { getRuntimeLibImports: getCoreImports } = useCollector();
 
-    const lines = ['/* eslint-disable */'];
+    const lines = [];
 
     const imports = getCoreImports();
     if (imports.size) {
@@ -474,7 +311,7 @@ export function renderNamespaceDefinition(
     return withinRenderParams(
         {
             runtimeLib: params?.runtimeLib ?? '@scale-codec/definition-runtime',
-            runtimeTypes: params?.runtimeTypes ?? RuntimeLibStds,
+            runtimeTypes: params?.runtimeTypes ?? DefaultAvailableBuilders,
             rollupSingleTuples: params?.rollupSingleTuplesIntoAliases ?? false,
         },
         () =>

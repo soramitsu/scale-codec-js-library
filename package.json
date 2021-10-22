@@ -3,6 +3,7 @@
     "version": "0.0.0",
     "private": true,
     "scripts": {
+        "postinstall": "pnpm compiler:update-samples",
         "gulp-ts": "gulp --require esbuild-register -f gulpfile.ts",
         "test:all": "pnpm test:unit && pnpm build && pnpm test:e2e",
         "test:unit": "jest",
@@ -19,7 +20,9 @@
         "api:docs": "pnpm gulp-ts -- documentApis",
         "api:all": "pnpm gulp-ts -- extractAndDocumentApis",
         "docs:dev": "pnpm --filter @scale-codec/docs dev",
-        "docs:build": "pnpm --filter @scale-codec/docs build"
+        "docs:build": "pnpm --filter @scale-codec/docs build",
+        "docs:compile-ns": "pnpm gulp-ts -- compileDocsNamespace",
+        "compiler:update-samples": "pnpm gulp-ts -- compileCompilerSamples"
     },
     "devDependencies": {
         "@changesets/cli": "^2.17.0",
@@ -48,6 +51,7 @@
         "gulp": "^4.0.2",
         "husky": "^7.0.2",
         "jest": "^27.2.5",
+        "make-dir": "^3.1.0",
         "path-exists": "^4.0.0",
         "prettier": "^2.4.1",
         "prettier-eslint": "^13.0.0",

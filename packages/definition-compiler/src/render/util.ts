@@ -35,11 +35,3 @@ export function createStateScope<T>(): StateScope<T> {
         },
     };
 }
-
-export function replaceDollarVar(source: string, varName: string, replacement: string): string {
-    const match = source.match(new RegExp(`\\$${varName}`));
-    if (!match) throw new Error(`"$${varName}" not found in the "${source}"`);
-    const [found] = match;
-    const index = match.index!;
-    return `${source.slice(0, index)}${replacement}${source.slice(index + found.length)}`;
-}

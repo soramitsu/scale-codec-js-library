@@ -1,22 +1,20 @@
-// #region runtimeStds
 /**
  * Set of types defined in the `@scale-codec/definition-runtime`
  */
-export const RuntimeLibStds = new Set([
-    'str',
-    'bool',
+export const DefaultAvailableBuilders = new Set([
+    'Str',
+    'Bool',
     'Void',
     'Compact',
     'BytesVec',
-    'u8',
-    'u16',
-    'u32',
-    'u64',
-    'u128',
-    'i8',
-    'i16',
-    'i32',
-    'i64',
-    'i128',
+    'U8',
+    'U16',
+    'U32',
+    'U64',
+    'U128',
+    'I8',
+    'I16',
+    'I32',
+    'I64',
+    'I128',
 ]);
-// #endregion runtimeStds

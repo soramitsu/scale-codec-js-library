@@ -9,7 +9,7 @@ it('Renders vec', () => {
     matchSnapshot({
         Vec_str: {
             t: 'vec',
-            item: 'str',
+            item: 'Str',
         },
     });
 });
@@ -25,13 +25,13 @@ it('Renders struct + tuple', () => {
                 },
                 {
                     name: 'mur',
-                    ref: 'bool',
+                    ref: 'Bool',
                 },
             ],
         },
         Tuple_u8_i128: {
             t: 'tuple',
-            items: ['u8', 'i128'],
+            items: ['U8', 'I128'],
         },
     });
 });
@@ -48,7 +48,7 @@ it('Renders enum', () => {
                 {
                     name: 'Greeting',
                     discriminant: 1,
-                    ref: 'str',
+                    ref: 'Str',
                 },
             ],
         },
@@ -68,7 +68,7 @@ it('Renders map', () => {
     matchSnapshot({
         Map_str_Message: {
             t: 'map',
-            key: 'str',
+            key: 'Str',
             value: 'Message',
         },
     });
@@ -124,7 +124,7 @@ it('Renders an alias for some inner type', () => {
     matchSnapshot({
         StringAlias: {
             t: 'alias',
-            ref: 'str',
+            ref: 'Str',
         },
     });
 });
@@ -132,8 +132,8 @@ it('Renders an alias for some inner type', () => {
 it('Renders single tuple as alias in case when the related option is enabled', async () => {
     matchSnapshot(
         {
-            SingleTuple: { t: 'tuple', items: ['u128'] },
-            MultiTuple: { t: 'tuple', items: ['u8', 'bool'] },
+            SingleTuple: { t: 'tuple', items: ['U128'] },
+            MultiTuple: { t: 'tuple', items: ['U8', 'Bool'] },
         },
         {
             rollupSingleTuplesIntoAliases: true,
@@ -156,6 +156,16 @@ it('Renders imports for the external type using the custom name if provided', ()
             t: 'external',
             module: 'some-package',
             nameInModule: 're_export_me',
+        },
+    });
+});
+
+it('Renders result', () => {
+    matchSnapshot({
+        ResultI128Str: {
+            t: 'result',
+            ok: 'I128',
+            err: 'Str',
         },
     });
 });
