@@ -49,6 +49,7 @@ function apiSidebar(): SidebarLink[] {
 }
 
 export default defineConfig({
+    base: '/scale-codec-js-library/',
     title: 'SCALE codec',
     description: 'Implementation of SCALE codec spec in JavaScript',
     markdown: {
