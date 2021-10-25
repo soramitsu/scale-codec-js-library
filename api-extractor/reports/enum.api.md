@@ -4,29 +4,24 @@
 
 ```ts
 
-// @public (undocumented)
-export type EmptyVariants<Def> = {
-    [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V;
-}[keyof Def & string];
-
 // @public
 export class Enum<Def> {
-    as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends Valuable<infer T> ? T : never;
+    as<V extends TagsValuable<Def>>(tag: V): Def[V] extends Valuable<infer T> ? T : never;
     readonly content: null | [some: unknown];
-    static empty<Def>(variant: EmptyVariants<Def>): Enum<Def>;
-    is<V extends keyof Def>(variant: V): boolean;
+    static empty<Def>(tag: TagsEmpty<Def>): Enum<Def>;
+    is<V extends keyof Def>(tag: V): boolean;
     match<R = any>(matchMap: EnumMatchMap<Def, R>): R;
+    // (undocumented)
+    readonly tag: string;
     // @internal (undocumented)
     toJSON(): {
-        variant: string;
+        tag: string;
         value: unknown;
     } | {
-        variant: string;
+        tag: string;
         value?: undefined;
     };
-    static valuable<Def, V extends ValuableVariants<Def>>(variant: V, value: GetValuableVariantValue<Def[V]>): Enum<Def>;
-    // (undocumented)
-    readonly variant: string;
+    static valuable<Def, V extends TagsValuable<Def>>(tag: V, value: GetValuableVariantValue<Def[V]>): Enum<Def>;
 }
 
 // @public (undocumented)
@@ -53,15 +48,20 @@ export type Result<O, E> = Enum<{
     Err: Valuable<E>;
 }>;
 
+// @public (undocumented)
+export type TagsEmpty<Def> = {
+    [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V;
+}[keyof Def & string];
+
+// @public (undocumented)
+export type TagsValuable<Def> = {
+    [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never;
+}[keyof Def & string];
+
 // @public
 export interface Valuable<T> {
     // (undocumented)
     value: T;
 }
-
-// @public (undocumented)
-export type ValuableVariants<Def> = {
-    [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never;
-}[keyof Def & string];
 
 ```
