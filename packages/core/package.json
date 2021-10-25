@@ -3,6 +3,7 @@
     "version": "0.2.3",
     "description": "Implementations of core SCALE-codec primitives and data structures",
     "license": "Apache-2.0",
+    "keywords": ["scale", "scale-codec", "binary", "parity-scale-codec", "serialization", "typescript", "rust", "encoding"],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"

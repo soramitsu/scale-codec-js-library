@@ -2,6 +2,7 @@
     "name": "@scale-codec/definition-runtime",
     "version": "0.1.3",
     "description": "Runtime for compiled result from @scale-codec/definition-compiler",
+    "keywords": ["scale-codec", "typescript", "namespace", "codec"],
     "license": "Apache-2.0",
     "repository": {
         "type": "git",

@@ -29,9 +29,8 @@ async function compileSamples() {
             .map(async ([id, { def }]) => {
                 const code = renderNamespaceDefinition(def);
                 const file = path.join(OUTPUT_DIR, `${id}.ts`);
-                const fileRelative = path.relative(process.cwd(), file);
                 await fs.writeFile(file, code);
-                consola.info(chalk`Written: {blue.bold ${fileRelative}}`);
+                consola.info(chalk`Written: {blue.bold ${file}}`);
             }),
     );
 }
