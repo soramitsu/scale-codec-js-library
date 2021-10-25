@@ -13,21 +13,25 @@ interface SidebarLink {
 function guideSidebar(): SidebarLink[] {
     return [
         {
-            text: 'Guide',
-            children: [
-                { text: 'Intro', link: '/' },
-                {
-                    text: 'Contribution',
-                    link: '/contribution',
-                },
-            ],
+            text: 'About',
+            link: '/',
         },
         {
-            text: 'Libraries Guides',
-            children: LIBS.filter((x) => !/runtime|util/.test(x)).map((x) => ({
-                text: x,
-                link: `/lib/${x}`,
-            })),
+            text: 'Guide',
+            children: [
+                {
+                    text: 'Core package',
+                    link: '/lib/core',
+                },
+                {
+                    text: 'Handling large namespaces',
+                    link: '/lib/namespaces',
+                },
+                {
+                    text: 'Enums guide',
+                    link: '/lib/enum',
+                },
+            ],
         },
         {
             text: 'API',
@@ -35,8 +39,17 @@ function guideSidebar(): SidebarLink[] {
             children: apiSidebar(),
         },
         {
-            text: 'To Do',
-            link: '/todo',
+            text: 'Misc',
+            children: [
+                {
+                    text: 'Contribution',
+                    link: '/contribution',
+                },
+                {
+                    text: 'To Do',
+                    link: '/todo',
+                },
+            ],
         },
     ];
 }
@@ -83,6 +96,6 @@ export default defineConfig({
         // todo: convenient sidebar for API
     },
     vite: {
-        plugins: [WindiCSS({ config: path.resolve(__dirname, '../windi.config.ts') })],
+        plugins: [WindiCSS({ config: path.resolve(__dirname, '../../windi.config.ts') })],
     },
 });

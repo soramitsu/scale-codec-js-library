@@ -1,6 +1,6 @@
-# `@scale-codec/core`
+# Core package
 
-This package contains all necessary low-level tools to perform encoding and decoding between SCALE binaries and their JS representations.
+`@scale-codec/core` package contains all necessary low-level tools to perform encoding and decoding between SCALE binaries and their JS representations.
 
 ## Contents
 
@@ -24,14 +24,6 @@ This package contains all necessary low-level tools to perform encoding and deco
     -   Struct - as JS object
     -   Tuple - as JS `Array`
     -   Enum (+ special codec for OptionBool) - as `Enum` from [`@scale-codec/enum` package](./enum)
-
-## Install
-
-Available on NPM, so use your favorite package manager:
-
-```shell
-npm i @scale-codec/core
-```
 
 ## Usage examples
 
@@ -164,7 +156,9 @@ Output:
 
 <CoreStructResult />
 
-### TODO examples
+### More example
+
+Todo for:
 
 -   Map
 -   Set

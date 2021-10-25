@@ -14,9 +14,9 @@ const signed = ref(false);
 const num = ref('5881');
 const numAsBI = computed<Result<JSBI, Error>>(() => {
     try {
-        return Enum.create('Ok', JSBI.BigInt(num.value));
+        return Enum.valuable('Ok', JSBI.BigInt(num.value));
     } catch (err) {
-        return Enum.create('Err', err);
+        return Enum.valuable('Err', err);
     }
 });
 

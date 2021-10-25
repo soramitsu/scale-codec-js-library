@@ -6,22 +6,6 @@ sidebarDepth: 3
 
 Lightweight tool for working with Rust-style enums in JavaScript (with TypeScript support of course).
 
-## Contents
-
-[[toc]]
-
-## The Why
-
-SCALE spec comes from Rust programming language that has [Enums](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html), so any implementation of this codec has to work with this concept. Obviously, JavaScript doesn't have any native syntax/semantics to handle it. TypeScript's enums don't suit here neither because of the difference between them and Rust's ones (primarily because they don't have values associated with variants like in Rust). Thus, this library exists and tries to solve the problem of enums definition, creation and runtime-handling.
-
-## Install
-
-The package is available via NPM Registry, so just use your favorite package manager:
-
-```shell
-npm i @scale-codec/enum
-```
-
 ::: tip
 `@scale-codec/core` package reexports everything from `@scale-codec/enum`:
 
@@ -30,6 +14,14 @@ import { Enum, Option /* and other */ } from '@scale-codec/core';
 ```
 
 :::
+
+## Contents
+
+[[toc]]
+
+## The Why
+
+SCALE spec comes from Rust programming language that has [Enums](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html), so any implementation of this codec has to work with this concept. Obviously, JavaScript doesn't have any native syntax/semantics to handle it. TypeScript's enums don't suit here neither because of the difference between them and Rust's ones (primarily because they don't have values associated with variants like in Rust). Thus, this library exists and tries to solve the problem of enums definition, creation and runtime-handling.
 
 ## Enums defininition and creation
 
@@ -57,34 +49,33 @@ type Message = Enum<{
     Log: Valuable<string>;
 }>;
 
-let msg: Message = Enum.create('Quit');
-msg = Enum.create('Log', 'hello');
+let msg: Message = Enum.empty('Quit');
+msg = Enum.valuable('Log', 'hello');
 ```
+
+`Enum` has 2 main static methods - `empty(variantName)` and `valuable(variantName, variantValue)`. They are type-safe if TypeScript knows the definition of Enum (via type inference or with explicit declaration). More detailed info at [API](/api/enum).
 
 Without type inference:
 
 ```ts
-Enum.create<
-    {
-        Quit: null;
-        Log: Valuable<string>;
-    },
-    'Quit'
->('Quit');
+Enum.empty<{
+    Quit: null;
+    Log: Valuable<string>;
+}>('Quit');
 
 // or
 type MessageVariants = {
     Quit: null;
     Log: Valuable<string>;
 };
-Enum.create<MessageVariants, 'Log'>('Log', 'hello');
+Enum.valuable<MessageVariants, 'Log'>('Log', 'hello');
 ```
 
 ::: info
 `Valuable` type is a helper to distinguish empty variant from non-empty. In expanded form it is:
 
 ```ts
-// they are equivalent
+// Equivalent declarations
 
 type MessageVariants = {
     Quit: null;
@@ -112,16 +103,17 @@ function makeSomeTask(): Result<number, string> {
     const randomNum = Math.random();
 
     if (randomNum > 0.5) {
-        return Enum.create('Ok', randomNum);
+        // creating valuable variant with `valuable()`
+        return Enum.valuable('Ok', randomNum);
     }
-    return Enum.create('Err', 'Oops, bad luck :<');
+    return Enum.valuable('Err', 'Oops, bad luck :<');
 }
 
 const result = makeSomeTask();
 
-// Check for variant
+// Check for variant with `is()`
 if (result.is('Ok')) {
-    // Extract the content
+    // Extract the content with `as()`
     const num = result.as('Ok');
     console.log('Task result num:', num);
 } else {
@@ -129,7 +121,7 @@ if (result.is('Ok')) {
     console.error('Task resulted with an error:', errorMessage);
 }
 
-// Use 'match' syntax
+// Use 'match' syntax with `match()`
 const mapped: Option<number> = result.match({
     Ok(num) {
         return Enum.create('Some', num);
