@@ -16,10 +16,11 @@ async function clean() {
     await del(
         [
             'packages/*/dist',
-            '.declaration',
+            'packages/docs/root/api',
             'packages/*/.declaration',
+            'packages/definition-compiler/tests/samples',
+            '.declaration',
             'api-extractor/temp',
-            'packages/docs/api',
             'e2e-spa/runtime-rollup',
         ].map((x) => path.resolve(ROOT, x)),
     );
