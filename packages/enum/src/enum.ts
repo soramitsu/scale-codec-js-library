@@ -5,10 +5,10 @@ export interface Valuable<T> {
     value: T;
 }
 
-export type EmptyVariants<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V }[keyof Def &
+export type TagsEmpty<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V }[keyof Def &
     string];
 
-export type ValuableVariants<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never }[keyof Def &
+export type TagsValuable<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never }[keyof Def &
     string];
 
 export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
@@ -47,41 +47,41 @@ export type EnumMatchMap<V, R = any> = {
 export class Enum<Def> {
     /**
      * Create an empty variant of enum with it
-     * @param variant - Empty variant name
+     * @param tag - One of enum empty variants' tags
      */
-    public static empty<Def>(variant: EmptyVariants<Def>): Enum<Def> {
-        return new Enum(variant, null);
+    public static empty<Def>(tag: TagsEmpty<Def>): Enum<Def> {
+        return new Enum(tag, null);
     }
 
     /**
      * Create a valuable variant of enum with it
-     * @param variant - Valuable variant name
+     * @param tag - Valuable variant tag
      * @param value - Value associated with variant
      */
-    public static valuable<Def, V extends ValuableVariants<Def>>(
-        variant: V,
+    public static valuable<Def, V extends TagsValuable<Def>>(
+        tag: V,
         value: GetValuableVariantValue<Def[V]>,
     ): Enum<Def> {
-        return new Enum(variant, [value]);
+        return new Enum(tag, [value]);
     }
 
-    public readonly variant: string;
+    public readonly tag: string;
 
     /**
      * Inner value is untyped and should be used with caution
      */
     public readonly content: null | [some: unknown];
 
-    private constructor(variant: string, content: null | [unknown]) {
+    private constructor(tag: string, content: null | [unknown]) {
         this.content = content ?? null;
-        this.variant = variant;
+        this.tag = tag;
     }
 
     /**
      * Check whether an enum instance has this variant name or not
      */
-    public is<V extends keyof Def>(variant: V): boolean {
-        return this.variant === variant;
+    public is<V extends keyof Def>(tag: V): boolean {
+        return this.tag === tag;
     }
 
     /**
@@ -91,12 +91,12 @@ export class Enum<Def> {
      * @remarks
      * Use it in pair {@link Enum.is} to avoid runtime errors.
      */
-    public as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends Valuable<infer T> ? T : never {
-        if (this.is(variant) && this.content) {
+    public as<V extends TagsValuable<Def>>(tag: V): Def[V] extends Valuable<infer T> ? T : never {
+        if (this.is(tag) && this.content) {
             return this.content[0] as Def[V];
         }
 
-        throw new Error(`cast failed - enum is not the "${variant}"`);
+        throw new Error(`cast failed - enum is not the "${tag}"`);
     }
 
     /**
@@ -117,7 +117,7 @@ export class Enum<Def> {
      * ```
      */
     public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
-        const fn = (matchMap as any)[this.variant] as (...args: any[]) => any;
+        const fn = (matchMap as any)[this.tag] as (...args: any[]) => any;
         return this.content ? fn(this.content[0]) : fn();
     }
 
@@ -125,7 +125,7 @@ export class Enum<Def> {
      * @internal
      */
     public toJSON() {
-        const { variant, content } = this;
-        return content ? { variant, value: content[0] } : { variant };
+        const { tag, content } = this;
+        return content ? { tag, value: content[0] } : { tag };
     }
 }

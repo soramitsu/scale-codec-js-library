@@ -96,7 +96,7 @@ describe('Enum', () => {
             b: { value: string };
         }> = Enum.empty('a');
 
-        expect(val.toJSON()).toEqual({ variant: 'a' });
+        expect(val.toJSON()).toEqual({ tag: 'a' });
     });
 
     test('JSON repr of valuable enum', () => {
@@ -105,6 +105,6 @@ describe('Enum', () => {
             b: { value: string };
         }> = Enum.valuable('b', 'bobobo');
 
-        expect(val.toJSON()).toEqual({ variant: 'b', value: 'bobobo' });
+        expect(val.toJSON()).toEqual({ tag: 'b', value: 'bobobo' });
     });
 });

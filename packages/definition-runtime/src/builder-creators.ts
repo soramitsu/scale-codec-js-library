@@ -117,14 +117,14 @@ type UnwrapScaleEnum<T extends Enum<any>> = T extends Enum<infer Def>
     : never;
 
 function unwrapScaleEnum<T extends Enum<any>>(scale: ScaleInstance<T, any>): UnwrapScaleEnum<T> {
-    const { content, variant } = scale.value;
+    const { content, tag } = scale.value;
     let contentUnwrapped: null | [any] = null;
 
     if (content && content[0] instanceof ScaleInstance) {
         contentUnwrapped = [content[0].unwrap()];
     }
 
-    return (contentUnwrapped ? Enum.valuable<any, any>(variant, contentUnwrapped[0]) : Enum.empty<any>(variant)) as any;
+    return (contentUnwrapped ? Enum.valuable<any, any>(tag, contentUnwrapped[0]) : Enum.empty<any>(tag)) as any;
 }
 
 export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: BuilderFn<any>][];
@@ -138,12 +138,12 @@ function createScaleEnumWrapper<T extends Enum<any>>(
         builderFn && wrappers.set(name, builderFn);
     }
 
-    return ({ variant, content }) => {
+    return ({ tag, content }) => {
         if (content) {
-            const builder = mapGetUnwrap(wrappers, variant)();
-            return Enum.valuable<any, any>(variant, builder.wrap(content[0]));
+            const builder = mapGetUnwrap(wrappers, tag)();
+            return Enum.valuable<any, any>(tag, builder.wrap(content[0]));
         }
-        return Enum.empty<any>(variant as any) as any;
+        return Enum.empty<any>(tag as any) as any;
     };
 }
 

@@ -65,13 +65,13 @@ export type EnumDecoders = Record<
 const DISCRIMINANT_BYTES_COUNT = 1;
 
 export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Array {
-    const { variant, content } = val;
-    const { d, encode } = encoders[variant];
+    const { tag, content } = val;
+    const { d, encode } = encoders[tag];
 
     function* parts(): Generator<Uint8Array> {
         yield new Uint8Array([d]);
         if (encode) {
-            if (!content) throw new Error(`Codec for variant "${variant}" defined, but there is no content`);
+            if (!content) throw new Error(`Codec for variant "${tag}" defined, but there is no content`);
             yield encode(content[0]);
         }
     }
