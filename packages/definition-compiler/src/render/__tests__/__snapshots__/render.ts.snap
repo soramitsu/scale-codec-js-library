@@ -116,3 +116,19 @@ exports[`Renders vec 1`] = `
 export var Vec_str = createVecBuilder<InstanceViaBuilder<typeof Str>[]>('Vec_str', () => Str)
 "
 `;
+
+exports[`Respects custom \`runtimeLib\` param 1`] = `
+"import { InnerValue, Str, UnwrappedValue, createAliasBuilder } from 'custom-runtime-lib'
+
+export var S = createAliasBuilder<InnerValue<typeof Str>, UnwrappedValue<typeof Str>>('S', () => Str)
+"
+`;
+
+exports[`Respects custom set of knowns types set 1`] = `
+"import { Foo, InnerValue, UnwrappedValue, createAliasBuilder } from '@scale-codec/definition-runtime'
+
+export var FooAlias = createAliasBuilder<InnerValue<typeof Foo>, UnwrappedValue<typeof Foo>>('FooAlias', () => Foo)
+
+export var StrAlias = createAliasBuilder<InnerValue<typeof Str>, UnwrappedValue<typeof Str>>('StrAlias', () => Str)
+"
+`;

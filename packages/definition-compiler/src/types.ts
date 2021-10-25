@@ -171,7 +171,7 @@ export type DefResult = {
  * prefixes: `External_encode`, `External_decode`, `External_Decoded` and `External_Encodable` (for the "External" type
  * name)
  */
-export type DefExternal = {
+export type DefImport = {
     /**
      * Where to import from, path
      *
@@ -205,4 +205,4 @@ export type TypeDef =
     | WithTMark<DefEnum, 'enum'>
     | WithTMark<DefOption, 'option'>
     | WithTMark<DefResult, 'result'>
-    | WithTMark<DefExternal, 'external'>;
+    | WithTMark<DefImport, 'import'>;

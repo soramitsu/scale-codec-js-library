@@ -144,7 +144,7 @@ it('Renders single tuple as alias in case when the related option is enabled', a
 it('Render import for the external type as expected', () => {
     matchSnapshot({
         MyCustomExternal: {
-            t: 'external',
+            t: 'import',
             module: './module-with-externals',
         },
     });
@@ -153,7 +153,7 @@ it('Render import for the external type as expected', () => {
 it('Renders imports for the external type using the custom name if provided', () => {
     matchSnapshot({
         ReExportMe: {
-            t: 'external',
+            t: 'import',
             module: 'some-package',
             nameInModule: 're_export_me',
         },
@@ -168,4 +168,33 @@ it('Renders result', () => {
             err: 'Str',
         },
     });
+});
+
+it('Respects custom `runtimeLib` param', () => {
+    matchSnapshot(
+        {
+            S: {
+                t: 'alias',
+                ref: 'Str',
+            },
+        },
+        { runtimeLib: 'custom-runtime-lib' },
+    );
+});
+
+it('Respects custom set of knowns types set', () => {
+    matchSnapshot(
+        {
+            FooAlias: {
+                t: 'alias',
+                ref: 'Foo',
+            },
+            // Should not be imported from runtime lib
+            StrAlias: {
+                t: 'alias',
+                ref: 'Str',
+            },
+        },
+        { runtimeTypes: new Set(['Foo']) },
+    );
 });

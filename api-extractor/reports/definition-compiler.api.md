@@ -33,7 +33,7 @@ export type DefEnumVariant = {
 };
 
 // @public
-export type DefExternal = {
+export type DefImport = {
     module: string;
     nameInModule?: string;
 };
@@ -97,7 +97,7 @@ export interface RenderNamespaceDefinitionParams {
 // Warning: (ae-forgotten-export) The symbol "WithTMark" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export type TypeDef = WithTMark<DefAlias, 'alias'> | WithTMark<DefArray, 'array'> | WithTMark<DefBytesArray, 'bytes-array'> | WithTMark<DefVec, 'vec'> | WithTMark<DefTuple, 'tuple'> | WithTMark<DefStruct, 'struct'> | WithTMark<DefMap, 'map'> | WithTMark<DefSet, 'set'> | WithTMark<DefEnum, 'enum'> | WithTMark<DefOption, 'option'> | WithTMark<DefResult, 'result'> | WithTMark<DefExternal, 'external'>;
+export type TypeDef = WithTMark<DefAlias, 'alias'> | WithTMark<DefArray, 'array'> | WithTMark<DefBytesArray, 'bytes-array'> | WithTMark<DefVec, 'vec'> | WithTMark<DefTuple, 'tuple'> | WithTMark<DefStruct, 'struct'> | WithTMark<DefMap, 'map'> | WithTMark<DefSet, 'set'> | WithTMark<DefEnum, 'enum'> | WithTMark<DefOption, 'option'> | WithTMark<DefResult, 'result'> | WithTMark<DefImport, 'import'>;
 
 // @public (undocumented)
 export type TypeRef = string;

@@ -19,11 +19,11 @@ export const aliases = defineSample({
 
 export const externals = defineSample({
     JustExternalInclusion: {
-        t: 'external',
+        t: 'import',
         module: '../externals-sample-help',
     },
     WithCustomExternalName: {
-        t: 'external',
+        t: 'import',
         module: '../externals-sample-help',
         nameInModule: 'Str',
     },

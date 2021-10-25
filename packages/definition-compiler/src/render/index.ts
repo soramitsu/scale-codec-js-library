@@ -124,7 +124,7 @@ function renderAlias(to: string): string {
 function renderVoidAlias(): string {
     const { runtimeLib } = useRenderParams();
 
-    return renderExternal({ nameInModule: 'Void', module: runtimeLib });
+    return renderImport({ nameInModule: 'Void', module: runtimeLib });
 }
 
 function renderVec(item: string): string {
@@ -237,13 +237,7 @@ function renderResult(ok: string, err: string): string {
     });
 }
 
-function renderExternal({
-    nameInModule,
-    module: moduleName,
-}: {
-    nameInModule?: string | null;
-    module: string;
-}): string {
+function renderImport({ nameInModule, module: moduleName }: { nameInModule?: string | null; module: string }): string {
     const ty = useCurrentTyName();
 
     return linesJoin(
@@ -277,8 +271,8 @@ function renderParticularDef(tyName: string, def: TypeDef): string {
                 return renderOption(def.some);
             case 'result':
                 return renderResult(def.ok, def.err);
-            case 'external':
-                return renderExternal(def);
+            case 'import':
+                return renderImport(def);
             default: {
                 const uncovered: never = def;
                 throw new Error(`Undefined type definition: ${uncovered}`);
