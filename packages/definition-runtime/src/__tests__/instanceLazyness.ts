@@ -24,7 +24,7 @@ describe('Within TupleBool', () => {
         const TupleBool = createScaleBuilder<[InstanceViaBuilder<typeof Bool>]>(
             'TupleBool',
             (val) => encodeTupleSpy(val, [(x) => x.bytes]),
-            (bytes) => decodeTupleSpy(bytes, [(x) => Bool.fromBytesRaw(x)]),
+            (bytes) => decodeTupleSpy(bytes, [(x) => Bool.decodeRaw(x)]),
         );
 
         return [Bool, TupleBool, encodeBoolSpy, decodeBoolSpy, encodeTupleSpy, decodeTupleSpy];

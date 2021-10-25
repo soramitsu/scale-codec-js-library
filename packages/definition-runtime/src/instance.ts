@@ -4,8 +4,10 @@ import { assert } from '@scale-codec/util';
 type OptionTupleSome<T> = [T];
 type OptionTuple<T> = null | OptionTupleSome<T>;
 
-function offPropEnumerability(object: object, prop: PropertyKey) {
-    Reflect.defineProperty(object, prop, { enumerable: false });
+function offPropsEnumerability(object: object, props: PropertyKey[]) {
+    for (const prop of props) {
+        Reflect.defineProperty(object, prop, { enumerable: false });
+    }
 }
 
 function offPropEnumerabilityWithValue(object: object, prop: PropertyKey, value: any) {
@@ -19,21 +21,47 @@ function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => a
     });
 }
 
-export abstract class ScaleInstance<T, Unwrapped = T> {
-    public value: T;
+/**
+ * The main atom that contains 2 representations of the same data - encoded bytes and its JS representation
+ *
+ * @remarks
+ *
+ * **Immutable!** Never mutate its `value` or `bytes` internals, because it will produce a malfunction in a
+ * whole `ScaleInstance`s' tree (if it contains nested instances).
+ *
+ * Type `Value` represents JS value, `Unwrapped` - JS value with content where all of the `ScaleInstance`s are
+ * unwrapped to their values.
+ */
+export abstract class ScaleInstance<Value, Unwrapped = Value> {
+    /**
+     * Some JS-easy-accessible value of the instance
+     */
+    public readonly value: Value;
 
-    public bytes: Uint8Array;
+    /**
+     * SCALE-encoded bytes of the instance
+     */
+    public readonly bytes: Uint8Array;
 
-    private __value: null | OptionTuple<T>;
+    private __value: null | OptionTuple<Value>;
 
     private __bytes: null | Uint8Array;
 
-    protected abstract __encode: Encode<T>;
+    /**
+     * @internal
+     */
+    protected abstract __encode: Encode<Value>;
 
-    protected abstract __decode: Decode<T>;
+    /**
+     * @internal
+     */
+    protected abstract __decode: Decode<Value>;
 
-    public constructor(value: null | OptionTuple<T>, bytes: null | Uint8Array) {
-        if (!value && !bytes) throw new Error('ScaleInstance cannot be empty');
+    /**
+     * @internal
+     */
+    public constructor(value: null | OptionTuple<Value>, bytes: null | Uint8Array) {
+        if (!value && !bytes) throw new Error('ScaleInstance should have either value or bytes or both');
 
         // Firstly gettere were on the class itself, but it turned out that under the hood
         // they are defined with `{ enumerable: false }`; also not-own keys & getters aren't visible
@@ -47,7 +75,7 @@ export abstract class ScaleInstance<T, Unwrapped = T> {
         offPropEnumerabilityWithValue(this, '__bytes', bytes);
     }
 
-    private getValue(): T {
+    private getValue(): Value {
         if (!this.__value) {
             const bytes = this.__bytes!;
             const [val, len] = this.__decode(bytes);
@@ -64,6 +92,9 @@ export abstract class ScaleInstance<T, Unwrapped = T> {
         return this.__bytes;
     }
 
+    /**
+     * Unwraps its contents and all of the nested `ScaleInstance`s
+     */
     public abstract unwrap(): Unwrapped;
 }
 
@@ -72,10 +103,26 @@ export type ScaleInstanceCtor<T, U = T> = new (value: null | OptionTuple<T>, byt
     U
 >;
 
+/**
+ * Defines how a builder for {@link ScaleInstance} should look like
+ */
 export interface ScaleBuilder<T, U = T> {
+    /**
+     * Constructs instance from JS value to give an opportunity to encode it later or use in any
+     * other way
+     */
     fromValue: (value: T) => ScaleInstance<T, U>;
+    /**
+     * Constructs instance from SCALE-encoded bytes to give an opportunity to access to its decoded contents
+     */
     fromBytes: (bytes: Uint8Array) => ScaleInstance<T, U>;
-    fromBytesRaw: (bytes: Uint8Array) => DecodeResult<ScaleInstance<T, U>>;
+    /**
+     * Raw `Decode` function. Primarily used by the builder or by other builders internally
+     */
+    decodeRaw: Decode<ScaleInstance<T, U>>;
+    /**
+     * Constructs instance back from unwrapped value, i.e. works vice versa from {@link ScaleInstance.unwrap}
+     */
     wrap: (unwrappedValue: U) => ScaleInstance<T, U>;
 }
 
@@ -116,8 +163,12 @@ function unwrapFallback<T>(scale: ScaleInstance<T, any>): any {
 }
 
 export type ScaleBuilderUnwrapper<T, U> = (self: ScaleInstance<T, U>) => U;
+
 export type ScaleBuilderWrapper<T, U> = (unwrapped: U) => T;
 
+/**
+ * Universal function that specifies necessary stuff to implement {@link ScaleBuilder} protocol
+ */
 // eslint-disable-next-line max-params
 export function createScaleBuilder<T, U = T>(
     name: string,
@@ -135,7 +186,7 @@ export function createScaleBuilder<T, U = T>(
             return new Self(null, bytes);
         }
 
-        public static fromBytesRaw(bytes: Uint8Array): DecodeResult<Self> {
+        public static decodeRaw(bytes: Uint8Array): DecodeResult<Self> {
             return decodeAndMemorize(bytes, decode, Self);
         }
 
@@ -150,8 +201,7 @@ export function createScaleBuilder<T, U = T>(
             super(value, bytes);
 
             // implementation details
-            offPropEnumerability(this, '__encode');
-            offPropEnumerability(this, '__decode');
+            offPropsEnumerability(this, ['__encode', '__decode']);
         }
 
         public unwrap(): U {

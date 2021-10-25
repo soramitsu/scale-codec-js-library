@@ -94,7 +94,7 @@ export function createStructBuilder<T>(
 
     for (const [field, builder] of schema) {
         order.push(field);
-        decoders[field] = (bytes: Uint8Array) => builder().fromBytesRaw(bytes) as any;
+        decoders[field] = (bytes: Uint8Array) => builder().decodeRaw(bytes) as any;
     }
 
     return createScaleBuilder(
@@ -158,7 +158,7 @@ export function createEnumBuilder<T extends Enum<any>>(
         encoders[name] = { d: dis, encode: codec && scaleInstanceEncode };
         decoders[dis] = {
             v: name,
-            decode: codec && ((b) => codec().fromBytesRaw(b)),
+            decode: codec && ((b) => codec().decodeRaw(b)),
         };
     }
 
@@ -195,7 +195,7 @@ export function createArrayBuilder<T extends ScaleInstance<any>[]>(
     return createScaleBuilder(
         name,
         (v) => encodeArray(v, scaleInstanceEncode, len),
-        (b) => decodeArray(b, (x) => builder().fromBytesRaw(x), len) as any,
+        (b) => decodeArray(b, (x) => builder().decodeRaw(x), len) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(builder),
     );
@@ -208,7 +208,7 @@ export function createVecBuilder<T extends ScaleInstance<any>[]>(
     return createScaleBuilder(
         name,
         (v) => encodeVec(v, scaleInstanceEncode),
-        (b) => decodeVec(b, (x) => builder().fromBytesRaw(x)) as any,
+        (b) => decodeVec(b, (x) => builder().decodeRaw(x)) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(builder),
     );
@@ -233,7 +233,7 @@ export function createSetBuilder<T extends Set<ScaleInstance<any>>>(
     return createScaleBuilder(
         name,
         (value) => encodeSet(value, scaleInstanceEncode),
-        (bytes) => decodeSet(bytes, (part) => builder().fromBytesRaw(part)) as any,
+        (bytes) => decodeSet(bytes, (part) => builder().decodeRaw(part)) as any,
         unwrapScaleSet as any,
         createScaleSetWrapper(builder),
     );
@@ -273,8 +273,8 @@ export function createMapBuilder<T extends Map<ScaleInstance<any>, ScaleInstance
         (bytes) =>
             decodeMap(
                 bytes,
-                (part) => key().fromBytesRaw(part),
-                (part) => value().fromBytesRaw(part),
+                (part) => key().decodeRaw(part),
+                (part) => value().decodeRaw(part),
             ) as any,
         unwrapScaleMap as any,
         createScaleMapWrapper(key, value),
@@ -285,7 +285,7 @@ export function createAliasBuilder<T, U>(name: string, to: BuilderFn<T, U>): Sca
     return createScaleBuilder(
         name,
         (value) => to().fromValue(value).bytes,
-        (bytes) => mapDecodeResult(to().fromBytesRaw(bytes), (x) => x.value),
+        (bytes) => mapDecodeResult(to().decodeRaw(bytes), (x) => x.value),
         (value) => to().fromValue(value.value).unwrap(),
         (unwrapped) => to().wrap(unwrapped).value,
     );
@@ -315,7 +315,7 @@ export function createTupleBuilder<T extends ScaleInstance<any>[]>(
 ): ScaleBuilder<T, UnwrapScaleTuple<T>> {
     const encoders: TupleEncoders<T> = [...yieldNTimes(scaleInstanceEncode, builders.length)] as any;
 
-    const decoders: TupleDecoders<T> = builders.map((x) => (part: Uint8Array) => x().fromBytesRaw(part)) as any;
+    const decoders: TupleDecoders<T> = builders.map((x) => (part: Uint8Array) => x().decodeRaw(part)) as any;
 
     return createScaleBuilder(
         name,
