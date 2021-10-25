@@ -156,7 +156,7 @@ Output:
 
 <CoreStructResult />
 
-### More example
+### More examples
 
 Todo for:
 
@@ -179,3 +179,7 @@ Todo for:
 ## Also
 
 -   [API](../api/core)
+
+### Why `JSBI` for numbers?
+
+Because it can be easily migrated to the native BigInt in the future with a [special JSBI's Babel plugin](https://github.com/GoogleChromeLabs/babel-plugin-transform-jsbi-to-bigint).

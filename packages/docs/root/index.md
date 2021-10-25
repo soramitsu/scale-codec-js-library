@@ -19,6 +19,6 @@ Current list of packages:
         v-for="i in ['core', 'enum', 'definition-runtime', 'definition-compiler', 'util']"
         :key="i"
     >
-        <code>@scale-codec/{{ i }}</code>
+        <code>@scale-codec/{{ i }}</code> - <img :src="`https://img.shields.io/npm/v/@scale-codec/${i}`" class="relative top-[7px]">
     </li>
 </ul>

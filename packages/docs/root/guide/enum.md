@@ -124,10 +124,10 @@ if (result.is('Ok')) {
 // Use 'match' syntax with `match()`
 const mapped: Option<number> = result.match({
     Ok(num) {
-        return Enum.create('Some', num);
+        return Enum.valuable('Some', num);
     },
     Err() {
-        return Enum.create('None');
+        return Enum.empty('None');
     },
 });
 ```
