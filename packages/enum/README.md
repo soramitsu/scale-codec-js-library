@@ -1,5 +1,5 @@
-# enum
+# enum ![version](https://img.shields.io/npm/v/@scale-codec/enum) ![license](https://img.shields.io/npm/l/@scale-codec/enum)
 
 Lightweight tool for working with Rust-style enums in JavaScript (with TypeScript support).
 
-Please refer to /lib/enum docs for additional documentation.
+Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/enum)!

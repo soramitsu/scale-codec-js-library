@@ -10,7 +10,7 @@
     "bugs": {
         "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
     },
-    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/core#readme",
+    "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
     "main": "src/lib.ts",
     "engines": {
         "node": ">=14.5.0"
@@ -31,10 +31,6 @@
     "files": [
         "dist"
     ],
-    "scripts": {
-        "docs:build": "typedoc --out docs ./src/lib.ts",
-        "docs:serve": "http-server ./docs"
-    },
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.1",
         "@scale-codec/util": "workspace:^0.1.1",
@@ -42,8 +38,6 @@
     },
     "devDependencies": {
         "hada": "^0.0.8",
-        "http-server": "^13.0.2",
-        "type-fest": "^2.3.4",
-        "typedoc": "^0.22.5"
+        "type-fest": "^2.3.4"
     }
 }
