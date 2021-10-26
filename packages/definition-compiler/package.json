@@ -2,7 +2,13 @@
     "name": "@scale-codec/definition-compiler",
     "version": "0.3.0",
     "description": "SCALE-codec types namespace definition compiler",
-    "keywords": ["scale-codec", "typescript", "compiler", "namespace"],
+    "keywords": [
+        "SCALE",
+        "scale-codec",
+        "typescript",
+        "compiler",
+        "namespace"
+    ],
     "license": "Apache-2.0",
     "repository": {
         "type": "git",

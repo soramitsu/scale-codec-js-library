@@ -26,7 +26,7 @@ async function clean() {
 }
 
 async function cleanCompilerSamples() {
-    await del(path.resolve(ROOT, ('packages/definition-compiler/tests/samples'))) 
+    await del(path.resolve(ROOT, 'packages/definition-compiler/tests/samples'));
 }
 
 async function buildDeclarationsOnly() {
@@ -82,12 +82,13 @@ async function rollup() {
     await $`pnpx rollup -c`;
 }
 
-function unitTests() {
+function testUnit() {
     return $`pnpm test:unit`;
 }
 
-function lint() {
-    return $`pnpm lint`;
+function lintCheck() {
+    // only checking eslint, because prettier curses *.vue files edited by eslint
+    return $`pnpm lint:eslint-check`;
 }
 
 function typeCheck() {
@@ -137,7 +138,12 @@ export const extractAndDocumentApis = series(extractApis, documentApis);
 
 export const build = series(clean, buildDeclarationsOnly, extractApis, parallel(rollup, documentApis));
 
-export const checkCodeIntegrity = series(parallel(unitTests, lint, typeCheck), build, testE2e);
+export const checkCodeIntegrity = series(
+    compileCompilerSamples,
+    parallel(testUnit, lintCheck, typeCheck),
+    build,
+    testE2e,
+);
 
 export const buildDeclarations = series(clean, buildDeclarationsOnly);
 
@@ -149,5 +155,5 @@ export {
     extractApisLocalBuild,
     compileDocsNamespace,
     compileCompilerSamples,
-    cleanCompilerSamples
+    cleanCompilerSamples,
 };

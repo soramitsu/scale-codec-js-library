@@ -1,1 +1,12 @@
 packages/definition-compiler/tests/samples
+.declaration
+pnpm-lock.yaml
+api-extractor/
+CHANGELOG.md
+dist
+packages/rust-ints
+e2e-spa/runtime-rollup
+e2e-spa/src/namespace.ts
+packages/docs/root/api
+namespace-schema-compiled.ts
+
