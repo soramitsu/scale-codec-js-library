@@ -8,8 +8,8 @@ import {
     decodeBool,
     encodeBigInt,
     decodeBigInt,
-    encodeStrCompact,
-    decodeStrCompact,
+    encodeStr,
+    decodeStr,
     BigIntCodecOptions,
 } from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
@@ -139,8 +139,8 @@ b8 20 d0 bc d0 b8 d1 80 30 e4 b8 89 e5 9b bd e6 bc 94 e4 b9 89 bc d8 a3 d9 8e d9
 d9 81 20 d9 84 d9 8e d9 8a d9 92 d9 84 d9 8e d8 a9 20 d9 88 d9 8e d9 84 d9 8e d9 8a d9 92 \
 d9 84 d9 8e d8 a9 e2 80 8e`;
 
-        const encode = (v: string) => encodeStrCompact(v);
-        const decode = (b: Uint8Array) => decodeStrCompact(b);
+        const encode = (v: string) => encodeStr(v);
+        const decode = (b: Uint8Array) => decodeStr(b);
 
         const encoded = encodeVec(strings, encode);
         expect(hexifyBytes(encoded)).toEqual(hex);
@@ -226,7 +226,7 @@ describe('Tuple', () => {
     it('tuple (u64, String, Vec<i8>, (i32, i32), bool) encoded as expected', () => {
         type Codec<T> = [(v: T) => Uint8Array, (b: Uint8Array) => [T, number]];
 
-        const strCodec: Codec<string> = [encodeStrCompact, decodeStrCompact];
+        const strCodec: Codec<string> = [encodeStr, decodeStr];
         const i32Codec: Codec<JSBI> = [
             (n) => encodeBigInt(n, { bits: 32, signed: true, endianness: 'le' }),
             (b) => decodeBigInt(b, { bits: 32, signed: true, endianness: 'le' }),
@@ -279,7 +279,7 @@ describe('Struct', () => {
 
         it('encode', () => {
             const encoders = {
-                foo: encodeStrCompact,
+                foo: encodeStr,
                 bar: (v: JSBI) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' }),
             };
 
@@ -290,7 +290,7 @@ describe('Struct', () => {
 
         it('decode', () => {
             const decoders: { [K in keyof typeof STRUCT]: Decode<typeof STRUCT[K]> } = {
-                foo: decodeStrCompact,
+                foo: decodeStr,
                 bar: (buff: Uint8Array) => decodeBigInt(buff, { bits: 32, signed: true, endianness: 'le' }),
             };
 
@@ -333,15 +333,13 @@ describe('Map', () => {
 
         it('encode', () => {
             expect(
-                encodeMap(map, encodeStrCompact, (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
+                encodeMap(map, encodeStr, (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
             ).toEqual(encoded);
         });
 
         it('decode', () => {
             expect(
-                decodeMap(encoded, decodeStrCompact, (v) =>
-                    decodeBigInt(v, { bits: 32, signed: true, endianness: 'le' }),
-                ),
+                decodeMap(encoded, decodeStr, (v) => decodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
             ).toEqual([map, encoded.length]);
         });
     });
@@ -440,8 +438,8 @@ describe('Set', () => {
                 8, 12, 111, 110, 101, 72, 194, 169, 226, 136, 134, 203, 153, 194, 169, 226, 136, 171, 226, 136, 171,
                 226, 136, 171,
             ],
-            encode: encodeStrCompact,
-            decode: decodeStrCompact,
+            encode: encodeStr,
+            decode: decodeStr,
         }),
     ])('encode/decode set of $js', ({ js, bytes, encode, decode }: TestCase<unknown>) => {
         const set = new Set(js);

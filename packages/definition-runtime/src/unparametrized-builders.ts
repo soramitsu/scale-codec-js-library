@@ -2,12 +2,12 @@ import {
     AllowedBits,
     decodeBool,
     decodeCompact,
-    decodeStrCompact,
+    decodeStr,
     decodeUint8Vec,
     decodeVoid,
     encodeBool,
     encodeCompact,
-    encodeStrCompact,
+    encodeStr,
     encodeUint8Vec,
     encodeVoid,
     JSBI,
@@ -26,7 +26,7 @@ function* createBigIntBuilders(): Generator<ScaleBuilder<JSBI>> {
 // fixme separate for tree-shaking
 export const [U8, U16, U32, U64, U128, I8, I16, I32, I64, I128] = createBigIntBuilders();
 
-export const Str = createScaleBuilder<string>('Str', encodeStrCompact, decodeStrCompact);
+export const Str = createScaleBuilder<string>('Str', encodeStr, decodeStr);
 
 export const Bool = createScaleBuilder<boolean>('Bool', encodeBool, decodeBool);
 

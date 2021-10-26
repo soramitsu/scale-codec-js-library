@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { encodeStruct, JSBI, encodeStrCompact, encodeBigInt } from '@scale-codec/core';
+import { encodeStruct, JSBI, encodeStr, encodeBigInt } from '@scale-codec/core';
 import { hexifyBytes } from '@scale-codec/util';
 
 interface Message {
@@ -15,7 +15,7 @@ const msg: Message = {
 const msgEncoded = encodeStruct(
     msg,
     {
-        author: encodeStrCompact,
+        author: encodeStr,
         timestamp: (v) =>
             encodeBigInt(v, {
                 bits: 128,

@@ -2,7 +2,7 @@ import {
     encodeStruct,
     encodeUint8Vec,
     encodeCompact,
-    encodeStrCompact,
+    encodeStr,
     JSBI,
     InstanceViaBuilder,
     Str,
@@ -47,7 +47,7 @@ function encodeRaw(value: Raw): Uint8Array {
         {
             A: encodeUint8Vec,
             a: encodeCompact,
-            b: encodeStrCompact,
+            b: encodeStr,
         },
         ['b', 'a', 'A'],
     );

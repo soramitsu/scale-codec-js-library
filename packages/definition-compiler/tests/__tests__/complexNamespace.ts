@@ -6,7 +6,7 @@ import {
     JSBI,
     Enum,
     encodeMap,
-    encodeStrCompact,
+    encodeStr,
     encodeBigInt,
     Encode,
     encodeStruct,
@@ -51,7 +51,7 @@ type RawMsgEnum = Enum<{ Quit: null; Greeting: Valuable<string> }>;
 const encodeMsgEnum: Encode<RawMsgEnum> = (value) =>
     encodeEnum(value, {
         Quit: { d: 0 },
-        Greeting: { d: 1, encode: encodeStrCompact },
+        Greeting: { d: 1, encode: encodeStr },
     });
 
 const encodeOption: Encode<Option<RawMsgEnum>> = (val) =>
@@ -61,12 +61,12 @@ test.each([
     defineCaseWrapped(
         MapStrU8,
         new Map([[Str.fromValue('Hey'), U8.fromValue(JSBI.BigInt(56))]]),
-        encodeMap(new Map([['Hey', JSBI.BigInt(56)]]), encodeStrCompact, encodeU8),
+        encodeMap(new Map([['Hey', JSBI.BigInt(56)]]), encodeStr, encodeU8),
     ),
     defineCaseWrapped(
         Character,
         { name: Str.fromValue('Alice') },
-        encodeStruct({ name: 'Alice' }, { name: encodeStrCompact }, ['name']),
+        encodeStruct({ name: 'Alice' }, { name: encodeStr }, ['name']),
     ),
     defineCaseWrapped(SetU8, new Set(), encodeSetU8(new Set())),
     defineCaseWrapped(
@@ -76,7 +76,7 @@ test.each([
     ),
     defineCaseWrapped(Msg, Enum.empty('Quit'), encodeMsgEnum(Enum.empty('Quit'))),
     defineCaseWrapped(VecBool, [Bool.fromValue(false)], encodeVec([false], encodeBool)),
-    defineCaseWrapped(StrAlias, 'wow', encodeStrCompact('wow')),
+    defineCaseWrapped(StrAlias, 'wow', encodeStr('wow')),
     defineCaseWrapped(OptionMsg, Enum.empty('None'), encodeOption(Enum.empty('None'))),
 ])('Encode/decode hand-constructed data with %p: %p', (builder, val, expectedBytes) => {
     const instance = builder.fromValue(val as any);

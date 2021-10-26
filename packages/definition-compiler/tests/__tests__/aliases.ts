@@ -1,5 +1,5 @@
 import { A, B, C } from '../samples/aliases';
-import { encodeStrCompact, encodeTuple, InnerValue, JSBI, U8 } from '@scale-codec/definition-runtime';
+import { encodeStr, JSBI, U8 } from '@scale-codec/definition-runtime';
 
 test('A->B alias encodes as B', () => {
     const str = 'Koora';
@@ -8,7 +8,7 @@ test('A->B alias encodes as B', () => {
 
 test('B->Str alias encodes as standalone string', () => {
     const str = 'Torii';
-    expect(encodeStrCompact(str)).toEqual(B.fromValue(str).bytes);
+    expect(encodeStr(str)).toEqual(B.fromValue(str).bytes);
 });
 
 test('C (tuple with inner alias) decodes ok', () => {

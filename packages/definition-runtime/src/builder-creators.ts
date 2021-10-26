@@ -32,9 +32,9 @@ import {
     Option,
     Result,
     Valuable,
+    mapDecodeResult,
 } from '@scale-codec/core';
 import { mapGetUnwrap, yieldNTimes } from '@scale-codec/util';
-import { mapDecodeResult } from './util';
 import { createScaleBuilder, ScaleBuilder, ScaleBuilderWrapper, ScaleInstance, UnwrapScale } from './instance';
 
 export type BuilderFn<T, U = T> = () => ScaleBuilder<T, U>;

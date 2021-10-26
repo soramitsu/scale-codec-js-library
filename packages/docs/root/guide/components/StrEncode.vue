@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { hexifyBytes } from '@scale-codec/util';
-import { encodeStrCompact } from '@scale-codec/core';
+import { encodeStr } from '@scale-codec/core';
 import { computed } from 'vue';
 
 const props = defineProps<{
     val: string;
 }>();
 
-const result = computed(() => hexifyBytes(encodeStrCompact(props.val)));
+const result = computed(() => hexifyBytes(encodeStr(props.val)));
 </script>
 
 <template>
