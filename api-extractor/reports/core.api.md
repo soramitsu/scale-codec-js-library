@@ -53,10 +53,10 @@ export type DecodeResult<T> = [value: T, decodedBytes: number];
 export function decodeSet<T>(bytes: Uint8Array, entryDecoder: Decode<T>): DecodeResult<Set<T>>;
 
 // @public
-export function decodeStr(bytes: Uint8Array): string;
+export function decodeStr(bytes: Uint8Array): DecodeResult<string>;
 
 // @public
-export function decodeStrCompact(buff: Uint8Array): DecodeResult<string>;
+export function decodeStrRaw(bytes: Uint8Array): string;
 
 // @public (undocumented)
 export function decodeStruct<T extends {}>(bytes: Uint8Array, decoders: StructDecoders<T>, order: (keyof T & string)[]): DecodeResult<T>;
@@ -81,15 +81,6 @@ export type Encode<T> = (value: T) => Uint8Array;
 
 // @public
 export function encodeArray<T>(items: T[], itemEncoder: Encode<T>, len: number): Uint8Array;
-
-// @public
-export type EncodeAsIs = {
-    readonly [EncodeAsIsBrand]: true;
-    readonly bytes: Uint8Array;
-};
-
-// @public
-export function encodeAsIs(bytes: Uint8Array): EncodeAsIs;
 
 // @public (undocumented)
 export function encodeBigInt(value: JSBI_2, { bits, signed, endianness }: BigIntCodecOptions): Uint8Array;
@@ -116,7 +107,7 @@ export function encodeSet<T>(set: Set<T>, entryEncoder: Encode<T>): Uint8Array;
 export function encodeStr(str: string): Uint8Array;
 
 // @public
-export function encodeStrCompact(str: string): Uint8Array;
+export function encodeStrRaw(str: string): Uint8Array;
 
 // @public (undocumented)
 export function encodeStruct<T extends {}>(struct: T, encoders: StructEncoders<T>, order: (keyof T & string)[]): Uint8Array;
@@ -158,16 +149,10 @@ export type EnumSchemaDef<Def> = {
     };
 };
 
-// @public
-export function isEncodeAsIsWrapper(val: unknown): val is EncodeAsIs;
-
 export { JSBI }
 
-// @public
-export function makeEncoderAsIsRespectable<T>(encode: Encode<T>): Encode<T | EncodeAsIs>;
-
-// @public
-export function respectEncodeAsIs<T>(val: T | EncodeAsIs, encode: Encode<T>): Uint8Array;
+// @public (undocumented)
+export function mapDecodeResult<T, U>([value, len]: DecodeResult<T>, mapFn: (value: T) => U): DecodeResult<U>;
 
 // @public (undocumented)
 export type StructDecoders<T> = {
