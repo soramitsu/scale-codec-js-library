@@ -2,23 +2,25 @@ import { $, chalk, path, cd } from 'zx';
 import del from 'del';
 import { series, parallel } from 'gulp';
 import consola from 'consola';
-import pathExists from 'path-exists';
 import { ExtractorConfig, Extractor } from '@microsoft/api-extractor';
 import compileDocsNamespace from './scripts/compile-docs-namespace';
 import compileCompilerSamples from './scripts/compile-compiler-samples';
+import bundle from './scripts/bundle';
+import bundleForE2e from './scripts/bundle-for-e2e';
 
 const ROOT = __dirname;
 
-const PUBLISH_PACKAGES = ['enum', 'util', 'core', 'definition-compiler', 'definition-runtime'];
-const DECLARATION_PACKAGES = [...PUBLISH_PACKAGES];
+const BUILD_PACKAGES = ['enum', 'util', 'core', 'definition-compiler', 'definition-runtime'];
+// const DECLARATION_PACKAGES = [...BUILD_PACKAGES];
 
 async function clean() {
     await del(
         [
+            'dist',
+            'dist-tsc',
             'packages/*/dist',
+            'packages/*/dist-tsc',
             'packages/docs/root/api',
-            'packages/*/.declaration',
-            '.declaration',
             'api-extractor/temp',
             'e2e-spa/runtime-rollup',
         ].map((x) => path.resolve(ROOT, x)),
@@ -29,14 +31,16 @@ async function cleanCompilerSamples() {
     await del(path.resolve(ROOT, 'packages/definition-compiler/tests/samples'));
 }
 
-async function buildDeclarationsOnly() {
-    const overallDeclarationDir = path.resolve(ROOT, '.declaration');
-    await $`pnpx tsc -p ./ --emitDeclarationOnly --declaration --declarationDir ${overallDeclarationDir}`;
+async function buildTS() {
+    // Main TypeScript build into root `dist` dir
+    await $`pnpm tsc --emitDeclarationOnly`;
 
+    // Copying compiled internals into each package's own `dist` dir
     await Promise.all(
-        DECLARATION_PACKAGES.map(async (pkg) => {
-            const outDir = path.resolve(ROOT, 'packages', pkg, '.declaration');
-            await $`cp -r ${path.join(overallDeclarationDir, pkg, 'src')} ${outDir}`;
+        BUILD_PACKAGES.map(async (unscopedName) => {
+            const dirFrom = path.resolve(ROOT, 'dist-tsc', unscopedName, 'src');
+            const dirTo = path.resolve(ROOT, 'packages', unscopedName, 'dist-tsc');
+            await $`cp -r ${dirFrom} ${dirTo}`;
         }),
     );
 }
@@ -60,7 +64,7 @@ async function extractPackageApis(unscopedPackageName: string, localBuild = fals
 }
 
 async function extractApisParametrized(localBuild = false) {
-    await Promise.all(DECLARATION_PACKAGES.map((x) => extractPackageApis(x, localBuild)));
+    await Promise.all(BUILD_PACKAGES.map((x) => extractPackageApis(x, localBuild)));
 }
 
 function extractApisLocalBuild() {
@@ -78,10 +82,6 @@ async function documentApis() {
     await $`pnpx api-documenter markdown -i api-extractor/temp -o packages/docs/root/api`;
 }
 
-async function rollup() {
-    await $`pnpx rollup -c`;
-}
-
 function testUnit() {
     return $`pnpm test:unit`;
 }
@@ -96,7 +96,7 @@ function typeCheck() {
 }
 
 async function publishAll() {
-    for (const pkg of PUBLISH_PACKAGES) {
+    for (const pkg of BUILD_PACKAGES) {
         const pkgFullName = `@scale-codec/${pkg}`;
 
         consola.info(chalk`Publishing {blue.bold ${pkgFullName}}`);
@@ -109,34 +109,17 @@ async function publishAll() {
     consola.info('Done');
 }
 
-async function arePackagesBuilt(): Promise<boolean> {
-    const existense = await Promise.all(
-        ['enum', 'core', 'definition-compiler', 'definition-runtime', 'util']
-            .map((x) => path.join(ROOT, 'packages', x, 'dist'))
-            .map((x) => pathExists(x)),
-    );
-
-    return existense.every((x) => !!x);
-}
-
-async function checkBuild() {
-    if (!(await arePackagesBuilt())) {
-        consola.warn(chalk`Run {bold.blue pnpm build} in the root of workspace before running e2e test`);
-        process.exit(1);
-    }
-}
-
 async function runTestInE2eSpa() {
     cd(path.resolve(ROOT, './e2e-spa'));
     await $`pnpm test`;
     cd(__dirname);
 }
 
-export const testE2e = series(checkBuild, runTestInE2eSpa);
+export const testE2e = series(bundleForE2e, runTestInE2eSpa);
 
 export const extractAndDocumentApis = series(extractApis, documentApis);
 
-export const build = series(clean, buildDeclarationsOnly, extractApis, parallel(rollup, documentApis));
+export const build = series(clean, buildTS, extractApis, parallel(bundle, documentApis));
 
 export const checkCodeIntegrity = series(
     compileCompilerSamples,
@@ -145,7 +128,7 @@ export const checkCodeIntegrity = series(
     testE2e,
 );
 
-export const buildDeclarations = series(clean, buildDeclarationsOnly);
+export const buildDeclarations = series(clean, buildTS);
 
 export {
     clean,
@@ -156,4 +139,7 @@ export {
     compileDocsNamespace,
     compileCompilerSamples,
     cleanCompilerSamples,
+    buildTS,
+    bundle,
+    bundleForE2e,
 };

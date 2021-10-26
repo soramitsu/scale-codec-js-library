@@ -4,11 +4,8 @@
         "module": "esnext",
         "lib": ["esnext", "DOM"],
         "esModuleInterop": true,
-        // "declaration": true,
-        // "removeComments": false,
-        // "stripInternal": true,
-        // since 2.3
-        // "strict": true,
+        "outDir": "dist-tsc",
+        "declaration": true,
         "alwaysStrict": true,
         "noImplicitAny": true,
         "noImplicitThis": true,
