@@ -18,12 +18,15 @@ async function clean() {
             'packages/*/dist',
             'packages/docs/root/api',
             'packages/*/.declaration',
-            'packages/definition-compiler/tests/samples',
             '.declaration',
             'api-extractor/temp',
             'e2e-spa/runtime-rollup',
         ].map((x) => path.resolve(ROOT, x)),
     );
+}
+
+async function cleanCompilerSamples() {
+    await del(path.resolve(ROOT, ('packages/definition-compiler/tests/samples'))) 
 }
 
 async function buildDeclarationsOnly() {
@@ -146,4 +149,5 @@ export {
     extractApisLocalBuild,
     compileDocsNamespace,
     compileCompilerSamples,
+    cleanCompilerSamples
 };
