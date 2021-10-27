@@ -26,6 +26,12 @@ enum BaseType {
     Valuable = 'Valuable',
     Option = 'Option',
     Result = 'Result',
+    ScaleSetBuilder = 'ScaleSetBuilder',
+    ScaleMapBuilder = 'ScaleMapBuilder',
+    ScaleArrayBuilder = 'ScaleArrayBuilder',
+    ScaleStructBuilder = 'ScaleStructBuilder',
+    ScaleEnumBuilder = 'ScaleEnumBuilder',
+    ScaleTupleBuilder = 'ScaleTupleBuilder',
 }
 
 // =========
@@ -76,11 +82,11 @@ const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<
 
 // =========
 
-function renderBuilder(props: { valueTy: string | null; createHelper: string; createHelperArgs: string }): string {
+function renderBuilder(props: { builderTy: string | null; createFn: string; createArgs: string }): string {
     const ty = useCurrentTyName();
-    const helperGeneric = props.valueTy ? `<${props.valueTy}>` : '';
+    const tyDeclaration = props.builderTy ? `: ${props.builderTy}` : '';
 
-    return `export var ${ty} = ${touchImport(props.createHelper)}${helperGeneric}('${ty}', ${props.createHelperArgs})`;
+    return `export const ${ty}${tyDeclaration} = ${touchImport(props.createFn)}('${ty}', ${props.createArgs})`;
 }
 
 function touchRef(ref: string): string {
@@ -99,10 +105,10 @@ function touchBase(ty: BaseType): string {
 }
 
 /**
- * ref -> `() => ${ref}`
+ * ref -> `dynBuilder(() => ${ref})` (with touches)
  */
-function refFn(ref: string): string {
-    return `() => ${touchRef(ref)}`;
+function refDynBuilder(ref: string): string {
+    return `${touchImport('dynBuilder')}(() => ${touchRef(ref)})`;
 }
 
 function linesJoin(lines: string[], joiner = '\n\n'): string {
@@ -113,11 +119,9 @@ function linesJoin(lines: string[], joiner = '\n\n'): string {
 
 function renderAlias(to: string): string {
     return renderBuilder({
-        valueTy: [BaseType.InnerValue, BaseType.UnwrappedValue]
-            .map((x) => `${touchBase(x)}<typeof ${touchRef(to)}>`)
-            .join(', '),
-        createHelper: 'createAliasBuilder',
-        createHelperArgs: refFn(to),
+        builderTy: `typeof ${touchRef(to)}`,
+        createFn: 'createAliasBuilder',
+        createArgs: refDynBuilder(to),
     });
 }
 
@@ -129,9 +133,9 @@ function renderVoidAlias(): string {
 
 function renderVec(item: string): string {
     return renderBuilder({
-        valueTy: `${instanceViaBuilder(item)}[]`,
-        createHelper: 'createVecBuilder',
-        createHelperArgs: refFn(item),
+        builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
+        createFn: 'createVecBuilder',
+        createArgs: refDynBuilder(item),
     });
 }
 
@@ -142,13 +146,13 @@ function renderStruct(fields: DefStructField[]): string {
 
     const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${instanceViaBuilder(x.ref)}`);
 
-    const schemaItems = fields.map((x) => `['${x.name}', ${refFn(x.ref)}]`);
+    const schemaItems = fields.map((x) => `['${x.name}', ${refDynBuilder(x.ref)}]`);
     const schema = `[${schemaItems.join(', ')}]`;
 
     return renderBuilder({
-        valueTy: `{\n    ${valueTypeFields.join(',\n    ')}\n}`,
-        createHelper: 'createStructBuilder',
-        createHelperArgs: `${schema}`,
+        builderTy: `${touchBase(BaseType.ScaleStructBuilder)}<{\n    ${valueTypeFields.join(',\n    ')}\n}>`,
+        createFn: 'createStructBuilder',
+        createArgs: `${schema}`,
     });
 }
 
@@ -161,12 +165,12 @@ function renderTuple(refs: string[]): string {
     if (rollupSingleTuples && refs.length === 1) return renderAlias(refs[0]);
 
     const valueEntries: string[] = refs.map(instanceViaBuilder);
-    const codecs: string[] = refs.map(refFn);
+    const codecs: string[] = refs.map(refDynBuilder);
 
     return renderBuilder({
-        valueTy: `[\n    ${valueEntries.join(',\n    ')}\n]`,
-        createHelper: 'createTupleBuilder',
-        createHelperArgs: `[${codecs.join(', ')}]`,
+        builderTy: `${touchBase(BaseType.ScaleTupleBuilder)}<[\n    ${valueEntries.join(',\n    ')}\n]>`,
+        createFn: 'createTupleBuilder',
+        createArgs: `[${codecs.join(', ')}]`,
     });
 }
 
@@ -178,62 +182,68 @@ function renderEnum(variants: DefEnumVariant[]): string {
 
     const schemaLines: string[] = variants.map((x) => {
         const items = [x.discriminant, `'${x.name}'`];
-        x.ref && items.push(refFn(x.ref));
+        x.ref && items.push(refDynBuilder(x.ref));
         return `[${items.join(', ')}]`;
     });
 
     return renderBuilder({
-        valueTy: `${touchBase(BaseType.Enum)}<{\n    ${definitionTyLines.join(',\n    ')}\n}>`,
-        createHelper: 'createEnumBuilder',
-        createHelperArgs: `[${schemaLines.join(', ')}]`,
+        builderTy: `${touchBase(BaseType.ScaleEnumBuilder)}<${touchBase(BaseType.Enum)}<{\n    ${definitionTyLines.join(
+            ',\n    ',
+        )}\n}>>`,
+        createFn: 'createEnumBuilder',
+        createArgs: `[${schemaLines.join(', ')}]`,
     });
 }
 
 function renderSet(item: string): string {
     return renderBuilder({
-        valueTy: `Set<${instanceViaBuilder(item)}>`,
-        createHelper: 'createSetBuilder',
-        createHelperArgs: refFn(item),
+        builderTy: `${touchBase(BaseType.ScaleSetBuilder)}<Set<${instanceViaBuilder(item)}>>`,
+        createFn: 'createSetBuilder',
+        createArgs: refDynBuilder(item),
     });
 }
 
 function renderMap(key: string, value: string): string {
     return renderBuilder({
-        valueTy: `Map<${instanceViaBuilder(key)}, ${instanceViaBuilder(value)}>`,
-        createHelper: 'createMapBuilder',
-        createHelperArgs: [key, value].map(refFn).join(', '),
+        builderTy: `${touchBase(BaseType.ScaleMapBuilder)}<Map<${[key, value].map(instanceViaBuilder).join(', ')}>>`,
+        createFn: 'createMapBuilder',
+        createArgs: [key, value].map(refDynBuilder).join(', '),
     });
 }
 
 function renderArray(item: string, len: number): string {
     return renderBuilder({
-        valueTy: `${instanceViaBuilder(item)}[]`,
-        createHelper: `createArrayBuilder`,
-        createHelperArgs: `${refFn(item)}, ${len}`,
+        builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
+        createFn: `createArrayBuilder`,
+        createArgs: `${refDynBuilder(item)}, ${len}`,
     });
 }
 
 function renderBytesArray(len: number): string {
     return renderBuilder({
-        valueTy: null,
-        createHelper: 'createBytesArrayBuilder',
-        createHelperArgs: `${len}`,
+        builderTy: null,
+        createFn: 'createBytesArrayBuilder',
+        createArgs: `${len}`,
     });
 }
 
 function renderOption(some: string): string {
     return renderBuilder({
-        valueTy: `${touchBase(BaseType.Option)}<${instanceViaBuilder(some)}>`,
-        createHelper: 'createOptionBuilder',
-        createHelperArgs: refFn(some),
+        builderTy: `${touchBase(BaseType.ScaleEnumBuilder)}<${touchBase(BaseType.Option)}<${instanceViaBuilder(
+            some,
+        )}>>`,
+        createFn: 'createOptionBuilder',
+        createArgs: refDynBuilder(some),
     });
 }
 
 function renderResult(ok: string, err: string): string {
     return renderBuilder({
-        valueTy: `${touchBase(BaseType.Result)}<${instanceViaBuilder(ok)}, ${instanceViaBuilder(err)}>`,
-        createHelper: 'createResultBuilder',
-        createHelperArgs: [ok, err].map(refFn).join(', '),
+        builderTy: `${touchBase(BaseType.ScaleEnumBuilder)}<${touchBase(BaseType.Result)}<${[ok, err]
+            .map(instanceViaBuilder)
+            .join(', ')}>>`,
+        createFn: 'createResultBuilder',
+        createArgs: [ok, err].map(refDynBuilder).join(', '),
     });
 }
 

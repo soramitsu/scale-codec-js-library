@@ -91,7 +91,7 @@ describe('Within TupleBool', () => {
 test('Alias decoding is lazy', () => {
     const decodeBoolSpy = jest.fn(decodeBool);
     const Bool = createScaleBuilder<boolean>('Bool', encodeBool, decodeBoolSpy);
-    const BoolAlias = createAliasBuilder<boolean, boolean>('BoolAlias', () => Bool);
+    const BoolAlias = createAliasBuilder<boolean, boolean>('BoolAlias', Bool);
 
     const item = BoolAlias.fromBytes(new Uint8Array([1]));
 

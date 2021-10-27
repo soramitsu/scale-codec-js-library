@@ -1,27 +1,27 @@
-import { Enum, InstanceViaBuilder, Str, U32, U8, Valuable, createArrayBuilder, createEnumBuilder, createMapBuilder, createStructBuilder, createTupleBuilder, createVecBuilder } from '@scale-codec/definition-runtime'
+import { Enum, InstanceViaBuilder, ScaleArrayBuilder, ScaleEnumBuilder, ScaleMapBuilder, ScaleStructBuilder, ScaleTupleBuilder, Str, U32, U8, Valuable, createArrayBuilder, createEnumBuilder, createMapBuilder, createStructBuilder, createTupleBuilder, createVecBuilder, dynBuilder } from '@scale-codec/definition-runtime'
 
-export var Array_u8_32 = createArrayBuilder<InstanceViaBuilder<typeof U8>[]>('Array_u8_32', () => U8, 32)
+export const Array_u8_32: ScaleArrayBuilder<InstanceViaBuilder<typeof U8>[]> = createArrayBuilder('Array_u8_32', dynBuilder(() => U8), 32)
 
-export var Passport = createTupleBuilder<[
+export const Passport: ScaleTupleBuilder<[
     InstanceViaBuilder<typeof U32>,
     InstanceViaBuilder<typeof U32>
-]>('Passport', [() => U32, () => U32])
+]> = createTupleBuilder('Passport', [dynBuilder(() => U32), dynBuilder(() => U32)])
 
-export var Person = createStructBuilder<{
+export const Person: ScaleStructBuilder<{
     name: InstanceViaBuilder<typeof Str>,
     age: InstanceViaBuilder<typeof U8>,
     document: InstanceViaBuilder<typeof PersonDocument>
-}>('Person', [['name', () => Str], ['age', () => U8], ['document', () => PersonDocument]])
+}> = createStructBuilder('Person', [['name', dynBuilder(() => Str)], ['age', dynBuilder(() => U8)], ['document', dynBuilder(() => PersonDocument)]])
 
-export var PersonDocument = createEnumBuilder<Enum<{
+export const PersonDocument: ScaleEnumBuilder<Enum<{
     Id: Valuable<InstanceViaBuilder<typeof U8>>,
     Passport: Valuable<InstanceViaBuilder<typeof Passport>>
-}>>('PersonDocument', [[0, 'Id', () => U8], [1, 'Passport', () => Passport]])
+}>> = createEnumBuilder('PersonDocument', [[0, 'Id', dynBuilder(() => U8)], [1, 'Passport', dynBuilder(() => Passport)]])
 
-export var PersonsMap = createMapBuilder<Map<InstanceViaBuilder<typeof U8>, InstanceViaBuilder<typeof Person>>>('PersonsMap', () => U8, () => Person)
+export const PersonsMap: ScaleMapBuilder<Map<InstanceViaBuilder<typeof U8>, InstanceViaBuilder<typeof Person>>> = createMapBuilder('PersonsMap', dynBuilder(() => U8), dynBuilder(() => Person))
 
-export var PersonsVec = createVecBuilder<InstanceViaBuilder<typeof Person>[]>('PersonsVec', () => Person)
+export const PersonsVec: ScaleArrayBuilder<InstanceViaBuilder<typeof Person>[]> = createVecBuilder('PersonsVec', dynBuilder(() => Person))
 
-export var PublicKey = createStructBuilder<{
+export const PublicKey: ScaleStructBuilder<{
     payload: InstanceViaBuilder<typeof Array_u8_32>
-}>('PublicKey', [['payload', () => Array_u8_32]])
+}> = createStructBuilder('PublicKey', [['payload', dynBuilder(() => Array_u8_32)]])

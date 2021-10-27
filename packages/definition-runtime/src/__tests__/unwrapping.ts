@@ -1,10 +1,9 @@
-import { Enum, JSBI, Option, Valuable } from '@scale-codec/core';
+import { Enum, JSBI, Valuable } from '@scale-codec/core';
 import {
     createAliasBuilder,
     createArrayBuilder,
     createEnumBuilder,
     createMapBuilder,
-    createOptionBuilder,
     createSetBuilder,
     createStructBuilder,
     createTupleBuilder,
@@ -13,11 +12,11 @@ import {
 import { InnerValue, InstanceViaBuilder, ScaleInstance, UnwrappedValue } from '../instance';
 import { Bool, I128, Str } from '../unparametrized-builders';
 
-const Key = createStructBuilder<{ payload: ScaleInstance<JSBI> }>('Key', [['payload', () => I128]]);
+const Key = createStructBuilder<{ payload: ScaleInstance<JSBI> }>('Key', [['payload', I128]]);
 
 const StructWithKey = createStructBuilder<{
     key: InstanceViaBuilder<typeof Key>;
-}>('', [['key', () => Key]]);
+}>('', [['key', Key]]);
 
 const Msg = createEnumBuilder<
     Enum<{
@@ -26,28 +25,24 @@ const Msg = createEnumBuilder<
     }>
 >('Msg', [
     [0, 'Quit'],
-    [1, 'Greeting', () => Key],
+    [1, 'Greeting', Key],
 ]);
 
-const Bool2 = createArrayBuilder<ScaleInstance<boolean>[]>('Bool2', () => Bool, 2);
+const Bool2 = createArrayBuilder<ScaleInstance<boolean>[]>('Bool2', Bool, 2);
 
-const VecBool = createVecBuilder<ScaleInstance<boolean>[]>('VecBool', () => Bool);
+const VecBool = createVecBuilder<ScaleInstance<boolean>[]>('VecBool', Bool);
 
-const MAP = createMapBuilder<Map<ScaleInstance<boolean>, ScaleInstance<string>>>(
-    'Map',
-    () => Bool,
-    () => Str,
-);
+const MAP = createMapBuilder<Map<ScaleInstance<boolean>, ScaleInstance<string>>>('Map', Bool, Str);
 
-const SET = createSetBuilder<Set<ScaleInstance<string>>>('Set', () => Str);
+const SET = createSetBuilder<Set<ScaleInstance<string>>>('Set', Str);
 
-const TUPLE = createTupleBuilder<[ScaleInstance<boolean>, ScaleInstance<string>]>('Tuple', [() => Bool, () => Str]);
+const TUPLE = createTupleBuilder<[ScaleInstance<boolean>, ScaleInstance<string>]>('Tuple', [Bool, Str]);
 
 type KeyValue = InnerValue<typeof Key>;
 type KeyUnwrapped = UnwrappedValue<typeof Key>;
 
-const AliasA = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasA', () => Key);
-const AliasB = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasB', () => AliasA);
+const AliasA = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasA', Key);
+const AliasB = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasB', AliasA);
 
 describe('Unwrapping', () => {
     test('Unwraps primitive (Str)', () => {
