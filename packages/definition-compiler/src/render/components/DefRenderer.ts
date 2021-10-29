@@ -1,5 +1,5 @@
 import { defineComponent, computed, PropType, compile } from 'vue';
-import { AliasDef, MapDef, TypeDef } from '../../definitions';
+import { DefAlias as DefAliasType, DefMap as DefMapType, TypeDef } from '../../definitions';
 
 import DefVec from './DefVec';
 import DefTuple from './DefTuple';
@@ -60,14 +60,14 @@ export default defineComponent({
 
             if (t === 'map') {
                 return {
-                    keyRef: (rest as MapDef).key,
-                    valueRef: (rest as MapDef).value,
+                    keyRef: (rest as DefMapType).key,
+                    valueRef: (rest as DefMapType).value,
                 };
             }
 
             if (t === 'alias') {
                 return {
-                    typeRef: (rest as AliasDef).ref,
+                    typeRef: (rest as DefAliasType).ref,
                 };
             }
 

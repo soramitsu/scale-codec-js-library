@@ -1,50 +1,36 @@
-import { RollupOptions } from 'rollup';
+import { RollupOptions, defineConfig } from 'rollup';
 import esbuild from 'rollup-plugin-esbuild';
-import dts from 'rollup-plugin-dts';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import json from '@rollup/plugin-json';
-import commonjs from '@rollup/plugin-commonjs';
 
-const packages: {
-    dir: string;
-    external?: string[];
-}[] = [
-    {
-        dir: 'enum',
-    },
-    {
-        dir: 'util',
-    },
-    {
-        dir: 'core',
-        external: ['jsbi', '@scale-codec/enum', '@scale-codec/util'],
-    },
-    {
-        dir: 'definition-compiler',
-        external: ['vue', 'prettier', '@scale-codec/core'],
-    },
-    {
-        dir: 'definition-runtime',
-        external: ['@scale-codec/core'],
-    },
-    // {
-    //     dir: 'namespace',
-    //     external: ['jsbi', '@scale-codec/core', '@scale-codec/util'],
-    // },
-    // {
-    //     dir: 'namespace-codegen',
-    //     external: ['case', '@scale-codec/namespace', '@scale-codec/enum', '@scale-codec/util'],
-    // },
-];
-
-const configs: RollupOptions[] = [];
-
-for (const { dir, external } of packages) {
-    const input = `packages/${dir}/src/lib.ts`;
-    const inputDts = `.declaration/${dir}/src/lib.d.ts`;
-
-    configs.push(
+function* publishConfigs(): Generator<RollupOptions> {
+    const regularPublishRollups: {
+        unscopedPackageName: string;
+        external?: string | RegExp | (string | RegExp)[];
+    }[] = [
         {
+            unscopedPackageName: 'enum',
+        },
+        {
+            unscopedPackageName: 'util',
+        },
+        {
+            unscopedPackageName: 'core',
+            external: ['jsbi', /^@scale-codec\./],
+        },
+        {
+            unscopedPackageName: 'definition-compiler',
+            external: ['vue', 'prettier', '@scale-codec/core'],
+        },
+        {
+            unscopedPackageName: 'definition-runtime',
+            external: ['@scale-codec/core'],
+        },
+    ];
+
+    for (const { unscopedPackageName: dir, external } of regularPublishRollups) {
+        const input = `packages/${dir}/src/lib.ts`;
+
+        yield {
             input,
             output: [
                 {
@@ -63,29 +49,31 @@ for (const { dir, external } of packages) {
                 nodeResolve(),
             ],
             external,
-        },
-        {
-            input: inputDts,
-            output: {
-                file: `packages/${dir}/dist/lib.d.ts`,
-                format: 'es',
-            },
-            plugins: [dts()],
-            external,
-        },
-    );
+        };
+    }
 }
 
-// // codegen cli
+/**
+ * Makes all-in-one `@scale-codec/definition-runtime` rollup without any externals
+ * to test the whole runtime packages chain in e2e-spa
+ */
+function runtimeRollupForTest(): RollupOptions {
+    return {
+        input: 'packages/definition-runtime/src/lib.ts',
+        plugins: [esbuild(), nodeResolve()],
+        output: [
+            {
+                // for testing in Node.js
+                file: 'e2e-spa/runtime-rollup/index.cjs.js',
+                format: 'cjs',
+            },
+            {
+                // for testing in Browser with Vite + Cypress
+                file: 'e2e-spa/runtime-rollup/index.esm.js',
+                format: 'esm',
+            },
+        ],
+    };
+}
 
-// configs.push({
-//     input: 'packages/namespace-codegen-cli/src/main.ts',
-//     output: {
-//         file: 'packages/namespace-codegen-cli/dist/main.js',
-//         format: 'cjs',
-//     },
-//     plugins: [esbuild({ minify: false }), nodeResolve({ preferBuiltins: true }), json(), commonjs()],
-//     external: ['fs/promises'],
-// });
-
-export default configs;
+export default defineConfig([...publishConfigs(), runtimeRollupForTest()]);

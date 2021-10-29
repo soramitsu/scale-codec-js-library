@@ -5,3 +5,6 @@ dist
 .pnpm-store
 report
 .declaration
+.pnpm-debug.log
+tsdoc-metadata.json
+api-extractor/temp

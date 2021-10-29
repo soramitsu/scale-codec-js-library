@@ -91,4 +91,8 @@ describe('int/uint', () => {
         expect(firstResult).toEqual(secondResult);
         expect(firstResult).toEqual([num, 8]);
     });
+
+    test('Encode throws if signed=false, but negative num is passed', () => {
+        expect(() => encodeBigInt(JSBI.BigInt(-12), { signed: false, bits: 8, endianness: 'le' })).toThrow();
+    });
 });
