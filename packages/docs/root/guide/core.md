@@ -71,22 +71,22 @@ for (const num of [1, 34_000, 891_000_000, '24141828384918234']) {
 
 Result:
 
-<div><template v-for="x in [1, 34_000, 891_000_000, '24141828384918234']">{{ x }}: <CompactEncode :num="String(x)" hex /><br></template></div>
+<p><template v-for="x in [1, 34_000, 891_000_000, '24141828384918234']">{{ x }}: <code><CompactEncode :num="String(x)" hex /></code><br></template></p>
 
 [Playground](#compact-playground)
 
 ### Strings
 
 ```ts
-import { encodeStrCompact } from '@scale-codec/core';
+import { encodeStr } from '@scale-codec/core';
 import { hexifyBytes } from '@scale-codec/util';
 
-console.log(hexifyBytes(encodeStrCompact('Лев Николаевич Толстой')));
+console.log(hexifyBytes(encodeStr('Лев Николаевич Толстой')));
 ```
 
 Result:
 
-<StrEncode val="Лев Николаевич Толстой" />
+<code><StrEncode val="Лев Николаевич Толстой" /></code>
 
 ### Other primitives
 
@@ -154,17 +154,70 @@ console.log(hexifyBytes(msgEncoded));
 
 Output:
 
-<CoreStructResult />
+<code><CoreStructResult /></code>
 
-### More examples
+### Enum
 
-Todo for:
+::: tip
+Enums handling is based on `@scale-codec/enum` package. More info at [Enums guide](./enum.md).
+:::
 
--   Map
--   Set
--   Tuple
--   Array & Vec
--   Enum
+Enums handling is more low-level then other tools because of typing issues. Thus, the responsibility to define encode & decode schema correctly is on the end user.
+
+```ts
+import { Enum, Valuable, encodeEnum, decodeEnum, encodeStr, decodeStr } from '@scale-codec/core';
+
+type Event = Enum<{
+    Focus: null;
+    KeyPress: Valuable<string>;
+}>;
+
+const myEvent = decodeEnum<Event>(new Uint8Array(/* ... */), {
+    // map from discriminants to variant names
+    // + optional decode fn for valuable variants
+    0: { v: 'Focus' },
+    1: { v: 'KeyPress', decode: decodeStr },
+});
+
+const encoded = encodeEnum(myEvent, {
+    // map from variant names to discriminants
+    // + optional encode fn for valuable variants
+    Focus: { d: 0 },
+    KeyPress: { d: 1, encode: encodeStr },
+});
+```
+
+### Array, Vec, Tuple
+
+```ts
+import { decodeTuple, decodeArray, decodeVec, decodeStr, decodeBool } from '@scale-codec/core';
+
+// [String; 10]
+const strings = decodeArray(new Uint8Array(/* ... */), decodeStr, 10);
+
+// (String, bool)
+const [str, bool] = decodeTuple(new Uint8Array(/* ... */), [decodeStr, decodeBool]);
+
+// Vec<bool>
+const booleans = decodeVec(new Uint8Array(/* ... */), decodeBool);
+```
+
+### Map & Set
+
+```ts
+import { encodeSet, encodeMap, encodeStr, encodeBool } from '@scale-codec/core';
+
+encodeMap(
+    new Map<string, boolean>([
+        ['foo', false],
+        ['bar', true],
+    ]),
+    encodeStr,
+    encodeBool,
+);
+
+encodeSet(new Set<string>(['a', 'b', 'c']), encodeStr);
+```
 
 ## Play
 

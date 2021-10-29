@@ -1,6 +1,6 @@
 import { dynBuilder } from '../builder-creators';
 import { ScaleInstance } from '../instance';
-import { Bool } from '../unparametrized-builders';
+import { Bool } from '../presets';
 
 const DynBool = dynBuilder(() => Bool);
 

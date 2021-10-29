@@ -6,6 +6,7 @@
 
 import { AllowedBits } from '@scale-codec/core';
 import { Decode } from '@scale-codec/core';
+import { DecodeResult } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Enum } from '@scale-codec/core';
 import { JSBI } from '@scale-codec/core';
@@ -14,13 +15,10 @@ import { Result } from '@scale-codec/core';
 import { Valuable } from '@scale-codec/core';
 
 // @public (undocumented)
-export type ArrayBuilderItemBuilder<T> = T extends ScaleInstance<infer V>[] ? BuilderFn<V> : never;
+export type ArrayItemBuilder<T> = T extends ScaleInstance<infer V, infer U>[] ? ScaleBuilder<V, U> : never;
 
 // @public (undocumented)
 export const Bool: ScaleBuilder<boolean, boolean>;
-
-// @public (undocumented)
-export type BuilderFn<T, U = T> = () => ScaleBuilder<T, U>;
 
 // @public (undocumented)
 export type BuilderViaInstance<T extends ScaleInstance<any>> = T extends ScaleInstance<infer V, infer U> ? ScaleBuilder<V, U> : never;
@@ -32,12 +30,10 @@ export const BytesVec: ScaleBuilder<Uint8Array, Uint8Array>;
 export const Compact: ScaleBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export function createAliasBuilder<T, U>(name: string, to: BuilderFn<T, U>): ScaleBuilder<T, U>;
+export function createAliasBuilder<T, U>(name: string, to: ScaleBuilder<T, U>): ScaleBuilder<T, U>;
 
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleArray" needs to be exported by the entry point lib.d.ts
-//
 // @public (undocumented)
-export function createArrayBuilder<T extends ScaleInstance<any>[]>(name: string, builder: ArrayBuilderItemBuilder<T>, len: number): ScaleBuilder<T, UnwrapScaleArray<T>>;
+export function createArrayBuilder<T extends ScaleInstance<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>, len: number): ScaleArrayBuilder<T>;
 
 // @public (undocumented)
 export function createBigIntBuilder(name: string, bits: AllowedBits, signed: boolean): ScaleBuilder<JSBI>;
@@ -45,52 +41,68 @@ export function createBigIntBuilder(name: string, bits: AllowedBits, signed: boo
 // @public (undocumented)
 export function createBytesArrayBuilder(name: string, len: number): ScaleBuilder<Uint8Array>;
 
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleEnum" needs to be exported by the entry point lib.d.ts
-//
 // @public (undocumented)
-export function createEnumBuilder<T extends Enum<any>>(name: string, schema: EnumBuilderSchema): ScaleBuilder<T, UnwrapScaleEnum<T>>;
+export function createEnumBuilder<T extends Enum<any>>(name: string, schema: EnumBuilderSchema): ScaleEnumBuilder<T>;
 
 // Warning: (ae-forgotten-export) The symbol "MapKeyInner" needs to be exported by the entry point lib.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapValueInner" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createMapBuilder<T extends Map<ScaleInstance<any>, ScaleInstance<any>>>(name: string, key: BuilderFn<MapKeyInner<T>>, value: BuilderFn<MapValueInner<T>>): ScaleBuilder<T, UnwrapScaleMap<T>>;
+export function createMapBuilder<T extends Map<ScaleInstance<any>, ScaleInstance<any>>>(name: string, keyBuilder: ScaleBuilder<MapKeyInner<T>>, valueBuilder: ScaleBuilder<MapValueInner<T>>): ScaleMapBuilder<T>;
 
 // Warning: (ae-forgotten-export) The symbol "OptionBuilder" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createOptionBuilder<T extends Option_2<ScaleInstance<any>>>(name: string, some: OptionBuilder<T>): ScaleBuilder<T, UnwrapScaleEnum<T>>;
+export function createOptionBuilder<T extends Option_2<ScaleInstance<any>>>(name: string, some: OptionBuilder<T>): ScaleEnumBuilder<T>;
 
 // Warning: (ae-forgotten-export) The symbol "ResultOkBuilder" needs to be exported by the entry point lib.d.ts
 // Warning: (ae-forgotten-export) The symbol "ResultErrBuilder" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createResultBuilder<T extends Result<ScaleInstance<any>, ScaleInstance<any>>>(name: string, ok: ResultOkBuilder<T>, err: ResultErrBuilder<T>): ScaleBuilder<T, UnwrapScaleEnum<T>>;
+export function createResultBuilder<T extends Result<ScaleInstance<any>, ScaleInstance<any>>>(name: string, ok: ResultOkBuilder<T>, err: ResultErrBuilder<T>): ScaleEnumBuilder<T>;
 
 // @public
 export function createScaleBuilder<T, U = T>(name: string, encode: Encode<T>, decode: Decode<T>, unwrap?: ScaleBuilderUnwrapper<T, U>, wrap?: ScaleBuilderWrapper<T, U>): ScaleBuilder<T, U>;
 
-// Warning: (ae-forgotten-export) The symbol "ScaleSetBuilderFn" needs to be exported by the entry point lib.d.ts
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleSet" needs to be exported by the entry point lib.d.ts
+// Warning: (ae-forgotten-export) The symbol "SetEntryBuilder" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createSetBuilder<T extends Set<ScaleInstance<any>>>(name: string, builder: ScaleSetBuilderFn<T>): ScaleBuilder<T, UnwrapScaleSet<T>>;
-
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleStruct" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export function createStructBuilder<T>(name: string, schema: StructBuilderSchema<T>): ScaleBuilder<T, UnwrapScaleStruct<T>>;
-
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleTuple" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export function createTupleBuilder<T extends ScaleInstance<any>[]>(name: string, builders: BuilderFn<any>[]): ScaleBuilder<T, UnwrapScaleTuple<T>>;
+export function createSetBuilder<T extends Set<ScaleInstance<any>>>(name: string, entryBuilder: SetEntryBuilder<T>): ScaleSetBuilder<T>;
 
 // @public (undocumented)
-export function createVecBuilder<T extends ScaleInstance<any>[]>(name: string, builder: ArrayBuilderItemBuilder<T>): ScaleBuilder<T, UnwrapScaleArray<T>>;
+export function createStructBuilder<T extends {
+    [K in keyof T]: ScaleInstance<any>;
+}>(name: string, schema: StructBuilderSchema<T>): ScaleStructBuilder<T>;
 
 // @public (undocumented)
-export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: BuilderFn<any>][];
+export function createTupleBuilder<T extends ScaleInstance<any>[]>(name: string, builders: ScaleBuilder<any>[]): ScaleTupleBuilder<T>;
+
+// @public (undocumented)
+export function createVecBuilder<T extends ScaleInstance<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>): ScaleArrayBuilder<T>;
+
+// @public
+export class DynBuilder<T, U = T> implements ScaleBuilder<T, U> {
+    constructor(dynBuilderFn: DynBuilderFn<T, U>);
+    // (undocumented)
+    decodeRaw(bytes: Uint8Array): DecodeResult<ScaleInstance<T, U>>;
+    // (undocumented)
+    readonly fn: DynBuilderFn<T, U>;
+    // (undocumented)
+    fromBytes(bytes: Uint8Array): ScaleInstance<T, U>;
+    // (undocumented)
+    fromValue(value: T): ScaleInstance<T, U>;
+    // (undocumented)
+    wrap(unwrapped: U): ScaleInstance<T, U>;
+}
+
+// @public
+export function dynBuilder<T, U = T>(fn: DynBuilderFn<T, U>): DynBuilder<T, U>;
+
+// @public (undocumented)
+export type DynBuilderFn<T, U = T> = () => ScaleBuilder<T, U>;
+
+// @public (undocumented)
+export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: ScaleBuilder<any>][];
 
 // @public (undocumented)
 export const I128: ScaleBuilder<JSBI, JSBI>;
@@ -113,6 +125,11 @@ export type InnerValue<T extends ScaleInstance<any> | ScaleBuilder<any>> = T ext
 // @public (undocumented)
 export type InstanceViaBuilder<T extends ScaleBuilder<any>> = T extends ScaleBuilder<infer V, infer U> ? ScaleInstance<V, U> : never;
 
+// Warning: (ae-forgotten-export) The symbol "UnwrapScaleArray" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export type ScaleArrayBuilder<T extends ScaleInstance<any>[]> = ScaleBuilder<T, UnwrapScaleArray<T>>;
+
 // @public
 export interface ScaleBuilder<T, U = T> {
     decodeRaw: Decode<ScaleInstance<T, U>>;
@@ -126,6 +143,9 @@ export type ScaleBuilderUnwrapper<T, U> = (self: ScaleInstance<T, U>) => U;
 
 // @public (undocumented)
 export type ScaleBuilderWrapper<T, U> = (unwrapped: U) => T;
+
+// @public (undocumented)
+export type ScaleEnumBuilder<T extends Enum<any>> = ScaleBuilder<T, UnwrapScaleEnum<T>>;
 
 // @public
 export abstract class ScaleInstance<Value, Unwrapped = Value> {
@@ -146,10 +166,28 @@ export abstract class ScaleInstance<Value, Unwrapped = Value> {
 export type ScaleInstanceCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => ScaleInstance<T, U>;
 
 // @public (undocumented)
+export type ScaleMapBuilder<T extends Map<ScaleInstance<any>, ScaleInstance<any>>> = ScaleBuilder<T, UnwrapScaleMap<T>>;
+
+// Warning: (ae-forgotten-export) The symbol "UnwrapScaleSet" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export type ScaleSetBuilder<T extends Set<ScaleInstance<any>>> = ScaleBuilder<T, UnwrapScaleSet<T>>;
+
+// @public
+export type ScaleStructBuilder<T extends {
+    [K in keyof T]: ScaleInstance<any>;
+}> = ScaleBuilder<T, UnwrapScaleStruct<T>>;
+
+// Warning: (ae-forgotten-export) The symbol "UnwrapScaleTuple" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export type ScaleTupleBuilder<T> = ScaleBuilder<T, UnwrapScaleTuple<T>>;
+
+// @public (undocumented)
 export const Str: ScaleBuilder<string, string>;
 
 // @public (undocumented)
-export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: BuilderFn<any>][];
+export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: ScaleBuilder<any>][];
 
 // @public (undocumented)
 export const U128: ScaleBuilder<JSBI, JSBI>;
@@ -173,7 +211,17 @@ export type UnwrappedValue<T extends ScaleInstance<any> | ScaleBuilder<any>> = T
 export type UnwrapScale<T> = T extends ScaleInstance<any, infer U> ? U : T;
 
 // @public (undocumented)
+export type UnwrapScaleEnum<T extends Enum<any>> = T extends Enum<infer Def> ? Enum<{
+    [K in keyof Def]: Def[K] extends Valuable<infer I> ? I extends ScaleInstance<any, infer U> ? Valuable<U> : never : null;
+}> : never;
+
+// @public (undocumented)
 export type UnwrapScaleMap<T> = T extends Map<ScaleInstance<any, infer K>, ScaleInstance<any, infer V>> ? Map<UnwrapScale<K>, UnwrapScale<V>> : never;
+
+// @public (undocumented)
+export type UnwrapScaleStruct<T> = {
+    [K in keyof T]: UnwrapScale<T[K]>;
+};
 
 // @public (undocumented)
 export const Void: ScaleBuilder<null, null>;

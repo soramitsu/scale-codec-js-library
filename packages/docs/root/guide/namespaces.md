@@ -19,7 +19,21 @@ SCALE might (and should!) be used within huge types namespaces with structs, enu
 
 It exposes 3 core things - `ScaleInstance` abstract class, `ScaleBuilder` interface and `createScaleBuilder()` helper. First one is a generic container for a SCALE-encodable value; the second one defines a constructor for this container with several entrypoints; and the third one combines both via the unified protocol.
 
-With these 3 tools it is easy to define your own codec. For example, codec for string:
+-   `ScaleInstance` is a generic container for value with 2 getters - `value` and `bytes`. Thus you can access its value and encoded bytes simultaneously. It is designed to be **immutable** and due to this it internally uses **lazy computations** with **caching**. It allows:
+
+    -   To prevent unnecessary encoding/decoding (depends on construction way) before its first access;
+    -   To prevent re-encoding and re-decoding the same data multiple times.
+
+    Also it is designed to be embeddable into a fractal nested structure with another `ScaleInstance`s (e.g. for structs, enums, maps etc any other complex type).
+
+-   `ScaleBuilder` is an interface that defines multiple ways to construct `ScaleInstance` - from decoded value, from encoded bytes, from unwrapped value (i.e. wrap it back). Also it is responsible to provide a raw decode function.
+-   `createScaleBuilder` helper combines the instance and its builder into a single class via a unified protocol. Here you can define encode/decode functions and wrap/unwrap functions (for advanced types).
+
+By the way, there are more high-level tools for specific structures, and some of them described below.
+
+### Primitive builder
+
+Let's create a builder for string:
 
 ```ts
 import { encodeStrCompact, decodeStrCompact } from '@scale-codec/core';
@@ -42,16 +56,20 @@ const decodedBack = Str.fromBytes(encoded);
 console.log(decodedBack.value); // 'Omnia mea mecum porto'
 ```
 
-Also it supports extended functionality to handle wrap/unwrap functionality. It is very handy for complex structures with nested `ScaleInstance`s. Anyway, you probably never will work with `createScaleBuilder()` directly - the package also exposes individual helpers for each common SCALE complex type. For example, working with `struct`:
+::: tip
+Runtime package exposes a set of unparametrized builders like `Str`, `Bool` and others. The list is [below](#predefined-builders).
+:::
+
+### Complex builder: struct
 
 ```ts
-import { Str, createStructBuilder, InstanceViaBuilder } from '@scale-codec/definition-runtime';
+import { Str, ScaleStructBuilder, createStructBuilder, InstanceViaBuilder } from '@scale-codec/definition-runtime';
 
-const Person = createStructBuilder<{
+const Person: ScaleStructBuilder<{
     // We tell to the builder that in "wrapped" state the value
     // will have a field with another instance for string
     name: InstanceViaBuilder<typeof Str>;
-}>('Person', [['name', () => Str]]);
+}> = createStructBuilder('Person', [['name', Str]]);
 
 // Verbose: create & access
 let person = Person.fromValue({ name: Str.fromValue('TORII') });
@@ -63,11 +81,15 @@ unwrapped.name === 'TORII';
 person = Person.fromUnwrapped(unwrapped);
 ```
 
-The greatest thing here is that it is completely typed!
+### Current builders trade-offs
 
-::: tip
-Runtime package exposes a set of unparametrized builders like `Str`, `Bool` and others. The list is [below](#predefined-builders).
-:::
+Unfortunately, it is hard to achieve these 2 goals simultaneously:
+
+1. Make usage of builders 100% type-safe. **The most important**.
+2. Make builders types easy to be inferrenced from the creation helper. **Important too**, especially for ergonomics, but you declare the builder only one time and use it a lot of times.
+3. Make builders creation syntax as short and minify-compatible as possible for compilation into large namespaces. **Not critical**, may be workarounded with specialized type-unsafe helpers.
+
+Thus, the current builders design is a compromise between all of these points. You are still responsible to correctly define builders types, but it is still type-checked (partially).
 
 ## Compiler: generate builders automatically
 
@@ -108,7 +130,7 @@ struct PublicKey {
 
 **Definition for Compiler:**
 
-<<< @/lib/snippets/namespace-schema.ts
+<<< @/snippets/namespace-schema.ts
 
 **Compilation code:**
 
@@ -122,7 +144,7 @@ console.log(code);
 
 **Compiled output:**
 
-<<< @/lib/snippets/namespace-schema-compiled.ts
+<<< @/snippets/namespace-schema-compiled.ts
 
 Now the code is usable, and its execution depends on you!
 
@@ -148,5 +170,6 @@ Todo?
 
 -   [Runtime's API](/api/definition-runtime)
 -   [Compiler's API](/api/definition-compiler)
--   [Polkadot.js / types](https://github.com/polkadot-js/api/tree/master/packages/types) - another implementation of SCALE codec with a different namespaces approach
+-   [@polkadot/types](https://github.com/polkadot-js/api/tree/master/packages/types) - another implementation of SCALE codec with a different namespaces approach
+-   [ts-scale-codec](https://www.npmjs.com/package/@josepot/ts-scale-codec)- another lightweight implementation of SCALE
 -   [Protobuf.js](https://protobufjs.github.io/protobuf.js/index.html) - implementation not of SCALE, but of Protobuf spec. Their specs have a lot in common.

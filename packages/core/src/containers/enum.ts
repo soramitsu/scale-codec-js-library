@@ -64,7 +64,7 @@ export type EnumDecoders = Record<
 
 const DISCRIMINANT_BYTES_COUNT = 1;
 
-export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Array {
+export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders): Uint8Array {
     const { tag, content } = val;
     const { d, encode } = encoders[tag];
 
@@ -79,17 +79,17 @@ export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Ar
     return concatUint8Arrays(parts());
 }
 
-export function decodeEnum<Def>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<Enum<Def>> {
+export function decodeEnum<T extends Enum<any>>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<T> {
     const d = bytes[0];
     const { v, decode } = decoders[d];
 
     if (decode) {
         const [decodedContent, contentBytes] = decode(bytes.subarray(1));
 
-        return [Enum.valuable(v as any, decodedContent), DISCRIMINANT_BYTES_COUNT + contentBytes];
+        return [Enum.valuable<any, any>(v as any, decodedContent) as any, DISCRIMINANT_BYTES_COUNT + contentBytes];
     }
 
-    return [Enum.empty(v as any), DISCRIMINANT_BYTES_COUNT];
+    return [Enum.empty<any>(v as any) as any, DISCRIMINANT_BYTES_COUNT];
 }
 
 function optBoolByteToEnum(byte: number): Option<boolean> {

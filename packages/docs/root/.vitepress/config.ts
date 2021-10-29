@@ -21,15 +21,15 @@ function guideSidebar(): SidebarLink[] {
             children: [
                 {
                     text: 'Core package',
-                    link: '/lib/core',
+                    link: '/guide/core',
                 },
                 {
                     text: 'Handling large namespaces',
-                    link: '/lib/namespaces',
+                    link: '/guide/namespaces',
                 },
                 {
                     text: 'Enums guide',
-                    link: '/lib/enum',
+                    link: '/guide/enum',
                 },
             ],
         },

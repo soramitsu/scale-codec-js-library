@@ -38,7 +38,7 @@ export function decodeBool(bytes: Uint8Array): DecodeResult<boolean>;
 export function decodeCompact(bytes: Uint8Array): DecodeResult<JSBI_2>;
 
 // @public (undocumented)
-export function decodeEnum<Def>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<Enum<Def>>;
+export function decodeEnum<T extends Enum<any>>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<T>;
 
 // @public (undocumented)
 export function decodeMap<K, V>(bytes: Uint8Array, KeyDecoder: Decode<K>, ValueDecoder: Decode<V>): DecodeResult<Map<K, V>>;
@@ -92,7 +92,7 @@ export function encodeBool(bool: boolean): Uint8Array;
 export function encodeCompact(bn: JSBI_2): Uint8Array;
 
 // @public (undocumented)
-export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Array;
+export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders): Uint8Array;
 
 // @public (undocumented)
 export function encodeMap<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Uint8Array;

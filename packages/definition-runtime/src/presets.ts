@@ -15,16 +15,20 @@ import {
 import { createBigIntBuilder } from './builder-creators';
 import { createScaleBuilder, ScaleBuilder } from './instance';
 
-function* createBigIntBuilders(): Generator<ScaleBuilder<JSBI>> {
-    for (const signed of [false, true]) {
-        for (let bits = 8; bits <= 128; bits *= 2) {
-            yield createBigIntBuilder(`${signed ? 'U' : 'I'}${bits}`, bits as AllowedBits, signed);
-        }
-    }
+function biBuilder(bits: AllowedBits, signed: boolean): ScaleBuilder<JSBI> {
+    return createBigIntBuilder(`${signed ? 'U' : 'I'}${bits}`, bits as AllowedBits, signed);
 }
 
-// fixme separate for tree-shaking
-export const [U8, U16, U32, U64, U128, I8, I16, I32, I64, I128] = createBigIntBuilders();
+export const U8 = biBuilder(8, false);
+export const I8 = biBuilder(8, true);
+export const U16 = biBuilder(16, false);
+export const I16 = biBuilder(16, true);
+export const U32 = biBuilder(32, false);
+export const I32 = biBuilder(32, true);
+export const U64 = biBuilder(64, false);
+export const I64 = biBuilder(64, true);
+export const U128 = biBuilder(128, false);
+export const I128 = biBuilder(128, true);
 
 export const Str = createScaleBuilder<string>('Str', encodeStr, decodeStr);
 

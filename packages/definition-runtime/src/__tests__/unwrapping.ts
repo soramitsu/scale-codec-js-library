@@ -10,7 +10,7 @@ import {
     createVecBuilder,
 } from '../builder-creators';
 import { InnerValue, InstanceViaBuilder, ScaleInstance, UnwrappedValue } from '../instance';
-import { Bool, I128, Str } from '../unparametrized-builders';
+import { Bool, I128, Str } from '../presets';
 
 const Key = createStructBuilder<{ payload: ScaleInstance<JSBI> }>('Key', [['payload', I128]]);
 
