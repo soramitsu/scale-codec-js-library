@@ -1,62 +1,174 @@
+/**
+ * The main map with all the definitions
+ *
+ * @remarks
+ * Name of type should be **a valid JavaScript identifier name**, because it will be compiled to an identifier.
+ *
+ * See {@link StdTypes} for available type presets.
+ *
+ * @example
+ * ```ts
+ * const definition: NamespaceDefinition = {
+ *   Person: {
+ *     t: 'struct',
+ *     fields: [
+ *       { name: 'name', ref: 'str' },
+ *       { name: 'age', ref: 'u8' }
+ *     ]
+ *   },
+ *   VecPerson: { t: 'vec', item: 'Person' }
+ * }
+ * ```
+ */
 export type NamespaceDefinition = Record<string, TypeDef>;
 
-export type AliasDef = {
-    ref: string;
-};
+// #region stds
+/**
+ * These type references will be interpreted as known and
+ * their codecs will be imported from the runtime-library
+ */
+export type StdTypes =
+    | 'str'
+    | 'bool'
+    | 'u8'
+    | 'u16'
+    | 'u32'
+    | 'u64'
+    | 'u128'
+    | 'i8'
+    | 'i16'
+    | 'i32'
+    | 'i64'
+    | 'i128'
+    | 'Void'
+    | 'Compact'
+    | 'BytesVec';
+// #endregion stds
 
-export type ArrayDef = {
-    item: string;
-    len: number;
-};
+export type TypeRef = StdTypes | string;
 
-export type BytesArrayDef = {
-    len: number;
-};
-
-export type VecDef = {
-    item: string;
-};
-
-export type TupleDef = {
-    items: string[];
-};
-
-export type StructDef = {
-    fields: {
-        name: string;
-        ref: string;
-    }[];
-};
-
-export type MapDef = {
-    key: string;
-    value: string;
-};
-
-export type SetDef = {
-    entry: string;
-};
-
-export type EnumDef = {
-    variants: EnumVariantDef[];
-};
-
-export type EnumVariantDef = {
-    name: string;
-    discriminant: number;
-    ref?: string | null;
-};
-
-export type OptionDef = {
-    some: string;
-};
-
-export type ResultDef = {
-    ok: string;
-    err: string;
+/**
+ * Just an alias to the inner type
+ */
+export type DefAlias = {
+    ref: TypeRef;
 };
 
 /**
+ * Fixed-length array
+ */
+export type DefArray = {
+    /**
+     * Inner type name
+     */
+    item: TypeRef;
+    len: number;
+};
+
+/**
+ * It's like {@link DefArray} but for bytes (u8). Use it for bytes for better performance.
+ */
+export type DefBytesArray = {
+    len: number;
+};
+
+/**
+ * `Vec<T>` definition
+ */
+export type DefVec = {
+    /**
+     * Inner vec type name
+     */
+    item: TypeRef;
+};
+
+/**
+ * Tuple definition
+ */
+export type DefTuple = {
+    /**
+     * Array of inner types
+     */
+    items: TypeRef[];
+};
+
+/**
+ * Structure definition
+ */
+export type DefStruct = {
+    /**
+     * @remarks
+     * **note**: order of fields matters!
+     */
+    fields: DefStructField[];
+};
+
+export type DefStructField = {
+    /**
+     * Name of the struct field
+     */
+    name: string;
+    /**
+     * Reference to the type
+     */
+    ref: TypeRef;
+};
+
+/**
+ * Map definition (e.g. `HashMap`, `BTreeMap`)
+ */
+export type DefMap = {
+    key: TypeRef;
+    value: TypeRef;
+};
+
+/**
+ * Set definition (e.g. `HashSet`, `BTreeSet`)
+ */
+export type DefSet = {
+    entry: TypeRef;
+};
+
+/**
+ * Enum definition
+ */
+export type DefEnum = {
+    /**
+     * @remarks
+     * Order of variants doesn't matter, but variants should not contain collisions between their names
+     * and discriminants
+     */
+    variants: DefEnumVariant[];
+};
+
+export type DefEnumVariant = {
+    name: string;
+    discriminant: number;
+    /**
+     * No ref/null ref means that this variant is empty
+     */
+    ref?: TypeRef | null;
+};
+
+/**
+ * Option enum definition
+ */
+export type DefOption = {
+    some: TypeRef;
+};
+
+/**
+ * Result enum definition
+ */
+export type DefResult = {
+    ok: TypeRef;
+    err: TypeRef;
+};
+
+/**
+ * External type definition - import codec from external module
+ *
+ * @remarks
  * Provides a possibility to define external types, e.g. to use some complex structure from another compiled namespace
  * OR to define your own custom low-level codec for type that is not included into the SCALE codec spec by default.
  *
@@ -64,10 +176,14 @@ export type ResultDef = {
  * prefixes: `External_encode`, `External_decode`, `External_Decoded` and `External_Encodable` (for the "External" type
  * name)
  */
-export type ExternalDef = {
+export type DefExternal = {
     /**
      * Where to import from, path
-     * @example import { ... } from '<here is the module name>'
+     *
+     * @example
+     * ```ts
+     * import { ... } from '<here is the module name>'
+     * ```
      */
     module: string;
     /**
@@ -78,20 +194,20 @@ export type ExternalDef = {
     nameInModule?: string;
 };
 
-export type WithTMark<T, M extends string> = T & {
+type WithTMark<T, M extends string> = T & {
     t: M;
 };
 
 export type TypeDef =
-    | WithTMark<AliasDef, 'alias'>
-    | WithTMark<ArrayDef, 'array'>
-    | WithTMark<BytesArrayDef, 'bytes-array'>
-    | WithTMark<VecDef, 'vec'>
-    | WithTMark<TupleDef, 'tuple'>
-    | WithTMark<StructDef, 'struct'>
-    | WithTMark<MapDef, 'map'>
-    | WithTMark<SetDef, 'set'>
-    | WithTMark<EnumDef, 'enum'>
-    | WithTMark<OptionDef, 'option'>
-    | WithTMark<ResultDef, 'result'>
-    | WithTMark<ExternalDef, 'external'>;
+    | WithTMark<DefAlias, 'alias'>
+    | WithTMark<DefArray, 'array'>
+    | WithTMark<DefBytesArray, 'bytes-array'>
+    | WithTMark<DefVec, 'vec'>
+    | WithTMark<DefTuple, 'tuple'>
+    | WithTMark<DefStruct, 'struct'>
+    | WithTMark<DefMap, 'map'>
+    | WithTMark<DefSet, 'set'>
+    | WithTMark<DefEnum, 'enum'>
+    | WithTMark<DefOption, 'option'>
+    | WithTMark<DefResult, 'result'>
+    | WithTMark<DefExternal, 'external'>;

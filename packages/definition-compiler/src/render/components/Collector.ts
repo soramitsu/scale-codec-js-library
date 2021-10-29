@@ -1,4 +1,5 @@
 import { Ref, defineComponent, reactive, computed, provide, inject, InjectionKey } from 'vue';
+import { StdTypes } from '../../definitions';
 import { DefPartSuffixMap } from '../def-part';
 
 export interface CollectorAPI {
@@ -7,14 +8,14 @@ export interface CollectorAPI {
     imports: Ref<Set<string>>;
 }
 
-function* stdRefsGen(): Generator<string> {
-    for (const i of ['str', 'bool', 'Void', 'Compact', 'BytesVec']) {
+function* stdRefsGen(): Generator<StdTypes> {
+    for (const i of ['str', 'bool', 'Void', 'Compact', 'BytesVec'] as StdTypes[]) {
         yield i;
     }
 
     for (const bits of [8, 16, 32, 64, 128]) {
         for (const signed of [false, true]) {
-            yield `${signed ? 'i' : 'u'}${bits}`;
+            yield `${signed ? 'i' : 'u'}${bits}` as StdTypes;
         }
     }
 }
@@ -31,7 +32,7 @@ const Collector = defineComponent({
             return new Set([
                 ...cores,
                 ...[...refs]
-                    .filter((x) => STD_REFS.has(x))
+                    .filter((x) => STD_REFS.has(x as StdTypes))
                     .flatMap((x) => Object.values(DefPartSuffixMap).map((sfx) => x + sfx)),
             ]);
         });

@@ -2,87 +2,42 @@
 
 Monorepo with [SCALE codec](https://substrate.dev/docs/en/knowledgebase/advanced/codec) implementation in JavaScript.
 
-### Install packages
+## Install
 
 Install `pnpm` if you do not have it installed:
 
-```sh
+```shell
 npm i -g pnpm
 ```
 
 Then install packages
 
-```sh
+```shell
 pnpm i
 ```
 
-### Lint
+### Read The Docs
 
-```sh
-pnpm lint
+_Visit published (WIP)_.
 
-# fix-in-place
-pnpm lint -- --fix
+Locally:
+
+```shell
+pnpm docs:dev
 ```
 
-### Type-checking
+## For DevOps
 
-```sh
-pnpm type-check
-```
+```shell
+# all tests, build, lint, type-ckecking
+pnpm check-code-integrity
 
-### Build
-
-```sh
+# just build
 pnpm build
+
+# packages publishing
+pnpm publish-all
+
+# docs build
+pnpm docs:build
 ```
-
-This will emit `dist` directories in every package that should be published to npm.
-
-### Clean builds
-
-```sh
-pnpm clean
-```
-
-### Test
-
-Test all (in CI):
-
-```sh
-pnpm test:all
-```
-
-#### Unit
-
-It will run all unit tests in all packages:
-
-```sh
-# Run all unit tests in all packages
-pnpm test:unit
-
-# You can pass any options to jest directly
-pnpm test:unit -- packages/core
-```
-
-#### e2e
-
-**Before running e2e test you should to build all packages.**
-
-```sh
-pnpm test:e2e
-```
-
-Description of how it works in `e2e-spa` directory.
-
-### Publish
-
-```sh
-pnpm publish:all
-```
-
-### TODO
-
--   [ ] Rename "namespace" package to some more general?
--   [ ] Auto-docs for every package? Where to publish?
--   [ ] Maybe create some helper/inspector for debugging of encode and decode? It might be useful to see how actual data mapped to final bytes.

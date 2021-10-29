@@ -7,8 +7,22 @@ export type EnumSchemaDef<Def> = {
 };
 
 /**
- * Unsafe-typed params of enum encoding. It's a map with variant names as keys and discriminant + maybe encode fn as
- * values
+ * Unsafe-typed params for enum encoding. It defines relationships between variant names and their
+ * discriminants, as well as it defines encode functions for particular variants.
+ *
+ * @example
+ *
+ * ```ts
+ * type MyEnum = Enum<{
+ *     A: null
+ *     B: Valuable<string>
+ * }>
+ *
+ * const encoders: EnumEncoders = {
+ *     A: { d: 0 },
+ *     B: { d: 1, encode: encodeStrCompact }
+ * }
+ * ```
  */
 export type EnumEncoders = Record<
     string | number | symbol,
@@ -21,6 +35,25 @@ export type EnumEncoders = Record<
     }
 >;
 
+/**
+ * Unsafe-type for enum decoding. It defines relationships between discriminants and their variant names,
+ * as well as it defines decode functions for particular variants. If function is specified,
+ * then a non-empty enum will be created.
+ *
+ * @example
+ *
+ * ```ts
+ * type MyEnum = Enum<{
+ *     A: null
+ *     B: Valuable<string>
+ * }>
+ *
+ * const decoders: EnumDecoders = {
+ *     0: { v: 'A' },
+ *     1: { v: 'B', decode: decodeStrCompact }
+ * }
+ * ```
+ */
 export type EnumDecoders = Record<
     number,
     {
@@ -31,9 +64,9 @@ export type EnumDecoders = Record<
 
 const DISCRIMINANT_BYTES_COUNT = 1;
 
-export function encodeEnum<Def>(val: Enum<Def>, params: EnumEncoders): Uint8Array {
+export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Array {
     const { variant, content } = val;
-    const { d, encode } = params[variant];
+    const { d, encode } = encoders[variant];
 
     function* parts(): Generator<Uint8Array> {
         yield new Uint8Array([d]);
@@ -46,9 +79,9 @@ export function encodeEnum<Def>(val: Enum<Def>, params: EnumEncoders): Uint8Arra
     return concatUint8Arrays(parts());
 }
 
-export function decodeEnum<Def>(bytes: Uint8Array, params: EnumDecoders): DecodeResult<Enum<Def>> {
+export function decodeEnum<Def>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<Enum<Def>> {
     const d = bytes[0];
-    const { v, decode } = params[d];
+    const { v, decode } = decoders[d];
 
     if (decode) {
         const [decodedContent, contentBytes] = decode(bytes.subarray(1));

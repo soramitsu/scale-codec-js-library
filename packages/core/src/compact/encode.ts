@@ -25,7 +25,7 @@ function consts(): {
 }
 
 /**
- * @describe Encodes a number into a compact representation
+ * Encodes a number into a compact representation
  */
 export function encodeCompact(bn: JSBI): Uint8Array {
     const { MAX_U8, MAX_U32, MAX_U16 } = consts();

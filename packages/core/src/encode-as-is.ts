@@ -21,7 +21,7 @@ export function encodeAsIs(bytes: Uint8Array): EncodeAsIs {
 }
 
 /**
- * Checks if the value is bytes wrapped into a `EncodeAsIs`
+ * Checks if the value is `EncodeAsIs` wrapper
  */
 export function isEncodeAsIsWrapper(val: unknown): val is EncodeAsIs {
     return !!(val && (val as EncodeAsIs)[EncodeAsIsBrand]);

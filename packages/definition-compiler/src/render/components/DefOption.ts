@@ -1,5 +1,5 @@
 import { defineComponent, compile, computed } from 'vue';
-import { EnumVariantDef } from '../../definitions';
+import { DefEnumVariant } from '../../definitions';
 import { Encoders, Decoders } from './DefEnum';
 
 export default defineComponent({
@@ -16,7 +16,7 @@ export default defineComponent({
     },
     setup(props) {
         return {
-            variants: computed<EnumVariantDef[]>(() => [
+            variants: computed<DefEnumVariant[]>(() => [
                 {
                     name: 'None',
                     discriminant: 0,

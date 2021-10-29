@@ -8,15 +8,24 @@
         "test:unit": "jest",
         "test:e2e": "pnpm gulp-ts -- testE2e",
         "build": "pnpm gulp-ts -- build",
+        "build:declarations": "pnpm gulp-ts -- buildDeclarations",
         "type-check": "tsc --noEmit",
         "clean": "pnpm gulp-ts -- clean",
         "publish:all": "pnpm gulp-ts -- publishAll",
         "lint": "prettier-eslint \"**/*.(ts|js)\"",
-        "check-code-integrity": "pnpm gulp-ts -- checkCodeIntegrity"
+        "check-code-integrity": "pnpm gulp-ts -- checkCodeIntegrity",
+        "api:extract-local": "pnpm gulp-ts -- extractApisLocalBuild",
+        "api:extract": "pnpm gulp-ts -- extractApis",
+        "api:docs": "pnpm gulp-ts -- documentApis",
+        "api:all": "pnpm gulp-ts -- extractAndDocumentApis",
+        "docs:dev": "pnpm --filter @scale-codec/docs dev",
+        "docs:build": "pnpm --filter @scale-codec/docs build"
     },
     "devDependencies": {
         "@changesets/cli": "^2.17.0",
         "@jest/types": "^27.2.5",
+        "@microsoft/api-documenter": "^7.13.63",
+        "@microsoft/api-extractor": "^7.18.16",
         "@rollup/plugin-commonjs": "^21.0.0",
         "@rollup/plugin-json": "^4.1.0",
         "@rollup/plugin-node-resolve": "^13.0.5",
@@ -31,8 +40,9 @@
         "esbuild-jest": "^0.5.0",
         "esbuild-register": "^3.0.0",
         "eslint": "^7.32.0",
-        "eslint-config-alloy": "^4.3.0",
+        "eslint-config-alloy": "^4.4.0",
         "eslint-plugin-cypress": "^2.12.1",
+        "eslint-plugin-vue": "^7.19.1",
         "esno": "^0.10.1",
         "execa": "^5.1.1",
         "gulp": "^4.0.2",
@@ -43,9 +53,8 @@
         "prettier-eslint": "^13.0.0",
         "prettier-eslint-cli": "^5.0.1",
         "rollup": "^2.58.0",
-        "rollup-plugin-dts": "^4.0.0",
-        "rollup-plugin-esbuild": "^4.5.0",
-        "typescript": "^4.4.3",
+        "rollup-plugin-esbuild": "^4.6.0",
+        "typescript": "^4.4.4",
         "zx": "^4.2.0"
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/e2e-spa",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "private": true,
     "scripts": {
         "dev": "vite --port 4444 --clearScreen false",
@@ -15,14 +15,14 @@
     },
     "dependencies": {
         "@jest/types": "^27.2.5",
-        "@scale-codec/definition-compiler": "link:../packages/definition-compiler",
-        "@scale-codec/definition-runtime": "link:../packages/definition-runtime",
+        "@scale-codec/definition-compiler": "workspace:^0.3.0",
+        "@scale-codec/definition-runtime": "workspace:^0.1.3",
         "@types/jest": "^27.0.2",
         "@vitejs/plugin-vue": "^1.9.3",
-        "@vue/compiler-sfc": "^3.1.4",
+        "@vue/compiler-sfc": "^3.2.20",
         "chalk": "^4.1.2",
         "consola": "^2.15.3",
-        "cypress": "^8.5.0",
+        "cypress": "^8.6.0",
         "del": "^6.0.0",
         "esbuild-jest": "^0.5.0",
         "esbuild-register": "^3.0.0",
@@ -31,9 +31,9 @@
         "jest": "^27.2.5",
         "rimraf": "^3.0.2",
         "start-server-and-test": "^1.14.0",
-        "typescript": "^4.4.3",
-        "vite": "^2.6.5",
-        "vue": "^3.1.4",
+        "typescript": "^4.4.4",
+        "vite": "^2.6.7",
+        "vue": "^3.2.20",
         "zx": "^4.2.0"
     }
 }

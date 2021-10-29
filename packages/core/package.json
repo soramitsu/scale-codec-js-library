@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/core",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "description": "Implementations of core SCALE-codec primitives and data structures",
     "license": "Apache-2.0",
     "repository": {
@@ -12,6 +12,10 @@
     },
     "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/core#readme",
     "main": "src/lib.ts",
+    "engines": {
+        "node": ">=14.5.0"
+    },
+    "engineStrict": true,
     "publishConfig": {
         "main": "./dist/lib.cjs.js",
         "module": "./dist/lib.esm.js",
@@ -32,8 +36,8 @@
         "docs:serve": "http-server ./docs"
     },
     "dependencies": {
-        "@scale-codec/enum": "workspace:^0.1.0",
-        "@scale-codec/util": "workspace:^0.1.0",
+        "@scale-codec/enum": "workspace:^0.1.1",
+        "@scale-codec/util": "workspace:^0.1.1",
         "jsbi": "3.2.5"
     },
     "devDependencies": {
