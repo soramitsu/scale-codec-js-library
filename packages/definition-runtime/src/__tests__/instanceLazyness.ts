@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { decodeBool, decodeTuple, encodeBool, encodeTuple } from '@scale-codec/core';
-import { createScaleBuilder, InstanceViaBuilder } from '../instance';
+import { createBuilder, FragmentFromBuilder } from '../fragment';
 import { createAliasBuilder } from '../builder-creators';
 
 describe('Within TupleBool', () => {
@@ -19,9 +19,9 @@ describe('Within TupleBool', () => {
         const encodeTupleSpy = jest.fn(encodeTuple) as typeof encodeTuple;
         const decodeTupleSpy = jest.fn(decodeTuple) as typeof decodeTuple;
 
-        const Bool = createScaleBuilder<boolean>('Bool', encodeBoolSpy, decodeBoolSpy);
+        const Bool = createBuilder<boolean>('Bool', encodeBoolSpy, decodeBoolSpy);
 
-        const TupleBool = createScaleBuilder<[InstanceViaBuilder<typeof Bool>]>(
+        const TupleBool = createBuilder<[FragmentFromBuilder<typeof Bool>]>(
             'TupleBool',
             (val) => encodeTupleSpy(val, [(x) => x.bytes]),
             (bytes) => decodeTupleSpy(bytes, [(x) => Bool.decodeRaw(x)]),
@@ -90,7 +90,7 @@ describe('Within TupleBool', () => {
 
 test('Alias decoding is lazy', () => {
     const decodeBoolSpy = jest.fn(decodeBool);
-    const Bool = createScaleBuilder<boolean>('Bool', encodeBool, decodeBoolSpy);
+    const Bool = createBuilder<boolean>('Bool', encodeBool, decodeBoolSpy);
     const BoolAlias = createAliasBuilder<boolean, boolean>('BoolAlias', Bool);
 
     const item = BoolAlias.fromBytes(new Uint8Array([1]));

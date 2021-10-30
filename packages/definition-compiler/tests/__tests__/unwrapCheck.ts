@@ -1,4 +1,4 @@
-import { Bool, Enum, Option, Result, Str, UnwrapScale, Valuable } from '@scale-codec/definition-runtime';
+import { Bool, Enum, Option, Result, Str, UnwrapFragment, Valuable } from '@scale-codec/definition-runtime';
 import {
     AliasA,
     ArrayA,
@@ -13,7 +13,7 @@ import {
     VecEnumA,
 } from '../samples/unwrapCheck';
 
-function defineUnwrap<T>(unwrapped: UnwrapScale<T>): UnwrapScale<T> {
+function defineUnwrap<T>(unwrapped: UnwrapFragment<T>): UnwrapFragment<T> {
     return unwrapped;
 }
 

@@ -9,6 +9,6 @@
 
 export * from '@scale-codec/core';
 
-export * from './instance';
+export * from './fragment';
 export * from './builder-creators';
 export * from './presets';

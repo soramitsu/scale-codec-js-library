@@ -4,7 +4,7 @@ import {
     encodeCompact,
     encodeStr,
     JSBI,
-    InstanceViaBuilder,
+    FragmentFromBuilder,
     Str,
     BytesVec,
     Compact,
@@ -17,7 +17,7 @@ interface Raw {
     A: Uint8Array;
 }
 
-type Scale = InstanceViaBuilder<typeof Mystery>;
+type Scale = FragmentFromBuilder<typeof Mystery>;
 
 function makeRaw(value: Raw): Raw {
     return value;

@@ -1,10 +1,10 @@
 import { dynBuilder } from '../builder-creators';
-import { ScaleInstance } from '../instance';
+import { Fragment } from '../fragment';
 import { Bool } from '../presets';
 
 const DynBool = dynBuilder(() => Bool);
 
-function compareInstances(actual: ScaleInstance<any>, expected: ScaleInstance<any>) {
+function compareInstances(actual: Fragment<any>, expected: Fragment<any>) {
     expect(actual.unwrap()).toEqual(expected.unwrap());
     expect(actual.bytes).toEqual(expected.bytes);
 }

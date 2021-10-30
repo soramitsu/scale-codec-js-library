@@ -5,5 +5,5 @@
 
 **Breaking**:
 
--   Runtime: new approach with `ScaleInstance`, `ScaleBuilder` and others
+-   Runtime: new approach with `Fragment`, `FragmentBuilder` and others
 -   Compiler: drop vue & prettier + new approach for new runtime

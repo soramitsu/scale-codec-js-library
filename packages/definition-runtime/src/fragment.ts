@@ -32,7 +32,7 @@ function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => a
  * Type `Value` represents JS value, `Unwrapped` - JS value with content where all of the `ScaleInstance`s are
  * unwrapped to their values.
  */
-export abstract class ScaleInstance<Value, Unwrapped = Value> {
+export abstract class Fragment<Value, Unwrapped = Value> {
     /**
      * Some JS-easy-accessible value of the instance
      */
@@ -98,58 +98,61 @@ export abstract class ScaleInstance<Value, Unwrapped = Value> {
     public abstract unwrap(): Unwrapped;
 }
 
-export type ScaleInstanceCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => ScaleInstance<
+export type ScaleInstanceCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<
     T,
     U
 >;
 
 /**
- * Defines how a builder for {@link ScaleInstance} should look like
+ * Defines how a builder for {@link Fragment} should look like
  */
-export interface ScaleBuilder<T, U = T> {
+export interface FragmentBuilder<T, U = T> {
     /**
      * Constructs instance from JS value to give an opportunity to encode it later or use in any
      * other way
      */
-    fromValue: (value: T) => ScaleInstance<T, U>;
+    fromValue: (value: T) => Fragment<T, U>;
     /**
      * Constructs instance from SCALE-encoded bytes to give an opportunity to access to its decoded contents
      */
-    fromBytes: (bytes: Uint8Array) => ScaleInstance<T, U>;
+    fromBytes: (bytes: Uint8Array) => Fragment<T, U>;
     /**
      * Raw `Decode` function. Primarily used by the builder or by other builders internally
      */
-    decodeRaw: Decode<ScaleInstance<T, U>>;
+    decodeRaw: Decode<Fragment<T, U>>;
     /**
-     * Constructs instance back from unwrapped value, i.e. works vice versa from {@link ScaleInstance.unwrap}
+     * Constructs instance back from unwrapped value, i.e. works vice versa from {@link Fragment.unwrap}
      */
-    wrap: (unwrappedValue: U) => ScaleInstance<T, U>;
+    wrap: (unwrappedValue: U) => Fragment<T, U>;
 }
 
-export type InstanceViaBuilder<T extends ScaleBuilder<any>> = T extends ScaleBuilder<infer V, infer U>
-    ? ScaleInstance<V, U>
+export type FragmentFromBuilder<T extends FragmentBuilder<any>> = T extends FragmentBuilder<infer V, infer U>
+    ? Fragment<V, U>
     : never;
 
-export type BuilderViaInstance<T extends ScaleInstance<any>> = T extends ScaleInstance<infer V, infer U>
-    ? ScaleBuilder<V, U>
+export type BuilderFromFragment<T extends Fragment<any>> = T extends Fragment<infer V, infer U>
+    ? FragmentBuilder<V, U>
     : never;
 
-export type InnerValue<T extends ScaleInstance<any> | ScaleBuilder<any>> = T extends ScaleInstance<infer V>
+export type FragmentOrBuilderValue<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<infer V>
     ? V
-    : T extends ScaleBuilder<infer V>
+    : T extends FragmentBuilder<infer V>
     ? V
     : never;
 
-export type UnwrappedValue<T extends ScaleInstance<any> | ScaleBuilder<any>> = T extends ScaleInstance<any, infer U>
+export type FragmentOrBuilderUnwrapped<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<
+    any,
+    infer U
+>
     ? U
-    : T extends ScaleBuilder<any, infer U>
+    : T extends FragmentBuilder<any, infer U>
     ? U
     : never;
 
-function decodeAndMemorize<T extends ScaleInstance<any>>(
+function decodeAndMemorize<T extends Fragment<any>>(
     bytes: Uint8Array,
-    decode: Decode<InnerValue<T>>,
-    ctor: ScaleInstanceCtor<InnerValue<T>>,
+    decode: Decode<FragmentOrBuilderValue<T>>,
+    ctor: ScaleInstanceCtor<FragmentOrBuilderValue<T>>,
 ): DecodeResult<T> {
     const [value, bytesCount] = decode(bytes);
     const usedBytes = bytes.slice(0, bytesCount);
@@ -158,26 +161,26 @@ function decodeAndMemorize<T extends ScaleInstance<any>>(
     return [instance, bytesCount];
 }
 
-function unwrapFallback<T>(scale: ScaleInstance<T, any>): any {
+function unwrapFallback<T>(scale: Fragment<T, any>): any {
     return scale.value;
 }
 
-export type ScaleBuilderUnwrapper<T, U> = (self: ScaleInstance<T, U>) => U;
+export type FragmentUnwrapFn<T, U> = (self: Fragment<T, U>) => U;
 
-export type ScaleBuilderWrapper<T, U> = (unwrapped: U) => T;
+export type FragmentWrapFn<T, U> = (unwrapped: U) => T;
 
 /**
- * Universal function that specifies necessary stuff to implement {@link ScaleBuilder} protocol
+ * Universal function that specifies necessary stuff to implement {@link FragmentBuilder} protocol
  */
 // eslint-disable-next-line max-params
-export function createScaleBuilder<T, U = T>(
+export function createBuilder<T, U = T>(
     name: string,
     encode: Encode<T>,
     decode: Decode<T>,
-    unwrap?: ScaleBuilderUnwrapper<T, U>,
-    wrap?: ScaleBuilderWrapper<T, U>,
-): ScaleBuilder<T, U> {
-    const ctor: ScaleBuilder<T, U> = class Self extends ScaleInstance<T, U> {
+    unwrap?: FragmentUnwrapFn<T, U>,
+    wrap?: FragmentWrapFn<T, U>,
+): FragmentBuilder<T, U> {
+    const ctor: FragmentBuilder<T, U> = class Self extends Fragment<T, U> {
         public static fromValue(value: T): Self {
             return new Self([value], null);
         }
@@ -214,4 +217,4 @@ export function createScaleBuilder<T, U = T>(
     return ctor;
 }
 
-export type UnwrapScale<T> = T extends ScaleInstance<any, infer U> ? U : T;
+export type UnwrapFragment<T> = T extends Fragment<any, infer U> ? U : T;

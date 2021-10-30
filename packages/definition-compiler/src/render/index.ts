@@ -17,11 +17,11 @@ function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; 
 }
 
 enum BaseType {
-    Instance = 'ScaleInstance',
-    Builder = 'ScaleBuilder',
-    InstanceViaBuilder = 'InstanceViaBuilder',
-    InnerValue = 'InnerValue',
-    UnwrappedValue = 'UnwrappedValue',
+    Fragment = 'Fragment',
+    Builder = 'FragmentBuilder',
+    FragmentFromBuilder = 'FragmentFromBuilder',
+    InnerValue = 'FragmentOrBuilderValue',
+    UnwrappedValue = 'FragmentOrBuilderUnwrapped',
     Enum = 'Enum',
     Valuable = 'Valuable',
     Option = 'Option',
@@ -53,7 +53,7 @@ interface ImportsCollector {
 }
 
 function instanceViaBuilder(ref: string): string {
-    return `${touchBase(BaseType.InstanceViaBuilder)}<typeof ${touchRef(ref)}>`;
+    return `${touchBase(BaseType.FragmentFromBuilder)}<typeof ${touchRef(ref)}>`;
 }
 
 function createImportsCollector(): ImportsCollector {

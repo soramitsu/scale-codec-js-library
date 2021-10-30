@@ -1,5 +1,5 @@
 import {
-    ScaleBuilder,
+    FragmentBuilder,
     Bool,
     Str,
     U8,
@@ -31,15 +31,19 @@ import {
     VecBool,
 } from '../samples/complexNamespace';
 
-type CaseWrapped<T> = [ScaleBuilder<T>, T, Uint8Array];
+type CaseWrapped<T> = [FragmentBuilder<T>, T, Uint8Array];
 
-function defineCaseWrapped<T>(builder: ScaleBuilder<T, any>, value: T, expectedBytes: Uint8Array): CaseWrapped<T> {
+function defineCaseWrapped<T>(builder: FragmentBuilder<T, any>, value: T, expectedBytes: Uint8Array): CaseWrapped<T> {
     return [builder, value, expectedBytes];
 }
 
-type CaseUnwrapped<T, U> = [ScaleBuilder<T, U>, U, Encode<U>];
+type CaseUnwrapped<T, U> = [FragmentBuilder<T, U>, U, Encode<U>];
 
-function defineCaseUnwrapped<T, U>(builder: ScaleBuilder<T, U>, unwrapped: U, encode: Encode<U>): CaseUnwrapped<T, U> {
+function defineCaseUnwrapped<T, U>(
+    builder: FragmentBuilder<T, U>,
+    unwrapped: U,
+    encode: Encode<U>,
+): CaseUnwrapped<T, U> {
     return [builder, unwrapped, encode];
 }
 

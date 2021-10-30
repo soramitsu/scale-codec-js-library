@@ -13,9 +13,9 @@ import {
     JSBI,
 } from '@scale-codec/core';
 import { createBigIntBuilder } from './builder-creators';
-import { createScaleBuilder, ScaleBuilder } from './instance';
+import { createBuilder, FragmentBuilder } from './fragment';
 
-function biBuilder(bits: AllowedBits, signed: boolean): ScaleBuilder<JSBI> {
+function biBuilder(bits: AllowedBits, signed: boolean): FragmentBuilder<JSBI> {
     return createBigIntBuilder(`${signed ? 'U' : 'I'}${bits}`, bits as AllowedBits, signed);
 }
 
@@ -30,12 +30,12 @@ export const I64 = biBuilder(64, true);
 export const U128 = biBuilder(128, false);
 export const I128 = biBuilder(128, true);
 
-export const Str = createScaleBuilder<string>('Str', encodeStr, decodeStr);
+export const Str = createBuilder<string>('Str', encodeStr, decodeStr);
 
-export const Bool = createScaleBuilder<boolean>('Bool', encodeBool, decodeBool);
+export const Bool = createBuilder<boolean>('Bool', encodeBool, decodeBool);
 
-export const BytesVec = createScaleBuilder<Uint8Array>('BytesVec', encodeUint8Vec, decodeUint8Vec);
+export const BytesVec = createBuilder<Uint8Array>('BytesVec', encodeUint8Vec, decodeUint8Vec);
 
-export const Compact = createScaleBuilder<JSBI>('Compact', encodeCompact, decodeCompact);
+export const Compact = createBuilder<JSBI>('Compact', encodeCompact, decodeCompact);
 
-export const Void = createScaleBuilder<null>('Void', encodeVoid, decodeVoid);
+export const Void = createBuilder<null>('Void', encodeVoid, decodeVoid);

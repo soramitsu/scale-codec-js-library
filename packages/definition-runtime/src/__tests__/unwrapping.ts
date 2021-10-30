@@ -9,37 +9,37 @@ import {
     createTupleBuilder,
     createVecBuilder,
 } from '../builder-creators';
-import { InnerValue, InstanceViaBuilder, ScaleInstance, UnwrappedValue } from '../instance';
+import { FragmentOrBuilderValue, FragmentFromBuilder, Fragment, FragmentOrBuilderUnwrapped } from '../fragment';
 import { Bool, I128, Str } from '../presets';
 
-const Key = createStructBuilder<{ payload: ScaleInstance<JSBI> }>('Key', [['payload', I128]]);
+const Key = createStructBuilder<{ payload: Fragment<JSBI> }>('Key', [['payload', I128]]);
 
 const StructWithKey = createStructBuilder<{
-    key: InstanceViaBuilder<typeof Key>;
+    key: FragmentFromBuilder<typeof Key>;
 }>('', [['key', Key]]);
 
 const Msg = createEnumBuilder<
     Enum<{
         Quit: null;
-        Greeting: Valuable<InstanceViaBuilder<typeof Key>>;
+        Greeting: Valuable<FragmentFromBuilder<typeof Key>>;
     }>
 >('Msg', [
     [0, 'Quit'],
     [1, 'Greeting', Key],
 ]);
 
-const Bool2 = createArrayBuilder<ScaleInstance<boolean>[]>('Bool2', Bool, 2);
+const Bool2 = createArrayBuilder<Fragment<boolean>[]>('Bool2', Bool, 2);
 
-const VecBool = createVecBuilder<ScaleInstance<boolean>[]>('VecBool', Bool);
+const VecBool = createVecBuilder<Fragment<boolean>[]>('VecBool', Bool);
 
-const MAP = createMapBuilder<Map<ScaleInstance<boolean>, ScaleInstance<string>>>('Map', Bool, Str);
+const MAP = createMapBuilder<Map<Fragment<boolean>, Fragment<string>>>('Map', Bool, Str);
 
-const SET = createSetBuilder<Set<ScaleInstance<string>>>('Set', Str);
+const SET = createSetBuilder<Set<Fragment<string>>>('Set', Str);
 
-const TUPLE = createTupleBuilder<[ScaleInstance<boolean>, ScaleInstance<string>]>('Tuple', [Bool, Str]);
+const TUPLE = createTupleBuilder<[Fragment<boolean>, Fragment<string>]>('Tuple', [Bool, Str]);
 
-type KeyValue = InnerValue<typeof Key>;
-type KeyUnwrapped = UnwrappedValue<typeof Key>;
+type KeyValue = FragmentOrBuilderValue<typeof Key>;
+type KeyUnwrapped = FragmentOrBuilderUnwrapped<typeof Key>;
 
 const AliasA = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasA', Key);
 const AliasB = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasB', AliasA);
