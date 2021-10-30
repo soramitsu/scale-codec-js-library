@@ -43,8 +43,7 @@
     ],
     "dependencies": {
         "@scale-codec/enum": "workspace:^0.1.1",
-        "@scale-codec/util": "workspace:^0.1.1",
-        "jsbi": "4.0.0"
+        "@scale-codec/util": "workspace:^0.1.1"
     },
     "devDependencies": {
         "hada": "^0.0.8",

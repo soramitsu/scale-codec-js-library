@@ -3,11 +3,9 @@ import {
     Bool,
     Str,
     U8,
-    JSBI,
     Enum,
     encodeMap,
     encodeStr,
-    encodeBigInt,
     Encode,
     encodeStruct,
     encodeSet,
@@ -18,6 +16,7 @@ import {
     encodeBool,
     encodeTuple,
     Option,
+    encodeInt,
 } from '@scale-codec/definition-runtime';
 import {
     ArraySetU8l2,
@@ -47,9 +46,9 @@ function defineCaseUnwrapped<T, U>(
     return [builder, unwrapped, encode];
 }
 
-const encodeU8: Encode<JSBI> = (x) => encodeBigInt(x, { bits: 8, signed: false, endianness: 'le' });
+const encodeU8: Encode<number> = (x) => encodeInt(x, 'u8');
 
-const encodeSetU8: Encode<Set<JSBI>> = (x) => encodeSet(x, encodeU8);
+const encodeSetU8: Encode<Set<number>> = (x) => encodeSet(x, encodeU8);
 
 type RawMsgEnum = Enum<{ Quit: null; Greeting: Valuable<string> }>;
 const encodeMsgEnum: Encode<RawMsgEnum> = (value) =>
@@ -64,8 +63,8 @@ const encodeOption: Encode<Option<RawMsgEnum>> = (val) =>
 test.each([
     defineCaseWrapped(
         MapStrU8,
-        new Map([[Str.fromValue('Hey'), U8.fromValue(JSBI.BigInt(56))]]),
-        encodeMap(new Map([['Hey', JSBI.BigInt(56)]]), encodeStr, encodeU8),
+        new Map([[Str.fromValue('Hey'), U8.fromValue(56)]]),
+        encodeMap(new Map([['Hey', 56]]), encodeStr, encodeU8),
     ),
     defineCaseWrapped(
         Character,
@@ -73,11 +72,7 @@ test.each([
         encodeStruct({ name: 'Alice' }, { name: encodeStr }, ['name']),
     ),
     defineCaseWrapped(SetU8, new Set(), encodeSetU8(new Set())),
-    defineCaseWrapped(
-        SetU8,
-        new Set([U8.fromValue(JSBI.BigInt(51)), U8.fromValue(JSBI.BigInt(5))]),
-        encodeSetU8(new Set([JSBI.BigInt(51), JSBI.BigInt(5)])),
-    ),
+    defineCaseWrapped(SetU8, new Set([U8.fromValue(51), U8.fromValue(5)]), encodeSetU8(new Set([51, 5]))),
     defineCaseWrapped(Msg, Enum.empty('Quit'), encodeMsgEnum(Enum.empty('Quit'))),
     defineCaseWrapped(VecBool, [Bool.fromValue(false)], encodeVec([false], encodeBool)),
     defineCaseWrapped(StrAlias, 'wow', encodeStr('wow')),
@@ -95,9 +90,7 @@ test.each([
 
 test.each([
     defineCaseUnwrapped(Msg, Enum.valuable('Greeting', 'Nya'), encodeMsgEnum),
-    defineCaseUnwrapped(ArraySetU8l2, [new Set(), new Set([JSBI.BigInt('412341234')])], (x) =>
-        encodeArray(x, encodeSetU8, 2),
-    ),
+    defineCaseUnwrapped(ArraySetU8l2, [new Set(), new Set([412341234])], (x) => encodeArray(x, encodeSetU8, 2)),
     defineCaseUnwrapped(TupleMsgMsg, [Enum.empty('Quit'), Enum.empty('Quit')] as [RawMsgEnum, RawMsgEnum], (x) =>
         encodeTuple(x, [encodeMsgEnum, encodeMsgEnum]),
     ),

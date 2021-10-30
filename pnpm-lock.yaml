@@ -111,12 +111,10 @@ importers:
       '@scale-codec/enum': workspace:^0.1.1
       '@scale-codec/util': workspace:^0.1.1
       hada: ^0.0.8
-      jsbi: 4.0.0
       type-fest: ^2.5.1
     dependencies:
       '@scale-codec/enum': link:../enum
       '@scale-codec/util': link:../util
-      jsbi: 4.0.0
     devDependencies:
       hada: 0.0.8
       type-fest: 2.5.1
@@ -5593,10 +5591,6 @@ packages:
     dependencies:
       argparse: 1.0.10
       esprima: 4.0.1
-
-  /jsbi/4.0.0:
-    resolution: {integrity: sha512-68RUMweVqu0MevPlF4cjsxTvySzvYx4rMZpH8WhoKJ9yIUd5F4/C4zcrp5ITN9j8ayd8DTH6C/2ZuoW9bsBAEw==}
-    dev: false
 
   /jsbn/0.1.1:
     resolution: {integrity: sha1-peZUwuWi3rXyAdls77yoDA7y9RM=}

@@ -2,7 +2,6 @@
 
 import { yieldNTimes } from '@scale-codec/util';
 import { Enum, Option, Valuable } from '@scale-codec/enum';
-import JSBI from 'jsbi';
 import {
     encodeBool,
     decodeBool,
@@ -10,23 +9,36 @@ import {
     decodeBigInt,
     encodeStr,
     decodeStr,
-    BigIntCodecOptions,
-} from '../../primitives';
+    encodeVec,
+    decodeArray,
+    decodeUint8Array,
+    encodeTuple,
+    decodeSet,
+    encodeSet,
+    decodeTuple,
+    encodeArray,
+    encodeUint8Array,
+    decodeVec,
+    encodeUint8Vec,
+    decodeUint8Vec,
+    encodeEnum,
+    decodeEnum,
+    encodeOptionBool,
+    decodeOptionBool,
+    encodeMap,
+    decodeMap,
+    encodeStruct,
+    decodeStruct,
+} from '../';
 import { Encode, Decode, DecodeResult } from '../../types';
-import { encodeVec, decodeVec, encodeUint8Vec, decodeUint8Vec } from '../vec';
-import { encodeEnum, decodeEnum, encodeOptionBool, decodeOptionBool } from '../enum';
-import { encodeMap, decodeMap } from '../map';
-import { encodeStruct, decodeStruct } from '../struct';
-import { encodeTuple, decodeTuple } from '../tuple';
-import { decodeArray, decodeUint8Array, encodeArray, encodeUint8Array } from '../array';
-import { decodeSet, encodeSet } from '../set';
+import { BigIntTypes, decodeInt, encodeInt } from '../int';
 
 type Codec<T> = { encode: Encode<T>; decode: Decode<T> };
 
-export function bigIntCodec(opts: BigIntCodecOptions): Codec<JSBI> {
+export function bigIntCodec(ty: BigIntTypes): Codec<bigint> {
     return {
-        encode: (bi) => encodeBigInt(bi, opts),
-        decode: (bytes) => decodeBigInt(bytes, opts),
+        encode: (bi: bigint) => encodeBigInt(bi, ty),
+        decode: (bytes: Uint8Array) => decodeBigInt(bytes, ty),
     };
 }
 
@@ -63,11 +75,11 @@ function optionCodec<T>({ encode, decode }: Codec<T>): Codec<Option<T>> {
 describe('Vec', () => {
     // https://github.com/paritytech/parity-scale-codec/blob/166d748abc1e48d74c528e2456fefe6f3c48f256/src/codec.rs#L1320
     describe('vec of u8 encoded as expected', () => {
-        const numbers = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34].map((x) => JSBI.BigInt(x));
+        const numbers = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34].map((x) => BigInt(x));
         const hex = '28 00 01 01 02 03 05 08 0d 15 22';
 
         it('encode', () => {
-            const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 8, signed: false, endianness: 'le' });
+            const numEncode = (v: bigint) => encodeBigInt(v, 'u8');
 
             const encoded = encodeVec(numbers, numEncode);
 
@@ -75,8 +87,7 @@ describe('Vec', () => {
         });
 
         it('decode', () => {
-            const numDecode = (b: Uint8Array): [JSBI, number] =>
-                decodeBigInt(b, { bits: 8, signed: false, endianness: 'le' });
+            const numDecode = (b: Uint8Array): [bigint, number] => decodeBigInt(b, 'u8');
             const encoded = prettyHexToBytes(hex);
 
             const [decoded, len] = decodeVec(encoded, numDecode);
@@ -88,12 +99,11 @@ describe('Vec', () => {
 
     // https://github.com/paritytech/parity-scale-codec/blob/166d748abc1e48d74c528e2456fefe6f3c48f256/src/codec.rs#L1328
     it('vec of i16 encoded as expected', () => {
-        const numbers = [0, 1, -1, 2, -2, 3, -3].map((x) => JSBI.BigInt(x));
+        const numbers = [0, 1, -1, 2, -2, 3, -3].map((x) => BigInt(x));
         const hex = '1c 00 00 01 00 ff ff 02 00 fe ff 03 00 fd ff';
 
-        const numEncode = (v: JSBI) => encodeBigInt(v, { bits: 16, signed: true, endianness: 'le' });
-        const numDecode = (b: Uint8Array): [JSBI, number] =>
-            decodeBigInt(b, { bits: 16, signed: true, endianness: 'le' });
+        const numEncode = (v: bigint) => encodeBigInt(v, 'i16');
+        const numDecode = (b: Uint8Array): [bigint, number] => decodeBigInt(b, 'i16');
 
         const encoded = encodeVec(numbers, numEncode);
         expect(hexifyBytes(encoded)).toEqual(hex);
@@ -123,9 +133,7 @@ describe('Vec', () => {
             4,
         ]);
 
-        const [_decoded, len] = decodeVec(encoded, (bytes) =>
-            decodeBigInt(bytes, { bits: 8, endianness: 'le', signed: false }),
-        );
+        const [_decoded, len] = decodeVec(encoded, (bytes) => decodeBigInt(bytes, 'u8'));
 
         expect(len).toEqual(actualVecBytesLen);
     });
@@ -152,10 +160,10 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
 
     // https://github.com/paritytech/parity-scale-codec/blob/master/src/codec.rs#L1336
     describe('vec of option int encoded as expected', () => {
-        const { encode, decode } = optionCodec<JSBI>(bigIntCodec({ bits: 8, signed: true, endianness: 'le' }));
-        const vec: Enum<OptionDef<JSBI>>[] = [
-            Enum.valuable('Some', JSBI.BigInt(1)),
-            Enum.valuable('Some', JSBI.BigInt(-1)),
+        const { encode, decode } = optionCodec<bigint>(bigIntCodec('i8'));
+        const vec: Enum<OptionDef<bigint>>[] = [
+            Enum.valuable('Some', BigInt(1)),
+            Enum.valuable('Some', BigInt(-1)),
             Enum.empty('None'),
         ];
         const hex = '0c 01 01 01 ff 00';
@@ -224,27 +232,19 @@ describe('Tuple', () => {
     });
 
     it('tuple (u64, String, Vec<i8>, (i32, i32), bool) encoded as expected', () => {
-        type Codec<T> = [(v: T) => Uint8Array, (b: Uint8Array) => [T, number]];
-
-        const strCodec: Codec<string> = [encodeStr, decodeStr];
-        const i32Codec: Codec<JSBI> = [
-            (n) => encodeBigInt(n, { bits: 32, signed: true, endianness: 'le' }),
-            (b) => decodeBigInt(b, { bits: 32, signed: true, endianness: 'le' }),
-        ];
-        const i8Codec: Codec<JSBI> = [
-            (n) => encodeBigInt(n, { bits: 8, signed: true, endianness: 'le' }),
-            (b) => decodeBigInt(b, { bits: 8, signed: true, endianness: 'le' }),
-        ];
-        const u64Codec: Codec<JSBI> = [
-            (n) => encodeBigInt(n, { bits: 64, signed: true, endianness: 'le' }),
-            (b) => decodeBigInt(b, { bits: 64, signed: true, endianness: 'le' }),
-        ];
-        const veci8Codec: Codec<JSBI[]> = [(arr) => encodeVec(arr, i8Codec[0]), (b) => decodeVec(b, i8Codec[1])];
-        const boolCodec: Codec<boolean> = [encodeBool, decodeBool];
-        const i32TupleCodec: Codec<[JSBI, JSBI]> = [
-            (v) => encodeTuple(v, yieldNTimes(i32Codec[0], 2) as any),
-            (b) => decodeTuple(b, yieldNTimes(i32Codec[1], 2) as any),
-        ];
+        const strCodec: Codec<string> = { encode: encodeStr, decode: decodeStr };
+        const i32Codec = bigIntCodec('i32');
+        const i8Codec = bigIntCodec('i8');
+        const u64Codec = bigIntCodec('i64');
+        const veci8Codec: Codec<bigint[]> = {
+            encode: (arr) => encodeVec(arr, i8Codec.encode),
+            decode: (b) => decodeVec(b, i8Codec.decode),
+        };
+        const boolCodec: Codec<boolean> = { encode: encodeBool, decode: decodeBool };
+        const i32TupleCodec: Codec<[bigint, bigint]> = {
+            encode: (v) => encodeTuple(v, yieldNTimes(i32Codec.encode, 2) as any),
+            decode: (b) => decodeTuple(b, yieldNTimes(i32Codec.decode, 2) as any),
+        };
 
         const TUPLE_CODECS = [u64Codec, strCodec, veci8Codec, i32TupleCodec, boolCodec];
 
@@ -253,16 +253,10 @@ describe('Tuple', () => {
             6, 0, 1,
         ]);
 
-        const VALUE = [
-            JSBI.BigInt(64),
-            'Henno?',
-            [7, 1, 22, 5, -42].map(JSBI.BigInt),
-            [-4242, 456720].map(JSBI.BigInt),
-            true,
-        ];
+        const VALUE = [BigInt(64), 'Henno?', [7, 1, 22, 5, -42].map(BigInt), [-4242, 456720].map(BigInt), true];
 
-        expect(encodeTuple(VALUE, TUPLE_CODECS.map((x) => x[0]) as any)).toEqual(ENCODED);
-        expect(decodeTuple(ENCODED, TUPLE_CODECS.map((x) => x[1]) as any)).toEqual([VALUE, ENCODED.length]);
+        expect(encodeTuple(VALUE, TUPLE_CODECS.map((x) => x.encode) as any)).toEqual(ENCODED);
+        expect(decodeTuple(ENCODED, TUPLE_CODECS.map((x) => x.decode) as any)).toEqual([VALUE, ENCODED.length]);
     });
 });
 
@@ -272,7 +266,7 @@ describe('Struct', () => {
             // string
             foo: 'bazzing',
             // u32
-            bar: JSBI.BigInt(69),
+            bar: 69,
         };
         const ORDER: (keyof typeof STRUCT)[] = ['foo', 'bar'];
         const ENCODED = Uint8Array.from([28, 98, 97, 122, 122, 105, 110, 103, 69, 0, 0, 0]);
@@ -280,7 +274,7 @@ describe('Struct', () => {
         it('encode', () => {
             const encoders = {
                 foo: encodeStr,
-                bar: (v: JSBI) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' }),
+                bar: (v: number) => encodeInt(v, 'u32'),
             };
 
             const encoded = encodeStruct(STRUCT, encoders, ORDER);
@@ -291,7 +285,7 @@ describe('Struct', () => {
         it('decode', () => {
             const decoders: { [K in keyof typeof STRUCT]: Decode<typeof STRUCT[K]> } = {
                 foo: decodeStr,
-                bar: (buff: Uint8Array) => decodeBigInt(buff, { bits: 32, signed: true, endianness: 'le' }),
+                bar: (buff: Uint8Array) => decodeInt(buff, 'u32'),
             };
 
             const [decoded, len] = decodeStruct(ENCODED, decoders, ORDER);
@@ -328,37 +322,31 @@ describe('Enum', () => {
 
 describe('Map', () => {
     describe('Map<string, u32>', () => {
-        const map = new Map<string, JSBI>([['bazzing', JSBI.BigInt(69)]]);
+        const map = new Map<string, number>([['bazzing', 69]]);
         const encoded = Uint8Array.from([4, 28, 98, 97, 122, 122, 105, 110, 103, 69, 0, 0, 0]);
 
         it('encode', () => {
-            expect(
-                encodeMap(map, encodeStr, (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
-            ).toEqual(encoded);
+            expect(encodeMap(map, encodeStr, (v) => encodeInt(v, 'i32'))).toEqual(encoded);
         });
 
         it('decode', () => {
-            expect(
-                decodeMap(encoded, decodeStr, (v) => decodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
-            ).toEqual([map, encoded.length]);
+            expect(decodeMap(encoded, decodeStr, (b) => decodeInt(b, 'i32'))).toEqual([map, encoded.length]);
         });
     });
 
     describe('Map<u32, u32>', () => {
-        const map = new Map<JSBI, JSBI>(
-            [
-                [1, 2],
-                [23, 24],
-                [28, 30],
-                [45, 80],
-            ].map(([k, v]) => [JSBI.BigInt(k), JSBI.BigInt(v)]),
-        );
+        const map = new Map<number, number>([
+            [1, 2],
+            [23, 24],
+            [28, 30],
+            [45, 80],
+        ]);
         const encoded = Uint8Array.from([
             16, 1, 0, 0, 0, 2, 0, 0, 0, 23, 0, 0, 0, 24, 0, 0, 0, 28, 0, 0, 0, 30, 0, 0, 0, 45, 0, 0, 0, 80, 0, 0, 0,
         ]);
 
-        const encode: Encode<JSBI> = (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' });
-        const decode: Decode<JSBI> = (b) => decodeBigInt(b, { bits: 32, signed: true, endianness: 'le' });
+        const encode: Encode<number> = (v) => encodeInt(v, 'i32');
+        const decode: Decode<number> = (b) => decodeInt(b, 'i32');
 
         it('encode', () => {
             expect(encodeMap(map, encode, encode)).toEqual(encoded);
@@ -373,19 +361,14 @@ describe('Map', () => {
 describe('Array', () => {
     describe('[u8; 7]', () => {
         const nums = [5, 8, 1, 2, 8, 42, 129];
-        const arrU8 = nums.map(JSBI.BigInt);
         const encoded = Uint8Array.from(nums);
 
         test('encode', () => {
-            expect(encodeArray(arrU8, (v) => encodeBigInt(v, { bits: 8, signed: false, endianness: 'le' }), 7)).toEqual(
-                encoded,
-            );
+            expect(encodeArray(nums, (v) => encodeInt(v, 'u8'), 7)).toEqual(encoded);
         });
 
         test('decode', () => {
-            expect(
-                decodeArray(encoded, (b) => decodeBigInt(b, { bits: 8, signed: false, endianness: 'le' }), 7),
-            ).toEqual([arrU8, 7]);
+            expect(decodeArray(encoded, (b) => decodeInt(b, 'u8'), 7)).toEqual([nums, 7]);
         });
     });
 });
@@ -428,9 +411,9 @@ describe('Set', () => {
 
     test.each([
         defCase({
-            js: [2, 24, 30, 80].map((x) => JSBI.BigInt(x)),
+            js: [2, 24, 30, 80].map((x) => BigInt(x)),
             bytes: [16, 2, 0, 0, 0, 24, 0, 0, 0, 30, 0, 0, 0, 80, 0, 0, 0],
-            ...bigIntCodec({ bits: 32, signed: false, endianness: 'le' }),
+            ...bigIntCodec('u32'),
         }),
         defCase({
             js: ['one', '©∆˙©∫∫∫'],

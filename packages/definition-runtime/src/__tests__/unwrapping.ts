@@ -1,4 +1,4 @@
-import { Enum, JSBI, Valuable } from '@scale-codec/core';
+import { Enum, Valuable } from '@scale-codec/core';
 import {
     createAliasBuilder,
     createArrayBuilder,
@@ -12,7 +12,7 @@ import {
 import { FragmentOrBuilderValue, FragmentFromBuilder, Fragment, FragmentOrBuilderUnwrapped } from '../fragment';
 import { Bool, I128, Str } from '../presets';
 
-const Key = createStructBuilder<{ payload: Fragment<JSBI> }>('Key', [['payload', I128]]);
+const Key = createStructBuilder<{ payload: Fragment<bigint> }>('Key', [['payload', I128]]);
 
 const StructWithKey = createStructBuilder<{
     key: FragmentFromBuilder<typeof Key>;
@@ -52,7 +52,7 @@ describe('Unwrapping', () => {
     });
 
     test('Unwraps struct with primitive key', () => {
-        const num = JSBI.BigInt(999767262);
+        const num = BigInt(999767262);
 
         const unwrapped = Key.fromValue({ payload: I128.fromValue(num) }).unwrap();
 
@@ -63,14 +63,14 @@ describe('Unwrapping', () => {
         expect(
             StructWithKey.fromValue({
                 key: Key.fromValue({
-                    payload: I128.fromValue(JSBI.BigInt(0)),
+                    payload: I128.fromValue(BigInt(0)),
                 }),
             }).unwrap(),
-        ).toEqual({ key: { payload: JSBI.BigInt(0) } });
+        ).toEqual({ key: { payload: BigInt(0) } });
     });
 
     test("Unwraps enum's contents", () => {
-        const num = JSBI.BigInt(789123);
+        const num = BigInt(789123);
 
         const nonEmpty = Msg.fromValue(Enum.valuable('Greeting', Key.fromValue({ payload: I128.fromValue(num) })));
         const unwrapped = nonEmpty.unwrap();
@@ -115,7 +115,7 @@ describe('Unwrapping', () => {
     });
 
     test('Unwraps aliases chain', () => {
-        const num = JSBI.BigInt(111);
+        const num = BigInt(111);
 
         expect(
             AliasB.fromValue({
@@ -134,13 +134,13 @@ describe('Wrapping back', () => {
         expect(
             StructWithKey.wrap({
                 key: {
-                    payload: JSBI.BigInt(71),
+                    payload: BigInt(71),
                 },
             }),
         ).toEqual(
             StructWithKey.fromValue({
                 key: Key.fromValue({
-                    payload: I128.fromValue(JSBI.BigInt(71)),
+                    payload: I128.fromValue(BigInt(71)),
                 }),
             }),
         );
@@ -150,7 +150,7 @@ describe('Wrapping back', () => {
         expect(
             Msg.wrap(
                 Enum.valuable('Greeting', {
-                    payload: JSBI.BigInt(67),
+                    payload: BigInt(67),
                 }),
             ),
         ).toEqual(
@@ -158,7 +158,7 @@ describe('Wrapping back', () => {
                 Enum.valuable(
                     'Greeting',
                     Key.fromValue({
-                        payload: I128.fromValue(JSBI.BigInt(67)),
+                        payload: I128.fromValue(BigInt(67)),
                     }),
                 ),
             ),
@@ -206,11 +206,11 @@ describe('Wrapping back', () => {
     test('Wraps aliases chain', () => {
         expect(
             AliasB.wrap({
-                payload: JSBI.BigInt(787171),
+                payload: BigInt(787171),
             }),
         ).toEqual(
             AliasB.fromValue({
-                payload: I128.fromValue(JSBI.BigInt(787171)),
+                payload: I128.fromValue(BigInt(787171)),
             }),
         );
     });

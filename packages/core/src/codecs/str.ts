@@ -1,4 +1,4 @@
-import { decodeUint8Vec, encodeUint8Vec } from '../containers';
+import { decodeUint8Vec, encodeUint8Vec } from './vec';
 import { DecodeResult } from '../types';
 import { mapDecodeResult } from '../util';
 

@@ -1,5 +1,5 @@
 import {
-    AllowedBits,
+    BigIntTypes,
     decodeBool,
     decodeCompact,
     decodeStr,
@@ -10,25 +10,29 @@ import {
     encodeStr,
     encodeUint8Vec,
     encodeVoid,
-    JSBI,
+    IntTypes,
 } from '@scale-codec/core';
-import { createBigIntBuilder } from './builder-creators';
+import { createBigIntBuilder, createIntBuilder } from './builder-creators';
 import { createBuilder, FragmentBuilder } from './fragment';
 
-function biBuilder(bits: AllowedBits, signed: boolean): FragmentBuilder<JSBI> {
-    return createBigIntBuilder(`${signed ? 'U' : 'I'}${bits}`, bits as AllowedBits, signed);
+function intBuilder(ty: IntTypes): FragmentBuilder<number> {
+    return createIntBuilder(ty.toUpperCase(), ty);
 }
 
-export const U8 = biBuilder(8, false);
-export const I8 = biBuilder(8, true);
-export const U16 = biBuilder(16, false);
-export const I16 = biBuilder(16, true);
-export const U32 = biBuilder(32, false);
-export const I32 = biBuilder(32, true);
-export const U64 = biBuilder(64, false);
-export const I64 = biBuilder(64, true);
-export const U128 = biBuilder(128, false);
-export const I128 = biBuilder(128, true);
+function bigIntBuilder(ty: BigIntTypes): FragmentBuilder<bigint> {
+    return createBigIntBuilder(ty.toUpperCase(), ty);
+}
+
+export const U8 = intBuilder('u8');
+export const I8 = intBuilder('i8');
+export const U16 = intBuilder('u16');
+export const I16 = intBuilder('i16');
+export const U32 = intBuilder('u32');
+export const I32 = intBuilder('i32');
+export const U64 = bigIntBuilder('u64');
+export const I64 = bigIntBuilder('i64');
+export const U128 = bigIntBuilder('u128');
+export const I128 = bigIntBuilder('i128');
 
 export const Str = createBuilder<string>('Str', encodeStr, decodeStr);
 
@@ -36,6 +40,6 @@ export const Bool = createBuilder<boolean>('Bool', encodeBool, decodeBool);
 
 export const BytesVec = createBuilder<Uint8Array>('BytesVec', encodeUint8Vec, decodeUint8Vec);
 
-export const Compact = createBuilder<JSBI>('Compact', encodeCompact, decodeCompact);
+export const Compact = createBuilder<bigint>('Compact', encodeCompact, decodeCompact);
 
 export const Void = createBuilder<null>('Void', encodeVoid, decodeVoid);

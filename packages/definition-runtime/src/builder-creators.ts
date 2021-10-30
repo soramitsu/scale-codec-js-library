@@ -1,6 +1,4 @@
 import {
-    AllowedBits,
-    BigIntCodecOptions,
     decodeArray,
     decodeBigInt,
     decodeSet,
@@ -10,7 +8,6 @@ import {
     encodeBigInt,
     encodeSet,
     encodeStruct,
-    JSBI,
     StructEncoders,
     TupleEncoders,
     Enum,
@@ -33,6 +30,10 @@ import {
     Result,
     Valuable,
     mapDecodeResult,
+    BigIntTypes,
+    IntTypes,
+    encodeInt,
+    decodeInt,
 } from '@scale-codec/core';
 import { mapGetUnwrap, yieldNTimes } from '@scale-codec/util';
 import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragment } from './fragment';
@@ -87,13 +88,19 @@ const proxyScaleInstanceEncodeGetters: StructEncoders<any> = new Proxy(
     },
 ) as any;
 
-export function createBigIntBuilder(name: string, bits: AllowedBits, signed: boolean): FragmentBuilder<JSBI> {
-    const opts: BigIntCodecOptions = { bits, signed, endianness: 'le' };
-
-    return createBuilder<JSBI>(
+export function createIntBuilder(name: string, ty: IntTypes): FragmentBuilder<number> {
+    return createBuilder(
         name,
-        (v) => encodeBigInt(v, opts),
-        (b) => decodeBigInt(b, opts),
+        (v) => encodeInt(v, ty),
+        (b) => decodeInt(b, ty),
+    );
+}
+
+export function createBigIntBuilder(name: string, ty: BigIntTypes): FragmentBuilder<bigint> {
+    return createBuilder<bigint>(
+        name,
+        (v) => encodeBigInt(v, ty),
+        (b) => decodeBigInt(b, ty),
     );
 }
 
