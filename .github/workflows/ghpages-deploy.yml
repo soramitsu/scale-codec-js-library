@@ -2,48 +2,44 @@ name: CD
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-      
-    - name: Set up Node.js 14.x
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-      env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
+      - uses: actions/checkout@v2
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v2.0.1
-      with:
-        version: 6.19.0
+      - name: Set up Node.js 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: "true"
 
-    - name: Install packages
-      run: pnpm install
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6.19.0
 
-    - name: Build application
-      run: pnpm run build
-      env:
-        PUBLIC_PATH: /scale-codec-js-library/
+      - name: Install packages
+        run: pnpm install
 
-    - name: deploy application
-      run: pnpm docs:build
+      - name: Build packages
+        run: pnpm run build
+        env:
+          PUBLIC_PATH: /scale-codec-js-library/
 
-    - name: Init git repo in 'dist'
-      working-directory: ./dist
-      run: |
-        git config --global user.email "${GITHUB_ACTOR}@https://users.noreply.github.com/"
-        git config --global user.name "${GITHUB_ACTOR}"
-        git init
-        git add --all
-        git commit -m "Auto update pages on $(date +'%Y-%m-%d %H:%M:%S')"
+      - name: Build docs
+        run: pnpm docs:build
 
-    - name: Push to master:gh-pages
-      working-directory: ./dist
-      run: |
-        git push -f -q https://git:${{ secrets.github_token }}@github.com/${{ github.repository }} master:gh-pages
+      - name: Push dist into master:gh-pages
+        working-directory: ./packages/docs/.vitepress/dist
+        run: |
+          git config --global user.email "${GITHUB_ACTOR}@https://users.noreply.github.com/"
+          git config --global user.name "${GITHUB_ACTOR}"
+          git init
+          git add --all
+          git commit -m "Auto update pages on $(date +'%Y-%m-%d %H:%M:%S')"
+          git push -f -q https://git:${{ secrets.github_token }}@github.com/${{ github.repository }} master:gh-pages
