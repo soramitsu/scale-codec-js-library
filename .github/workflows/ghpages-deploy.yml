@@ -28,11 +28,11 @@ jobs:
 
       - name: Build packages
         run: pnpm run build
-        env:
-          PUBLIC_PATH: /scale-codec-js-library/
 
       - name: Build docs
         run: pnpm docs:build
+        env:
+          PUBLIC_PATH: /scale-codec-js-library/
 
       - name: Push dist into master:gh-pages
         working-directory: ./packages/docs/.vitepress/dist
