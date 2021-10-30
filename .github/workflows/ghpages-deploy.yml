@@ -35,7 +35,7 @@ jobs:
           PUBLIC_PATH: /scale-codec-js-library/
 
       - name: Push dist into master:gh-pages
-        working-directory: ./packages/docs/.vitepress/dist
+        working-directory: ./packages/docs/root/.vitepress/dist
         run: |
           git config --global user.email "${GITHUB_ACTOR}@https://users.noreply.github.com/"
           git config --global user.name "${GITHUB_ACTOR}"
