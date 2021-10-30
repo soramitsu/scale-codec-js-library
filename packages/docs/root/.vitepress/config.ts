@@ -62,7 +62,7 @@ function apiSidebar(): SidebarLink[] {
 }
 
 export default defineConfig({
-    base: '/scale-codec-js-library/',
+    base: process.env.PUBLIC_PATH || '/',
     title: 'SCALE codec',
     description: 'Implementation of SCALE codec spec in JavaScript',
     markdown: {
