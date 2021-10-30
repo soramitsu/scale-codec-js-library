@@ -7,7 +7,9 @@
         "scale-codec",
         "typescript",
         "namespace",
-        "codec"
+        "codec",
+        "serialization",
+        "binary"
     ],
     "license": "Apache-2.0",
     "repository": {
