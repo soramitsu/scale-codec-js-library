@@ -80,8 +80,6 @@ export function createTupleBuilder<T extends Fragment<any>[]>(name: string, buil
 // @public (undocumented)
 export function createVecBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>): ScaleArrayBuilder<T>;
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@scale-codec/definition-runtime" does not have an export "ScaleBuilder"
-//
 // @public
 export class DynBuilder<T, U = T> implements FragmentBuilder<T, U> {
     constructor(dynBuilderFn: DynBuilderFn<T, U>);
@@ -130,6 +128,9 @@ export interface FragmentBuilder<T, U = T> {
 }
 
 // @public (undocumented)
+export type FragmentCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<T, U>;
+
+// @public (undocumented)
 export type FragmentFromBuilder<T extends FragmentBuilder<any>> = T extends FragmentBuilder<infer V, infer U> ? Fragment<V, U> : never;
 
 // @public (undocumented)
@@ -166,9 +167,6 @@ export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, Un
 
 // @public (undocumented)
 export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>>;
-
-// @public (undocumented)
-export type ScaleInstanceCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<T, U>;
 
 // @public (undocumented)
 export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = FragmentBuilder<T, UnwrapScaleMap<T>>;

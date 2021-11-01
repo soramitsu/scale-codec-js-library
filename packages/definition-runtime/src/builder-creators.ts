@@ -40,7 +40,7 @@ import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragmen
 export type DynBuilderFn<T, U = T> = () => FragmentBuilder<T, U>;
 
 /**
- * Wrapper to dynamically dispatch another {@link ScaleBuilder}
+ * Wrapper to dynamically dispatch another {@link FragmentBuilder}
  */
 export class DynBuilder<T, U = T> implements FragmentBuilder<T, U> {
     public readonly fn: DynBuilderFn<T, U>;
@@ -73,17 +73,17 @@ export function dynBuilder<T, U = T>(fn: DynBuilderFn<T, U>): DynBuilder<T, U> {
     return new DynBuilder(fn);
 }
 
-const scaleInstanceEncode: Encode<Fragment<unknown>> = (x) => {
+const fragmentEncode: Encode<Fragment<unknown>> = (x) => {
     if (!(x instanceof Fragment)) {
-        throw new Error(`expected ScaleInstance; actually: ${x}`);
+        throw new Error(`expected Fragment; actually: ${x}`);
     }
     return x.bytes;
 };
 
-const proxyScaleInstanceEncodeGetters: StructEncoders<any> = new Proxy(
+const proxyFragmentEncodeGetters: StructEncoders<any> = new Proxy(
     {},
     {
-        get: () => scaleInstanceEncode,
+        get: () => fragmentEncode,
     },
 ) as any;
 
@@ -120,7 +120,7 @@ function createScaleStructWrapper<T>(schema: StructBuilderSchema<T>): FragmentWr
 export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][];
 
 /**
- * Defines builder for struct which fields (in wrapped state) are `ScaleInstance`s
+ * Defines builder for struct which fields (in wrapped state) are `Fragment`s
  */
 export type ScaleStructBuilder<T extends { [K in keyof T]: Fragment<any> }> = FragmentBuilder<T, UnwrapScaleStruct<T>>;
 
@@ -131,9 +131,9 @@ export type ScaleStructBuilder<T extends { [K in keyof T]: Fragment<any> }> = Fr
  *
  * ```ts
  * const Account: ScaleStructBuilder<{
- *   name: ScaleInstance<string>
+ *   name: Fragment<string>
  *   // extract the type from another builder
- *   second_name: InstanceViaBuilder<typeof Str>
+ *   second_name: FragmentFromBuilder<typeof Str>
  * }> = createStructBuilder('Account', [['name', Str], ['second_name', Str]])
  * ```
  */
@@ -151,7 +151,7 @@ export function createStructBuilder<T extends { [K in keyof T]: Fragment<any> }>
 
     return createBuilder(
         name,
-        (value: T) => encodeStruct<T>(value, proxyScaleInstanceEncodeGetters, order),
+        (value: T) => encodeStruct<T>(value, proxyFragmentEncodeGetters, order),
         (bytes) => decodeStruct(bytes, decoders, order),
         unwrapScaleStruct,
         createScaleStructWrapper<T>(schema),
@@ -204,7 +204,7 @@ export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapSca
  * ```ts
  * const Message: ScaleEnumBuilder<Enum<{
  *   Quit: null
- *   Greeting: Valuable<ScaleInstance<string>>
+ *   Greeting: Valuable<Fragment<string>>
  * }>> = createEnumBuilder('Message', [[0, 'Quit'], [1, 'Greeting', Str]])
  * ```
  */
@@ -213,7 +213,7 @@ export function createEnumBuilder<T extends Enum<any>>(name: string, schema: Enu
     const decoders: EnumDecoders = {};
 
     for (const [dis, name, codec] of schema) {
-        encoders[name] = { d: dis, encode: codec && scaleInstanceEncode };
+        encoders[name] = { d: dis, encode: codec && fragmentEncode };
         decoders[dis] = {
             v: name,
             decode: codec && ((b) => codec.decodeRaw(b)),
@@ -250,7 +250,7 @@ export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, Un
 /**
  * @example
  * ```ts
- * const Array_u32_l5: ScaleArrayBuilder<InstanceViaBuilder<typeof U32>[]> =
+ * const Array_u32_l5: ScaleArrayBuilder<FragmentFromBuilder<typeof U32>[]> =
  *   createArrayBuilder('Array_u32_l5', U32, 5)
  * ```
  */
@@ -261,7 +261,7 @@ export function createArrayBuilder<T extends Fragment<any>[]>(
 ): ScaleArrayBuilder<T> {
     return createBuilder(
         name,
-        (v) => encodeArray(v, scaleInstanceEncode, len),
+        (v) => encodeArray(v, fragmentEncode, len),
         (b) => decodeArray(b, (x) => itemBuilder.decodeRaw(x), len) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
@@ -271,7 +271,7 @@ export function createArrayBuilder<T extends Fragment<any>[]>(
 /**
  * @example
  * ```ts
- * const VecU32: ScaleArrayBuilder<InstanceViaBuilder<typeof U32>[]> =
+ * const VecU32: ScaleArrayBuilder<FragmentFromBuilder<typeof U32>[]> =
  *   createArrayBuilder('VecU32', U32)
  * ```
  */
@@ -281,7 +281,7 @@ export function createVecBuilder<T extends Fragment<any>[]>(
 ): ScaleArrayBuilder<T> {
     return createBuilder(
         name,
-        (v) => encodeVec(v, scaleInstanceEncode),
+        (v) => encodeVec(v, fragmentEncode),
         (b) => decodeVec(b, (x) => itemBuilder.decodeRaw(x)) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
@@ -305,7 +305,7 @@ export type ScaleSetBuilder<T extends Set<Fragment<any>>> = FragmentBuilder<T, U
 /**
  * @example
  * ```ts
- * const SetU32: ScaleSetBuilder<Set<InstanceViaBuilder<typeof U32>>> =
+ * const SetU32: ScaleSetBuilder<Set<FragmentFromBuilder<typeof U32>>> =
  *   createSetBuilder('SetU32', U32)
  * ```
  */
@@ -315,7 +315,7 @@ export function createSetBuilder<T extends Set<Fragment<any>>>(
 ): ScaleSetBuilder<T> {
     return createBuilder(
         name,
-        (value) => encodeSet(value, scaleInstanceEncode),
+        (value) => encodeSet(value, fragmentEncode),
         (bytes) => decodeSet(bytes, (part) => entryBuilder.decodeRaw(part)) as any,
         unwrapScaleSet as any,
         createScaleSetWrapper(entryBuilder),
@@ -348,7 +348,7 @@ export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = Fragm
 /**
  * @example
  * ```ts
- * const MapStrBool: ScaleMapBuilder<Map<InstanceViaBuilder<typeof Str>, InstanceViaBuilder<typeof Bool>>> =
+ * const MapStrBool: ScaleMapBuilder<Map<FragmentFromBuilder<typeof Str>, FragmentFromBuilder<typeof Bool>>> =
  *   createMapBuilder('MapStrBool', Str, Bool)
  * ```
  */
@@ -359,7 +359,7 @@ export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(
 ): ScaleMapBuilder<T> {
     return createBuilder(
         name,
-        (value) => encodeMap(value, scaleInstanceEncode, scaleInstanceEncode),
+        (value) => encodeMap(value, fragmentEncode, fragmentEncode),
         (bytes) =>
             decodeMap(
                 bytes,
@@ -410,7 +410,7 @@ export type ScaleTupleBuilder<T> = FragmentBuilder<T, UnwrapScaleTuple<T>>;
 /**
  * @example
  * ```ts
- * const U32_U32: ScaleTupleBuilder<[InstanceViaBuilder<typeof U32>, InstanceViaBuilder<typeof U32>]> =
+ * const U32_U32: ScaleTupleBuilder<[FragmentFromBuilder<typeof U32>, FragmentFromBuilder<typeof U32>]> =
  *   createTupleBuilder('U32_U32', [U32, U32])
  * ```
  */
@@ -418,7 +418,7 @@ export function createTupleBuilder<T extends Fragment<any>[]>(
     name: string,
     builders: FragmentBuilder<any>[],
 ): ScaleTupleBuilder<T> {
-    const encoders: TupleEncoders<T> = [...yieldNTimes(scaleInstanceEncode, builders.length)] as any;
+    const encoders: TupleEncoders<T> = [...yieldNTimes(fragmentEncode, builders.length)] as any;
 
     const decoders: TupleDecoders<T> = builders.map((x) => (part: Uint8Array) => x.decodeRaw(part)) as any;
 
@@ -436,7 +436,7 @@ type OptionBuilder<T> = T extends Option<Fragment<infer V, infer U>> ? FragmentB
 /**
  * @example
  * ```ts
- * const OptionStr: ScaleEnumBuilder<Option<InstanceViaBuilder<typeof Str>>> =
+ * const OptionStr: ScaleEnumBuilder<Option<FragmentFromBuilder<typeof Str>>> =
  *   createOptionBuilder('OptionStr', Str)
  * ```
  */
@@ -461,7 +461,7 @@ type ResultErrBuilder<T> = T extends Result<Fragment<any, any>, Fragment<infer V
 /**
  * @example
  * ```ts
- * const Res: ScaleEnumBuilder<Result<ScaleInstance<null>, ScaleInstance<string>>> =
+ * const Res: ScaleEnumBuilder<Result<Fragment<null>, Fragment<string>>> =
  *   createResultBuilder('Res', Void, Str)
  * ```
  */

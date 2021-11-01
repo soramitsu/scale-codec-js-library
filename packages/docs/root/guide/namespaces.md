@@ -17,17 +17,17 @@ SCALE might (and should!) be used within huge types namespaces with structs, enu
 
 ## Runtime: Builders and Instances
 
-It exposes 3 core things - `ScaleInstance` abstract class, `ScaleBuilder` interface and `createScaleBuilder()` helper. First one is a generic container for a SCALE-encodable value; the second one defines a constructor for this container with several entrypoints; and the third one combines both via the unified protocol.
+It exposes 3 core things - `Fragment` abstract class, `FragmentBuilder` interface and `createBuilder()` helper.
 
--   `ScaleInstance` is a generic container for value with 2 getters - `value` and `bytes`. Thus you can access its value and encoded bytes simultaneously. It is designed to be **immutable** and due to this it internally uses **lazy computations** with **caching**. It allows:
+-   `Fragment` is a generic container for value with 2 getters - `value` and `bytes`. Thus you can access its value and encoded bytes simultaneously. It is designed to be **immutable** and due to this it internally uses **lazy computations** with **caching**. It allows:
 
     -   To prevent unnecessary encoding/decoding (depends on construction way) before its first access;
     -   To prevent re-encoding and re-decoding the same data multiple times.
 
-    Also it is designed to be embeddable into a fractal nested structure with another `ScaleInstance`s (e.g. for structs, enums, maps etc any other complex type).
+    Also it is designed to be embeddable into a fractal nested structure with another `Fragment`s (e.g. for structs, enums, maps etc any other complex type).
 
--   `ScaleBuilder` is an interface that defines multiple ways to construct `ScaleInstance` - from decoded value, from encoded bytes, from unwrapped value (i.e. wrap it back). Also it is responsible to provide a raw decode function.
--   `createScaleBuilder` helper combines the instance and its builder into a single class via a unified protocol. Here you can define encode/decode functions and wrap/unwrap functions (for advanced types).
+-   `FragmentBuilder` is an interface that defines multiple ways to construct `Fragment` - from decoded value, from encoded bytes, from unwrapped value (i.e. wrap it back). Also it is responsible to provide a raw decode function.
+-   `createBuilder` helper combines the instance and its builder into a single class via a unified protocol. Here you can define encode/decode functions and wrap/unwrap functions (for advanced types).
 
 By the way, there are more high-level tools for specific structures, and some of them described below.
 
@@ -37,9 +37,9 @@ Let's create a builder for string:
 
 ```ts
 import { encodeStrCompact, decodeStrCompact } from '@scale-codec/core';
-import { createScaleBuilder } from '@scale-codec/definition-runtime';
+import { createBuilder } from '@scale-codec/definition-runtime';
 
-const Str = createScaleBuilder<string>(
+const Str = createBuilder<string>(
     // Name is assigned to the internally created class for better
     // debugging experience
     'Str',
@@ -63,12 +63,12 @@ Runtime package exposes a set of unparametrized builders like `Str`, `Bool` and 
 ### Complex builder: struct
 
 ```ts
-import { Str, ScaleStructBuilder, createStructBuilder, InstanceViaBuilder } from '@scale-codec/definition-runtime';
+import { Str, ScaleStructBuilder, createStructBuilder, FragmentFromBuilder } from '@scale-codec/definition-runtime';
 
 const Person: ScaleStructBuilder<{
     // We tell to the builder that in "wrapped" state the value
     // will have a field with another instance for string
-    name: InstanceViaBuilder<typeof Str>;
+    name: FragmentFromBuilder<typeof Str>;
 }> = createStructBuilder('Person', [['name', Str]]);
 
 // Verbose: create & access
