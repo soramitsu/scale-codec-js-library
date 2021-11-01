@@ -6,7 +6,7 @@ import { Enum, Valuable } from './enum';
  * @example
  *
  * ```ts
- * const file: Result<string, Error> = Enum.create('Ok', 'file contents')
+ * const file: Result<string, Error> = Enum.valuable('Ok', 'file contents')
  * ```
  */
 export type Result<O, E> = Enum<{

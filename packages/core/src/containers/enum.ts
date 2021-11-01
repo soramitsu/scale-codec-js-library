@@ -64,42 +64,42 @@ export type EnumDecoders = Record<
 
 const DISCRIMINANT_BYTES_COUNT = 1;
 
-export function encodeEnum<Def>(val: Enum<Def>, encoders: EnumEncoders): Uint8Array {
-    const { variant, content } = val;
-    const { d, encode } = encoders[variant];
+export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders): Uint8Array {
+    const { tag, content } = val;
+    const { d, encode } = encoders[tag];
 
     function* parts(): Generator<Uint8Array> {
         yield new Uint8Array([d]);
         if (encode) {
-            if (!content) throw new Error(`Codec for variant "${variant}" defined, but there is no content`);
-            yield encode(content.value);
+            if (!content) throw new Error(`Codec for variant "${tag}" defined, but there is no content`);
+            yield encode(content[0]);
         }
     }
 
     return concatUint8Arrays(parts());
 }
 
-export function decodeEnum<Def>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<Enum<Def>> {
+export function decodeEnum<T extends Enum<any>>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<T> {
     const d = bytes[0];
     const { v, decode } = decoders[d];
 
     if (decode) {
         const [decodedContent, contentBytes] = decode(bytes.subarray(1));
 
-        return [Enum.create(v as any, decodedContent), DISCRIMINANT_BYTES_COUNT + contentBytes];
+        return [Enum.valuable<any, any>(v as any, decodedContent) as any, DISCRIMINANT_BYTES_COUNT + contentBytes];
     }
 
-    return [Enum.create(v as any), DISCRIMINANT_BYTES_COUNT];
+    return [Enum.empty<any>(v as any) as any, DISCRIMINANT_BYTES_COUNT];
 }
 
 function optBoolByteToEnum(byte: number): Option<boolean> {
     switch (byte) {
         case 0:
-            return Enum.create('None');
+            return Enum.empty('None');
         case 1:
-            return Enum.create('Some', true);
+            return Enum.valuable('Some', true);
         case 2:
-            return Enum.create('Some', false);
+            return Enum.valuable('Some', false);
         default:
             throw new Error(`Failed to decode OptionBool - byte is ${byte}`);
     }

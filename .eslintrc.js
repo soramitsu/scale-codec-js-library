@@ -26,11 +26,17 @@ module.exports = {
         },
         {
             files: ['**/packages/docs/**/*.vue'],
-            plugins: ['vue'],
             extends: ['plugin:vue/vue3-recommended'],
+            parser: 'vue-eslint-parser',
             parserOptions: {
-                ecmaVersion: 2020,
                 parser: '@typescript-eslint/parser',
+                sourceType: 'module',
+            },
+            globals: {
+                defineProps: 'readonly',
+                defineEmits: 'readonly',
+                defineExpose: 'readonly',
+                withDefaults: 'readonly',
             },
             rules: {
                 'vue/html-indent': ['warn', 4],

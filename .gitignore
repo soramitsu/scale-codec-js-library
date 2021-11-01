@@ -1,10 +1,10 @@
 node_modules
 dist
+dist-tsc
 .vscode
 .DS_Store
 .pnpm-store
 report
-.declaration
 .pnpm-debug.log
 tsdoc-metadata.json
 api-extractor/temp

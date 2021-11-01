@@ -13,9 +13,7 @@ export function assert(condition: unknown, message: string | (() => string)): as
 }
 
 /**
- * @summary Creates a concatenated Uint8Array from the inputs.
- * @description
- * Concatenates the input arrays into a single `UInt8Array`.
+ * Creates a concatenated `Uint8Array` from the inputs.
  */
 export function concatUint8Arrays(iterable: Iterable<Uint8Array>): Uint8Array {
     const list = [...iterable];

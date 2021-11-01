@@ -1,48 +1,30 @@
-# @scale-codec/core
+# @scale-codec/core ![version](https://img.shields.io/npm/v/@scale-codec/core) ![license](https://img.shields.io/npm/l/@scale-codec/core)
 
 Codecs for primitives and main containers according to the SCALE specification.
 
-## Install
+Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/core)!
 
-```sh
-# Use your favorite PM
-npm install @scale-codec/core
+## Example
+
+```ts
+import { encodeVec, encodeBool, encodeStr, encodeStruct, Encode, encodeBigInt, JSBI } from '@scale-codec/core';
+
+const encodeInt32: Encode<number> = (num) =>
+    encodeBigInt(JSBI.BigInt(num), { bits: 64, signed: true, endianness: 'le' });
+
+const bytes = encodeStruct(
+    {
+        name: 'Hey',
+        coins: [5, 0, -88178782],
+        adult: true,
+    },
+    {
+        name: encodeStr,
+        coins: (arr) => encodeVec(arr, encodeInt32),
+        adult: encodeBool,
+    },
+    ['name', 'coins', 'adult'],
+);
 ```
 
-### Supported types
-
-Primitive:
-
--   [x] Integers (8/32/64/128/etc-bits, BE/LE, int/uint)
--   [x] String
--   [x] Boolean
-
-Containers:
-
--   [x] Arrays
--   [x] Vecs
--   [x] Tuples
--   [x] Maps (any key-value sized data)
--   [x] Structs
--   [x] Enums
--   [x] Sets
-
-### Docs
-
-Build docs:
-
-```sh
-pnpm docs:build
-```
-
-Serve built docs:
-
-```sh
-pnpm docs:serve
-```
-
-### Why `JSBI` for numbers?
-
-Because it can be easily migrated to the native BigInt in the future with babel plugin: https://github.com/GoogleChromeLabs/babel-plugin-transform-jsbi-to-bigint
-
-### todo check in bigint encode that number in integer!
+And there are more!

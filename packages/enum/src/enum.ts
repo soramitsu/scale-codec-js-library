@@ -5,9 +5,11 @@ export interface Valuable<T> {
     value: T;
 }
 
-export type EmptyVariants<Def> = { [V in keyof Def]: Def[V] extends Valuable<any> ? never : V }[keyof Def];
+export type TagsEmpty<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V }[keyof Def &
+    string];
 
-export type ValuableVariants<Def> = { [V in keyof Def]: Def[V] extends Valuable<any> ? V : never }[keyof Def];
+export type TagsValuable<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never }[keyof Def &
+    string];
 
 export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
 
@@ -36,7 +38,8 @@ export type EnumMatchMap<V, R = any> = {
  * Then you could create enums with that definition type-safely:
  *
  * ```ts
- * const a: MyEnum = Enum.create('EmptyVariant')
+ * const val1: MyEnum = Enum.empty('EmptyVariant')
+ * const val2: MyEnum = Enum.valuable('VarWithBool', true)
  * ```
  *
  * Also look for {@link Valuable} helper
@@ -44,49 +47,41 @@ export type EnumMatchMap<V, R = any> = {
 export class Enum<Def> {
     /**
      * Create an empty variant of enum with it
-     * @param variant - Empty variant name
+     * @param tag - One of enum empty variants' tags
      */
-    public static create<Def, V extends EmptyVariants<Def>>(variant: V): Enum<Def>;
+    public static empty<Def>(tag: TagsEmpty<Def>): Enum<Def> {
+        return new Enum(tag, null);
+    }
 
     /**
      * Create a valuable variant of enum with it
-     * @param variant - Valuable variant name
+     * @param tag - Valuable variant tag
      * @param value - Value associated with variant
      */
-    public static create<Def, V extends ValuableVariants<Def>>(
-        variant: V,
-        // eslint-disable-next-line @typescript-eslint/unified-signatures
+    public static valuable<Def, V extends TagsValuable<Def>>(
+        tag: V,
         value: GetValuableVariantValue<Def[V]>,
-    ): Enum<Def>;
-
-    public static create<Def, V extends keyof Def>(
-        variant: V,
-        value?: Def[V] extends Valuable<infer T> ? T : undefined,
     ): Enum<Def> {
-        return new Enum(
-            variant,
-            // so... we do not accept `undefined` as inner values, yes
-            value === undefined ? undefined : { value },
-        );
+        return new Enum(tag, [value]);
     }
 
-    public readonly variant: keyof Def;
+    public readonly tag: string;
 
     /**
      * Inner value is untyped and should be used with caution
      */
-    public readonly content: null | { value: unknown };
+    public readonly content: null | [some: unknown];
 
-    private constructor(variant: keyof Def, content?: { value: unknown }) {
+    private constructor(tag: string, content: null | [unknown]) {
         this.content = content ?? null;
-        this.variant = variant;
+        this.tag = tag;
     }
 
     /**
      * Check whether an enum instance has this variant name or not
      */
-    public is<V extends keyof Def>(variant: V): boolean {
-        return this.variant === variant;
+    public is<V extends keyof Def>(tag: V): boolean {
+        return this.tag === tag;
     }
 
     /**
@@ -96,12 +91,12 @@ export class Enum<Def> {
      * @remarks
      * Use it in pair {@link Enum.is} to avoid runtime errors.
      */
-    public as<V extends ValuableVariants<Def>>(variant: V): Def[V] extends Valuable<infer T> ? T : never {
-        if (this.is(variant) && this.content) {
-            return this.content.value as Def[V];
+    public as<V extends TagsValuable<Def>>(tag: V): Def[V] extends Valuable<infer T> ? T : never {
+        if (this.is(tag) && this.content) {
+            return this.content[0] as Def[V];
         }
 
-        throw new Error(`cast failed - enum is not the "${variant}"`);
+        throw new Error(`cast failed - enum is not the "${tag}"`);
     }
 
     /**
@@ -110,7 +105,7 @@ export class Enum<Def> {
      * @example
      *
      * ```ts
-     * const file: Result<string, Error> = Enum.create('Err', new Error('Oops!'))
+     * const file: Result<string, Error> = Enum.valuable('Err', new Error('Oops!'))
      *
      * const fileContents = file.match({
      *     Ok: (txt) => txt,
@@ -122,15 +117,15 @@ export class Enum<Def> {
      * ```
      */
     public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
-        const fn = matchMap[this.variant] as (...args: any[]) => any;
-        return this.content ? fn(this.content.value) : fn();
+        const fn = (matchMap as any)[this.tag] as (...args: any[]) => any;
+        return this.content ? fn(this.content[0]) : fn();
     }
 
     /**
      * @internal
      */
     public toJSON() {
-        const { variant, content } = this;
-        return content ? { variant, value: content.value } : { variant };
+        const { tag, content } = this;
+        return content ? { tag, value: content[0] } : { tag };
     }
 }

@@ -1,7 +1,6 @@
-import { concatUint8Arrays } from '@scale-codec/util';
-import JSBI from 'jsbi';
-import { encodeCompact, decodeCompact } from '../compact';
+import { decodeUint8Vec, encodeUint8Vec } from '../containers';
 import { DecodeResult } from '../types';
+import { mapDecodeResult } from '../util';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder('utf-8', {
@@ -14,9 +13,9 @@ const decoder = new TextDecoder('utf-8', {
  *
  * @remarks
  * Uses **whole** received buffer. Note that in SCALE strings represented with a `Compact` prefix so use
- * {@link decodeStrCompact} for it.
+ * {@link decodeStr} for it.
  */
-export function decodeStr(bytes: Uint8Array): string {
+export function decodeStrRaw(bytes: Uint8Array): string {
     return decoder.decode(bytes);
 }
 
@@ -25,30 +24,22 @@ export function decodeStr(bytes: Uint8Array): string {
  *
  * @remarks
  * Do not use it within SCALE spec directly, because strings require compact length prefix. Use
- * {@link encodeStrCompact} instead.
+ * {@link encodeStr} instead.
  */
-export function encodeStr(str: string): Uint8Array {
+export function encodeStrRaw(str: string): Uint8Array {
     return encoder.encode(str);
 }
 
 /**
  * Decodes string by SCALE spec
  */
-export function decodeStrCompact(buff: Uint8Array): DecodeResult<string> {
-    const [length, offset] = decodeCompact(buff);
-    const lenNum = JSBI.toNumber(length);
-    const total = offset + lenNum;
-
-    // assert(length.lten(MAX_LENGTH), () => `Text: length ${length.toString()} exceeds ${MAX_LENGTH}`);
-    // assert(total <= value.length, () => `Text: required length less than remainder, expected at least ${total}, found ${value.length}`);
-
-    return [decodeStr(buff.subarray(offset, total)), offset + lenNum];
+export function decodeStr(bytes: Uint8Array): DecodeResult<string> {
+    return mapDecodeResult(decodeUint8Vec(bytes), decodeStrRaw);
 }
 
 /**
  * Encodes string by SCALE spec
  */
-export function encodeStrCompact(str: string): Uint8Array {
-    const encoded = encodeStr(str);
-    return concatUint8Arrays([encodeCompact(JSBI.BigInt(encoded.length)), encoded]);
+export function encodeStr(str: string): Uint8Array {
+    return encodeUint8Vec(encodeStrRaw(str));
 }

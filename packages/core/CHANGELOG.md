@@ -1,5 +1,25 @@
 # @scale-codec/core
 
+## 0.3.0
+
+### Minor Changes
+
+-   97dfb7d: **Breaking**: rename `encodeStrCompact`& `encodeStr` to `encodeStr` & `encodeStrRaw` relatively (same for `decodeStr*`)
+
+### Patch Changes
+
+-   26c9dd0: Update readme and `homepage` at `package.json`
+-   97dfb7d: Update doc comments, error messages and str encoding internals
+-   6d26250: Bump `jsbi` package to `4.0.0`
+-   ab6d899: Update typings for Enum encode/decode
+-   334a28d: Add keywords to package.json
+-   c78d861: Update usage of `Enum`
+-   Updated dependencies [26c9dd0]
+-   Updated dependencies [c78d861]
+-   Updated dependencies [334a28d]
+    -   @scale-codec/enum@0.2.0
+    -   @scale-codec/util@0.1.2
+
 ## 0.2.3
 
 ### Patch Changes

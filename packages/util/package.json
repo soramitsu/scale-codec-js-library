@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/util",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Shared @scale-codec utilities",
     "license": "Apache-2.0",
     "repository": {
@@ -10,7 +10,7 @@
     "bugs": {
         "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
     },
-    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/util#readme",
+    "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
     "main": "src/lib.ts",
     "publishConfig": {
         "main": "./dist/lib.cjs.js",

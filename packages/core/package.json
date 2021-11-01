@@ -1,8 +1,18 @@
 {
     "name": "@scale-codec/core",
-    "version": "0.2.3",
+    "version": "0.3.0",
     "description": "Implementations of core SCALE-codec primitives and data structures",
     "license": "Apache-2.0",
+    "keywords": [
+        "SCALE",
+        "codec",
+        "binary",
+        "parity-scale-codec",
+        "serialization",
+        "typescript",
+        "rust",
+        "encoding"
+    ],
     "repository": {
         "type": "git",
         "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
@@ -10,7 +20,7 @@
     "bugs": {
         "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
     },
-    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/core#readme",
+    "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
     "main": "src/lib.ts",
     "engines": {
         "node": ">=14.5.0"
@@ -31,19 +41,13 @@
     "files": [
         "dist"
     ],
-    "scripts": {
-        "docs:build": "typedoc --out docs ./src/lib.ts",
-        "docs:serve": "http-server ./docs"
-    },
     "dependencies": {
-        "@scale-codec/enum": "workspace:^0.1.1",
-        "@scale-codec/util": "workspace:^0.1.1",
-        "jsbi": "3.2.5"
+        "@scale-codec/enum": "workspace:^0.2.0",
+        "@scale-codec/util": "workspace:^0.1.2",
+        "jsbi": "4.0.0"
     },
     "devDependencies": {
         "hada": "^0.0.8",
-        "http-server": "^13.0.2",
-        "type-fest": "^2.3.4",
-        "typedoc": "^0.22.5"
+        "type-fest": "^2.5.1"
     }
 }
