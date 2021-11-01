@@ -1,7 +1,7 @@
 {
     "name": "@scale-codec/core",
     "version": "0.3.0",
-    "description": "Implementations of core SCALE-codec primitives and data structures",
+    "description": "Low-level tools to perform serialization and deserialization via SCALE spec",
     "license": "Apache-2.0",
     "keywords": [
         "SCALE",

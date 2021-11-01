@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import inspect from 'object-inspect';
-import { encodeBigInt, JSBI } from '@scale-codec/core';
+import { BigIntTypes, encodeBigInt } from '@scale-codec/core';
 
 const props = defineProps<{
-    signed: boolean;
-    endianness: 'le' | 'be';
-    bits: 8 | 16 | 32 | 64 | 128;
-    num: string;
+    ty: BigIntTypes;
+    num: string | number;
 }>();
 
 const result = computed<string>(() => {
     try {
-        const result = encodeBigInt(JSBI.BigInt(props.num), props);
+        const result = encodeBigInt(BigInt(props.num), props.ty);
         return inspect(result);
     } catch (err) {
         return inspect(err);
