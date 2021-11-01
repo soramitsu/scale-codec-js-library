@@ -27,9 +27,9 @@ function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => a
  * @remarks
  *
  * **Immutable!** Never mutate its `value` or `bytes` internals, because it will produce a malfunction in a
- * whole `ScaleInstance`s' tree (if it contains nested instances).
+ * whole `Fragment`s' tree (if it contains nested instances).
  *
- * Type `Value` represents JS value, `Unwrapped` - JS value with content where all of the `ScaleInstance`s are
+ * Type `Value` represents JS value, `Unwrapped` - JS value with content where all of the `Fragment`s are
  * unwrapped to their values.
  */
 export abstract class Fragment<Value, Unwrapped = Value> {
@@ -61,7 +61,7 @@ export abstract class Fragment<Value, Unwrapped = Value> {
      * @internal
      */
     public constructor(value: null | OptionTuple<Value>, bytes: null | Uint8Array) {
-        if (!value && !bytes) throw new Error('ScaleInstance should have either value or bytes or both');
+        if (!value && !bytes) throw new Error('Fragment should have either value or bytes or both');
 
         // Firstly gettere were on the class itself, but it turned out that under the hood
         // they are defined with `{ enumerable: false }`; also not-own keys & getters aren't visible
@@ -93,15 +93,12 @@ export abstract class Fragment<Value, Unwrapped = Value> {
     }
 
     /**
-     * Unwraps its contents and all of the nested `ScaleInstance`s
+     * Unwraps its contents and all of the nested `Fragment`s
      */
     public abstract unwrap(): Unwrapped;
 }
 
-export type ScaleInstanceCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<
-    T,
-    U
->;
+export type FragmentCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<T, U>;
 
 /**
  * Defines how a builder for {@link Fragment} should look like
@@ -152,7 +149,7 @@ export type FragmentOrBuilderUnwrapped<T extends Fragment<any> | FragmentBuilder
 function decodeAndMemorize<T extends Fragment<any>>(
     bytes: Uint8Array,
     decode: Decode<FragmentOrBuilderValue<T>>,
-    ctor: ScaleInstanceCtor<FragmentOrBuilderValue<T>>,
+    ctor: FragmentCtor<FragmentOrBuilderValue<T>>,
 ): DecodeResult<T> {
     const [value, bytesCount] = decode(bytes);
     const usedBytes = bytes.slice(0, bytesCount);
