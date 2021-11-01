@@ -4,188 +4,227 @@
 
 ```ts
 
-import { decodeBool as bool_decode } from '@scale-codec/core';
-import { encodeBool as bool_encode } from '@scale-codec/core';
-import { decodeUint8Vec as BytesVec_decode } from '@scale-codec/core';
-import { encodeUint8Vec as BytesVec_encode } from '@scale-codec/core';
-import { decodeCompact as Compact_decode } from '@scale-codec/core';
-import { encodeCompact as Compact_encode } from '@scale-codec/core';
+import { AllowedBits } from '@scale-codec/core';
+import { Decode } from '@scale-codec/core';
 import { DecodeResult } from '@scale-codec/core';
+import { Encode } from '@scale-codec/core';
+import { Enum } from '@scale-codec/core';
 import { JSBI } from '@scale-codec/core';
-import { decodeStrCompact as str_decode } from '@scale-codec/core';
-import { encodeStrCompact as str_encode } from '@scale-codec/core';
-import { decodeVoid as Void_decode } from '@scale-codec/core';
-import { encodeVoid as Void_encode } from '@scale-codec/core';
-
-export { bool_decode }
+import { Option as Option_2 } from '@scale-codec/core';
+import { Result } from '@scale-codec/core';
+import { Valuable } from '@scale-codec/core';
 
 // @public (undocumented)
-export type bool_Decoded = boolean;
+export type ArrayItemBuilder<T> = T extends Fragment<infer V, infer U>[] ? FragmentBuilder<V, U> : never;
 
 // @public (undocumented)
-export type bool_Encodable = boolean;
-
-export { bool_encode }
-
-export { BytesVec_decode }
+export const Bool: FragmentBuilder<boolean, boolean>;
 
 // @public (undocumented)
-export type BytesVec_Decoded = Uint8Array;
+export type BuilderFromFragment<T extends Fragment<any>> = T extends Fragment<infer V, infer U> ? FragmentBuilder<V, U> : never;
 
 // @public (undocumented)
-export type BytesVec_Encodable = Uint8Array;
-
-export { BytesVec_encode }
-
-export { Compact_decode }
+export const BytesVec: FragmentBuilder<Uint8Array, Uint8Array>;
 
 // @public (undocumented)
-export type Compact_Decoded = JSBI;
+export const Compact: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export type Compact_Encodable = JSBI;
-
-export { Compact_encode }
+export function createAliasBuilder<T, U>(name: string, to: FragmentBuilder<T, U>): FragmentBuilder<T, U>;
 
 // @public (undocumented)
-export function i128_decode(bytes: Uint8Array): DecodeResult<i128_Decoded>;
+export function createArrayBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>, len: number): ScaleArrayBuilder<T>;
 
 // @public (undocumented)
-export type i128_Decoded = JSBI;
+export function createBigIntBuilder(name: string, bits: AllowedBits, signed: boolean): FragmentBuilder<JSBI>;
+
+// @public
+export function createBuilder<T, U = T>(name: string, encode: Encode<T>, decode: Decode<T>, unwrap?: FragmentUnwrapFn<T, U>, wrap?: FragmentWrapFn<T, U>): FragmentBuilder<T, U>;
 
 // @public (undocumented)
-export type i128_Encodable = JSBI;
+export function createBytesArrayBuilder(name: string, len: number): FragmentBuilder<Uint8Array>;
 
 // @public (undocumented)
-export function i128_encode(encodable: i128_Encodable): Uint8Array;
+export function createEnumBuilder<T extends Enum<any>>(name: string, schema: EnumBuilderSchema): ScaleEnumBuilder<T>;
+
+// Warning: (ae-forgotten-export) The symbol "MapKeyInner" needs to be exported by the entry point lib.d.ts
+// Warning: (ae-forgotten-export) The symbol "MapValueInner" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(name: string, keyBuilder: FragmentBuilder<MapKeyInner<T>>, valueBuilder: FragmentBuilder<MapValueInner<T>>): ScaleMapBuilder<T>;
+
+// Warning: (ae-forgotten-export) The symbol "OptionBuilder" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export function createOptionBuilder<T extends Option_2<Fragment<any>>>(name: string, some: OptionBuilder<T>): ScaleEnumBuilder<T>;
+
+// Warning: (ae-forgotten-export) The symbol "ResultOkBuilder" needs to be exported by the entry point lib.d.ts
+// Warning: (ae-forgotten-export) The symbol "ResultErrBuilder" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export function createResultBuilder<T extends Result<Fragment<any>, Fragment<any>>>(name: string, ok: ResultOkBuilder<T>, err: ResultErrBuilder<T>): ScaleEnumBuilder<T>;
+
+// Warning: (ae-forgotten-export) The symbol "SetEntryBuilder" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export function createSetBuilder<T extends Set<Fragment<any>>>(name: string, entryBuilder: SetEntryBuilder<T>): ScaleSetBuilder<T>;
 
 // @public (undocumented)
-export function i16_decode(bytes: Uint8Array): DecodeResult<i16_Decoded>;
+export function createStructBuilder<T extends {
+    [K in keyof T]: Fragment<any>;
+}>(name: string, schema: StructBuilderSchema<T>): ScaleStructBuilder<T>;
 
 // @public (undocumented)
-export type i16_Decoded = JSBI;
+export function createTupleBuilder<T extends Fragment<any>[]>(name: string, builders: FragmentBuilder<any>[]): ScaleTupleBuilder<T>;
 
 // @public (undocumented)
-export type i16_Encodable = JSBI;
+export function createVecBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>): ScaleArrayBuilder<T>;
+
+// @public
+export class DynBuilder<T, U = T> implements FragmentBuilder<T, U> {
+    constructor(dynBuilderFn: DynBuilderFn<T, U>);
+    // (undocumented)
+    decodeRaw(bytes: Uint8Array): DecodeResult<Fragment<T, U>>;
+    // (undocumented)
+    readonly fn: DynBuilderFn<T, U>;
+    // (undocumented)
+    fromBytes(bytes: Uint8Array): Fragment<T, U>;
+    // (undocumented)
+    fromValue(value: T): Fragment<T, U>;
+    // (undocumented)
+    wrap(unwrapped: U): Fragment<T, U>;
+}
+
+// @public
+export function dynBuilder<T, U = T>(fn: DynBuilderFn<T, U>): DynBuilder<T, U>;
 
 // @public (undocumented)
-export function i16_encode(encodable: i16_Encodable): Uint8Array;
+export type DynBuilderFn<T, U = T> = () => FragmentBuilder<T, U>;
 
 // @public (undocumented)
-export function i32_decode(bytes: Uint8Array): DecodeResult<i32_Decoded>;
+export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: FragmentBuilder<any>][];
+
+// @public
+export abstract class Fragment<Value, Unwrapped = Value> {
+    // Warning: (ae-forgotten-export) The symbol "OptionTuple" needs to be exported by the entry point lib.d.ts
+    //
+    // @internal
+    constructor(value: null | OptionTuple<Value>, bytes: null | Uint8Array);
+    // @internal (undocumented)
+    protected abstract __decode: Decode<Value>;
+    // @internal (undocumented)
+    protected abstract __encode: Encode<Value>;
+    readonly bytes: Uint8Array;
+    abstract unwrap(): Unwrapped;
+    readonly value: Value;
+}
+
+// @public
+export interface FragmentBuilder<T, U = T> {
+    decodeRaw: Decode<Fragment<T, U>>;
+    fromBytes: (bytes: Uint8Array) => Fragment<T, U>;
+    fromValue: (value: T) => Fragment<T, U>;
+    wrap: (unwrappedValue: U) => Fragment<T, U>;
+}
 
 // @public (undocumented)
-export type i32_Decoded = JSBI;
+export type FragmentCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<T, U>;
 
 // @public (undocumented)
-export type i32_Encodable = JSBI;
+export type FragmentFromBuilder<T extends FragmentBuilder<any>> = T extends FragmentBuilder<infer V, infer U> ? Fragment<V, U> : never;
 
 // @public (undocumented)
-export function i32_encode(encodable: i32_Encodable): Uint8Array;
+export type FragmentOrBuilderUnwrapped<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<any, infer U> ? U : T extends FragmentBuilder<any, infer U> ? U : never;
 
 // @public (undocumented)
-export function i64_decode(bytes: Uint8Array): DecodeResult<i64_Decoded>;
+export type FragmentOrBuilderValue<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<infer V> ? V : T extends FragmentBuilder<infer V> ? V : never;
 
 // @public (undocumented)
-export type i64_Decoded = JSBI;
+export type FragmentUnwrapFn<T, U> = (self: Fragment<T, U>) => U;
 
 // @public (undocumented)
-export type i64_Encodable = JSBI;
+export type FragmentWrapFn<T, U> = (unwrapped: U) => T;
 
 // @public (undocumented)
-export function i64_encode(encodable: i64_Encodable): Uint8Array;
+export const I128: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export function i8_decode(bytes: Uint8Array): DecodeResult<i8_Decoded>;
+export const I16: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export type i8_Decoded = JSBI;
+export const I32: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export type i8_Encodable = JSBI;
+export const I64: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export function i8_encode(encodable: i8_Encodable): Uint8Array;
+export const I8: FragmentBuilder<JSBI, JSBI>;
 
-export { str_decode }
+// Warning: (ae-forgotten-export) The symbol "UnwrapScaleArray" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, UnwrapScaleArray<T>>;
 
 // @public (undocumented)
-export type str_Decoded = string;
+export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>>;
 
 // @public (undocumented)
-export type str_Encodable = string;
+export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = FragmentBuilder<T, UnwrapScaleMap<T>>;
 
-export { str_encode }
+// Warning: (ae-forgotten-export) The symbol "UnwrapScaleSet" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export type ScaleSetBuilder<T extends Set<Fragment<any>>> = FragmentBuilder<T, UnwrapScaleSet<T>>;
+
+// @public
+export type ScaleStructBuilder<T extends {
+    [K in keyof T]: Fragment<any>;
+}> = FragmentBuilder<T, UnwrapScaleStruct<T>>;
+
+// Warning: (ae-forgotten-export) The symbol "UnwrapScaleTuple" needs to be exported by the entry point lib.d.ts
+//
+// @public (undocumented)
+export type ScaleTupleBuilder<T> = FragmentBuilder<T, UnwrapScaleTuple<T>>;
 
 // @public (undocumented)
-export function u128_decode(bytes: Uint8Array): DecodeResult<u128_Decoded>;
+export const Str: FragmentBuilder<string, string>;
 
 // @public (undocumented)
-export type u128_Decoded = JSBI;
+export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][];
 
 // @public (undocumented)
-export type u128_Encodable = JSBI;
+export const U128: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export function u128_encode(encodable: u128_Encodable): Uint8Array;
+export const U16: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export function u16_decode(bytes: Uint8Array): DecodeResult<u16_Decoded>;
+export const U32: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export type u16_Decoded = JSBI;
+export const U64: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export type u16_Encodable = JSBI;
+export const U8: FragmentBuilder<JSBI, JSBI>;
 
 // @public (undocumented)
-export function u16_encode(encodable: u16_Encodable): Uint8Array;
+export type UnwrapFragment<T> = T extends Fragment<any, infer U> ? U : T;
 
 // @public (undocumented)
-export function u32_decode(bytes: Uint8Array): DecodeResult<u32_Decoded>;
+export type UnwrapScaleEnum<T extends Enum<any>> = T extends Enum<infer Def> ? Enum<{
+    [K in keyof Def]: Def[K] extends Valuable<infer I> ? I extends Fragment<any, infer U> ? Valuable<U> : never : null;
+}> : never;
 
 // @public (undocumented)
-export type u32_Decoded = JSBI;
+export type UnwrapScaleMap<T> = T extends Map<Fragment<any, infer K>, Fragment<any, infer V>> ? Map<UnwrapFragment<K>, UnwrapFragment<V>> : never;
 
 // @public (undocumented)
-export type u32_Encodable = JSBI;
+export type UnwrapScaleStruct<T> = {
+    [K in keyof T]: UnwrapFragment<T[K]>;
+};
 
 // @public (undocumented)
-export function u32_encode(encodable: u32_Encodable): Uint8Array;
-
-// @public (undocumented)
-export function u64_decode(bytes: Uint8Array): DecodeResult<u64_Decoded>;
-
-// @public (undocumented)
-export type u64_Decoded = JSBI;
-
-// @public (undocumented)
-export type u64_Encodable = JSBI;
-
-// @public (undocumented)
-export function u64_encode(encodable: u64_Encodable): Uint8Array;
-
-// @public (undocumented)
-export function u8_decode(bytes: Uint8Array): DecodeResult<u8_Decoded>;
-
-// @public (undocumented)
-export type u8_Decoded = JSBI;
-
-// @public (undocumented)
-export type u8_Encodable = JSBI;
-
-// @public (undocumented)
-export function u8_encode(encodable: u8_Encodable): Uint8Array;
-
-export { Void_decode }
-
-// @public (undocumented)
-export type Void_Decoded = null;
-
-// @public (undocumented)
-export type Void_Encodable = null;
-
-export { Void_encode }
+export const Void: FragmentBuilder<null, null>;
 
 
 export * from "@scale-codec/core";

@@ -6,7 +6,7 @@ import { Enum, Valuable } from './enum';
  * @example
  *
  * ```ts
- * const maybeString: Option<string> = Enum.create('None')
+ * const maybeString: Option<string> = Enum.empty('None')
  * ```
  */
 export type Option<T> = Enum<{

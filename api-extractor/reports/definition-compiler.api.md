@@ -33,7 +33,7 @@ export type DefEnumVariant = {
 };
 
 // @public
-export type DefExternal = {
+export type DefImport = {
     module: string;
     nameInModule?: string;
 };
@@ -85,23 +85,21 @@ export type DefVec = {
 export type NamespaceDefinition = Record<string, TypeDef>;
 
 // @public
-export function renderNamespaceDefinition(def: NamespaceDefinition, params: RenderNamespaceDefinitionParams): Promise<string>;
+export function renderNamespaceDefinition(definition: NamespaceDefinition, params?: RenderNamespaceDefinitionParams): string;
 
 // @public (undocumented)
 export interface RenderNamespaceDefinitionParams {
-    importLib: string;
     rollupSingleTuplesIntoAliases?: boolean;
+    runtimeLib?: string;
+    runtimeTypes?: Set<string>;
 }
-
-// @public
-export type StdTypes = 'str' | 'bool' | 'u8' | 'u16' | 'u32' | 'u64' | 'u128' | 'i8' | 'i16' | 'i32' | 'i64' | 'i128' | 'Void' | 'Compact' | 'BytesVec';
 
 // Warning: (ae-forgotten-export) The symbol "WithTMark" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export type TypeDef = WithTMark<DefAlias, 'alias'> | WithTMark<DefArray, 'array'> | WithTMark<DefBytesArray, 'bytes-array'> | WithTMark<DefVec, 'vec'> | WithTMark<DefTuple, 'tuple'> | WithTMark<DefStruct, 'struct'> | WithTMark<DefMap, 'map'> | WithTMark<DefSet, 'set'> | WithTMark<DefEnum, 'enum'> | WithTMark<DefOption, 'option'> | WithTMark<DefResult, 'result'> | WithTMark<DefExternal, 'external'>;
+export type TypeDef = WithTMark<DefAlias, 'alias'> | WithTMark<DefArray, 'array'> | WithTMark<DefBytesArray, 'bytes-array'> | WithTMark<DefVec, 'vec'> | WithTMark<DefTuple, 'tuple'> | WithTMark<DefStruct, 'struct'> | WithTMark<DefMap, 'map'> | WithTMark<DefSet, 'set'> | WithTMark<DefEnum, 'enum'> | WithTMark<DefOption, 'option'> | WithTMark<DefResult, 'result'> | WithTMark<DefImport, 'import'>;
 
 // @public (undocumented)
-export type TypeRef = StdTypes | string;
+export type TypeRef = string;
 
 ```

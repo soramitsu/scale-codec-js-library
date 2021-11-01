@@ -1,5 +1,28 @@
 # @scale-codec/definition-runtime
 
+## 0.4.0
+
+### Minor Changes
+
+-   c78d861: **Breaking**:
+
+    -   Runtime: new approach with `Fragment`, `FragmentBuilder` and others
+    -   Compiler: drop vue & prettier + new approach for new runtime
+
+### Patch Changes
+
+-   26c9dd0: Update readme and `homepage` at `package.json`
+-   334a28d: Add keywords to package.json
+-   Updated dependencies [26c9dd0]
+-   Updated dependencies [97dfb7d]
+-   Updated dependencies [6d26250]
+-   Updated dependencies [97dfb7d]
+-   Updated dependencies [ab6d899]
+-   Updated dependencies [334a28d]
+-   Updated dependencies [c78d861]
+    -   @scale-codec/core@0.3.0
+    -   @scale-codec/util@0.1.2
+
 ## 0.1.3
 
 ### Patch Changes

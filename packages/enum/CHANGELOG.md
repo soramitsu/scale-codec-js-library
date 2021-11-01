@@ -1,6 +1,21 @@
 # @scale-codec/enum
 
-## 0.1.1
+## 0.2.0
+
+### Minor Changes
+
+-   c78d861: **Breaking changes**:
+
+    -   drop `create()` static method, add `valuable()` and `empty()` instead
+    -   update internal fields which are used by other packages
+
 ### Patch Changes
 
-- b79934e: Add more inline documentation
+-   26c9dd0: Update readme and `homepage` at `package.json`
+-   334a28d: Add keywords to package.json
+
+## 0.1.1
+
+### Patch Changes
+
+-   b79934e: Add more inline documentation

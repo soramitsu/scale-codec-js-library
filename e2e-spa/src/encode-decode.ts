@@ -1,32 +1,28 @@
-import {
-    Array_Vec_HashMap_str_Id_8_decode,
-    Array_Vec_HashMap_str_Id_8_Encodable,
-    Array_Vec_HashMap_str_Id_8_encode,
-} from './namespace';
+import { Array_Vec_HashMap_str_Id_8 } from './namespace';
 import { Enum, Result, JSBI } from '@scale-codec/definition-runtime';
 import deepEqual from 'fast-deep-equal';
 
 export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
     try {
-        const data: Array_Vec_HashMap_str_Id_8_Encodable = [
+        const data = Array_Vec_HashMap_str_Id_8.wrap([
             [
                 new Map([
                     [
                         'some-key',
                         {
                             name: 'Alice',
-                            second_name: Enum.create('None'),
+                            second_name: Enum.empty('None'),
                             domain: 'wonderland',
-                            enum: Enum.create('Two', [JSBI.BigInt(4412), false, ['nope', JSBI.BigInt(2)]]),
+                            enum: Enum.valuable('Two', [JSBI.BigInt(4412), false, ['nope', JSBI.BigInt(2)]]),
                         },
                     ],
                     [
                         'another',
                         {
                             name: 'Charlie',
-                            second_name: Enum.create('Some', 'Watson'),
+                            second_name: Enum.valuable('Some', 'Watson'),
                             domain: 'netherland',
-                            enum: Enum.create('One'),
+                            enum: Enum.empty('One'),
                         },
                     ],
                 ]),
@@ -38,18 +34,17 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
             [],
             [],
             [],
-        ];
+        ]);
 
-        const encoded = Array_Vec_HashMap_str_Id_8_encode(data);
-        const [decoded] = Array_Vec_HashMap_str_Id_8_decode(encoded);
+        const encoded = data.bytes;
+        const decoded = Array_Vec_HashMap_str_Id_8.fromBytes(encoded);
 
-        if (!deepEqual(data, decoded)) {
+        if (!deepEqual(data.unwrap(), decoded.unwrap())) {
             throw new Error('Not equals >:(');
         }
 
-        return Enum.create('Ok', null);
+        return Enum.valuable('Ok', null);
     } catch (err: any) {
-        // throw err;
-        return Enum.create('Err', err);
+        return Enum.valuable('Err', err);
     }
 }

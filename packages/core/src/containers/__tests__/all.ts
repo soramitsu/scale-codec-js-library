@@ -8,8 +8,8 @@ import {
     decodeBool,
     encodeBigInt,
     decodeBigInt,
-    encodeStrCompact,
-    decodeStrCompact,
+    encodeStr,
+    decodeStr,
     BigIntCodecOptions,
 } from '../../primitives';
 import { Encode, Decode, DecodeResult } from '../../types';
@@ -139,8 +139,8 @@ b8 20 d0 bc d0 b8 d1 80 30 e4 b8 89 e5 9b bd e6 bc 94 e4 b9 89 bc d8 a3 d9 8e d9
 d9 81 20 d9 84 d9 8e d9 8a d9 92 d9 84 d9 8e d8 a9 20 d9 88 d9 8e d9 84 d9 8e d9 8a d9 92 \
 d9 84 d9 8e d8 a9 e2 80 8e`;
 
-        const encode = (v: string) => encodeStrCompact(v);
-        const decode = (b: Uint8Array) => decodeStrCompact(b);
+        const encode = (v: string) => encodeStr(v);
+        const decode = (b: Uint8Array) => decodeStr(b);
 
         const encoded = encodeVec(strings, encode);
         expect(hexifyBytes(encoded)).toEqual(hex);
@@ -154,9 +154,9 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     describe('vec of option int encoded as expected', () => {
         const { encode, decode } = optionCodec<JSBI>(bigIntCodec({ bits: 8, signed: true, endianness: 'le' }));
         const vec: Enum<OptionDef<JSBI>>[] = [
-            Enum.create('Some', JSBI.BigInt(1)),
-            Enum.create('Some', JSBI.BigInt(-1)),
-            Enum.create('None'),
+            Enum.valuable('Some', JSBI.BigInt(1)),
+            Enum.valuable('Some', JSBI.BigInt(-1)),
+            Enum.empty('None'),
         ];
         const hex = '0c 01 01 01 ff 00';
 
@@ -174,9 +174,9 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     // it encodes not like default enum
     describe('vec of option bool encoded as expected', () => {
         const vec: Enum<OptionDef<boolean>>[] = [
-            Enum.create('Some', true),
-            Enum.create('Some', false),
-            Enum.create('None'),
+            Enum.valuable('Some', true),
+            Enum.valuable('Some', false),
+            Enum.empty('None'),
         ];
         const hex = '0c 01 02 00';
 
@@ -200,11 +200,11 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
                 decodeVec(prettyHexToBytes(hex), (bytes): DecodeResult<Enum<OptionDef<boolean>>> => {
                     switch (bytes[0]) {
                         case 0:
-                            return [Enum.create('None'), 1];
+                            return [Enum.empty('None'), 1];
                         case 1:
-                            return [Enum.create('Some', true), 1];
+                            return [Enum.valuable('Some', true), 1];
                         case 2:
-                            return [Enum.create('Some', false), 1];
+                            return [Enum.valuable('Some', false), 1];
                         default:
                             throw new Error('unreachable?');
                     }
@@ -226,7 +226,7 @@ describe('Tuple', () => {
     it('tuple (u64, String, Vec<i8>, (i32, i32), bool) encoded as expected', () => {
         type Codec<T> = [(v: T) => Uint8Array, (b: Uint8Array) => [T, number]];
 
-        const strCodec: Codec<string> = [encodeStrCompact, decodeStrCompact];
+        const strCodec: Codec<string> = [encodeStr, decodeStr];
         const i32Codec: Codec<JSBI> = [
             (n) => encodeBigInt(n, { bits: 32, signed: true, endianness: 'le' }),
             (b) => decodeBigInt(b, { bits: 32, signed: true, endianness: 'le' }),
@@ -279,7 +279,7 @@ describe('Struct', () => {
 
         it('encode', () => {
             const encoders = {
-                foo: encodeStrCompact,
+                foo: encodeStr,
                 bar: (v: JSBI) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' }),
             };
 
@@ -290,7 +290,7 @@ describe('Struct', () => {
 
         it('decode', () => {
             const decoders: { [K in keyof typeof STRUCT]: Decode<typeof STRUCT[K]> } = {
-                foo: decodeStrCompact,
+                foo: decodeStr,
                 bar: (buff: Uint8Array) => decodeBigInt(buff, { bits: 32, signed: true, endianness: 'le' }),
             };
 
@@ -307,20 +307,20 @@ describe('Enum', () => {
         const { encode, decode } = optionCodec({ encode: encodeBool, decode: decodeBool });
 
         it('"None" encoded as expected', () => {
-            expect(encode(Enum.create('None'))).toEqual(new Uint8Array([0]));
+            expect(encode(Enum.empty('None'))).toEqual(new Uint8Array([0]));
         });
 
         it('"None" decoded as expected', () => {
-            const none: Enum<OptionDef<boolean>> = Enum.create('None');
+            const none: Enum<OptionDef<boolean>> = Enum.empty('None');
             expect(decode(new Uint8Array([0]))).toEqual([none, 1]);
         });
 
         it('"Some(false)" encoded as expected', () => {
-            expect(encode(Enum.create('Some', false))).toEqual(new Uint8Array([1, 0]));
+            expect(encode(Enum.valuable('Some', false))).toEqual(new Uint8Array([1, 0]));
         });
 
         it('"Some(false)" decoded as expected', () => {
-            const some: Enum<OptionDef<boolean>> = Enum.create('Some', false);
+            const some: Enum<OptionDef<boolean>> = Enum.valuable('Some', false);
             expect(decode(new Uint8Array([1, 0]))).toEqual([some, 2]);
         });
     });
@@ -333,15 +333,13 @@ describe('Map', () => {
 
         it('encode', () => {
             expect(
-                encodeMap(map, encodeStrCompact, (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
+                encodeMap(map, encodeStr, (v) => encodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
             ).toEqual(encoded);
         });
 
         it('decode', () => {
             expect(
-                decodeMap(encoded, decodeStrCompact, (v) =>
-                    decodeBigInt(v, { bits: 32, signed: true, endianness: 'le' }),
-                ),
+                decodeMap(encoded, decodeStr, (v) => decodeBigInt(v, { bits: 32, signed: true, endianness: 'le' })),
             ).toEqual([map, encoded.length]);
         });
     });
@@ -405,9 +403,9 @@ describe('OptionBool', () => {
     }
 
     test.each([
-        testCase(Enum.create('None'), 0),
-        testCase(Enum.create('Some', true), 1),
-        testCase(Enum.create('Some', false), 2),
+        testCase(Enum.empty('None'), 0),
+        testCase(Enum.valuable('Some', true), 1),
+        testCase(Enum.valuable('Some', false), 2),
     ])('encode/decode %s', (_label, item, byte) => {
         const bytes = Uint8Array.from([byte]);
 
@@ -440,8 +438,8 @@ describe('Set', () => {
                 8, 12, 111, 110, 101, 72, 194, 169, 226, 136, 134, 203, 153, 194, 169, 226, 136, 171, 226, 136, 171,
                 226, 136, 171,
             ],
-            encode: encodeStrCompact,
-            decode: decodeStrCompact,
+            encode: encodeStr,
+            decode: decodeStr,
         }),
     ])('encode/decode set of $js', ({ js, bytes, encode, decode }: TestCase<unknown>) => {
         const set = new Set(js);

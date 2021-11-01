@@ -1,4 +1,4 @@
-# scale-codec-js-library
+# scale-codec-js-library ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![license](https://img.shields.io/github/license/soramitsu/scale-codec-js-library)
 
 Monorepo with [SCALE codec](https://substrate.dev/docs/en/knowledgebase/advanced/codec) implementation in JavaScript.
 
@@ -18,7 +18,7 @@ pnpm i
 
 ### Read The Docs
 
-_Visit published (WIP)_.
+Published at GitHub Pages [here](https://soramitsu.github.io/scale-codec-js-library/).
 
 Locally:
 
@@ -39,5 +39,6 @@ pnpm build
 pnpm publish-all
 
 # docs build
+# result at packages/docs/root/.vitepress/dist
 pnpm docs:build
 ```
