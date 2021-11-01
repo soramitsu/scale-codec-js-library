@@ -167,9 +167,7 @@ export type DefResult = {
  * Provides a possibility to define external types, e.g. to use some complex structure from another compiled namespace
  * OR to define your own custom low-level codec for type that is not included into the SCALE codec spec by default.
  *
- * Note that the external module **should contain the whole type interface**, e.g. the definition name + each of codec
- * prefixes: `External_encode`, `External_decode`, `External_Decoded` and `External_Encodable` (for the "External" type
- * name)
+ * Note that the import should be of `FragmentBuilder` type.
  */
 export type DefImport = {
     /**
