@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/core",
-    "version": "0.2.3",
+    "version": "0.3.0",
     "description": "Implementations of core SCALE-codec primitives and data structures",
     "license": "Apache-2.0",
     "keywords": [
@@ -42,8 +42,8 @@
         "dist"
     ],
     "dependencies": {
-        "@scale-codec/enum": "workspace:^0.1.1",
-        "@scale-codec/util": "workspace:^0.1.1",
+        "@scale-codec/enum": "workspace:^0.2.0",
+        "@scale-codec/util": "workspace:^0.1.2",
         "jsbi": "4.0.0"
     },
     "devDependencies": {
