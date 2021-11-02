@@ -61,10 +61,21 @@ function isIntTypeSigned(ty: IntTypes | BigIntTypes): boolean {
     return ty[0] === 'i';
 }
 
+function checkAndAssertNegation(value: number | bigint, ty: BigIntTypes): boolean {
+    const isNegative = value < 0;
+    const isTySigned = isIntTypeSigned(ty);
+    assert(!isNegative || isTySigned, () => `Negative num (${value}) passed to unsigned ("${ty}") encoder`);
+
+    return isNegative;
+}
+
 /**
  * Encodes signed/unsigned 8/16/32 bits integers in Little-Endian
  */
 export function encodeInt(value: number, ty: IntTypes): Uint8Array {
+    checkAndAssertNegation(value, ty);
+    assert(Number.isSafeInteger(value), () => `Unsafe integer (${value}) is passed into encoder`);
+
     const arr = new Uint8Array(INT_BYTES_COUNT_MAP[ty]);
     const view = new DataView(arr.buffer);
     INT_SETTERS[ty](value, view);
@@ -146,17 +157,15 @@ class LittleEndianBytesView {
  * Encodes `bigint` in Little-Endian
  */
 export function encodeBigInt(bi: bigint, ty: BigIntTypes): Uint8Array {
+    const isNegative = checkAndAssertNegation(bi, ty);
+
+    // check for more optimized ways first
     if (isIntTy(ty)) {
         return encodeInt(Number(bi), ty);
     }
     if (isBigIntTyNativeSupported(ty)) {
         return encodeBINativeSupported(bi, ty);
     }
-
-    // negative analysis
-    const isNegative = bi < 0;
-    const isTySigned = isIntTypeSigned(ty);
-    assert(!isNegative || isTySigned, () => `Negative num (${bi}) passed to unsigned ("${ty}") encoder`);
 
     // prepare
     const bytes = INT_BYTES_COUNT_MAP[ty];

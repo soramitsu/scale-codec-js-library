@@ -32,6 +32,18 @@ describe('Ints (8-32 bits)', () => {
 
         expect(source).toEqual(sourceCopy);
     });
+
+    test('Unsigned encoder throws if negative num is passed', () => {
+        expect(() => encodeInt(-1, 'u16')).toThrow();
+    });
+
+    test('Encoder throws if non-integer num is passed', () => {
+        expect(() => encodeInt(3.14, 'i32')).toThrow();
+    });
+
+    test('Encoder throws if non-safe integer num is passed', () => {
+        expect(() => encodeInt(1e20, 'u32')).toThrow();
+    });
 });
 
 describe('Big ints (64-128 bits)', () => {
@@ -86,4 +98,11 @@ describe('Big ints (64-128 bits)', () => {
         expect(firstResult).toEqual(secondResult);
         expect(firstResult).toEqual([num, 8]);
     });
+
+    test.each([['u32'], ['u64'], ['u128']])(
+        'Unsigned encoder (%p) throws if a negative bigint is passed',
+        (encoding: BigIntTypes) => {
+            expect(() => encodeBigInt(-1n, encoding)).toThrow();
+        },
+    );
 });
