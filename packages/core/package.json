@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/core",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "Low-level tools to perform serialization and deserialization via SCALE spec",
     "license": "Apache-2.0",
     "keywords": [
