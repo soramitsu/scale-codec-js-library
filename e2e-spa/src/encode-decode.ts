@@ -13,7 +13,7 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
                             name: 'Alice',
                             second_name: Enum.empty('None'),
                             domain: 'wonderland',
-                            enum: Enum.valuable('Two', [BigInt(4412), false, ['nope', 2]]),
+                            enum: Enum.valuable('Two', [4412n, false, ['nope', 2]]),
                         },
                     ],
                     [

@@ -162,8 +162,8 @@ d9 84 d9 8e d8 a9 e2 80 8e`;
     describe('vec of option int encoded as expected', () => {
         const { encode, decode } = optionCodec<bigint>(bigIntCodec('i8'));
         const vec: Enum<OptionDef<bigint>>[] = [
-            Enum.valuable('Some', BigInt(1)),
-            Enum.valuable('Some', BigInt(-1)),
+            Enum.valuable('Some', 1n),
+            Enum.valuable('Some', -1n),
             Enum.empty('None'),
         ];
         const hex = '0c 01 01 01 ff 00';
@@ -253,7 +253,7 @@ describe('Tuple', () => {
             6, 0, 1,
         ]);
 
-        const VALUE = [BigInt(64), 'Henno?', [7, 1, 22, 5, -42].map(BigInt), [-4242, 456720].map(BigInt), true];
+        const VALUE = [64n, 'Henno?', [7, 1, 22, 5, -42].map(BigInt), [-4242, 456720].map(BigInt), true];
 
         expect(encodeTuple(VALUE, TUPLE_CODECS.map((x) => x.encode) as any)).toEqual(ENCODED);
         expect(decodeTuple(ENCODED, TUPLE_CODECS.map((x) => x.decode) as any)).toEqual([VALUE, ENCODED.length]);

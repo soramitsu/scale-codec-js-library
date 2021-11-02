@@ -8,7 +8,7 @@ module.exports = {
     // preset: 'ts-jest',
     testEnvironment: 'node',
     transform: {
-        '^.+\\.ts$': ['esbuild-jest', { sourcemap: true }],
+        '^.+\\.ts$': ['esbuild-jest', { sourcemap: true, target: 'es2020' }],
     },
     testMatch: ['**/src/**/*.spec.ts'],
     moduleNameMapper: {

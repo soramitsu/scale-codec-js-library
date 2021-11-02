@@ -52,7 +52,7 @@ describe('Unwrapping', () => {
     });
 
     test('Unwraps struct with primitive key', () => {
-        const num = BigInt(999767262);
+        const num = 999767262n;
 
         const unwrapped = Key.fromValue({ payload: I128.fromValue(num) }).unwrap();
 
@@ -63,14 +63,14 @@ describe('Unwrapping', () => {
         expect(
             StructWithKey.fromValue({
                 key: Key.fromValue({
-                    payload: I128.fromValue(BigInt(0)),
+                    payload: I128.fromValue(0n),
                 }),
             }).unwrap(),
-        ).toEqual({ key: { payload: BigInt(0) } });
+        ).toEqual({ key: { payload: 0n } });
     });
 
     test("Unwraps enum's contents", () => {
-        const num = BigInt(789123);
+        const num = 789123n;
 
         const nonEmpty = Msg.fromValue(Enum.valuable('Greeting', Key.fromValue({ payload: I128.fromValue(num) })));
         const unwrapped = nonEmpty.unwrap();
@@ -115,7 +115,7 @@ describe('Unwrapping', () => {
     });
 
     test('Unwraps aliases chain', () => {
-        const num = BigInt(111);
+        const num = 111n;
 
         expect(
             AliasB.fromValue({
@@ -134,13 +134,13 @@ describe('Wrapping back', () => {
         expect(
             StructWithKey.wrap({
                 key: {
-                    payload: BigInt(71),
+                    payload: 71n,
                 },
             }),
         ).toEqual(
             StructWithKey.fromValue({
                 key: Key.fromValue({
-                    payload: I128.fromValue(BigInt(71)),
+                    payload: I128.fromValue(71n),
                 }),
             }),
         );
@@ -150,7 +150,7 @@ describe('Wrapping back', () => {
         expect(
             Msg.wrap(
                 Enum.valuable('Greeting', {
-                    payload: BigInt(67),
+                    payload: 67n,
                 }),
             ),
         ).toEqual(
@@ -158,7 +158,7 @@ describe('Wrapping back', () => {
                 Enum.valuable(
                     'Greeting',
                     Key.fromValue({
-                        payload: I128.fromValue(BigInt(67)),
+                        payload: I128.fromValue(67n),
                     }),
                 ),
             ),
@@ -206,11 +206,11 @@ describe('Wrapping back', () => {
     test('Wraps aliases chain', () => {
         expect(
             AliasB.wrap({
-                payload: BigInt(787171),
+                payload: 787171n,
             }),
         ).toEqual(
             AliasB.fromValue({
-                payload: I128.fromValue(BigInt(787171)),
+                payload: I128.fromValue(787171n),
             }),
         );
     });

@@ -25,19 +25,19 @@ describe('encode: from Rust tests', (): void => {
         { expected: '03 00 00 00 40', value: BigInt('1073741824') },
         {
             expected: '03 ff ff ff ff',
-            value: BigInt(`0b${1}${'0'.repeat(32)}`) - BigInt(1),
+            value: BigInt(`0b${1}${'0'.repeat(32)}`) - 1n,
         },
         { expected: '07 00 00 00 00 01', value: BigInt(`0b${1}${'0'.repeat(32)}`) },
         { expected: '0b 00 00 00 00 00 01', value: BigInt(`0b${1}${'0'.repeat(40)}`) },
         { expected: '0f 00 00 00 00 00 00 01', value: BigInt(`0b${1}${'0'.repeat(48)}`) },
         {
             expected: '0f ff ff ff ff ff ff ff',
-            value: BigInt(`0b${1}${'0'.repeat(56)}`) - BigInt(1),
+            value: BigInt(`0b${1}${'0'.repeat(56)}`) - 1n,
         },
         { expected: '13 00 00 00 00 00 00 00 01', value: BigInt(`0b${1}${'0'.repeat(56)}`) },
         {
             expected: '13 ff ff ff ff ff ff ff ff',
-            value: BigInt(`0b${1}${'0'.repeat(64)}`) - BigInt(1),
+            value: BigInt(`0b${1}${'0'.repeat(64)}`) - 1n,
         },
     ])('encodes $value', ({ expected, value }) => {
         expect(encodeCompact(value)).toEqual(Uint8Array.from(expected.split(' ').map((s) => parseInt(s, 16))));
