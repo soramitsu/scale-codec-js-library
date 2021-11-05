@@ -1,5 +1,13 @@
 # @scale-codec/e2e-spa
 
+## 0.0.3
+
+### Patch Changes
+
+-   Updated dependencies [8890415]
+    -   @scale-codec/definition-runtime@0.5.0
+    -   @scale-codec/definition-compiler@0.4.0
+
 ## 0.0.2
 
 ### Patch Changes

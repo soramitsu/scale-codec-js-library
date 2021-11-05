@@ -273,6 +273,13 @@
     "be": "ff ff fb 2e"
   },
   {
+    "decimal": "-123",
+    "bits": 64,
+    "signed": true,
+    "le": "85 ff ff ff ff ff ff ff",
+    "be": "ff ff ff ff ff ff ff 85"
+  },
+  {
     "decimal": "255",
     "bits": 8,
     "signed": false,

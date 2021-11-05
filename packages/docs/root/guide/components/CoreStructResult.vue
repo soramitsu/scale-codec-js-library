@@ -1,27 +1,22 @@
 <script setup lang="ts">
-import { encodeStruct, JSBI, encodeStr, encodeBigInt } from '@scale-codec/core';
+import { encodeStruct, encodeStr, encodeBigInt } from '@scale-codec/core';
 import { hexifyBytes } from '@scale-codec/util';
 
 interface Message {
     author: string;
-    timestamp: JSBI;
+    timestamp: bigint;
 }
 
 const msg: Message = {
     author: 'Clara',
-    timestamp: JSBI.BigInt('16488182899412'),
+    timestamp: BigInt('16488182899412'),
 };
 
 const msgEncoded = encodeStruct(
     msg,
     {
         author: encodeStr,
-        timestamp: (v) =>
-            encodeBigInt(v, {
-                bits: 128,
-                signed: false,
-                endianness: 'le',
-            }),
+        timestamp: (v) => encodeBigInt(v, 'u128'),
     },
     ['author', 'timestamp'],
 );

@@ -4,8 +4,11 @@ Tiny crate that generates different integers (with different bit-length, signed/
 
 Generated data located at `output.json`.
 
+**upd**: also compacts here.
+
 ### Regenerate data
 
 ```sh
-cargo run > output.json
+cargo run -- ints > output-ints.json
+cargo run -- compacts > output-compacts.json
 ```

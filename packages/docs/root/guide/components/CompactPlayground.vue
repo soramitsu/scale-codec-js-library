@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { encodeCompact, JSBI } from '@scale-codec/core';
+import { encodeCompact } from '@scale-codec/core';
 import { computed, ref } from 'vue';
 import { hexifyBytes } from '@scale-codec/util';
 import { useIntervalFn } from '@vueuse/core';
@@ -27,7 +27,7 @@ const numInput = computed({
 
 const result = computed<any>(() => {
     try {
-        const bytes = encodeCompact(JSBI.BigInt(num.value));
+        const bytes = encodeCompact(BigInt(num.value));
         return hexifyBytes(bytes);
     } catch (err) {
         return err;

@@ -1,94 +1,71 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from 'vue';
-import { AllowedBits, Endianness, BigIntCodecOptions, encodeBigInt, Result, JSBI, Enum } from '@scale-codec/core';
+import { ref, computed } from 'vue';
+import { encodeBigInt, Result, Enum, BigIntTypes } from '@scale-codec/core';
 import { hexifyBytes } from '@scale-codec/util';
 
-const bits = ref<AllowedBits>(32);
-const optionsBits: AllowedBits[] = [8, 16, 32, 64, 128];
-
-const endianness = ref<Endianness>('le');
-const optionsEnd: Endianness[] = ['le', 'be'];
-
-const signed = ref(false);
+const tySelected = ref<BigIntTypes>('i32');
 
 const num = ref('5881');
-const numAsBI = computed<Result<JSBI, Error>>(() => {
+const numAsBI = computed<Result<bigint, Error>>(() => {
     try {
-        return Enum.valuable('Ok', JSBI.BigInt(num.value));
+        return Enum.valuable('Ok', BigInt(num.value));
     } catch (err) {
         return Enum.valuable('Err', err);
     }
 });
 
-const bigIntOpts: BigIntCodecOptions = reactive({ bits, endianness, signed });
 const output = computed(() => {
     return numAsBI.value.match<any>({
         Err: (e) => e,
         Ok: (bi) => {
             try {
-                return hexifyBytes(encodeBigInt(bi, bigIntOpts));
+                return hexifyBytes(encodeBigInt(bi, tySelected.value));
             } catch (err) {
                 return err;
             }
         },
     });
 });
+
+function* types(): Generator<BigIntTypes> {
+    for (const bits of [8, 16, 32, 64, 128]) {
+        for (const sign of 'ui') {
+            yield `${sign}${bits}` as BigIntTypes;
+        }
+    }
+}
 </script>
 
 <template>
     <div class="border-2 border-solid rounded border-gray-200 p-4">
-        <div class="grid grid-cols-3 gap-4">
-            <div class="space-y-4">
-                <div>
-                    <label>
-                        Number:
-                        <input
-                            v-model="num"
-                            class="block"
-                        >
-                    </label>
-                </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label>
+                    Number:
+                    <input
+                        v-model="num"
+                        class="block"
+                    >
+                </label>
+            </div>
 
-                <div>
-                    <label>
-                        <input
-                            v-model="signed"
-                            type="checkbox"
-                        >
-                        Signed
-                    </label>
-                </div>
-            </div>
             <div>
-                Bits:
-                <div class="grid pt-2 -ml-1">
-                    <label
-                        v-for="x in optionsBits"
-                        :key="x"
+                <div>Type:</div>
+
+                <div class="grid grid-cols-4">
+                    <template
+                        v-for="ty in types()"
+                        :key="ty"
                     >
-                        <input
-                            v-model="bits"
-                            type="radio"
-                            :value="x"
-                        >
-                        {{ x }}
-                    </label>
-                </div>
-            </div>
-            <div>
-                Endianness:
-                <div class="grid pt-2 -ml-1">
-                    <label
-                        v-for="x in optionsEnd"
-                        :key="x"
-                    >
-                        <input
-                            v-model="endianness"
-                            type="radio"
-                            :value="x"
-                        >
-                        {{ x }}
-                    </label>
+                        <label>
+                            <input
+                                v-model="tySelected"
+                                type="radio"
+                                :value="ty"
+                            >
+                            {{ ty }}
+                        </label>
+                    </template>
                 </div>
             </div>
         </div>

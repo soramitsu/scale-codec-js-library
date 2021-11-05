@@ -168,8 +168,8 @@ Todo?
 
 ## Also
 
--   [Runtime's API](/api/definition-runtime)
--   [Compiler's API](/api/definition-compiler)
+-   [Runtime's API](../api/definition-runtime)
+-   [Compiler's API](../api/definition-compiler)
 -   [@polkadot/types](https://github.com/polkadot-js/api/tree/master/packages/types) - another implementation of SCALE codec with a different namespaces approach
 -   [ts-scale-codec](https://www.npmjs.com/package/@josepot/ts-scale-codec)- another lightweight implementation of SCALE
 -   [Protobuf.js](https://protobufjs.github.io/protobuf.js/index.html) - implementation not of SCALE, but of Protobuf spec. Their specs have a lot in common.

@@ -5,22 +5,10 @@
 ```ts
 
 import { Enum } from '@scale-codec/enum';
-import { default as JSBI } from 'jsbi';
-import { default as JSBI_2 } from 'jsbi';
 import { Option as Option_2 } from '@scale-codec/enum';
 
 // @public
-export type AllowedBits = 8 | 16 | 32 | 64 | 128;
-
-// @public (undocumented)
-export interface BigIntCodecOptions {
-    // (undocumented)
-    bits: AllowedBits;
-    // (undocumented)
-    endianness: Endianness;
-    // (undocumented)
-    signed: boolean;
-}
+export type BigIntTypes = IntTypes | `${'i' | 'u'}${64 | 128 | 256 | 512}`;
 
 // @public
 export type Decode<T> = (bytes: Uint8Array) => DecodeResult<T>;
@@ -28,17 +16,23 @@ export type Decode<T> = (bytes: Uint8Array) => DecodeResult<T>;
 // @public
 export function decodeArray<T>(bytes: Uint8Array, itemDecoder: Decode<T>, len: number): DecodeResult<T[]>;
 
-// @public (undocumented)
-export function decodeBigInt(bytesArray: Uint8Array, { bits, signed, endianness }: BigIntCodecOptions): DecodeResult<JSBI_2>;
+// @public
+export function decodeBigInt(input: Uint8Array, ty: BigIntTypes): DecodeResult<bigint>;
+
+// @public
+export function decodeBigIntVarious(input: Uint8Array, bytes: number, signed: boolean): DecodeResult<bigint>;
 
 // @public (undocumented)
 export function decodeBool(bytes: Uint8Array): DecodeResult<boolean>;
 
 // @public
-export function decodeCompact(bytes: Uint8Array): DecodeResult<JSBI_2>;
+export function decodeCompact(input: Uint8Array): DecodeResult<bigint>;
 
 // @public (undocumented)
 export function decodeEnum<T extends Enum<any>>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<T>;
+
+// @public
+export function decodeInt(input: Uint8Array, ty: IntTypes): DecodeResult<number>;
 
 // @public (undocumented)
 export function decodeMap<K, V>(bytes: Uint8Array, KeyDecoder: Decode<K>, ValueDecoder: Decode<V>): DecodeResult<Map<K, V>>;
@@ -82,17 +76,20 @@ export type Encode<T> = (value: T) => Uint8Array;
 // @public
 export function encodeArray<T>(items: T[], itemEncoder: Encode<T>, len: number): Uint8Array;
 
-// @public (undocumented)
-export function encodeBigInt(value: JSBI_2, { bits, signed, endianness }: BigIntCodecOptions): Uint8Array;
+// @public
+export function encodeBigInt(bi: bigint, ty: BigIntTypes): Uint8Array;
 
 // @public (undocumented)
 export function encodeBool(bool: boolean): Uint8Array;
 
 // @public
-export function encodeCompact(bn: JSBI_2): Uint8Array;
+export function encodeCompact(value: bigint): Uint8Array;
 
 // @public (undocumented)
 export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders): Uint8Array;
+
+// @public
+export function encodeInt(value: number, ty: IntTypes): Uint8Array;
 
 // @public (undocumented)
 export function encodeMap<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Uint8Array;
@@ -128,9 +125,6 @@ export function encodeVec<T>(items: T[], itemEncoder: Encode<T>): Uint8Array;
 export function encodeVoid(voidValue?: null): Uint8Array;
 
 // @public
-export type Endianness = 'le' | 'be';
-
-// @public
 export type EnumDecoders = Record<number, {
     v: string | number | symbol;
     decode?: Decode<any>;
@@ -149,7 +143,8 @@ export type EnumSchemaDef<Def> = {
     };
 };
 
-export { JSBI }
+// @public
+export type IntTypes = `${'i' | 'u'}${8 | 16 | 32}`;
 
 // @public (undocumented)
 export function mapDecodeResult<T, U>([value, len]: DecodeResult<T>, mapFn: (value: T) => U): DecodeResult<U>;

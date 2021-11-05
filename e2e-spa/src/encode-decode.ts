@@ -1,5 +1,5 @@
 import { Array_Vec_HashMap_str_Id_8 } from './namespace';
-import { Enum, Result, JSBI } from '@scale-codec/definition-runtime';
+import { Enum, Result } from '@scale-codec/definition-runtime';
 import deepEqual from 'fast-deep-equal';
 
 export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
@@ -13,7 +13,7 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
                             name: 'Alice',
                             second_name: Enum.empty('None'),
                             domain: 'wonderland',
-                            enum: Enum.valuable('Two', [JSBI.BigInt(4412), false, ['nope', JSBI.BigInt(2)]]),
+                            enum: Enum.valuable('Two', [4412n, false, ['nope', 2]]),
                         },
                     ],
                     [
