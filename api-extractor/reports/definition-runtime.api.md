@@ -4,12 +4,12 @@
 
 ```ts
 
-import { AllowedBits } from '@scale-codec/core';
+import { BigIntTypes } from '@scale-codec/core';
 import { Decode } from '@scale-codec/core';
 import { DecodeResult } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Enum } from '@scale-codec/core';
-import { JSBI } from '@scale-codec/core';
+import { IntTypes } from '@scale-codec/core';
 import { Option as Option_2 } from '@scale-codec/core';
 import { Result } from '@scale-codec/core';
 import { Valuable } from '@scale-codec/core';
@@ -27,7 +27,7 @@ export type BuilderFromFragment<T extends Fragment<any>> = T extends Fragment<in
 export const BytesVec: FragmentBuilder<Uint8Array, Uint8Array>;
 
 // @public (undocumented)
-export const Compact: FragmentBuilder<JSBI, JSBI>;
+export const Compact: FragmentBuilder<bigint, bigint>;
 
 // @public (undocumented)
 export function createAliasBuilder<T, U>(name: string, to: FragmentBuilder<T, U>): FragmentBuilder<T, U>;
@@ -36,7 +36,7 @@ export function createAliasBuilder<T, U>(name: string, to: FragmentBuilder<T, U>
 export function createArrayBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>, len: number): ScaleArrayBuilder<T>;
 
 // @public (undocumented)
-export function createBigIntBuilder(name: string, bits: AllowedBits, signed: boolean): FragmentBuilder<JSBI>;
+export function createBigIntBuilder(name: string, ty: BigIntTypes): FragmentBuilder<bigint>;
 
 // @public
 export function createBuilder<T, U = T>(name: string, encode: Encode<T>, decode: Decode<T>, unwrap?: FragmentUnwrapFn<T, U>, wrap?: FragmentWrapFn<T, U>): FragmentBuilder<T, U>;
@@ -46,6 +46,9 @@ export function createBytesArrayBuilder(name: string, len: number): FragmentBuil
 
 // @public (undocumented)
 export function createEnumBuilder<T extends Enum<any>>(name: string, schema: EnumBuilderSchema): ScaleEnumBuilder<T>;
+
+// @public (undocumented)
+export function createIntBuilder(name: string, ty: IntTypes): FragmentBuilder<number>;
 
 // Warning: (ae-forgotten-export) The symbol "MapKeyInner" needs to be exported by the entry point lib.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapValueInner" needs to be exported by the entry point lib.d.ts
@@ -146,19 +149,19 @@ export type FragmentUnwrapFn<T, U> = (self: Fragment<T, U>) => U;
 export type FragmentWrapFn<T, U> = (unwrapped: U) => T;
 
 // @public (undocumented)
-export const I128: FragmentBuilder<JSBI, JSBI>;
+export const I128: FragmentBuilder<bigint, bigint>;
 
 // @public (undocumented)
-export const I16: FragmentBuilder<JSBI, JSBI>;
+export const I16: FragmentBuilder<number, number>;
 
 // @public (undocumented)
-export const I32: FragmentBuilder<JSBI, JSBI>;
+export const I32: FragmentBuilder<number, number>;
 
 // @public (undocumented)
-export const I64: FragmentBuilder<JSBI, JSBI>;
+export const I64: FragmentBuilder<bigint, bigint>;
 
 // @public (undocumented)
-export const I8: FragmentBuilder<JSBI, JSBI>;
+export const I8: FragmentBuilder<number, number>;
 
 // Warning: (ae-forgotten-export) The symbol "UnwrapScaleArray" needs to be exported by the entry point lib.d.ts
 //
@@ -193,19 +196,19 @@ export const Str: FragmentBuilder<string, string>;
 export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][];
 
 // @public (undocumented)
-export const U128: FragmentBuilder<JSBI, JSBI>;
+export const U128: FragmentBuilder<bigint, bigint>;
 
 // @public (undocumented)
-export const U16: FragmentBuilder<JSBI, JSBI>;
+export const U16: FragmentBuilder<number, number>;
 
 // @public (undocumented)
-export const U32: FragmentBuilder<JSBI, JSBI>;
+export const U32: FragmentBuilder<number, number>;
 
 // @public (undocumented)
-export const U64: FragmentBuilder<JSBI, JSBI>;
+export const U64: FragmentBuilder<bigint, bigint>;
 
 // @public (undocumented)
-export const U8: FragmentBuilder<JSBI, JSBI>;
+export const U8: FragmentBuilder<number, number>;
 
 // @public (undocumented)
 export type UnwrapFragment<T> = T extends Fragment<any, infer U> ? U : T;

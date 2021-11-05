@@ -8,22 +8,25 @@
 
 ## Supported types
 
--   Primitives
-    -   Integers - signed & unsigned, 8/16/32/64/128 bits, as [`JSBI` (`BigInt` replacement for compatibility)](https://github.com/GoogleChromeLabs/jsbi), and...
-        -   Compact (special integers representation) - as `JSBI` too
-    -   String - as native JS `String`
-    -   Boolean - as native JS `Boolean`
-    -   Void (just for consistence) - as `null`
--   Complex
-    -   Fixed-length Array - as JS `Array`, and...
-        -   `[u8; len]` as JS `Uint8Array`
-    -   Vector - as JS `Array`, and...
-        -   `Vec<u8>` as JS `Uint8Array`
-    -   Set - as native JS `Set`
-    -   Map - as native JS `Map`
-    -   Struct - as JS object
-    -   Tuple - as JS `Array`
-    -   Enum (+ special codec for OptionBool) - as `Enum` from [`@scale-codec/enum` package](./enum)
+**Low-level:**
+
+-   Integers - signed & unsigned, 8/16/32/64/128 bits. For ints with bits less than or equal 32 both `number` & `bigint` could be used, for 64+ bits integers - only `bigint`.
+-   Compact (int) - as `bigint`
+-   String - as JS `String`
+-   Boolean - as JS `Boolean`
+-   Void (just for consistence) - as `null`
+
+**Higher-order:**
+
+-   Fixed-length Array - as JS `Array`
+-   `[u8; len]` as JS `Uint8Array`
+-   Vector - as JS `Array`
+-   `Vec<u8>` as JS `Uint8Array`
+-   Set - as JS `Set`
+-   Map - as JS `Map`
+-   Struct - as JS object
+-   Tuple - as JS `Array`
+-   Enum (+ special codec for OptionBool) - as `Enum` from [`@scale-codec/enum` package](./enum)
 
 ## Usage examples
 
@@ -39,32 +42,27 @@ import CoreStructResult from './components/CoreStructResult.vue'
 ### Integers
 
 ```ts
-import { encodeBigInt, JSBI } from '@scale-codec/core';
+import { encodeBigInt, encodeInt } from '@scale-codec/core';
 
-const num = JSBI.BigInt(5_012_009);
-const encoded = encodeBigInt(num, {
-    bits: 32,
-    signed: false,
-    endianness: 'le',
-});
-
-console.log(encoded);
+console.log(encodeInt(5_012_009, 'u32'));
+console.log(encodeBigInt(-9_009_000_000_000_000_000n, 'i128'));
 ```
 
 Result:
 
-<BigIntEncode :bits="32" endianness="le" num="5012009" />
+<BigIntEncode ty="u32" num="5012009" /><br>
+<BigIntEncode ty="i128" num="-9009000000000000000" />
 
 [Playground](#bigint-playground)
 
 ### Compact
 
 ```ts
-import { encodeCompact, JSBI } from '@scale-codec/core';
+import { encodeCompact } from '@scale-codec/core';
 import { hexifyBytes } from '@scale-codec/util';
 
 for (const num of [1, 34_000, 891_000_000, '24141828384918234']) {
-    const encoded = encodeCompact(JSBI.BigInt(num));
+    const encoded = encodeCompact(BigInt(num));
     console.log('%s: %s', num, hexifyBytes(encoded));
 }
 ```
@@ -122,29 +120,24 @@ struct Message {
 Definition & encoding in JavaScript:
 
 ```ts
-import { encodeStruct, JSBI, encodeStrCompact, encodeBigInt } from '@scale-codec/core';
+import { encodeStruct, encodeStr, encodeBigInt } from '@scale-codec/core';
 import { hexifyBytes } from '@scale-codec/util';
 
 interface Message {
     author: string;
-    timestamp: JSBI;
+    timestamp: bigint;
 }
 
 const msg: Message = {
     author: 'Clara',
-    timestamp: JSBI.BigInt('16488182899412'),
+    timestamp: BigInt('16488182899412'),
 };
 
 const msgEncoded = encodeStruct(
     msg,
     {
-        author: encodeStrCompact,
-        timestamp: (v) =>
-            encodeBigInt(v, {
-                bits: 128,
-                signed: false,
-                endianness: 'le',
-            }),
+        author: encodeStr,
+        timestamp: (v) => encodeBigInt(v, 'u128'),
     },
     ['author', 'timestamp'],
 );

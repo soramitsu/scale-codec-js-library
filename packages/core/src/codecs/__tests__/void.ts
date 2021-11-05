@@ -1,4 +1,4 @@
-import { encodeVoid, decodeVoid } from './void';
+import { encodeVoid, decodeVoid } from '../void';
 
 test('Encodes into empty bytes', () => {
     expect(encodeVoid()).toEqual(new Uint8Array());

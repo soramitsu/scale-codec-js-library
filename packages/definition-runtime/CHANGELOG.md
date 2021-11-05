@@ -1,5 +1,17 @@
 # @scale-codec/definition-runtime
 
+## 0.5.0
+
+### Minor Changes
+
+-   8890415: **breaking**: update int codecs due to breaking changes in core package
+
+### Patch Changes
+
+-   Updated dependencies [56a9d2c]
+-   Updated dependencies [8890415]
+    -   @scale-codec/core@0.4.0
+
 ## 0.4.0
 
 ### Minor Changes

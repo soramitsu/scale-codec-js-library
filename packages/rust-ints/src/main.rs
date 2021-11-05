@@ -1,13 +1,66 @@
+use parity_scale_codec::{Compact, Encode};
 use serde::Serialize;
+use std::env;
 use std::fmt::{Debug, Display};
 
-#[derive(Debug, Serialize)]
-struct IntEncodedInfo {
-    decimal: String,
-    bits: u32,
-    signed: bool,
-    le: String,
-    be: String,
+fn main() {
+    match parse_args().unwrap() {
+        RunCommand::Compact => compacts(),
+        RunCommand::Int => ints(),
+    }
+}
+
+enum RunCommand {
+    Int,
+    Compact,
+}
+
+fn parse_args() -> Result<RunCommand, String> {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() != 2 {
+        return Err("Expected one command: ints | compacts".to_owned());
+    }
+
+    let command = &args[1];
+    if command == "ints" {
+        Ok(RunCommand::Int)
+    } else if command == "compacts" {
+        Ok(RunCommand::Compact)
+    } else {
+        Err(format!("Unknown command: {}", command))
+    }
+}
+
+fn compacts() {
+    let nums: Vec<u128> = vec![
+        0,
+        u128::pow(2, 8 - 2) - 5,
+        u128::pow(2, 14 - 2) - 5,
+        u128::pow(2, 16 - 2) - 5,
+        u128::pow(2, 24 - 2) - 5,
+        u128::pow(2, 32 - 2) - 5,
+        u128::pow(2, 40 - 2) - 5,
+        u128::pow(2, 48 - 2) - 5,
+        u128::pow(2, 64 - 2) - 5,
+        u128::MAX,
+    ];
+
+    #[derive(Serialize)]
+    struct EncodedInfo {
+        num: String,
+        hex: String,
+    }
+
+    let info: Vec<EncodedInfo> = nums
+        .iter()
+        .map(|x| EncodedInfo {
+            num: x.to_string(),
+            hex: to_hex(&(Compact::from(*x).encode())),
+        })
+        .collect();
+
+    println!("{}", serde_json::to_string_pretty(&info).unwrap());
 }
 
 macro_rules! collect_encoded_info_as_vec {
@@ -16,7 +69,7 @@ macro_rules! collect_encoded_info_as_vec {
     };
 }
 
-fn main() {
+fn ints() {
     let nums: Vec<IntEncodedInfo> = collect_encoded_info_as_vec![
         0u8,
         0u16,
@@ -57,6 +110,7 @@ fn main() {
         256i16,
         1234u32,
         -1234i32,
+        -123i64,
         u8::MAX,
         u16::MAX,
         u32::MAX,
@@ -75,6 +129,15 @@ fn main() {
     ];
 
     println!("{}", serde_json::to_string_pretty(&nums).unwrap());
+}
+
+#[derive(Debug, Serialize)]
+struct IntEncodedInfo {
+    decimal: String,
+    bits: u32,
+    signed: bool,
+    le: String,
+    be: String,
 }
 
 mod generic_nums {

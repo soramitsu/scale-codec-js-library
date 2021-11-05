@@ -3,7 +3,6 @@ import {
     encodeUint8Vec,
     encodeCompact,
     encodeStr,
-    JSBI,
     FragmentFromBuilder,
     Str,
     BytesVec,
@@ -13,7 +12,7 @@ import { Mystery } from '../samples/structFieldsOrdering';
 
 interface Raw {
     b: string;
-    a: JSBI;
+    a: bigint;
     A: Uint8Array;
 }
 
@@ -56,7 +55,7 @@ function encodeRaw(value: Raw): Uint8Array {
 test('Encodes as expected', () => {
     const raw = makeRaw({
         A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
-        a: JSBI.BigInt('81818273'),
+        a: BigInt('81818273'),
         b: 'Nyanpasu',
     });
     const scale = makeScale(raw);
@@ -67,7 +66,7 @@ test('Encodes as expected', () => {
 test('Decodes as expected', () => {
     const raw = makeRaw({
         A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
-        a: JSBI.BigInt('81818273'),
+        a: BigInt('81818273'),
         b: 'Nyanpasu',
     });
     const encoded = encodeRaw(raw);

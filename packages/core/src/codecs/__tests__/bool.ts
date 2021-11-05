@@ -1,4 +1,4 @@
-import { decodeBool, encodeBool } from './bool';
+import { decodeBool, encodeBool } from '../bool';
 
 describe.only('booleans', () => {
     for (const flag of [false, true]) {

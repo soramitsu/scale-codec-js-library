@@ -1,16 +1,15 @@
 # @scale-codec/core ![version](https://img.shields.io/npm/v/@scale-codec/core) ![license](https://img.shields.io/npm/l/@scale-codec/core)
 
-Codecs for primitives and main containers according to the SCALE specification.
+Low-level tools to perform serialization and deserialization via SCALE spec.
 
 Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/core)!
 
 ## Example
 
 ```ts
-import { encodeVec, encodeBool, encodeStr, encodeStruct, Encode, encodeBigInt, JSBI } from '@scale-codec/core';
+import { encodeVec, encodeBool, encodeStr, encodeStruct, Encode, encodeInt } from '@scale-codec/core';
 
-const encodeInt32: Encode<number> = (num) =>
-    encodeBigInt(JSBI.BigInt(num), { bits: 64, signed: true, endianness: 'le' });
+const encodeInt32: Encode<number> = (num) => encodeInt(num, 'i32');
 
 const bytes = encodeStruct(
     {
@@ -25,6 +24,16 @@ const bytes = encodeStruct(
     },
     ['name', 'coins', 'adult'],
 );
+
+console.log(bytes);
 ```
 
-And there are more!
+```
+Uint8Array(18) [
+   12,  72, 101, 121, 12, 5,   0,
+    0,   0,   0,   0,  0, 0, 162,
+  127, 190, 250,   1
+]
+```
+
+And there is more!

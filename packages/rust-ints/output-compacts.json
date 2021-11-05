@@ -1,0 +1,42 @@
+[
+  {
+    "num": "0",
+    "hex": "00"
+  },
+  {
+    "num": "59",
+    "hex": "ec"
+  },
+  {
+    "num": "4091",
+    "hex": "ed 3f"
+  },
+  {
+    "num": "16379",
+    "hex": "ed ff"
+  },
+  {
+    "num": "4194299",
+    "hex": "ee ff ff 00"
+  },
+  {
+    "num": "1073741819",
+    "hex": "ee ff ff ff"
+  },
+  {
+    "num": "274877906939",
+    "hex": "07 fb ff ff ff 3f"
+  },
+  {
+    "num": "70368744177659",
+    "hex": "0b fb ff ff ff ff 3f"
+  },
+  {
+    "num": "4611686018427387899",
+    "hex": "13 fb ff ff ff ff ff ff 3f"
+  },
+  {
+    "num": "340282366920938463463374607431768211455",
+    "hex": "33 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff"
+  }
+]

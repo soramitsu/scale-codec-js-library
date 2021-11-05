@@ -1,5 +1,15 @@
 # @scale-codec/core
 
+## 0.4.0
+
+### Minor Changes
+
+-   8890415: **breaking**: drop `jsbi` replacement for native bigints, use native ones. Int & Compact codecs are completely refactored.
+
+### Patch Changes
+
+-   56a9d2c: Update readme & description in package.json
+
 ## 0.3.0
 
 ### Minor Changes
