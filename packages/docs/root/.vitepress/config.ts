@@ -90,12 +90,13 @@ export default defineConfig({
             },
         ],
         sidebar: {
-            // '/api/': apiSidebar(),
             '/': guideSidebar(),
         },
-        // todo: convenient sidebar for API
     },
     vite: {
         plugins: [WindiCSS({ config: path.resolve(__dirname, '../../windi.config.ts') })],
+        build: {
+            target: 'es2020',
+        },
     },
 });
