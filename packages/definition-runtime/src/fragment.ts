@@ -1,5 +1,6 @@
 import { Encode, Decode, DecodeResult } from '@scale-codec/core';
-import { assert } from '@scale-codec/util';
+import { assert, hexifyBytes } from '@scale-codec/util';
+import { trackDecode } from './errors';
 
 type OptionTupleSome<T> = [T];
 type OptionTuple<T> = null | OptionTupleSome<T>;
@@ -177,6 +178,8 @@ export function createBuilder<T, U = T>(
     unwrap?: FragmentUnwrapFn<T, U>,
     wrap?: FragmentWrapFn<T, U>,
 ): FragmentBuilder<T, U> {
+    const decodeTrackable: Decode<T> = (input) => trackDecode(name, input, decode);
+
     const ctor: FragmentBuilder<T, U> = class Self extends Fragment<T, U> {
         public static fromValue(value: T): Self {
             return new Self([value], null);
@@ -187,7 +190,7 @@ export function createBuilder<T, U = T>(
         }
 
         public static decodeRaw(bytes: Uint8Array): DecodeResult<Self> {
-            return decodeAndMemorize(bytes, decode, Self);
+            return decodeAndMemorize(bytes, decodeTrackable, Self);
         }
 
         public static wrap(unwrappedValue: U): Self {
@@ -195,7 +198,7 @@ export function createBuilder<T, U = T>(
         }
 
         protected __encode = encode;
-        protected __decode = decode;
+        protected __decode = decodeTrackable;
 
         public constructor(value: null | OptionTuple<T>, bytes: null | Uint8Array) {
             super(value, bytes);

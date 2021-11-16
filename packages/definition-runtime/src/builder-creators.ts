@@ -36,6 +36,7 @@ import {
     decodeInt,
 } from '@scale-codec/core';
 import { mapGetUnwrap, yieldNTimes } from '@scale-codec/util';
+import { trackDecode } from './errors';
 import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragment } from './fragment';
 
 export type DynBuilderFn<T, U = T> = () => FragmentBuilder<T, U>;
@@ -153,7 +154,8 @@ export function createStructBuilder<T extends { [K in keyof T]: Fragment<any> }>
 
     for (const [field, builder] of schema) {
         order.push(field);
-        decoders[field] = (bytes: Uint8Array) => builder.decodeRaw(bytes) as any;
+        decoders[field] = (bytes: Uint8Array) =>
+            trackDecode(`'${field}'`, bytes, () => builder.decodeRaw(bytes)) as any;
     }
 
     return createBuilder(
@@ -323,7 +325,7 @@ export function createSetBuilder<T extends Set<Fragment<any>>>(
     return createBuilder(
         name,
         (value) => encodeSet(value, fragmentEncode),
-        (bytes) => decodeSet(bytes, (part) => entryBuilder.decodeRaw(part)) as any,
+        (bytes) => decodeSet(bytes, (part) => trackDecode(`<entry>`, part, () => entryBuilder.decodeRaw(part))) as any,
         unwrapScaleSet as any,
         createScaleSetWrapper(entryBuilder),
     );
@@ -427,7 +429,9 @@ export function createTupleBuilder<T extends Fragment<any>[]>(
 ): ScaleTupleBuilder<T> {
     const encoders: TupleEncoders<T> = [...yieldNTimes(fragmentEncode, builders.length)] as any;
 
-    const decoders: TupleDecoders<T> = builders.map((x) => (part: Uint8Array) => x.decodeRaw(part)) as any;
+    const decoders: TupleDecoders<T> = builders.map(
+        (x, i) => (part: Uint8Array) => trackDecode(`[${i}]`, part, () => x.decodeRaw(part)),
+    ) as any;
 
     return createBuilder(
         name,
