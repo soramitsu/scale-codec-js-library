@@ -1,0 +1,59 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Changes bytesLimit if provided some 1`] = `
+Array [
+  "[SCALE] Decode of \\"First\\" succeed
+
+Decode steps:
+
+<[00 01...] (len = used = 4)>
+  First 🡪 Second: %O
+  First: %O
+",
+  "Result",
+  "Result",
+]
+`;
+
+exports[`Changes bytesLimit if provided some 2`] = `
+Array [
+  "[SCALE] Decode of \\"Whoosh\\" failed with error: Error: Expected inner error
+
+Decode steps:
+
+<04 02... (len: 4)>
+  Whoosh 🡪 Shoowh: ERROR - %s
+  Whoosh: <not computed>
+",
+  [Error: Expected inner error],
+]
+`;
+
+exports[`Prints debug log if related prop is set 1`] = `
+Array [
+  "[SCALE] Decode of \\"First\\" succeed
+
+Decode steps:
+
+<[00 01 02 03] (len = used = 4)>
+  First 🡪 Second: %O
+  First: %O
+",
+  "Result",
+  "Result",
+]
+`;
+
+exports[`Prints error log by default 1`] = `
+Array [
+  "[SCALE] Decode of \\"Whoosh\\" failed with error: Error: Expected inner error
+
+Decode steps:
+
+<04 02 03 01 (len: 4)>
+  Whoosh 🡪 Shoowh: ERROR - %s
+  Whoosh: <not computed>
+",
+  [Error: Expected inner error],
+]
+`;
