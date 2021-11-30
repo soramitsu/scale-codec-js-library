@@ -16,6 +16,9 @@ export type TrackDecodeFn = <T>(loc: string, input: Uint8Array, decode: Decode<T
 
 export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => DecodeResult<T>) => DecodeResult<T>;
 
+/**
+ * Instance that defines method to track decoding flow
+ */
 export interface CodecTracker {
     /**
      * Used to track decode step: location, input, and result
