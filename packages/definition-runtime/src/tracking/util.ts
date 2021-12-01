@@ -17,7 +17,7 @@ export interface PrettyDecodeInputParams {
 function hexLimited(bytes: Uint8Array, limit: number): string {
     const len = bytes.length;
     const cut = len > limit ? bytes.subarray(0, limit) : bytes;
-    const ellipsis = len > limit ? '...' : '';
+    const ellipsis = len > limit ? '…' : '';
     return `${hexifyBytes(cut)}${ellipsis}`;
 }
 
@@ -41,13 +41,13 @@ export function prettyDecodeInput(input: Uint8Array, params?: PrettyDecodeInputP
         shallPrintTheUsed && `[${hexLimited(input.subarray(0, used), computedSpaceForTheUsed)}]`;
     const theRestFormattedPart =
         shallPrintTheRest &&
-        (computedSpaceForTheRest ? hexLimited(input.subarray(used), computedSpaceForTheRest) : '...');
+        (computedSpaceForTheRest ? hexLimited(input.subarray(used), computedSpaceForTheRest) : '…');
     const formattedInput = [theUsedFormattedPart, theRestFormattedPart].filter((x) => !!x).join(' ');
 
     const summary =
         len === used ? `len = used = ${len}` : `len: ${len}${used ? `, used: ${used > len ? '(!) ' : ''}${used}` : ''}`;
 
-    return `<${formattedInput} (${summary})>`;
+    return `${formattedInput} (${summary})`;
 }
 
 export function isTrackValueInspectable(value: unknown): value is TrackValueInspectable {

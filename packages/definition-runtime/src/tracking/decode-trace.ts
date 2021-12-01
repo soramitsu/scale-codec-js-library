@@ -150,38 +150,76 @@ function tracePath(trace: DecodeTrace): string[] {
     return path;
 }
 
+const INDENT = ' '.repeat(4);
+
 function buildStepsRecursive(trace: DecodeTrace, params?: BuildTraceStepsFmtParams): Fmt {
     const errored = !!trace.error;
     const resultVal = trace.result;
 
-    let result = fmt``;
-
-    if (!trace.children.length) {
-        result = result.concat(
-            fmt`${
-                trace.input
-                    ? prettyDecodeInput(trace.input, {
-                          used: resultVal?.bytes,
-                          bytesLimit: params?.bytesPrintLimit,
-                      })
-                    : '<no input>'
-            }\n`,
-        );
-    } else {
-        result = result.concat(...trace.children.map((x) => buildStepsRecursive(x, params)));
-    }
-
-    const path = tracePath(trace);
-
-    const decodeResultFmt = errored
+    const path = tracePath(trace).join(' / ');
+    const result = errored
         ? fmt`ERROR - ${sub(trace.error, '%s')}`
         : resultVal
         ? sub(resultVal.value, '%O')
         : '<not computed>';
+    const input = trace.input
+        ? prettyDecodeInput(trace.input, {
+              used: resultVal?.bytes,
+              bytesLimit: params?.bytesPrintLimit,
+          })
+        : '<no input>';
 
-    result = result.concat(fmt`  ${path.join(' 🡪 ')}: ${decodeResultFmt}\n`);
+    let acc = Fmt.concat(
+        fmt`${path}\n`,
+        fmt`${INDENT}Input: ${input}\n`,
+        fmt`${INDENT}Children: ${trace.children.length}\n`,
+        fmt`${INDENT}Result: ${result}\n`,
+    );
 
-    return result;
+    if (trace.children.length) {
+        acc = acc.concat(
+            ...trace.children.map((x) => buildStepsRecursive(x, params)),
+            // fmt`  ...${path}\n  Result: ${result}\n`,
+        );
+    } else {
+        // acc = acc.concat(fmt`  Result: ${result}\n`);
+    }
+
+    return acc;
+
+    // if (!trace.children.length) {
+    //     result = result.concat(
+    //         fmt`${
+    //             trace.input
+    //                 ? prettyDecodeInput(trace.input, {
+    //                       used: resultVal?.bytes,
+    //                       bytesLimit: params?.bytesPrintLimit,
+    //                   })
+    //                 : '<no input>'
+    //         }\n`,
+    //     );
+    // } else {
+    //     result = result.concat(...trace.children.map((x) => buildStepsRecursive(x, params)));
+    // }
+
+    // /*
+    //     Value: maybe result or error
+    //       <its input maybe with used bytes>
+    //     Value -> ::U128 -> U128: maybe result or error
+
+    //  */
+
+    // const path = tracePath(trace);
+
+    // const decodeResultFmt = errored
+    //     ? fmt`ERROR - ${sub(trace.error, '%s')}`
+    //     : resultVal
+    //     ? sub(resultVal.value, '%O')
+    //     : '<not computed>';
+
+    // result = result.concat(fmt`  ${path.join(' 🡪 ')}: ${decodeResultFmt}\n`);
+
+    // return result;
 }
 
 /**

@@ -1,7 +1,5 @@
 <script setup>
 import DefaultTypes from './components/DefaultTypes.vue'
-import loggerSnapDevTools from '../img/snap-logger-devtools.png'
-import loggerSnapNode from '../img/snap-logger-node.png'
 </script>
 
 # Handling large namespaces
@@ -193,11 +191,11 @@ logger.unmount();
 
 Example of its output in Node.js console:
 
-<img :src="loggerSnapNode" />
+![Example of logger output in node](/img/logger-node-err.png)
 
 And in browser dev tools:
 
-<img :src="loggerSnapDevTools" />
+![Example of logger output in Devtools](/img/logger-devtools-err.png)
 
 You can use Tracking API to implement any logic you need. Example of usage:
 

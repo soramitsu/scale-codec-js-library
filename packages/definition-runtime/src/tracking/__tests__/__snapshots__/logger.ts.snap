@@ -6,9 +6,14 @@ Array [
 
 Decode steps:
 
-<[00 01...] (len = used = 4)>
-  First 🡪 Second: %O
-  First: %O
+First
+    Input: [00 01…] (len = used = 4)
+    Children: 1
+    Result: %O
+First / Second
+    Input: [00 01…] (len = used = 4)
+    Children: 0
+    Result: %O
 ",
   "Result",
   "Result",
@@ -21,9 +26,14 @@ Array [
 
 Decode steps:
 
-<04 02... (len: 4)>
-  Whoosh 🡪 Shoowh: ERROR - %s
-  Whoosh: <not computed>
+Whoosh
+    Input: 04 02… (len: 4)
+    Children: 1
+    Result: <not computed>
+Whoosh / Shoowh
+    Input: 04 02… (len: 4)
+    Children: 0
+    Result: ERROR - %s
 ",
   [Error: Expected inner error],
 ]
@@ -35,9 +45,14 @@ Array [
 
 Decode steps:
 
-<[00 01 02 03] (len = used = 4)>
-  First 🡪 Second: %O
-  First: %O
+First
+    Input: [00 01 02 03] (len = used = 4)
+    Children: 1
+    Result: %O
+First / Second
+    Input: [00 01 02 03] (len = used = 4)
+    Children: 0
+    Result: %O
 ",
   "Result",
   "Result",
@@ -50,9 +65,14 @@ Array [
 
 Decode steps:
 
-<04 02 03 01 (len: 4)>
-  Whoosh 🡪 Shoowh: ERROR - %s
-  Whoosh: <not computed>
+Whoosh
+    Input: 04 02 03 01 (len: 4)
+    Children: 1
+    Result: <not computed>
+Whoosh / Shoowh
+    Input: 04 02 03 01 (len: 4)
+    Children: 0
+    Result: ERROR - %s
 ",
   [Error: Expected inner error],
 ]
