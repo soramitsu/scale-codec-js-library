@@ -1,3 +1,7 @@
+<script setup>
+import DefaultTypes from './components/DefaultTypes.vue'
+</script>
+
 # Handling large namespaces
 
 ::: warning
@@ -150,10 +154,6 @@ Now the code is usable, and its execution depends on you!
 
 ## Predefined builders
 
-<script setup>
-import DefaultTypes from './components/DefaultTypes.vue'
-</script>
-
 <DefaultTypes />
 
 These builders **defined** at Runtime and Compiler **knows** about them. Anyway, you can customize both runtime lib and known types (see [rendering params at API section](/api/definition-compiler.rendernamespacedefinitionparams.html)).
@@ -161,6 +161,64 @@ These builders **defined** at Runtime and Compiler **knows** about them. Anyway,
 ```ts
 import { Str } from '@scale-codec/definition-runtime';
 ```
+
+## Debugging
+
+`@scale-codec/definition-runtime` provides special Tracking API and one of its possible implementations - Logger. With it, you can enable logging of decode process and/or decode failures. Its usage may look like this:
+
+```ts
+import { Logger, createStructBuilder } from '@scale-codec/definition-runtime';
+
+// some complex builder
+const StructBuilder = createStructBuilder('Struct' /* ...args */);
+
+// creating logger and mounting it as a current tracker
+const logger = new Logger({
+    logDecodeSuccesses: true,
+});
+logger.mount();
+
+// Decode some bytes
+const decodedAndUnwrapped = StructBuilder.fromBytes(
+    new Uint8Array([
+        /* ...bytes */
+    ]),
+).unwrap();
+
+// Unmount logger if you don't need it more
+logger.unmount();
+```
+
+Example of its output in Node.js console:
+
+![Example of logger output in node](/img/logger-node-err.png)
+
+And in browser dev tools:
+
+![Example of logger output in Devtools](/img/logger-devtools-err.png)
+
+You can use Tracking API to implement any logic you need. Example of usage:
+
+```ts
+import { setCurrentTracker } from '@scale-codec/definition-runtime';
+
+setCurrentTracker({
+    decode(loc, input, decodeFn) {
+        console.log('Decode step: %o\nInput: %o', loc, input);
+        return decodeFn(input);
+    },
+});
+```
+
+#### Possible questions
+
+-   Is there any runtime overhead if I don't use tracking?
+
+Yes, there is some, but it is reduced as possible.
+
+-   Is `Logger` tree-shakable?
+
+Yes, it should be.
 
 ## Compiler's Playground
 
