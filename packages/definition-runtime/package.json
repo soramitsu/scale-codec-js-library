@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/definition-runtime",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "description": "Runtime for compiled result from @scale-codec/definition-compiler",
     "keywords": [
         "SCALE",
@@ -38,6 +38,7 @@
     ],
     "dependencies": {
         "@scale-codec/core": "workspace:^0.4.0",
-        "@scale-codec/util": "workspace:^0.1.2"
+        "@scale-codec/util": "workspace:^0.1.2",
+        "fmt-subs": "^1.0.2"
     }
 }

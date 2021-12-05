@@ -9,6 +9,7 @@ import { Decode } from '@scale-codec/core';
 import { DecodeResult } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Enum } from '@scale-codec/core';
+import { Fmt } from 'fmt-subs';
 import { IntTypes } from '@scale-codec/core';
 import { Option as Option_2 } from '@scale-codec/core';
 import { Result } from '@scale-codec/core';
@@ -21,10 +22,24 @@ export type ArrayItemBuilder<T> = T extends Fragment<infer V, infer U>[] ? Fragm
 export const Bool: FragmentBuilder<boolean, boolean>;
 
 // @public (undocumented)
+export function buildDecodeTraceStepsFmt(trace: DecodeTrace, params?: BuildTraceStepsFmtParams): Fmt;
+
+// @public (undocumented)
 export type BuilderFromFragment<T extends Fragment<any>> = T extends Fragment<infer V, infer U> ? FragmentBuilder<V, U> : never;
 
 // @public (undocumented)
+export interface BuildTraceStepsFmtParams {
+    bytesPrintLimit?: number;
+}
+
+// @public (undocumented)
 export const BytesVec: FragmentBuilder<Uint8Array, Uint8Array>;
+
+// @public
+export interface CodecTracker {
+    decode?: TrackDecodeFn;
+    refineDecodeLoc?: RefineDecodeLocFn;
+}
 
 // @public (undocumented)
 export const Compact: FragmentBuilder<bigint, bigint>;
@@ -83,6 +98,52 @@ export function createTupleBuilder<T extends Fragment<any>[]>(name: string, buil
 // @public (undocumented)
 export function createVecBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>): ScaleArrayBuilder<T>;
 
+// @public (undocumented)
+export class DecodeTrace {
+    constructor(loc: string);
+    // (undocumented)
+    children: DecodeTrace[];
+    // (undocumented)
+    error?: unknown;
+    // (undocumented)
+    findRoot(): DecodeTrace;
+    // (undocumented)
+    input?: Uint8Array;
+    // (undocumented)
+    get isRoot(): boolean;
+    loc: string[];
+    // (undocumented)
+    parent: DecodeTrace | null;
+    // (undocumented)
+    refineLoc(loc: string): this;
+    // (undocumented)
+    result?: DecodeTraceResult;
+    // (undocumented)
+    setInput(input: Uint8Array): this;
+    // (undocumented)
+    setParent(trace: DecodeTrace): this;
+}
+
+// @public (undocumented)
+export class DecodeTraceCollector {
+    // (undocumented)
+    decodeError(err: unknown): DecodeTrace;
+    // (undocumented)
+    decodeStart(loc: string, input: Uint8Array): void;
+    // (undocumented)
+    decodeSuccess(result: DecodeResult<unknown>): null | DecodeTrace;
+    // (undocumented)
+    refineLoc(loc: string): void;
+}
+
+// @public (undocumented)
+export interface DecodeTraceResult {
+    // (undocumented)
+    bytes: number;
+    // (undocumented)
+    value: unknown;
+}
+
 // @public
 export class DynBuilder<T, U = T> implements FragmentBuilder<T, U> {
     constructor(dynBuilderFn: DynBuilderFn<T, U>);
@@ -108,7 +169,9 @@ export type DynBuilderFn<T, U = T> = () => FragmentBuilder<T, U>;
 export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: FragmentBuilder<any>][];
 
 // @public
-export abstract class Fragment<Value, Unwrapped = Value> {
+export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueInspectable {
+    // (undocumented)
+    [TrackValueInspect](): Unwrapped;
     // Warning: (ae-forgotten-export) The symbol "OptionTuple" needs to be exported by the entry point lib.d.ts
     //
     // @internal
@@ -117,6 +180,10 @@ export abstract class Fragment<Value, Unwrapped = Value> {
     protected abstract __decode: Decode<Value>;
     // @internal (undocumented)
     protected abstract __encode: Encode<Value>;
+    // Warning: (ae-forgotten-export) The symbol "FragmentInternalDecodeTrackFn" needs to be exported by the entry point lib.d.ts
+    //
+    // @internal (undocumented)
+    protected abstract __trackDecode: FragmentInternalDecodeTrackFn<Value, Unwrapped>;
     readonly bytes: Uint8Array;
     abstract unwrap(): Unwrapped;
     readonly value: Value;
@@ -148,6 +215,9 @@ export type FragmentUnwrapFn<T, U> = (self: Fragment<T, U>) => U;
 // @public (undocumented)
 export type FragmentWrapFn<T, U> = (unwrapped: U) => T;
 
+// @public
+export function getCurrentTracker(): null | CodecTracker;
+
 // @public (undocumented)
 export const I128: FragmentBuilder<bigint, bigint>;
 
@@ -162,6 +232,40 @@ export const I64: FragmentBuilder<bigint, bigint>;
 
 // @public (undocumented)
 export const I8: FragmentBuilder<number, number>;
+
+// @public (undocumented)
+export function isTrackValueInspectable(value: unknown): value is TrackValueInspectable;
+
+// @public
+export class Logger implements CodecTracker {
+    constructor(config?: LoggerConfig);
+    // (undocumented)
+    config?: LoggerConfig;
+    // (undocumented)
+    decode<T>(loc: string, input: Uint8Array, decode: Decode<T>): DecodeResult<T>;
+    mount(): void;
+    // (undocumented)
+    refineDecodeLoc<T>(loc: string, decode: () => DecodeResult<T>): DecodeResult<T>;
+    unmount(): void;
+}
+
+// @public (undocumented)
+export interface LoggerConfig extends BuildTraceStepsFmtParams {
+    logDecodeErrors?: boolean;
+    logDecodeSuccesses?: boolean;
+}
+
+// @public (undocumented)
+export function prettyDecodeInput(input: Uint8Array, params?: PrettyDecodeInputParams): string;
+
+// @public (undocumented)
+export interface PrettyDecodeInputParams {
+    bytesLimit?: number;
+    used?: number;
+}
+
+// @public (undocumented)
+export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => DecodeResult<T>) => DecodeResult<T>;
 
 // Warning: (ae-forgotten-export) The symbol "UnwrapScaleArray" needs to be exported by the entry point lib.d.ts
 //
@@ -189,11 +293,35 @@ export type ScaleStructBuilder<T extends {
 // @public (undocumented)
 export type ScaleTupleBuilder<T> = FragmentBuilder<T, UnwrapScaleTuple<T>>;
 
+// @public
+export function setCurrentTracker(tracker: null | CodecTracker): void;
+
 // @public (undocumented)
 export const Str: FragmentBuilder<string, string>;
 
 // @public (undocumented)
 export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][];
+
+// @public
+export function trackDecode<T>(loc: string, input: Uint8Array, decode: Decode<T>): DecodeResult<T>;
+
+// @public (undocumented)
+export type TrackDecodeFn = <T>(loc: string, input: Uint8Array, decode: Decode<T>) => DecodeResult<T>;
+
+// @public
+export function trackRefineDecodeLoc<T>(loc: string, headlessDecode: () => DecodeResult<T>): DecodeResult<T>;
+
+// @public
+export const TrackValueInspect: unique symbol;
+
+// @public
+export interface TrackValueInspectable {
+    // (undocumented)
+    [TrackValueInspect]: () => any;
+}
+
+// @public (undocumented)
+export function tryInspectValue(value: any): any;
 
 // @public (undocumented)
 export const U128: FragmentBuilder<bigint, bigint>;

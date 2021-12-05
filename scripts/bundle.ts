@@ -28,7 +28,7 @@ const opts: Options[] = [
     },
     {
         name: 'definition-runtime',
-        external: ['@scale-codec/enum', '@scale-codec/util', '@scale-codec/core'],
+        external: ['@scale-codec/enum', '@scale-codec/util', '@scale-codec/core', 'fmt-subs'],
     },
 ];
 

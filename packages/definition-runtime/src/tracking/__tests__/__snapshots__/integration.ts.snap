@@ -1,0 +1,322 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Collecting big decode trace and formatting it Error case 1`] = `
+Array [
+  "StructA
+    Input: 01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74… (len: 118)
+    Children: 4
+    Result: <not computed>
+StructA / .primitive / Bool
+    Input: [01] 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74… (len: 118, used: 1)
+    Children: 0
+    Result: %O
+StructA / .alias / TupleA
+    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 ff… (len: 117, used: 9)
+    Children: 1
+    Result: %O
+StructA / .alias / TupleA / .0 / Str
+    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 ff… (len: 117, used: 9)
+    Children: 0
+    Result: %O
+StructA / .enum / EnumA
+    Input: [02] 08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff… (len: 108, used: 1)
+    Children: 0
+    Result: %O
+StructA / .map / MapA
+    Input: 08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c… (len: 107)
+    Children: 1
+    Result: <not computed>
+StructA / .map / MapA / <key> / Str
+    Input: 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75… (len: 106)
+    Children: 0
+    Result: ERROR - %s
+",
+  true,
+  Array [
+    "test str",
+  ],
+  "test str",
+  Object {
+    "tag": "Empty",
+  },
+  [TypeError: The encoded data was not valid for encoding utf-8],
+]
+`;
+
+exports[`Collecting big decode trace and formatting it Success case 1`] = `
+Array [
+  "StructA
+    Input: [01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74…] (len = used = 118)
+    Children: 9
+    Result: %O
+StructA / .primitive / Bool
+    Input: [01] 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74… (len: 118, used: 1)
+    Children: 0
+    Result: %O
+StructA / .alias / TupleA
+    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 72… (len: 117, used: 9)
+    Children: 1
+    Result: %O
+StructA / .alias / TupleA / .0 / Str
+    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 72… (len: 117, used: 9)
+    Children: 0
+    Result: %O
+StructA / .enum / EnumA
+    Input: [02] 08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61… (len: 108, used: 1)
+    Children: 0
+    Result: %O
+StructA / .map / MapA
+    Input: [08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c…] … (len: 107, used: 46)
+    Children: 4
+    Result: %O
+StructA / .map / MapA / <key> / Str
+    Input: [20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61 6c 75… (len: 106, used: 9)
+    Children: 0
+    Result: %O
+StructA / .map / MapA / <value> / TupleA
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 2c 61 6e 6f 74 68 65 72… (len: 97, used: 12)
+    Children: 1
+    Result: %O
+StructA / .map / MapA / <value> / TupleA / .0 / Str
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 2c 61 6e 6f 74 68 65 72… (len: 97, used: 12)
+    Children: 0
+    Result: %O
+StructA / .map / MapA / <key> / Str
+    Input: [2c 61 6e 6f 74 68 65 72 20 6b 65 79] 2c 74 75 70 6c 65 20 76… (len: 85, used: 12)
+    Children: 0
+    Result: %O
+StructA / .map / MapA / <value> / TupleA
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 08 2c 74 75 70 6c 65 20… (len: 73, used: 12)
+    Children: 1
+    Result: %O
+StructA / .map / MapA / <value> / TupleA / .0 / Str
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 08 2c 74 75 70 6c 65 20… (len: 73, used: 12)
+    Children: 0
+    Result: %O
+StructA / .set / SetA
+    Input: [08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65…] … (len: 61, used: 27)
+    Children: 2
+    Result: %O
+StructA / .set / SetA / TupleA
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 34 61 6e 6f 74 68 65 72… (len: 60, used: 12)
+    Children: 1
+    Result: %O
+StructA / .set / SetA / TupleA / .0 / Str
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 34 61 6e 6f 74 68 65 72… (len: 60, used: 12)
+    Children: 0
+    Result: %O
+StructA / .set / SetA / TupleA
+    Input: [34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65] 01 01 01 08 01 02… (len: 48, used: 14)
+    Children: 1
+    Result: %O
+StructA / .set / SetA / TupleA / .0 / Str
+    Input: [34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65] 01 01 01 08 01 02… (len: 48, used: 14)
+    Children: 0
+    Result: %O
+StructA / .array / ArrayA
+    Input: [01 01 01] 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73… (len: 34, used: 3)
+    Children: 3
+    Result: %O
+StructA / .array / ArrayA / Bool
+    Input: [01] 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73… (len: 34, used: 1)
+    Children: 0
+    Result: %O
+StructA / .array / ArrayA / Bool
+    Input: [01] 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74… (len: 33, used: 1)
+    Children: 0
+    Result: %O
+StructA / .array / ArrayA / Bool
+    Input: [01] 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72… (len: 32, used: 1)
+    Children: 0
+    Result: %O
+StructA / .bytesArray / BytesArrayA
+    Input: [08 01 02 03 03] 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c… (len: 31, used: 5)
+    Children: 0
+    Result: %O
+StructA / .vec / VecEnumA
+    Input: [08 00 00 01 01 20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65… (len: 26, used: 14)
+    Children: 2
+    Result: %O
+StructA / .vec / VecEnumA / EnumA
+    Input: [00 00] 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20… (len: 25, used: 2)
+    Children: 1
+    Result: %O
+StructA / .vec / VecEnumA / EnumA / ::Opt / OptionA
+    Input: [00] 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76… (len: 24, used: 1)
+    Children: 0
+    Result: %O
+StructA / .vec / VecEnumA / EnumA
+    Input: [01 01 20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61… (len: 23, used: 11)
+    Children: 1
+    Result: %O
+StructA / .vec / VecEnumA / EnumA / ::Res / ResultA
+    Input: [01 20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61 6c… (len: 22, used: 10)
+    Children: 1
+    Result: %O
+StructA / .vec / VecEnumA / EnumA / ::Res / ResultA / ::Err / Str
+    Input: [20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61 6c 75… (len: 21, used: 9)
+    Children: 0
+    Result: %O
+StructA / .tuple / TupleA
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] (len = used = 12)
+    Children: 1
+    Result: %O
+StructA / .tuple / TupleA / .0 / Str
+    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] (len = used = 12)
+    Children: 0
+    Result: %O
+",
+  Object {
+    "alias": Array [
+      "test str",
+    ],
+    "array": Array [
+      true,
+      true,
+      true,
+    ],
+    "bytesArray": Uint8Array [
+      8,
+      1,
+      2,
+      3,
+      3,
+    ],
+    "enum": Object {
+      "tag": "Empty",
+    },
+    "map": Map {
+      "test str" => Array [
+        "tuple value",
+      ],
+      "another key" => Array [
+        "tuple value",
+      ],
+    },
+    "primitive": true,
+    "set": Set {
+      Array [
+        "tuple value",
+      ],
+      Array [
+        "another tuple",
+      ],
+    },
+    "tuple": Array [
+      "tuple value",
+    ],
+    "vec": Array [
+      Object {
+        "tag": "Opt",
+        "value": Object {
+          "tag": "None",
+        },
+      },
+      Object {
+        "tag": "Res",
+        "value": Object {
+          "tag": "Err",
+          "value": "test str",
+        },
+      },
+    ],
+  },
+  true,
+  Array [
+    "test str",
+  ],
+  "test str",
+  Object {
+    "tag": "Empty",
+  },
+  Map {
+    "test str" => Array [
+      "tuple value",
+    ],
+    "another key" => Array [
+      "tuple value",
+    ],
+  },
+  "test str",
+  Array [
+    "tuple value",
+  ],
+  "tuple value",
+  "another key",
+  Array [
+    "tuple value",
+  ],
+  "tuple value",
+  Set {
+    Array [
+      "tuple value",
+    ],
+    Array [
+      "another tuple",
+    ],
+  },
+  Array [
+    "tuple value",
+  ],
+  "tuple value",
+  Array [
+    "another tuple",
+  ],
+  "another tuple",
+  Array [
+    true,
+    true,
+    true,
+  ],
+  true,
+  true,
+  true,
+  Uint8Array [
+    8,
+    1,
+    2,
+    3,
+    3,
+  ],
+  Array [
+    Object {
+      "tag": "Opt",
+      "value": Object {
+        "tag": "None",
+      },
+    },
+    Object {
+      "tag": "Res",
+      "value": Object {
+        "tag": "Err",
+        "value": "test str",
+      },
+    },
+  ],
+  Object {
+    "tag": "Opt",
+    "value": Object {
+      "tag": "None",
+    },
+  },
+  Object {
+    "tag": "None",
+  },
+  Object {
+    "tag": "Res",
+    "value": Object {
+      "tag": "Err",
+      "value": "test str",
+    },
+  },
+  Object {
+    "tag": "Err",
+    "value": "test str",
+  },
+  "test str",
+  Array [
+    "tuple value",
+  ],
+  "tuple value",
+]
+`;

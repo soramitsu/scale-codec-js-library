@@ -24,7 +24,7 @@ function guideSidebar(): SidebarLink[] {
                     link: '/guide/core',
                 },
                 {
-                    text: 'Handling large namespaces',
+                    text: 'Building namespaces',
                     link: '/guide/namespaces',
                 },
                 {
@@ -44,10 +44,6 @@ function guideSidebar(): SidebarLink[] {
                 {
                     text: 'Contribution',
                     link: '/contribution',
-                },
-                {
-                    text: 'To Do',
-                    link: '/todo',
                 },
             ],
         },

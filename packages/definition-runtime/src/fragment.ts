@@ -1,8 +1,10 @@
 import { Encode, Decode, DecodeResult } from '@scale-codec/core';
 import { assert } from '@scale-codec/util';
+import { trackDecode, TrackValueInspect, TrackValueInspectable } from './tracking';
 
 type OptionTupleSome<T> = [T];
 type OptionTuple<T> = null | OptionTupleSome<T>;
+type FragmentInternalDecodeTrackFn<V, U> = (input: Uint8Array, decode: () => DecodeResult<Fragment<V, U>>) => void;
 
 function offPropsEnumerability(object: object, props: PropertyKey[]) {
     for (const prop of props) {
@@ -32,7 +34,7 @@ function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => a
  * Type `Value` represents JS value, `Unwrapped` - JS value with content where all of the `Fragment`s are
  * unwrapped to their values.
  */
-export abstract class Fragment<Value, Unwrapped = Value> {
+export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueInspectable {
     /**
      * Some JS-easy-accessible value of the instance
      */
@@ -60,6 +62,11 @@ export abstract class Fragment<Value, Unwrapped = Value> {
     /**
      * @internal
      */
+    protected abstract __trackDecode: FragmentInternalDecodeTrackFn<Value, Unwrapped>;
+
+    /**
+     * @internal
+     */
     public constructor(value: null | OptionTuple<Value>, bytes: null | Uint8Array) {
         if (!value && !bytes) throw new Error('Fragment should have either value or bytes or both');
 
@@ -75,14 +82,25 @@ export abstract class Fragment<Value, Unwrapped = Value> {
         offPropEnumerabilityWithValue(this, '__bytes', bytes);
     }
 
+    public [TrackValueInspect]() {
+        return this.unwrap();
+    }
+
     private getValue(): Value {
         if (!this.__value) {
             const bytes = this.__bytes!;
-            const [val, len] = this.__decode(bytes);
-            assert(bytes.length === len, () => `Decoded bytes mismatch: (actual) ${len} vs (expected) ${bytes.length}`);
-            this.__value = [val];
+
+            this.__trackDecode(bytes, () => {
+                const [val, len] = this.__decode(bytes);
+                assert(
+                    bytes.length === len,
+                    () => `Decoded bytes mismatch: (actual) ${len} vs (expected) ${bytes.length}`,
+                );
+                this.__value = [val];
+                return [this, len];
+            });
         }
-        return this.__value[0];
+        return this.__value![0];
     }
 
     private getBytes(): Uint8Array {
@@ -177,6 +195,10 @@ export function createBuilder<T, U = T>(
     unwrap?: FragmentUnwrapFn<T, U>,
     wrap?: FragmentWrapFn<T, U>,
 ): FragmentBuilder<T, U> {
+    // const decodeTrackable: Decode<T> = (input) => trackDecode(`__decode ${name}`, input, decode);
+
+    const internalTrackDecode: FragmentInternalDecodeTrackFn<T, U> = (bytes, fn) => trackDecode(name, bytes, fn);
+
     const ctor: FragmentBuilder<T, U> = class Self extends Fragment<T, U> {
         public static fromValue(value: T): Self {
             return new Self([value], null);
@@ -187,7 +209,7 @@ export function createBuilder<T, U = T>(
         }
 
         public static decodeRaw(bytes: Uint8Array): DecodeResult<Self> {
-            return decodeAndMemorize(bytes, decode, Self);
+            return trackDecode(name, bytes, () => decodeAndMemorize(bytes, decode, Self));
         }
 
         public static wrap(unwrappedValue: U): Self {
@@ -196,16 +218,21 @@ export function createBuilder<T, U = T>(
 
         protected __encode = encode;
         protected __decode = decode;
+        protected __trackDecode = internalTrackDecode;
 
         public constructor(value: null | OptionTuple<T>, bytes: null | Uint8Array) {
             super(value, bytes);
 
             // implementation details
-            offPropsEnumerability(this, ['__encode', '__decode']);
+            offPropsEnumerability(this, ['__encode', '__decode', '__trackDecode']);
         }
 
         public unwrap(): U {
             return (unwrap || unwrapFallback)(this) as U;
+        }
+
+        public [Symbol.toStringTag]() {
+            return name;
         }
     };
 

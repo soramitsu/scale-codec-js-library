@@ -29,13 +29,13 @@ import {
     Option,
     Result,
     Valuable,
-    mapDecodeResult,
     BigIntTypes,
     IntTypes,
     encodeInt,
     decodeInt,
 } from '@scale-codec/core';
 import { mapGetUnwrap, yieldNTimes } from '@scale-codec/util';
+import { trackRefineDecodeLoc } from './tracking';
 import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragment } from './fragment';
 
 export type DynBuilderFn<T, U = T> = () => FragmentBuilder<T, U>;
@@ -153,7 +153,8 @@ export function createStructBuilder<T extends { [K in keyof T]: Fragment<any> }>
 
     for (const [field, builder] of schema) {
         order.push(field);
-        decoders[field] = (bytes: Uint8Array) => builder.decodeRaw(bytes) as any;
+        decoders[field] = (bytes: Uint8Array) =>
+            trackRefineDecodeLoc(`.${field}`, () => builder.decodeRaw(bytes)) as any;
     }
 
     return createBuilder(
@@ -223,7 +224,7 @@ export function createEnumBuilder<T extends Enum<any>>(name: string, schema: Enu
         encoders[name] = { d: dis, encode: codec && fragmentEncode };
         decoders[dis] = {
             v: name,
-            decode: codec && ((b) => codec.decodeRaw(b)),
+            decode: codec && ((b) => trackRefineDecodeLoc(`::${name}`, () => codec.decodeRaw(b))),
         };
     }
 
@@ -269,7 +270,14 @@ export function createArrayBuilder<T extends Fragment<any>[]>(
     return createBuilder(
         name,
         (v) => encodeArray(v, fragmentEncode, len),
-        (b) => decodeArray(b, (x) => itemBuilder.decodeRaw(x), len) as any,
+        (b) =>
+            decodeArray(
+                b,
+                (x) =>
+                    // no need to track
+                    itemBuilder.decodeRaw(x),
+                len,
+            ) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
     );
@@ -289,7 +297,11 @@ export function createVecBuilder<T extends Fragment<any>[]>(
     return createBuilder(
         name,
         (v) => encodeVec(v, fragmentEncode),
-        (b) => decodeVec(b, (x) => itemBuilder.decodeRaw(x)) as any,
+        (b) =>
+            decodeVec(b, (x) =>
+                // no need to track
+                itemBuilder.decodeRaw(x),
+            ) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
     );
@@ -323,7 +335,11 @@ export function createSetBuilder<T extends Set<Fragment<any>>>(
     return createBuilder(
         name,
         (value) => encodeSet(value, fragmentEncode),
-        (bytes) => decodeSet(bytes, (part) => entryBuilder.decodeRaw(part)) as any,
+        (bytes) =>
+            decodeSet(bytes, (part) =>
+                // no need to track
+                entryBuilder.decodeRaw(part),
+            ) as any,
         unwrapScaleSet as any,
         createScaleSetWrapper(entryBuilder),
     );
@@ -370,8 +386,8 @@ export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(
         (bytes) =>
             decodeMap(
                 bytes,
-                (part) => keyBuilder.decodeRaw(part),
-                (part) => valueBuilder.decodeRaw(part),
+                (part) => trackRefineDecodeLoc('<key>', () => keyBuilder.decodeRaw(part)),
+                (part) => trackRefineDecodeLoc('<value>', () => valueBuilder.decodeRaw(part)),
             ) as any,
         unwrapScaleMap as any,
         createScaleMapWrapper(keyBuilder, valueBuilder),
@@ -385,13 +401,14 @@ export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(
  * ```
  */
 export function createAliasBuilder<T, U>(name: string, to: FragmentBuilder<T, U>): FragmentBuilder<T, U> {
-    return createBuilder(
-        name,
-        (value) => to.fromValue(value).bytes,
-        (bytes) => mapDecodeResult(to.decodeRaw(bytes), (x) => x.value),
-        (value) => to.fromValue(value.value).unwrap(),
-        (unwrapped) => to.wrap(unwrapped).value,
-    );
+    return to;
+    // return createBuilder(
+    //     name,
+    //     (value) => to.fromValue(value).bytes,
+    //     (bytes) => mapDecodeResult(to.decodeRaw(bytes), (x) => x.value),
+    //     (value) => to.fromValue(value.value).unwrap(),
+    //     (unwrapped) => to.wrap(unwrapped).value,
+    // );
 }
 
 export function createBytesArrayBuilder(name: string, len: number): FragmentBuilder<Uint8Array> {
@@ -427,7 +444,9 @@ export function createTupleBuilder<T extends Fragment<any>[]>(
 ): ScaleTupleBuilder<T> {
     const encoders: TupleEncoders<T> = [...yieldNTimes(fragmentEncode, builders.length)] as any;
 
-    const decoders: TupleDecoders<T> = builders.map((x) => (part: Uint8Array) => x.decodeRaw(part)) as any;
+    const decoders: TupleDecoders<T> = builders.map(
+        (x, i) => (part: Uint8Array) => trackRefineDecodeLoc(`.${i}`, () => x.decodeRaw(part)),
+    ) as any;
 
     return createBuilder(
         name,
