@@ -139,6 +139,10 @@ export interface FragmentBuilder<T, U = T> {
      * Constructs instance back from unwrapped value, i.e. works vice versa from {@link Fragment.unwrap}
      */
     wrap: (unwrappedValue: U) => Fragment<T, U>;
+    /**
+     * Type helper. Returns exactly what is passed to it.
+     */
+    defineUnwrap: (unwrappedValue: U) => U;
 }
 
 export type FragmentFromBuilder<T extends FragmentBuilder<any>> = T extends FragmentBuilder<infer V, infer U>
@@ -214,6 +218,10 @@ export function createBuilder<T, U = T>(
 
         public static wrap(unwrappedValue: U): Self {
             return new Self([wrap ? wrap(unwrappedValue) : (unwrappedValue as any)], null);
+        }
+
+        public static defineUnwrap(x: U): U {
+            return x;
         }
 
         protected __encode = encode;
