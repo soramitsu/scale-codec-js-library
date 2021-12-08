@@ -10,9 +10,12 @@ import { DecodeResult } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Enum } from '@scale-codec/core';
 import { Fmt } from 'fmt-subs';
+import { GetValuableVariantValue } from '@scale-codec/core';
 import { IntTypes } from '@scale-codec/core';
 import { Option as Option_2 } from '@scale-codec/core';
 import { Result } from '@scale-codec/core';
+import { TagsEmpty } from '@scale-codec/core';
+import { TagsValuable } from '@scale-codec/core';
 import { Valuable } from '@scale-codec/core';
 
 // @public (undocumented)
@@ -150,6 +153,8 @@ export class DynBuilder<T, U = T> implements FragmentBuilder<T, U> {
     // (undocumented)
     decodeRaw(bytes: Uint8Array): DecodeResult<Fragment<T, U>>;
     // (undocumented)
+    defineUnwrap(unwrapped: U): U;
+    // (undocumented)
     readonly fn: DynBuilderFn<T, U>;
     // (undocumented)
     fromBytes(bytes: Uint8Array): Fragment<T, U>;
@@ -192,6 +197,7 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
 // @public
 export interface FragmentBuilder<T, U = T> {
     decodeRaw: Decode<Fragment<T, U>>;
+    defineUnwrap: (unwrappedValue: U) => U;
     fromBytes: (bytes: Uint8Array) => Fragment<T, U>;
     fromValue: (value: T) => Fragment<T, U>;
     wrap: (unwrappedValue: U) => Fragment<T, U>;
@@ -273,7 +279,24 @@ export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => DecodeRes
 export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, UnwrapScaleArray<T>>;
 
 // @public (undocumented)
-export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>>;
+export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>> & {
+    variantsUnwrapped: ScaleEnumBuilderVariantsUnwrapped<T>;
+    variants: ScaleEnumBuilderVariants<T>;
+};
+
+// @public (undocumented)
+export type ScaleEnumBuilderVariants<T extends Enum<any>> = T extends Enum<infer D> ? {
+    [K in TagsEmpty<D>]: Fragment<T, UnwrapScaleEnum<T>>;
+} & {
+    [K in TagsValuable<D>]: (value: GetValuableVariantValue<D[K]>) => Fragment<T, UnwrapScaleEnum<T>>;
+} : never;
+
+// @public (undocumented)
+export type ScaleEnumBuilderVariantsUnwrapped<T extends Enum<any>> = T extends Enum<infer D> ? {
+    [K in TagsEmpty<D>]: UnwrapScaleEnum<T>;
+} & {
+    [K in TagsValuable<D>]: (value: UnwrapFragment<GetValuableVariantValue<D[K]>>) => UnwrapScaleEnum<T>;
+} : never;
 
 // @public (undocumented)
 export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = FragmentBuilder<T, UnwrapScaleMap<T>>;
