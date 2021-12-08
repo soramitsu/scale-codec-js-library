@@ -1,5 +1,12 @@
 # @scale-codec/definition-runtime
 
+## 0.7.0
+
+### Minor Changes
+
+-   **feat**: add `defineUnwrap` helper to the generic `FragmentBuilder`
+-   **feat**: add `variants` and `variantsUnwrapped` helpers to the Enum builders
+
 ## 0.6.0
 
 ### Minor Changes
