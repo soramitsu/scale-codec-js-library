@@ -15,8 +15,8 @@
         "vue": "^3.2.20"
     },
     "devDependencies": {
-        "@scale-codec/definition-compiler": "workspace:^0.4.0",
-        "@scale-codec/definition-runtime": "workspace:^0.7.0",
+        "@scale-codec/definition-compiler": "workspace:^0.8.0",
+        "@scale-codec/definition-runtime": "workspace:^0.8.0",
         "@types/object-inspect": "^1.8.1",
         "vite-plugin-windicss": "^1.4.12",
         "vitepress": "^0.20.0",

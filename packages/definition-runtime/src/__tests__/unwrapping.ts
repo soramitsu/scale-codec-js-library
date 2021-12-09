@@ -1,6 +1,5 @@
 import { Enum, Valuable } from '@scale-codec/core';
 import {
-    createAliasBuilder,
     createArrayBuilder,
     createEnumBuilder,
     createMapBuilder,
@@ -8,6 +7,7 @@ import {
     createStructBuilder,
     createTupleBuilder,
     createVecBuilder,
+    dynGetters,
 } from '../builder-creators';
 import { FragmentOrBuilderValue, FragmentFromBuilder, Fragment, FragmentOrBuilderUnwrapped } from '../fragment';
 import { Bool, I128, Str } from '../presets';
@@ -41,8 +41,8 @@ const TUPLE = createTupleBuilder<[Fragment<boolean>, Fragment<string>]>('Tuple',
 type KeyValue = FragmentOrBuilderValue<typeof Key>;
 type KeyUnwrapped = FragmentOrBuilderUnwrapped<typeof Key>;
 
-const AliasA = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasA', Key);
-const AliasB = createAliasBuilder<KeyValue, KeyUnwrapped>('AliasB', AliasA);
+const AliasA = dynGetters(() => Key);
+const AliasB = dynGetters(() => AliasA);
 
 describe('Unwrapping', () => {
     test('Unwraps primitive (Str)', () => {

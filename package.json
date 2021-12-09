@@ -5,7 +5,7 @@
     "scripts": {
         "postinstall": "pnpm compiler:update-samples",
         "gulp-ts": "gulp --require esbuild-register -f gulpfile.ts",
-        "test:all": "pnpm test:unit && pnpm build && pnpm test:e2e",
+        "test:all": "run-s test:unit build test:e2e",
         "test:unit": "jest",
         "test:e2e": "pnpm gulp-ts -- testE2e",
         "build": "pnpm gulp-ts -- build",

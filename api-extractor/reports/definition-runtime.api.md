@@ -48,9 +48,6 @@ export interface CodecTracker {
 export const Compact: FragmentBuilder<bigint, bigint>;
 
 // @public (undocumented)
-export function createAliasBuilder<T, U>(name: string, to: FragmentBuilder<T, U>): FragmentBuilder<T, U>;
-
-// @public (undocumented)
 export function createArrayBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>, len: number): ScaleArrayBuilder<T>;
 
 // @public (undocumented)
@@ -148,27 +145,9 @@ export interface DecodeTraceResult {
 }
 
 // @public
-export class DynBuilder<T, U = T> implements FragmentBuilder<T, U> {
-    constructor(dynBuilderFn: DynBuilderFn<T, U>);
-    // (undocumented)
-    decodeRaw(bytes: Uint8Array): DecodeResult<Fragment<T, U>>;
-    // (undocumented)
-    defineUnwrap(unwrapped: U): U;
-    // (undocumented)
-    readonly fn: DynBuilderFn<T, U>;
-    // (undocumented)
-    fromBytes(bytes: Uint8Array): Fragment<T, U>;
-    // (undocumented)
-    fromValue(value: T): Fragment<T, U>;
-    // (undocumented)
-    wrap(unwrapped: U): Fragment<T, U>;
-}
-
-// @public
-export function dynBuilder<T, U = T>(fn: DynBuilderFn<T, U>): DynBuilder<T, U>;
-
-// @public (undocumented)
-export type DynBuilderFn<T, U = T> = () => FragmentBuilder<T, U>;
+export function dynGetters<T extends {
+    [K in string | symbol]: any;
+}>(dynObject: () => T): T;
 
 // @public (undocumented)
 export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: FragmentBuilder<any>][];

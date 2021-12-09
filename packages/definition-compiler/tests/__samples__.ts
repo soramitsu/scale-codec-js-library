@@ -159,3 +159,23 @@ export const unwrapCheck = defineSample({
         ],
     },
 });
+
+/**
+ * Some builder could be extended, e.g. enum builder.
+ * Alias should handle it OK (type-only check).
+ */
+export const aliasToAnExtendedBuilder = defineSample({
+    Message: {
+        t: 'enum',
+        variants: [
+            {
+                name: 'Empty',
+                discriminant: 0,
+            },
+        ],
+    },
+    Msg: {
+        t: 'alias',
+        ref: 'Message',
+    },
+});
