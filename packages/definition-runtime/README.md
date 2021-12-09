@@ -1,4 +1,4 @@
-# @scale-codec/definition-runtime ![version](https://img.shields.io/npm/v/@scale-codec/definition-runtime) ![license](https://img.shields.io/npm/l/@scale-codec/definition-runtime)
+# @scale-codec/definition-runtime ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![version](https://img.shields.io/npm/v/@scale-codec/definition-runtime) ![license](https://img.shields.io/npm/l/@scale-codec/definition-runtime)
 
 Base tool to build complex type namespaces with SCALE-codec.
 
