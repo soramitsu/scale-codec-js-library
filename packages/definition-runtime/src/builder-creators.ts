@@ -41,44 +41,30 @@ import { mapGetUnwrap, yieldNTimes } from '@scale-codec/util';
 import { trackRefineDecodeLoc } from './tracking';
 import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragment } from './fragment';
 
-export type DynBuilderFn<T, U = T> = () => FragmentBuilder<T, U>;
-
 /**
- * Wrapper to dynamically dispatch another {@link FragmentBuilder}
+ * Creates proxy that dispatches provided object at the moment
+ * when its field is gotten.
+ *
+ * @remarks
+ *
+ * It is useful for aliases or cyclic dependencies.
+ *
+ * @example
+ * ```ts
+ * const OptionVec: ScaleEnumBuilder<Option<FragmentFromBuilder<typeof VecOption>>> =
+ *  createOptionBuilder('OptionVec', dynGetters(() => VecOption))
+ *
+ * const VecOption: ScaleArrayBuilder<FragmentFromBuilder<typeof OptionVec>[]> =
+ *  createVecBuilder('VecOption', OptionVec);
+ * ```
  */
-export class DynBuilder<T, U = T> implements FragmentBuilder<T, U> {
-    public readonly fn: DynBuilderFn<T, U>;
-
-    public constructor(dynBuilderFn: DynBuilderFn<T, U>) {
-        this.fn = dynBuilderFn;
-    }
-
-    public fromBytes(bytes: Uint8Array): Fragment<T, U> {
-        return this.fn().fromBytes(bytes);
-    }
-
-    public fromValue(value: T): Fragment<T, U> {
-        return this.fn().fromValue(value);
-    }
-
-    public decodeRaw(bytes: Uint8Array): DecodeResult<Fragment<T, U>> {
-        return this.fn().decodeRaw(bytes);
-    }
-
-    public wrap(unwrapped: U): Fragment<T, U> {
-        return this.fn().wrap(unwrapped);
-    }
-
-    public defineUnwrap(unwrapped: U): U {
-        return unwrapped;
-    }
-}
-
-/**
- * Shorter version of `new DynBuilder(fn)` (see {@link DynBuilder})
- */
-export function dynBuilder<T, U = T>(fn: DynBuilderFn<T, U>): DynBuilder<T, U> {
-    return new DynBuilder(fn);
+export function dynGetters<T extends { [K in string | symbol]: any }>(dynObject: () => T): T {
+    return new Proxy(
+        {},
+        {
+            get: (_target, prop) => (dynObject as any)()[prop],
+        },
+    ) as any;
 }
 
 const fragmentEncode: Encode<Fragment<unknown>> = (x) => {
@@ -512,23 +498,6 @@ export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(
         unwrapScaleMap as any,
         createScaleMapWrapper(keyBuilder, valueBuilder),
     );
-}
-
-/**
- * @example
- * ```ts
- * const StrAlias: typeof Str = createAliasBuilder('StrAlias', Str)
- * ```
- */
-export function createAliasBuilder<T, U>(name: string, to: FragmentBuilder<T, U>): FragmentBuilder<T, U> {
-    return to;
-    // return createBuilder(
-    //     name,
-    //     (value) => to.fromValue(value).bytes,
-    //     (bytes) => mapDecodeResult(to.decodeRaw(bytes), (x) => x.value),
-    //     (value) => to.fromValue(value.value).unwrap(),
-    //     (unwrapped) => to.wrap(unwrapped).value,
-    // );
 }
 
 export function createBytesArrayBuilder(name: string, len: number): FragmentBuilder<Uint8Array> {

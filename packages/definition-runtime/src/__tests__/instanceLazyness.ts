@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { decodeBool, decodeTuple, encodeBool, encodeTuple } from '@scale-codec/core';
 import { createBuilder, FragmentFromBuilder } from '../fragment';
-import { createAliasBuilder } from '../builder-creators';
+import { dynGetters } from '../builder-creators';
 
 describe('Within TupleBool', () => {
     function prepare(): [
@@ -91,7 +91,7 @@ describe('Within TupleBool', () => {
 test('Alias decoding is lazy', () => {
     const decodeBoolSpy = jest.fn(decodeBool);
     const Bool = createBuilder<boolean>('Bool', encodeBool, decodeBoolSpy);
-    const BoolAlias = createAliasBuilder<boolean, boolean>('BoolAlias', Bool);
+    const BoolAlias = dynGetters(() => Bool);
 
     const item = BoolAlias.fromBytes(new Uint8Array([1]));
 
