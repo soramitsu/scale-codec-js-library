@@ -58,16 +58,3 @@ const childName = decoded.value.child.value.as('Some').value.name.value;
 // access - short way with unwrapping feature
 const childNameAgain = decoded.unwrap().child.as('Some').name;
 ```
-
-```
-Decode history:
-    3c 7b 00 00 00
-    ^^^^^^^^^^^ - 'Tup'.<[0] tuple item>.'U32'
-
-    3c 7b 00 00 00
-    ^^^^^^^^^^^ - 'Tup'.<[0] tuple item>
-
-    00
-    (error) 'Tup'.<[1] tuple item>.'U32'
-
-```

@@ -1,5 +1,11 @@
 # @scale-codec/definition-runtime
 
+## 0.8.2
+
+### Patch Changes
+
+-   54c0866: docs: clean README
+
 ## 0.8.1
 
 ### Patch Changes
