@@ -1,5 +1,13 @@
 # @scale-codec/definition-compiler
 
+## 0.8.1
+
+### Patch Changes
+
+-   27b7927: Add build status badge to the README
+-   Updated dependencies [27b7927]
+    -   @scale-codec/util@0.1.3
+
 ## 0.8.0
 
 ### Minor Changes

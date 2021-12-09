@@ -1,5 +1,11 @@
 # @scale-codec/util
 
+## 0.1.3
+
+### Patch Changes
+
+-   27b7927: Add build status badge to the README
+
 ## 0.1.2
 
 ### Patch Changes
