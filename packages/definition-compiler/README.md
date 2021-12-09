@@ -1,4 +1,4 @@
-# @scale-codec/definition-compiler ![version](https://img.shields.io/npm/v/@scale-codec/definition-compiler) ![license](https://img.shields.io/npm/l/@scale-codec/definition-compiler)
+# @scale-codec/definition-compiler ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![version](https://img.shields.io/npm/v/@scale-codec/definition-compiler) ![license](https://img.shields.io/npm/l/@scale-codec/definition-compiler)
 
 Compiler for `@scale-codec/definition-runtime`.
 

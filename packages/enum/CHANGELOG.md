@@ -1,5 +1,11 @@
 # @scale-codec/enum
 
+## 0.2.1
+
+### Patch Changes
+
+-   27b7927: Add build status badge to the README
+
 ## 0.2.0
 
 ### Minor Changes

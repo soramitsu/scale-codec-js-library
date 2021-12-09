@@ -1,5 +1,14 @@
 # @scale-codec/core
 
+## 0.4.1
+
+### Patch Changes
+
+-   27b7927: Add build status badge to the README
+-   Updated dependencies [27b7927]
+    -   @scale-codec/enum@0.2.1
+    -   @scale-codec/util@0.1.3
+
 ## 0.4.0
 
 ### Minor Changes
