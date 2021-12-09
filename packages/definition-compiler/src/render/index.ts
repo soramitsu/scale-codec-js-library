@@ -120,12 +120,6 @@ function linesJoin(lines: string[], joiner = '\n\n'): string {
 function renderAlias(to: string): string {
     // special builder
     return `export const ${useCurrentTyName()}: typeof ${touchRef(to)} = ${refDynGetters(to)}`;
-
-    // return renderBuilder({
-    //     builderTy: `typeof ${touchRef(to)}`,
-    //     createFn: 'createAliasBuilder',
-    //     createArgs: refDynGetters(to),
-    // });
 }
 
 function renderVoidAlias(): string {
