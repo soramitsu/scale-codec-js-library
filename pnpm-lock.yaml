@@ -135,12 +135,15 @@ importers:
   packages/definition-runtime:
     specifiers:
       '@scale-codec/core': workspace:^0.4.0
+      '@scale-codec/definition-compiler': workspace:^0.4.0
       '@scale-codec/util': workspace:^0.1.2
       fmt-subs: ^1.0.2
     dependencies:
       '@scale-codec/core': link:../core
       '@scale-codec/util': link:../util
       fmt-subs: 1.0.2
+    devDependencies:
+      '@scale-codec/definition-compiler': link:../definition-compiler
 
   packages/docs:
     specifiers:

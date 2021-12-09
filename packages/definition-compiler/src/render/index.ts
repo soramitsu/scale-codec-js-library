@@ -105,10 +105,10 @@ function touchBase(ty: BaseType): string {
 }
 
 /**
- * ref -> `dynBuilder(() => ${ref})` (with touches)
+ * ref -> `dynGetters(() => ${ref})` (with touches)
  */
-function refDynBuilder(ref: string): string {
-    return `${touchImport('dynBuilder')}(() => ${touchRef(ref)})`;
+function refDynGetters(ref: string): string {
+    return `${touchImport('dynGetters')}(() => ${touchRef(ref)})`;
 }
 
 function linesJoin(lines: string[], joiner = '\n\n'): string {
@@ -118,11 +118,14 @@ function linesJoin(lines: string[], joiner = '\n\n'): string {
 // =========
 
 function renderAlias(to: string): string {
-    return renderBuilder({
-        builderTy: `typeof ${touchRef(to)}`,
-        createFn: 'createAliasBuilder',
-        createArgs: refDynBuilder(to),
-    });
+    // special builder
+    return `export const ${useCurrentTyName()}: typeof ${touchRef(to)} = ${refDynGetters(to)}`;
+
+    // return renderBuilder({
+    //     builderTy: `typeof ${touchRef(to)}`,
+    //     createFn: 'createAliasBuilder',
+    //     createArgs: refDynGetters(to),
+    // });
 }
 
 function renderVoidAlias(): string {
@@ -135,7 +138,7 @@ function renderVec(item: string): string {
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
         createFn: 'createVecBuilder',
-        createArgs: refDynBuilder(item),
+        createArgs: refDynGetters(item),
     });
 }
 
@@ -146,7 +149,7 @@ function renderStruct(fields: DefStructField[]): string {
 
     const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${instanceViaBuilder(x.ref)}`);
 
-    const schemaItems = fields.map((x) => `['${x.name}', ${refDynBuilder(x.ref)}]`);
+    const schemaItems = fields.map((x) => `['${x.name}', ${refDynGetters(x.ref)}]`);
     const schema = `[${schemaItems.join(', ')}]`;
 
     return renderBuilder({
@@ -165,7 +168,7 @@ function renderTuple(refs: string[]): string {
     if (rollupSingleTuples && refs.length === 1) return renderAlias(refs[0]);
 
     const valueEntries: string[] = refs.map(instanceViaBuilder);
-    const codecs: string[] = refs.map(refDynBuilder);
+    const codecs: string[] = refs.map(refDynGetters);
 
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleTupleBuilder)}<[\n    ${valueEntries.join(',\n    ')}\n]>`,
@@ -182,7 +185,7 @@ function renderEnum(variants: DefEnumVariant[]): string {
 
     const schemaLines: string[] = variants.map((x) => {
         const items = [x.discriminant, `'${x.name}'`];
-        x.ref && items.push(refDynBuilder(x.ref));
+        x.ref && items.push(refDynGetters(x.ref));
         return `[${items.join(', ')}]`;
     });
 
@@ -199,7 +202,7 @@ function renderSet(item: string): string {
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleSetBuilder)}<Set<${instanceViaBuilder(item)}>>`,
         createFn: 'createSetBuilder',
-        createArgs: refDynBuilder(item),
+        createArgs: refDynGetters(item),
     });
 }
 
@@ -207,7 +210,7 @@ function renderMap(key: string, value: string): string {
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleMapBuilder)}<Map<${[key, value].map(instanceViaBuilder).join(', ')}>>`,
         createFn: 'createMapBuilder',
-        createArgs: [key, value].map(refDynBuilder).join(', '),
+        createArgs: [key, value].map(refDynGetters).join(', '),
     });
 }
 
@@ -215,7 +218,7 @@ function renderArray(item: string, len: number): string {
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
         createFn: `createArrayBuilder`,
-        createArgs: `${refDynBuilder(item)}, ${len}`,
+        createArgs: `${refDynGetters(item)}, ${len}`,
     });
 }
 
@@ -233,7 +236,7 @@ function renderOption(some: string): string {
             some,
         )}>>`,
         createFn: 'createOptionBuilder',
-        createArgs: refDynBuilder(some),
+        createArgs: refDynGetters(some),
     });
 }
 
@@ -243,7 +246,7 @@ function renderResult(ok: string, err: string): string {
             .map(instanceViaBuilder)
             .join(', ')}>>`,
         createFn: 'createResultBuilder',
-        createArgs: [ok, err].map(refDynBuilder).join(', '),
+        createArgs: [ok, err].map(refDynGetters).join(', '),
     });
 }
 
