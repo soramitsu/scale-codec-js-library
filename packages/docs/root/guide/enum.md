@@ -10,7 +10,7 @@ Lightweight tool for working with Rust-style enums in JavaScript (with TypeScrip
 `@scale-codec/core` package reexports everything from `@scale-codec/enum`:
 
 ```ts
-import { Enum, Option /* and other */ } from '@scale-codec/core';
+import { Enum, Option /* and other */ } from '@scale-codec/core'
 ```
 
 :::
@@ -42,15 +42,15 @@ It contains one empty variant - `Quit`, and one valuable (non-empty) variant - `
 JavaScript analog definition:
 
 ```ts
-import { Enum, Valuable } from '@scale-codec/enum';
+import { Enum, Valuable } from '@scale-codec/enum'
 
 type Message = Enum<{
-    Quit: null;
-    Log: Valuable<string>;
-}>;
+    Quit: null
+    Log: Valuable<string>
+}>
 
-let msg: Message = Enum.empty('Quit');
-msg = Enum.valuable('Log', 'hello');
+let msg: Message = Enum.empty('Quit')
+msg = Enum.valuable('Log', 'hello')
 ```
 
 `Enum` has 2 main static methods - `empty(variantName)` and `valuable(variantName, variantValue)`. They are type-safe if TypeScript knows the definition of Enum (via type inference or with explicit declaration). More detailed info at [API](/api/enum).
@@ -59,16 +59,16 @@ Without type inference:
 
 ```ts
 Enum.empty<{
-    Quit: null;
-    Log: Valuable<string>;
-}>('Quit');
+    Quit: null
+    Log: Valuable<string>
+}>('Quit')
 
 // or
 type MessageVariants = {
-    Quit: null;
-    Log: Valuable<string>;
-};
-Enum.valuable<MessageVariants, 'Log'>('Log', 'hello');
+    Quit: null
+    Log: Valuable<string>
+}
+Enum.valuable<MessageVariants, 'Log'>('Log', 'hello')
 ```
 
 ::: info
@@ -78,14 +78,14 @@ Enum.valuable<MessageVariants, 'Log'>('Log', 'hello');
 // Equivalent declarations
 
 type MessageVariants = {
-    Quit: null;
-    Log: Valuable<string>;
-};
+    Quit: null
+    Log: Valuable<string>
+}
 
 type MessageVariants = {
-    Quit: null;
-    Log: { value: string };
-};
+    Quit: null
+    Log: { value: string }
+}
 ```
 
 So, for **valuable** variants you should specify `Valuable<T>` or `{ value: T }`, and for **empty** variants any other type (prefer `null` or `undefined` for better readability).
@@ -97,39 +97,39 @@ So, for **valuable** variants you should specify `Valuable<T>` or `{ value: T }`
 There are several usefull methods to work with `Enum` instances:
 
 ```ts
-import { Result, Option, Enum } from '@scale-codec/enum';
+import { Result, Option, Enum } from '@scale-codec/enum'
 
 function makeSomeTask(): Result<number, string> {
-    const randomNum = Math.random();
+    const randomNum = Math.random()
 
     if (randomNum > 0.5) {
         // creating valuable variant with `valuable()`
-        return Enum.valuable('Ok', randomNum);
+        return Enum.valuable('Ok', randomNum)
     }
-    return Enum.valuable('Err', 'Oops, bad luck :<');
+    return Enum.valuable('Err', 'Oops, bad luck :<')
 }
 
-const result = makeSomeTask();
+const result = makeSomeTask()
 
 // Check for variant with `is()`
 if (result.is('Ok')) {
     // Extract the content with `as()`
-    const num = result.as('Ok');
-    console.log('Task result num:', num);
+    const num = result.as('Ok')
+    console.log('Task result num:', num)
 } else {
-    const errorMessage = result.as('Err');
-    console.error('Task resulted with an error:', errorMessage);
+    const errorMessage = result.as('Err')
+    console.error('Task resulted with an error:', errorMessage)
 }
 
 // Use 'match' syntax with `match()`
 const mapped: Option<number> = result.match({
     Ok(num) {
-        return Enum.valuable('Some', num);
+        return Enum.valuable('Some', num)
     },
     Err() {
-        return Enum.empty('None');
+        return Enum.empty('None')
     },
-});
+})
 ```
 
 ::: tip

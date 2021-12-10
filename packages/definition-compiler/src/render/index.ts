@@ -1,19 +1,13 @@
-import {
-    NamespaceDefinition,
-    RenderNamespaceDefinitionParams,
-    TypeDef,
-    DefEnumVariant,
-    DefStructField,
-} from '../types';
-import { Set as SetImmutable } from 'immutable';
-import { renderImports, createStateScope } from './util';
-import { byValue, byString } from 'sort-es';
-import { DefaultAvailableBuilders } from '../const';
+import { NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef, DefEnumVariant, DefStructField } from '../types'
+import { Set as SetImmutable } from 'immutable'
+import { renderImports, createStateScope } from './util'
+import { byValue, byString } from 'sort-es'
+import { DefaultAvailableBuilders } from '../const'
 
 function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; def: TypeDef }[] {
-    const items = Object.entries(val);
-    items.sort(byValue((x) => x[0], byString()));
-    return items.map(([tyName, def]) => ({ tyName, def }));
+    const items = Object.entries(val)
+    items.sort(byValue((x) => x[0], byString()))
+    return items.map(([tyName, def]) => ({ tyName, def }))
 }
 
 enum BaseType {
@@ -37,95 +31,95 @@ enum BaseType {
 // =========
 
 interface RenderParams {
-    runtimeLib: string;
-    runtimeTypes: Set<String>;
-    rollupSingleTuples: boolean;
+    runtimeLib: string
+    runtimeTypes: Set<String>
+    rollupSingleTuples: boolean
 }
 
-const { within: withinRenderParams, use: useRenderParams } = createStateScope<RenderParams>();
+const { within: withinRenderParams, use: useRenderParams } = createStateScope<RenderParams>()
 
 // =========
 
 interface ImportsCollector {
-    collectRef: (ref: string) => void;
-    collectImport: (name: string) => void;
-    getRuntimeLibImports: () => Set<string>;
+    collectRef: (ref: string) => void
+    collectImport: (name: string) => void
+    getRuntimeLibImports: () => Set<string>
 }
 
 function instanceViaBuilder(ref: string): string {
-    return `${touchBase(BaseType.FragmentFromBuilder)}<typeof ${touchRef(ref)}>`;
+    return `${touchBase(BaseType.FragmentFromBuilder)}<typeof ${touchRef(ref)}>`
 }
 
 function createImportsCollector(): ImportsCollector {
-    const { runtimeTypes } = useRenderParams();
+    const { runtimeTypes } = useRenderParams()
 
-    let imports = SetImmutable<string>();
+    let imports = SetImmutable<string>()
 
     return {
         getRuntimeLibImports: () => new Set(imports),
         collectRef: (ref) => {
             if (runtimeTypes.has(ref)) {
-                imports = imports.add(ref);
+                imports = imports.add(ref)
             }
         },
         collectImport: (name) => {
-            imports = imports.add(name);
+            imports = imports.add(name)
         },
-    };
+    }
 }
 
-const { within: withinCollector, use: useCollector } = createStateScope<ImportsCollector>();
+const { within: withinCollector, use: useCollector } = createStateScope<ImportsCollector>()
 
 // =========
 
-const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<string>();
+const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<string>()
 
 // =========
 
 function renderBuilder(props: { builderTy: string | null; createFn: string; createArgs: string }): string {
-    const ty = useCurrentTyName();
-    const tyDeclaration = props.builderTy ? `: ${props.builderTy}` : '';
+    const ty = useCurrentTyName()
+    const tyDeclaration = props.builderTy ? `: ${props.builderTy}` : ''
 
-    return `export const ${ty}${tyDeclaration} = ${touchImport(props.createFn)}('${ty}', ${props.createArgs})`;
+    return `export const ${ty}${tyDeclaration} = ${touchImport(props.createFn)}('${ty}', ${props.createArgs})`
 }
 
 function touchRef(ref: string): string {
-    useCollector().collectRef(ref);
-    return ref;
+    useCollector().collectRef(ref)
+    return ref
 }
 
 function touchImport(name: string): string {
-    useCollector().collectImport(name);
-    return name;
+    useCollector().collectImport(name)
+    return name
 }
 
 function touchBase(ty: BaseType): string {
-    useCollector().collectImport(ty);
-    return ty;
+    useCollector().collectImport(ty)
+    return ty
 }
 
 /**
  * ref -> `dynGetters(() => ${ref})` (with touches)
  */
 function refDynGetters(ref: string): string {
-    return `${touchImport('dynGetters')}(() => ${touchRef(ref)})`;
+    return `${touchImport('dynGetters')}(() => ${touchRef(ref)})`
 }
 
 function linesJoin(lines: string[], joiner = '\n\n'): string {
-    return lines.join(joiner);
+    return lines.join(joiner)
 }
 
 // =========
 
 function renderAlias(to: string): string {
     // special builder
-    return `export const ${useCurrentTyName()}: typeof ${touchRef(to)} = ${refDynGetters(to)}`;
+    return `export const ${useCurrentTyName()}: typeof ${touchRef(to)} = ${refDynGetters(to)}`
 }
 
 function renderVoidAlias(): string {
-    const { runtimeLib } = useRenderParams();
+    const { runtimeLib } = useRenderParams()
 
-    return renderImport({ nameInModule: 'Void', module: runtimeLib });
+    return renderImport({ nameInModule: 'Void', module: runtimeLib })
 }
 
 function renderVec(item: string): string {
@@ -133,55 +127,55 @@ function renderVec(item: string): string {
         builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
         createFn: 'createVecBuilder',
         createArgs: refDynGetters(item),
-    });
+    })
 }
 
 function renderStruct(fields: DefStructField[]): string {
     if (!fields.length) {
-        return renderVoidAlias();
+        return renderVoidAlias()
     }
 
-    const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${instanceViaBuilder(x.ref)}`);
+    const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${instanceViaBuilder(x.ref)}`)
 
-    const schemaItems = fields.map((x) => `['${x.name}', ${refDynGetters(x.ref)}]`);
-    const schema = `[${schemaItems.join(', ')}]`;
+    const schemaItems = fields.map((x) => `['${x.name}', ${refDynGetters(x.ref)}]`)
+    const schema = `[${schemaItems.join(', ')}]`
 
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleStructBuilder)}<{\n    ${valueTypeFields.join(',\n    ')}\n}>`,
         createFn: 'createStructBuilder',
         createArgs: `${schema}`,
-    });
+    })
 }
 
 function renderTuple(refs: string[]): string {
     if (!refs.length) {
-        return renderVoidAlias();
+        return renderVoidAlias()
     }
 
-    const { rollupSingleTuples } = useRenderParams();
-    if (rollupSingleTuples && refs.length === 1) return renderAlias(refs[0]);
+    const { rollupSingleTuples } = useRenderParams()
+    if (rollupSingleTuples && refs.length === 1) return renderAlias(refs[0])
 
-    const valueEntries: string[] = refs.map(instanceViaBuilder);
-    const codecs: string[] = refs.map(refDynGetters);
+    const valueEntries: string[] = refs.map(instanceViaBuilder)
+    const codecs: string[] = refs.map(refDynGetters)
 
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleTupleBuilder)}<[\n    ${valueEntries.join(',\n    ')}\n]>`,
         createFn: 'createTupleBuilder',
         createArgs: `[${codecs.join(', ')}]`,
-    });
+    })
 }
 
 function renderEnum(variants: DefEnumVariant[]): string {
     const definitionTyLines: string[] = variants.map((x) => {
-        const right = x.ref ? `${touchBase(BaseType.Valuable)}<${instanceViaBuilder(x.ref)}>` : 'null';
-        return `${x.name}: ${right}`;
-    });
+        const right = x.ref ? `${touchBase(BaseType.Valuable)}<${instanceViaBuilder(x.ref)}>` : 'null'
+        return `${x.name}: ${right}`
+    })
 
     const schemaLines: string[] = variants.map((x) => {
-        const items = [x.discriminant, `'${x.name}'`];
-        x.ref && items.push(refDynGetters(x.ref));
-        return `[${items.join(', ')}]`;
-    });
+        const items = [x.discriminant, `'${x.name}'`]
+        x.ref && items.push(refDynGetters(x.ref))
+        return `[${items.join(', ')}]`
+    })
 
     return renderBuilder({
         builderTy: `${touchBase(BaseType.ScaleEnumBuilder)}<${touchBase(BaseType.Enum)}<{\n    ${definitionTyLines.join(
@@ -189,7 +183,7 @@ function renderEnum(variants: DefEnumVariant[]): string {
         )}\n}>>`,
         createFn: 'createEnumBuilder',
         createArgs: `[${schemaLines.join(', ')}]`,
-    });
+    })
 }
 
 function renderSet(item: string): string {
@@ -197,7 +191,7 @@ function renderSet(item: string): string {
         builderTy: `${touchBase(BaseType.ScaleSetBuilder)}<Set<${instanceViaBuilder(item)}>>`,
         createFn: 'createSetBuilder',
         createArgs: refDynGetters(item),
-    });
+    })
 }
 
 function renderMap(key: string, value: string): string {
@@ -205,7 +199,7 @@ function renderMap(key: string, value: string): string {
         builderTy: `${touchBase(BaseType.ScaleMapBuilder)}<Map<${[key, value].map(instanceViaBuilder).join(', ')}>>`,
         createFn: 'createMapBuilder',
         createArgs: [key, value].map(refDynGetters).join(', '),
-    });
+    })
 }
 
 function renderArray(item: string, len: number): string {
@@ -213,7 +207,7 @@ function renderArray(item: string, len: number): string {
         builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
         createFn: `createArrayBuilder`,
         createArgs: `${refDynGetters(item)}, ${len}`,
-    });
+    })
 }
 
 function renderBytesArray(len: number): string {
@@ -221,7 +215,7 @@ function renderBytesArray(len: number): string {
         builderTy: null,
         createFn: 'createBytesArrayBuilder',
         createArgs: `${len}`,
-    });
+    })
 }
 
 function renderOption(some: string): string {
@@ -231,7 +225,7 @@ function renderOption(some: string): string {
         )}>>`,
         createFn: 'createOptionBuilder',
         createArgs: refDynGetters(some),
-    });
+    })
 }
 
 function renderResult(ok: string, err: string): string {
@@ -241,67 +235,67 @@ function renderResult(ok: string, err: string): string {
             .join(', ')}>>`,
         createFn: 'createResultBuilder',
         createArgs: [ok, err].map(refDynGetters).join(', '),
-    });
+    })
 }
 
 function renderImport({ nameInModule, module: moduleName }: { nameInModule?: string | null; module: string }): string {
-    const ty = useCurrentTyName();
+    const ty = useCurrentTyName()
 
     return linesJoin(
         [renderImports([nameInModule ? { source: nameInModule, as: ty } : ty], moduleName), `export { ${ty} }`],
         '\n',
-    );
+    )
 }
 
 function renderParticularDef(tyName: string, def: TypeDef): string {
     const particularRendered: string = withinCurrentTyName(tyName, () => {
         switch (def.t) {
             case 'alias':
-                return renderAlias(def.ref);
+                return renderAlias(def.ref)
             case 'vec':
-                return renderVec(def.item);
+                return renderVec(def.item)
             case 'struct':
-                return renderStruct(def.fields);
+                return renderStruct(def.fields)
             case 'tuple':
-                return renderTuple(def.items);
+                return renderTuple(def.items)
             case 'enum':
-                return renderEnum(def.variants);
+                return renderEnum(def.variants)
             case 'set':
-                return renderSet(def.entry);
+                return renderSet(def.entry)
             case 'map':
-                return renderMap(def.key, def.value);
+                return renderMap(def.key, def.value)
             case 'array':
-                return renderArray(def.item, def.len);
+                return renderArray(def.item, def.len)
             case 'bytes-array':
-                return renderBytesArray(def.len);
+                return renderBytesArray(def.len)
             case 'option':
-                return renderOption(def.some);
+                return renderOption(def.some)
             case 'result':
-                return renderResult(def.ok, def.err);
+                return renderResult(def.ok, def.err)
             case 'import':
-                return renderImport(def);
+                return renderImport(def)
             default: {
-                const uncovered: never = def;
-                throw new Error(`Undefined type definition: ${uncovered}`);
+                const uncovered: never = def
+                throw new Error(`Undefined type definition: ${uncovered}`)
             }
         }
-    });
+    })
 
-    return particularRendered;
+    return particularRendered
 }
 
 function renderPreamble(): string {
-    const { runtimeLib } = useRenderParams();
-    const { getRuntimeLibImports: getCoreImports } = useCollector();
+    const { runtimeLib } = useRenderParams()
+    const { getRuntimeLibImports: getCoreImports } = useCollector()
 
-    const lines = [];
+    const lines = []
 
-    const imports = getCoreImports();
+    const imports = getCoreImports()
     if (imports.size) {
-        lines.push(renderImports(imports, runtimeLib));
+        lines.push(renderImports(imports, runtimeLib))
     }
 
-    return linesJoin(lines);
+    return linesJoin(lines)
 }
 
 /**
@@ -321,11 +315,11 @@ export function renderNamespaceDefinition(
             withinCollector(createImportsCollector(), () => {
                 const renderedTypes = namespaceDefinitionToList(definition)
                     .map(({ tyName, def }) => renderParticularDef(tyName, def))
-                    .join('\n\n');
+                    .join('\n\n')
 
-                const preamble = renderPreamble();
+                const preamble = renderPreamble()
 
-                return [preamble, renderedTypes].join('\n\n').trim() + '\n';
+                return [preamble, renderedTypes].join('\n\n').trim() + '\n'
             }),
-    );
+    )
 }

@@ -1,29 +1,29 @@
-import prettier from 'prettier';
-import prettierConfig from '../../../.prettierrc.js';
-import { NamespaceCodegenDefinition } from './types';
-import { generate, GenerateOptions } from './gen';
+import prettier from 'prettier'
+import prettierConfig from '../../../.prettierrc.js'
+import { NamespaceCodegenDefinition } from './types'
+import { generate, GenerateOptions } from './gen'
 
 function format(tsCode: string): string {
     return prettier.format(tsCode, {
         ...(prettierConfig as any),
         parser: 'typescript',
-    });
+    })
 }
 
 function shouldMatchCode(def: NamespaceCodegenDefinition, opts: GenerateOptions, expectedLike: string) {
-    const expected = format(expectedLike);
-    const actual = format(generate(def, opts));
+    const expected = format(expectedLike)
+    const actual = format(generate(def, opts))
 
-    expect(actual).toEqual(expected);
+    expect(actual).toEqual(expected)
 }
 
 function shouldMatchSnapshot(def: NamespaceCodegenDefinition, opts: GenerateOptions) {
-    expect(format(generate(def, opts))).toMatchSnapshot();
+    expect(format(generate(def, opts))).toMatchSnapshot()
 }
 
 function sortImports(...imports: string[]): string {
-    imports.sort();
-    return imports.join(', ');
+    imports.sort()
+    return imports.join(', ')
 }
 
 describe('generate()', () => {
@@ -44,8 +44,8 @@ describe('generate()', () => {
                 ...StdCodecs
             })
             `,
-        );
-    });
+        )
+    })
 
     test('definition with alias to std', () => {
         shouldMatchCode(
@@ -61,8 +61,8 @@ describe('generate()', () => {
             export const ns = defNamespace<WithAlias>({
                 ...StdCodecs, String: defAlias('str') })
             `,
-        );
-    });
+        )
+    })
 
     test('definition with struct', () => {
         shouldMatchSnapshot(
@@ -82,8 +82,8 @@ describe('generate()', () => {
                 namespaceValueName: 'withId',
                 importLib: 'my-scale',
             },
-        );
-    });
+        )
+    })
 
     test('complex definition', () => {
         shouldMatchSnapshot(
@@ -138,8 +138,8 @@ describe('generate()', () => {
                 namespaceValueName: 'complex',
                 importLib: '@scale-codec/namespace',
             },
-        );
-    });
+        )
+    })
 
     test('error if entry duplicated std type', () => {
         expect(() =>
@@ -149,8 +149,8 @@ describe('generate()', () => {
                 },
                 { namespaceTypeName: 'test', namespaceValueName: 'test', importLib: 'test' },
             ),
-        ).toThrow();
-    });
+        ).toThrow()
+    })
 
     test('error if duplicated enum discriminants', () => {
         expect(() => {
@@ -173,11 +173,11 @@ describe('generate()', () => {
                     },
                 },
                 { namespaceTypeName: 'test', namespaceValueName: 'test', importLib: 'test' },
-            );
-        }).toThrow();
-    });
+            )
+        }).toThrow()
+    })
 
-    test.todo('other validation errors');
+    test.todo('other validation errors')
 
     test('struct props camelCased if related option is provided', () => {
         shouldMatchSnapshot(
@@ -203,8 +203,8 @@ describe('generate()', () => {
 
                 structPropsCamelCase: true,
             },
-        );
-    });
+        )
+    })
 
     test('using set', () => {
         shouldMatchSnapshot(
@@ -219,8 +219,8 @@ describe('generate()', () => {
                 namespaceValueName: 'test',
                 importLib: 'test',
             },
-        );
-    });
+        )
+    })
 
     test('array of bytes', () => {
         shouldMatchSnapshot(
@@ -235,6 +235,6 @@ describe('generate()', () => {
                 namespaceValueName: 'VALUE',
                 importLib: 'test',
             },
-        );
-    });
-});
+        )
+    })
+})

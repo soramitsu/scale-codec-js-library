@@ -4,18 +4,18 @@ export interface RenderNamespaceDefinitionParams {
      *
      * Defaults to `@scale-codec/definition-runtime`
      */
-    runtimeLib?: string;
+    runtimeLib?: string
 
     /**
      * Types available in the runtime library.
      */
-    runtimeTypes?: Set<string>;
+    runtimeTypes?: Set<string>
 
     /**
      * Single tuples are always an arrays with a single element. It is possible to make final code cleaner
      * (and a bit performant) if render such tuples just as aliases for the inner element. It is optional feature.
      */
-    rollupSingleTuplesIntoAliases?: boolean;
+    rollupSingleTuplesIntoAliases?: boolean
 }
 
 /**
@@ -38,16 +38,16 @@ export interface RenderNamespaceDefinitionParams {
  * }
  * ```
  */
-export type NamespaceDefinition = Record<string, TypeDef>;
+export type NamespaceDefinition = Record<string, TypeDef>
 
-export type TypeRef = string;
+export type TypeRef = string
 
 /**
  * Just an alias to the inner type
  */
 export type DefAlias = {
-    ref: TypeRef;
-};
+    ref: TypeRef
+}
 
 /**
  * Fixed-length array
@@ -56,16 +56,16 @@ export type DefArray = {
     /**
      * Inner type name
      */
-    item: TypeRef;
-    len: number;
-};
+    item: TypeRef
+    len: number
+}
 
 /**
  * It's like {@link DefArray} but for bytes (u8). Use it for bytes for better performance.
  */
 export type DefBytesArray = {
-    len: number;
-};
+    len: number
+}
 
 /**
  * `Vec<T>` definition
@@ -74,8 +74,8 @@ export type DefVec = {
     /**
      * Inner vec type name
      */
-    item: TypeRef;
-};
+    item: TypeRef
+}
 
 /**
  * Tuple definition
@@ -84,8 +84,8 @@ export type DefTuple = {
     /**
      * Array of inner types
      */
-    items: TypeRef[];
-};
+    items: TypeRef[]
+}
 
 /**
  * Structure definition
@@ -95,34 +95,34 @@ export type DefStruct = {
      * @remarks
      * **note**: order of fields matters!
      */
-    fields: DefStructField[];
-};
+    fields: DefStructField[]
+}
 
 export type DefStructField = {
     /**
      * Name of the struct field
      */
-    name: string;
+    name: string
     /**
      * Reference to the type
      */
-    ref: TypeRef;
-};
+    ref: TypeRef
+}
 
 /**
  * Map definition (e.g. `HashMap`, `BTreeMap`)
  */
 export type DefMap = {
-    key: TypeRef;
-    value: TypeRef;
-};
+    key: TypeRef
+    value: TypeRef
+}
 
 /**
  * Set definition (e.g. `HashSet`, `BTreeSet`)
  */
 export type DefSet = {
-    entry: TypeRef;
-};
+    entry: TypeRef
+}
 
 /**
  * Enum definition
@@ -133,32 +133,32 @@ export type DefEnum = {
      * Order of variants doesn't matter, but variants should not contain collisions between their names
      * and discriminants
      */
-    variants: DefEnumVariant[];
-};
+    variants: DefEnumVariant[]
+}
 
 export type DefEnumVariant = {
-    name: string;
-    discriminant: number;
+    name: string
+    discriminant: number
     /**
      * No ref/null ref means that this variant is empty
      */
-    ref?: TypeRef | null;
-};
+    ref?: TypeRef | null
+}
 
 /**
  * Option enum definition
  */
 export type DefOption = {
-    some: TypeRef;
-};
+    some: TypeRef
+}
 
 /**
  * Result enum definition
  */
 export type DefResult = {
-    ok: TypeRef;
-    err: TypeRef;
-};
+    ok: TypeRef
+    err: TypeRef
+}
 
 /**
  * External type definition - import codec from external module
@@ -178,18 +178,18 @@ export type DefImport = {
      * import { ... } from '<here is the module name>'
      * ```
      */
-    module: string;
+    module: string
     /**
      * Name of the type inside of the module. If this field is omitted, the own type name will be used
      *
      * @todo *define custom name for each import?*
      */
-    nameInModule?: string;
-};
+    nameInModule?: string
+}
 
 type WithTMark<T, M extends string> = T & {
-    t: M;
-};
+    t: M
+}
 
 export type TypeDef =
     | WithTMark<DefAlias, 'alias'>
@@ -203,4 +203,4 @@ export type TypeDef =
     | WithTMark<DefEnum, 'enum'>
     | WithTMark<DefOption, 'option'>
     | WithTMark<DefResult, 'result'>
-    | WithTMark<DefImport, 'import'>;
+    | WithTMark<DefImport, 'import'>

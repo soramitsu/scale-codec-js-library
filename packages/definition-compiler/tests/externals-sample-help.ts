@@ -1,3 +1,3 @@
-import { Str } from '@scale-codec/definition-runtime';
+import { Str } from '@scale-codec/definition-runtime'
 
-export { Str, Str as JustExternalInclusion };
+export { Str, Str as JustExternalInclusion }

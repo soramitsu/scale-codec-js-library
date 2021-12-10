@@ -1,1 +1,1 @@
-export type StrKeys<T> = keyof T & string;
+export type StrKeys<T> = keyof T & string

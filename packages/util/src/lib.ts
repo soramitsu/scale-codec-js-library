@@ -8,7 +8,7 @@
  */
 export function assert(condition: unknown, message: string | (() => string)): asserts condition {
     if (!condition) {
-        throw new Error(typeof message === 'function' ? message() : message);
+        throw new Error(typeof message === 'function' ? message() : message)
     }
 }
 
@@ -16,17 +16,17 @@ export function assert(condition: unknown, message: string | (() => string)): as
  * Creates a concatenated `Uint8Array` from the inputs.
  */
 export function concatUint8Arrays(iterable: Iterable<Uint8Array>): Uint8Array {
-    const list = [...iterable];
+    const list = [...iterable]
 
-    const length = list.reduce((l, arr) => l + arr.length, 0);
-    const result = new Uint8Array(length);
+    const length = list.reduce((l, arr) => l + arr.length, 0)
+    const result = new Uint8Array(length)
 
     for (let i = 0, offset = 0; i < list.length; i++) {
-        result.set(list[i], offset);
-        offset += list[i].length;
+        result.set(list[i], offset)
+        offset += list[i].length
     }
 
-    return result;
+    return result
 }
 
 /**
@@ -38,8 +38,8 @@ export function concatUint8Arrays(iterable: Iterable<Uint8Array>): Uint8Array {
  * ```
  */
 export function* yieldNTimes<T>(value: T, n: number): Generator<T, void> {
-    let i = n;
-    while (i-- > 0) yield value;
+    let i = n
+    while (i-- > 0) yield value
 }
 
 /**
@@ -52,7 +52,7 @@ export function* yieldNTimes<T>(value: T, n: number): Generator<T, void> {
  */
 export function* yieldMapped<T, R>(items: Iterable<T>, mapFn: (item: T) => R): Generator<R, void> {
     for (const item of items) {
-        yield mapFn(item);
+        yield mapFn(item)
     }
 }
 
@@ -65,9 +65,9 @@ export function* yieldMapped<T, R>(items: Iterable<T>, mapFn: (item: T) => R): G
  * ```
  */
 export function* yieldCycleNTimes<T>(items: Iterable<T>, n: number): Generator<T, void> {
-    let i = n;
+    let i = n
     while (i-- > 0) {
-        for (const item of items) yield item;
+        for (const item of items) yield item
     }
 }
 
@@ -75,8 +75,8 @@ export function* yieldCycleNTimes<T>(items: Iterable<T>, n: number): Generator<T
  * Returns value from `map` by `key` and throws if there is no such key
  */
 export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
-    if (!map.has(key)) throw new Error(`failed to unwrap - key "${key}" not found`);
-    return map.get(key)!;
+    if (!map.has(key)) throw new Error(`failed to unwrap - key "${key}" not found`)
+    return map.get(key)!
 }
 
 /**
@@ -87,7 +87,7 @@ export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
  * ```
  */
 export function hexifyBytes(v: Uint8Array): string {
-    return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ');
+    return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ')
 }
 
 /**
@@ -99,5 +99,5 @@ export function hexifyBytes(v: Uint8Array): string {
  * ```
  */
 export function prettyHexToBytes(hex: string): Uint8Array {
-    return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)));
+    return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)))
 }

@@ -7,19 +7,19 @@ import {
     Str,
     BytesVec,
     Compact,
-} from '@scale-codec/definition-runtime';
-import { Mystery } from '../samples/structFieldsOrdering';
+} from '@scale-codec/definition-runtime'
+import { Mystery } from '../samples/structFieldsOrdering'
 
 interface Raw {
-    b: string;
-    a: bigint;
-    A: Uint8Array;
+    b: string
+    a: bigint
+    A: Uint8Array
 }
 
-type Scale = FragmentFromBuilder<typeof Mystery>;
+type Scale = FragmentFromBuilder<typeof Mystery>
 
 function makeRaw(value: Raw): Raw {
-    return value;
+    return value
 }
 
 function makeScale(value: Raw): Scale {
@@ -27,7 +27,7 @@ function makeScale(value: Raw): Scale {
         A: BytesVec.fromValue(value.A),
         a: Compact.fromValue(value.a),
         b: Str.fromValue(value.b),
-    });
+    })
 }
 
 function unwrapScale({
@@ -37,7 +37,7 @@ function unwrapScale({
         b: { value: b },
     },
 }: Scale): Raw {
-    return { A, a, b };
+    return { A, a, b }
 }
 
 function encodeRaw(value: Raw): Uint8Array {
@@ -49,7 +49,7 @@ function encodeRaw(value: Raw): Uint8Array {
             b: encodeStr,
         },
         ['b', 'a', 'A'],
-    );
+    )
 }
 
 test('Encodes as expected', () => {
@@ -57,21 +57,21 @@ test('Encodes as expected', () => {
         A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
         a: BigInt('81818273'),
         b: 'Nyanpasu',
-    });
-    const scale = makeScale(raw);
+    })
+    const scale = makeScale(raw)
 
-    expect(scale.bytes).toEqual(encodeRaw(raw));
-});
+    expect(scale.bytes).toEqual(encodeRaw(raw))
+})
 
 test('Decodes as expected', () => {
     const raw = makeRaw({
         A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
         a: BigInt('81818273'),
         b: 'Nyanpasu',
-    });
-    const encoded = encodeRaw(raw);
+    })
+    const encoded = encodeRaw(raw)
 
-    const scale = Mystery.fromBytes(encoded);
+    const scale = Mystery.fromBytes(encoded)
 
-    expect(unwrapScale(scale)).toEqual(raw);
-});
+    expect(unwrapScale(scale)).toEqual(raw)
+})

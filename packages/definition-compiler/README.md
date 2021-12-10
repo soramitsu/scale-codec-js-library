@@ -7,8 +7,8 @@ Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/namespa
 ## Example
 
 ```ts
-import { renderNamespaceDefinition } from '@scale-codec/definition-compiler';
-import fs from 'fs';
+import { renderNamespaceDefinition } from '@scale-codec/definition-compiler'
+import fs from 'fs'
 
 const code = renderNamespaceDefinition({
     PublicKey: {
@@ -22,9 +22,9 @@ const code = renderNamespaceDefinition({
         t: 'bytes-array',
         len: 32,
     },
-});
+})
 
-fs.writeFileSync('./output.ts', code);
+fs.writeFileSync('./output.ts', code)
 ```
 
 ```ts
@@ -36,15 +36,15 @@ import {
     createBytesArrayBuilder,
     createStructBuilder,
     dynBuilder,
-} from '@scale-codec/definition-runtime';
+} from '@scale-codec/definition-runtime'
 
-export const Bytes32 = createBytesArrayBuilder('Bytes32', 32);
+export const Bytes32 = createBytesArrayBuilder('Bytes32', 32)
 
 export const PublicKey: ScaleStructBuilder<{
-    digest: FragmentFromBuilder<typeof Str>;
-    payload: FragmentFromBuilder<typeof Bytes32>;
+    digest: FragmentFromBuilder<typeof Str>
+    payload: FragmentFromBuilder<typeof Bytes32>
 }> = createStructBuilder('PublicKey', [
     ['digest', dynBuilder(() => Str)],
     ['payload', dynBuilder(() => Bytes32)],
-]);
+])
 ```

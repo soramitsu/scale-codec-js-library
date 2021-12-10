@@ -12,4 +12,4 @@ module.exports = {
     roots: ['<rootDir>/packages'],
     testPathIgnorePatterns: ['/node_modules/', '/dist/'],
     modulePathIgnorePatterns: ['/dist/'],
-};
+}

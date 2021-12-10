@@ -1,6 +1,6 @@
-import { Array_Vec_HashMap_str_Id_8 } from './namespace';
-import { Enum, Result } from '@scale-codec/definition-runtime';
-import deepEqual from 'fast-deep-equal';
+import { Array_Vec_HashMap_str_Id_8 } from './namespace'
+import { Enum, Result } from '@scale-codec/definition-runtime'
+import deepEqual from 'fast-deep-equal'
 
 export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
     try {
@@ -34,17 +34,17 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
             [],
             [],
             [],
-        ]);
+        ])
 
-        const encoded = data.bytes;
-        const decoded = Array_Vec_HashMap_str_Id_8.fromBytes(encoded);
+        const encoded = data.bytes
+        const decoded = Array_Vec_HashMap_str_Id_8.fromBytes(encoded)
 
         if (!deepEqual(data.unwrap(), decoded.unwrap())) {
-            throw new Error('Not equals >:(');
+            throw new Error('Not equals >:(')
         }
 
-        return Enum.valuable('Ok', null);
+        return Enum.valuable('Ok', null)
     } catch (err: any) {
-        return Enum.valuable('Err', err);
+        return Enum.valuable('Err', err)
     }
 }

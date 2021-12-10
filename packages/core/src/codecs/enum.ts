@@ -1,10 +1,10 @@
-import { concatUint8Arrays } from '@scale-codec/util';
-import { Enum, Option } from '@scale-codec/enum';
-import { Decode, DecodeResult, Encode } from '../types';
+import { concatUint8Arrays } from '@scale-codec/util'
+import { Enum, Option } from '@scale-codec/enum'
+import { Decode, DecodeResult, Encode } from '../types'
 
 export type EnumSchemaDef<Def> = {
-    [K in keyof Def]: { discriminant: number };
-};
+    [K in keyof Def]: { discriminant: number }
+}
 
 /**
  * Unsafe-typed params for enum encoding. It defines relationships between variant names and their
@@ -30,10 +30,10 @@ export type EnumEncoders = Record<
         /**
          * Variant discriminant
          */
-        d: number;
-        encode?: Encode<any>;
+        d: number
+        encode?: Encode<any>
     }
->;
+>
 
 /**
  * Unsafe-type for enum decoding. It defines relationships between discriminants and their variant names,
@@ -57,51 +57,51 @@ export type EnumEncoders = Record<
 export type EnumDecoders = Record<
     number,
     {
-        v: string | number | symbol;
-        decode?: Decode<any>;
+        v: string | number | symbol
+        decode?: Decode<any>
     }
->;
+>
 
-const DISCRIMINANT_BYTES_COUNT = 1;
+const DISCRIMINANT_BYTES_COUNT = 1
 
 export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders): Uint8Array {
-    const { tag, content } = val;
-    const { d, encode } = encoders[tag];
+    const { tag, content } = val
+    const { d, encode } = encoders[tag]
 
     function* parts(): Generator<Uint8Array> {
-        yield new Uint8Array([d]);
+        yield new Uint8Array([d])
         if (encode) {
-            if (!content) throw new Error(`Codec for variant "${tag}" defined, but there is no content`);
-            yield encode(content[0]);
+            if (!content) throw new Error(`Codec for variant "${tag}" defined, but there is no content`)
+            yield encode(content[0])
         }
     }
 
-    return concatUint8Arrays(parts());
+    return concatUint8Arrays(parts())
 }
 
 export function decodeEnum<T extends Enum<any>>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<T> {
-    const d = bytes[0];
-    const { v, decode } = decoders[d];
+    const d = bytes[0]
+    const { v, decode } = decoders[d]
 
     if (decode) {
-        const [decodedContent, contentBytes] = decode(bytes.subarray(1));
+        const [decodedContent, contentBytes] = decode(bytes.subarray(1))
 
-        return [Enum.valuable<any, any>(v as any, decodedContent) as any, DISCRIMINANT_BYTES_COUNT + contentBytes];
+        return [Enum.valuable<any, any>(v as any, decodedContent) as any, DISCRIMINANT_BYTES_COUNT + contentBytes]
     }
 
-    return [Enum.empty<any>(v as any) as any, DISCRIMINANT_BYTES_COUNT];
+    return [Enum.empty<any>(v as any) as any, DISCRIMINANT_BYTES_COUNT]
 }
 
 function optBoolByteToEnum(byte: number): Option<boolean> {
     switch (byte) {
         case 0:
-            return Enum.empty('None');
+            return Enum.empty('None')
         case 1:
-            return Enum.valuable('Some', true);
+            return Enum.valuable('Some', true)
         case 2:
-            return Enum.valuable('Some', false);
+            return Enum.valuable('Some', false)
         default:
-            throw new Error(`Failed to decode OptionBool - byte is ${byte}`);
+            throw new Error(`Failed to decode OptionBool - byte is ${byte}`)
     }
 }
 
@@ -114,9 +114,9 @@ export const encodeOptionBool: Encode<Option<boolean>> = (item) =>
             None: () => 0,
             Some: (val) => (val ? 1 : 2),
         }),
-    ]);
+    ])
 
 /**
  * Special decoder for `OptionBool` type from Rust's parity_scale_codec
  */
-export const decodeOptionBool: Decode<Option<boolean>> = ([byte]) => [optBoolByteToEnum(byte), 1];
+export const decodeOptionBool: Decode<Option<boolean>> = ([byte]) => [optBoolByteToEnum(byte), 1]

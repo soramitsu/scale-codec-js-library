@@ -1,14 +1,14 @@
-import { build, Format } from 'esbuild';
-import { path } from 'zx';
+import { build, Format } from 'esbuild'
+import { path } from 'zx'
 
-const ROOT = path.resolve(__dirname, '../');
+const ROOT = path.resolve(__dirname, '../')
 
 interface Options {
     /**
      * Unscoped package name
      */
-    name: string;
-    external?: string[];
+    name: string
+    external?: string[]
 }
 
 const opts: Options[] = [
@@ -30,12 +30,12 @@ const opts: Options[] = [
         name: 'definition-runtime',
         external: ['@scale-codec/enum', '@scale-codec/util', '@scale-codec/core', 'fmt-subs'],
     },
-];
+]
 
 export default async function () {
     await Promise.all(
         opts.map(async (x) => {
-            const inputFile = path.resolve(ROOT, 'packages', x.name, 'src/lib.ts');
+            const inputFile = path.resolve(ROOT, 'packages', x.name, 'src/lib.ts')
 
             await Promise.all(
                 (['esm', 'cjs'] as Format[]).map((format) =>
@@ -50,7 +50,7 @@ export default async function () {
                         format,
                     }),
                 ),
-            );
+            )
         }),
-    );
+    )
 }

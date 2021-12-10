@@ -1,19 +1,19 @@
 // allowing imports of .ts files
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-require('esbuild-register');
+require('esbuild-register')
 
-import { cac } from 'cac';
-import consola from 'consola';
-import fs from 'fs/promises';
-import chalk from 'chalk';
-import prompts from 'prompts';
-import pathExists from 'path-exists';
-import { generate } from '@scale-codec/namespace-codegen';
-import packageJson from '../package.json';
-import { OptionsRaw, parseRawOptions } from './opts';
-import { normalizeRelativePath } from './util';
+import { cac } from 'cac'
+import consola from 'consola'
+import fs from 'fs/promises'
+import chalk from 'chalk'
+import prompts from 'prompts'
+import pathExists from 'path-exists'
+import { generate } from '@scale-codec/namespace-codegen'
+import packageJson from '../package.json'
+import { OptionsRaw, parseRawOptions } from './opts'
+import { normalizeRelativePath } from './util'
 
-const cli = cac('generate-scale-namespace');
+const cli = cac('generate-scale-namespace')
 
 cli.command('', 'Generate namespace from definition')
     .option(
@@ -33,71 +33,71 @@ cli.command('', 'Generate namespace from definition')
         const options = parseRawOptions(rawOptions).match({
             Ok: (v) => v,
             Err: (err) => {
-                consola.warn(err);
-                process.exit(1);
+                consola.warn(err)
+                process.exit(1)
             },
-        });
+        })
 
         // normalizing paths
-        const normalizedInputPath = normalizeRelativePath(options.input);
-        const normalizedOutputPath = normalizeRelativePath(options.output);
+        const normalizedInputPath = normalizeRelativePath(options.input)
+        const normalizedOutputPath = normalizeRelativePath(options.output)
 
         // checking if output already exists
         if (await pathExists(normalizedOutputPath)) {
             if (options.force) {
-                consola.info('Output file exists, will be overwritten');
+                consola.info('Output file exists, will be overwritten')
             } else {
                 const { confirmation } = await prompts({
                     name: 'confirmation',
                     type: 'confirm',
                     message: 'Output path already exists. Are you sure to overwrite this?',
-                });
+                })
 
                 if (!confirmation) {
-                    process.exit(0);
+                    process.exit(0)
                 }
             }
         }
 
         // smart definition import
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        let definition: any = require(normalizedInputPath);
+        let definition: any = require(normalizedInputPath)
         if ('default' in definition) {
             // 99% it is a ES module
-            definition = definition.default;
+            definition = definition.default
         }
 
         // generating
-        let rawGeneratedCode: string;
+        let rawGeneratedCode: string
         try {
             rawGeneratedCode = generate(definition, {
                 importLib: options.genImportFrom,
                 namespaceTypeName: options.genNamespaceType,
                 namespaceValueName: options.genNamespaceValue,
                 structPropsCamelCase: options.genCamel,
-            });
+            })
         } catch (err) {
-            consola.error('Generation failed :<', err);
-            process.exit(1);
+            consola.error('Generation failed :<', err)
+            process.exit(1)
         }
 
         // writing
-        await fs.writeFile(normalizedOutputPath, rawGeneratedCode, { encoding: 'utf-8' });
+        await fs.writeFile(normalizedOutputPath, rawGeneratedCode, { encoding: 'utf-8' })
 
-        consola.success(chalk`Generated to {green.bold ${normalizedOutputPath}}`);
-    });
+        consola.success(chalk`Generated to {green.bold ${normalizedOutputPath}}`)
+    })
 
-cli.help();
-cli.version(packageJson.version);
+cli.help()
+cli.version(packageJson.version)
 
 async function main() {
     try {
-        cli.parse(process.argv, { run: false });
-        await cli.runMatchedCommand();
+        cli.parse(process.argv, { run: false })
+        await cli.runMatchedCommand()
     } catch (error) {
-        consola.fatal(error);
-        process.exit(1);
+        consola.fatal(error)
+        process.exit(1)
     }
 }
 
-main();
+main()

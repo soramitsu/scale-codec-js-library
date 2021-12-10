@@ -1,11 +1,11 @@
-import { NamespaceDefinition } from '../src/types';
+import { NamespaceDefinition } from '../src/types'
 
 interface Sample {
-    def: NamespaceDefinition;
+    def: NamespaceDefinition
 }
 
 function defineSample(def: NamespaceDefinition): Sample {
-    return { def };
+    return { def }
 }
 
 export const aliases = defineSample({
@@ -15,7 +15,7 @@ export const aliases = defineSample({
     },
     A: { t: 'alias', ref: 'B' },
     C: { t: 'tuple', items: ['B', 'U8'] },
-});
+})
 
 export const externals = defineSample({
     JustExternalInclusion: {
@@ -27,7 +27,7 @@ export const externals = defineSample({
         module: '../externals-sample-help',
         nameInModule: 'Str',
     },
-});
+})
 
 export const complexNamespace = defineSample({
     OptionMsg: {
@@ -83,7 +83,7 @@ export const complexNamespace = defineSample({
             },
         ],
     },
-});
+})
 
 export const structFieldsOrdering = defineSample({
     Mystery: {
@@ -94,7 +94,7 @@ export const structFieldsOrdering = defineSample({
             { name: 'A', ref: 'BytesVec' },
         ],
     },
-});
+})
 
 export const unwrapCheck = defineSample({
     StructA: {
@@ -158,7 +158,7 @@ export const unwrapCheck = defineSample({
             { name: 'Empty', discriminant: 2 },
         ],
     },
-});
+})
 
 /**
  * Some builder could be extended, e.g. enum builder.
@@ -178,4 +178,4 @@ export const aliasToAnExtendedBuilder = defineSample({
         t: 'alias',
         ref: 'Message',
     },
-});
+})

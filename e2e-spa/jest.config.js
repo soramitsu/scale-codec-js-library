@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const path = require('path');
+const path = require('path')
 
 /**
  * @type {import('@jest/types').Config.InitialOptions}
@@ -14,4 +14,4 @@ module.exports = {
     moduleNameMapper: {
         '@scale-codec/definition-runtime': path.resolve(__dirname, 'runtime-rollup/index.cjs.js'),
     },
-};
+}

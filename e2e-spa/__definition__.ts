@@ -1,4 +1,4 @@
-import { NamespaceDefinition } from '@scale-codec/definition-compiler';
+import { NamespaceDefinition } from '@scale-codec/definition-compiler'
 
 const definition: NamespaceDefinition = {
     Option_str: {
@@ -69,6 +69,6 @@ const definition: NamespaceDefinition = {
     //     ok: 'Void',
     //     err: 'str',
     // },
-};
+}
 
-export default definition;
+export default definition

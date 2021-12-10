@@ -7,9 +7,9 @@ Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/core)!
 ## Example
 
 ```ts
-import { encodeVec, encodeBool, encodeStr, encodeStruct, Encode, encodeInt } from '@scale-codec/core';
+import { encodeVec, encodeBool, encodeStr, encodeStruct, Encode, encodeInt } from '@scale-codec/core'
 
-const encodeInt32: Encode<number> = (num) => encodeInt(num, 'i32');
+const encodeInt32: Encode<number> = (num) => encodeInt(num, 'i32')
 
 const bytes = encodeStruct(
     {
@@ -23,9 +23,9 @@ const bytes = encodeStruct(
         adult: encodeBool,
     },
     ['name', 'coins', 'adult'],
-);
+)
 
-console.log(bytes);
+console.log(bytes)
 ```
 
 ```

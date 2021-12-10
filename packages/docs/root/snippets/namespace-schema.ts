@@ -1,4 +1,4 @@
-import { NamespaceDefinition } from '@scale-codec/definition-compiler';
+import { NamespaceDefinition } from '@scale-codec/definition-compiler'
 
 const schema: NamespaceDefinition = {
     Person: {
@@ -60,6 +60,6 @@ const schema: NamespaceDefinition = {
         item: 'U8',
         len: 32,
     },
-};
+}
 
-export default schema;
+export default schema

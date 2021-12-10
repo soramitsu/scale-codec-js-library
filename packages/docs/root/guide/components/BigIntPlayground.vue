@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { encodeBigInt, Result, Enum, BigIntTypes } from '@scale-codec/core';
-import { hexifyBytes } from '@scale-codec/util';
+import { ref, computed } from 'vue'
+import { encodeBigInt, Result, Enum, BigIntTypes } from '@scale-codec/core'
+import { hexifyBytes } from '@scale-codec/util'
 
-const tySelected = ref<BigIntTypes>('i32');
+const tySelected = ref<BigIntTypes>('i32')
 
-const num = ref('5881');
+const num = ref('5881')
 const numAsBI = computed<Result<bigint, Error>>(() => {
     try {
-        return Enum.valuable('Ok', BigInt(num.value));
+        return Enum.valuable('Ok', BigInt(num.value))
     } catch (err) {
-        return Enum.valuable('Err', err);
+        return Enum.valuable('Err', err)
     }
-});
+})
 
 const output = computed(() => {
     return numAsBI.value.match<any>({
         Err: (e) => e,
         Ok: (bi) => {
             try {
-                return hexifyBytes(encodeBigInt(bi, tySelected.value));
+                return hexifyBytes(encodeBigInt(bi, tySelected.value))
             } catch (err) {
-                return err;
+                return err
             }
         },
-    });
-});
+    })
+})
 
 function* types(): Generator<BigIntTypes> {
     for (const bits of [8, 16, 32, 64, 128]) {
         for (const sign of 'ui') {
-            yield `${sign}${bits}` as BigIntTypes;
+            yield `${sign}${bits}` as BigIntTypes
         }
     }
 }

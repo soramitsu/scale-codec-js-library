@@ -1,58 +1,58 @@
-export type NamespaceCodegenDefinition = Record<string, TypeDef>;
+export type NamespaceCodegenDefinition = Record<string, TypeDef>
 
 export type ArrayDef = {
-    item: string;
-    len: number;
-};
+    item: string
+    len: number
+}
 
 export type BytesArrayDef = {
-    len: number;
-};
+    len: number
+}
 
 export type VecDef = {
-    item: string;
-};
+    item: string
+}
 
 export type TupleDef = {
-    items: string[];
-};
+    items: string[]
+}
 
 export type StructDef = {
     fields: {
-        name: string;
-        ref: string;
-    }[];
-};
+        name: string
+        ref: string
+    }[]
+}
 
 export type MapDef = {
-    key: string;
-    value: string;
-};
+    key: string
+    value: string
+}
 
 export type SetDef = {
-    entry: string;
-};
+    entry: string
+}
 
 export type EnumDef = {
     variants: {
-        name: string;
-        discriminant: number;
-        ref: string | null;
-    }[];
-};
+        name: string
+        discriminant: number
+        ref: string | null
+    }[]
+}
 
 export type OptionDef = {
-    some: string;
-};
+    some: string
+}
 
 export type ResultDef = {
-    ok: string;
-    err: string;
-};
+    ok: string
+    err: string
+}
 
 export type WithTMark<T, M extends string> = T & {
-    t: M;
-};
+    t: M
+}
 
 export type TypeDef =
     | string
@@ -65,4 +65,4 @@ export type TypeDef =
     | WithTMark<SetDef, 'set'>
     | WithTMark<EnumDef, 'enum'>
     | WithTMark<OptionDef, 'option'>
-    | WithTMark<ResultDef, 'result'>;
+    | WithTMark<ResultDef, 'result'>

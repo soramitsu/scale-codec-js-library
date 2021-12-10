@@ -1,17 +1,17 @@
 /* eslint-disable max-nested-callbacks */
-import { encodeCompact, decodeCompact } from '../compact';
-import COMPACTS from '../../../../rust-ints/output-compacts.json';
-import { prettyHexToBytes } from '@scale-codec/util';
+import { encodeCompact, decodeCompact } from '../compact'
+import COMPACTS from '../../../../rust-ints/output-compacts.json'
+import { prettyHexToBytes } from '@scale-codec/util'
 
 describe('Rust samples', () => {
     test.each(COMPACTS)('Encode/decode $num', ({ num, hex }) => {
-        const encoded = prettyHexToBytes(hex);
-        const bi = BigInt(num);
+        const encoded = prettyHexToBytes(hex)
+        const bi = BigInt(num)
 
-        expect(encodeCompact(bi)).toEqual(encoded);
-        expect(decodeCompact(encoded)).toEqual([bi, encoded.length]);
-    });
-});
+        expect(encodeCompact(bi)).toEqual(encoded)
+        expect(decodeCompact(encoded)).toEqual([bi, encoded.length])
+    })
+})
 
 describe('encode: from Rust tests', (): void => {
     it.each([
@@ -40,6 +40,6 @@ describe('encode: from Rust tests', (): void => {
             value: BigInt(`0b${1}${'0'.repeat(64)}`) - 1n,
         },
     ])('encodes $value', ({ expected, value }) => {
-        expect(encodeCompact(value)).toEqual(Uint8Array.from(expected.split(' ').map((s) => parseInt(s, 16))));
-    });
-});
+        expect(encodeCompact(value)).toEqual(Uint8Array.from(expected.split(' ').map((s) => parseInt(s, 16))))
+    })
+})

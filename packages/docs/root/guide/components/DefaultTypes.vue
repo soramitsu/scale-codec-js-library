@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { DefaultAvailableBuilders } from '@scale-codec/definition-compiler/src/const';
+import { DefaultAvailableBuilders } from '@scale-codec/definition-compiler/src/const'
 </script>
 
 <template>
