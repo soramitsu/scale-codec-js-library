@@ -40,8 +40,8 @@ By the way, there are more high-level tools for specific structures, and some of
 Let's create a builder for string:
 
 ```ts
-import { encodeStrCompact, decodeStrCompact } from '@scale-codec/core';
-import { createBuilder } from '@scale-codec/definition-runtime';
+import { encodeStrCompact, decodeStrCompact } from '@scale-codec/core'
+import { createBuilder } from '@scale-codec/definition-runtime'
 
 const Str = createBuilder<string>(
     // Name is assigned to the internally created class for better
@@ -49,15 +49,15 @@ const Str = createBuilder<string>(
     'Str',
     encodeStrCompact,
     decodeStrCompact,
-);
+)
 
 // encode
-const str = Str.fromValue('Omnia mea mecum porto');
-const encoded = str.bytes;
+const str = Str.fromValue('Omnia mea mecum porto')
+const encoded = str.bytes
 
 // decode
-const decodedBack = Str.fromBytes(encoded);
-console.log(decodedBack.value); // 'Omnia mea mecum porto'
+const decodedBack = Str.fromBytes(encoded)
+console.log(decodedBack.value) // 'Omnia mea mecum porto'
 ```
 
 ::: tip
@@ -67,22 +67,22 @@ Runtime package exposes a set of unparametrized builders like `Str`, `Bool` and 
 ### Complex builder: struct
 
 ```ts
-import { Str, ScaleStructBuilder, createStructBuilder, FragmentFromBuilder } from '@scale-codec/definition-runtime';
+import { Str, ScaleStructBuilder, createStructBuilder, FragmentFromBuilder } from '@scale-codec/definition-runtime'
 
 const Person: ScaleStructBuilder<{
     // We tell to the builder that in "wrapped" state the value
     // will have a field with another instance for string
-    name: FragmentFromBuilder<typeof Str>;
-}> = createStructBuilder('Person', [['name', Str]]);
+    name: FragmentFromBuilder<typeof Str>
+}> = createStructBuilder('Person', [['name', Str]])
 
 // Verbose: create & access
-let person = Person.fromValue({ name: Str.fromValue('TORII') });
-person.value.name.value === 'TORII';
+let person = Person.fromValue({ name: Str.fromValue('TORII') })
+person.value.name.value === 'TORII'
 
 // Short: create & access
-let unwrapped = person.unwrap();
-unwrapped.name === 'TORII';
-person = Person.fromUnwrapped(unwrapped);
+let unwrapped = person.unwrap()
+unwrapped.name === 'TORII'
+person = Person.fromUnwrapped(unwrapped)
 ```
 
 ### Current builders trade-offs
@@ -139,11 +139,11 @@ struct PublicKey {
 **Compilation code:**
 
 ```ts
-import { renderNamespaceDefinition } from '@scale-codec/definition-compiler';
-import schema from './schema';
+import { renderNamespaceDefinition } from '@scale-codec/definition-compiler'
+import schema from './schema'
 
-const code = renderNamespaceDefinition(schema);
-console.log(code);
+const code = renderNamespaceDefinition(schema)
+console.log(code)
 ```
 
 **Compiled output:**
@@ -159,7 +159,7 @@ Now the code is usable, and its execution depends on you!
 These builders **defined** at Runtime and Compiler **knows** about them. Anyway, you can customize both runtime lib and known types (see [rendering params at API section](/api/definition-compiler.rendernamespacedefinitionparams.html)).
 
 ```ts
-import { Str } from '@scale-codec/definition-runtime';
+import { Str } from '@scale-codec/definition-runtime'
 ```
 
 ## Debugging
@@ -167,26 +167,26 @@ import { Str } from '@scale-codec/definition-runtime';
 `@scale-codec/definition-runtime` provides special Tracking API and one of its possible implementations - Logger. With it, you can enable logging of decode process and/or decode failures. Its usage may look like this:
 
 ```ts
-import { Logger, createStructBuilder } from '@scale-codec/definition-runtime';
+import { Logger, createStructBuilder } from '@scale-codec/definition-runtime'
 
 // some complex builder
-const StructBuilder = createStructBuilder('Struct' /* ...args */);
+const StructBuilder = createStructBuilder('Struct' /* ...args */)
 
 // creating logger and mounting it as a current tracker
 const logger = new Logger({
     logDecodeSuccesses: true,
-});
-logger.mount();
+})
+logger.mount()
 
 // Decode some bytes
 const decodedAndUnwrapped = StructBuilder.fromBytes(
     new Uint8Array([
         /* ...bytes */
     ]),
-).unwrap();
+).unwrap()
 
 // Unmount logger if you don't need it more
-logger.unmount();
+logger.unmount()
 ```
 
 Example of its output in Node.js console:
@@ -200,14 +200,14 @@ And in browser dev tools:
 You can use Tracking API to implement any logic you need. Example of usage:
 
 ```ts
-import { setCurrentTracker } from '@scale-codec/definition-runtime';
+import { setCurrentTracker } from '@scale-codec/definition-runtime'
 
 setCurrentTracker({
     decode(loc, input, decodeFn) {
-        console.log('Decode step: %o\nInput: %o', loc, input);
-        return decodeFn(input);
+        console.log('Decode step: %o\nInput: %o', loc, input)
+        return decodeFn(input)
     },
-});
+})
 ```
 
 #### Possible questions

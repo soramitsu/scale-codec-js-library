@@ -1,4 +1,4 @@
-import { Bool, Enum, Option, Result, Str, UnwrapFragment, Valuable } from '@scale-codec/definition-runtime';
+import { Bool, Enum, Option, Result, Str, UnwrapFragment, Valuable } from '@scale-codec/definition-runtime'
 import {
     AliasA,
     ArrayA,
@@ -11,17 +11,17 @@ import {
     StructA,
     TupleA,
     VecEnumA,
-} from '../samples/unwrapCheck';
+} from '../samples/unwrapCheck'
 
 function defineUnwrap<T>(unwrapped: UnwrapFragment<T>): UnwrapFragment<T> {
-    return unwrapped;
+    return unwrapped
 }
 
 test('Complex struct unwrapped correctly', () => {
-    const scaleStr = Str.fromValue('test str');
-    const scaleBool = Bool.fromValue(true);
-    const scaleTuple = TupleA.fromValue([Str.fromValue('tuple value')]);
-    const bytes = new Uint8Array([0, 1, 2, 3, 4]);
+    const scaleStr = Str.fromValue('test str')
+    const scaleBool = Bool.fromValue(true)
+    const scaleTuple = TupleA.fromValue([Str.fromValue('tuple value')])
+    const bytes = new Uint8Array([0, 1, 2, 3, 4])
 
     const input = StructA.fromValue({
         primitive: scaleBool,
@@ -41,29 +41,29 @@ test('Complex struct unwrapped correctly', () => {
             EnumA.fromValue(Enum.valuable('Res', ResultA.fromValue(Enum.valuable('Err', scaleStr)))),
         ]),
         alias: AliasA.fromValue([scaleStr]),
-    });
+    })
 
-    type UnwrappedTuple = [string];
+    type UnwrappedTuple = [string]
 
-    type UnwrappedOption = Option<UnwrappedTuple>;
+    type UnwrappedOption = Option<UnwrappedTuple>
 
     type UnwrappedEnumA = Enum<{
-        Empty: null;
-        Opt: Valuable<UnwrappedOption>;
-        Res: Valuable<Result<UnwrappedTuple, string>>;
-    }>;
+        Empty: null
+        Opt: Valuable<UnwrappedOption>
+        Res: Valuable<Result<UnwrappedTuple, string>>
+    }>
 
     type ExpectedUnwrappedType = {
-        primitive: boolean;
-        enum: UnwrappedEnumA;
-        map: Map<string, UnwrappedTuple>;
-        set: Set<UnwrappedTuple>;
-        tuple: UnwrappedTuple;
-        array: boolean[];
-        bytesArray: Uint8Array;
-        vec: UnwrappedEnumA[];
-        alias: UnwrappedTuple;
-    };
+        primitive: boolean
+        enum: UnwrappedEnumA
+        map: Map<string, UnwrappedTuple>
+        set: Set<UnwrappedTuple>
+        tuple: UnwrappedTuple
+        array: boolean[]
+        bytesArray: Uint8Array
+        vec: UnwrappedEnumA[]
+        alias: UnwrappedTuple
+    }
 
     // specian construction to evaluate type checking
     const structUnwrapped: ExpectedUnwrappedType = defineUnwrap<typeof input>({
@@ -79,7 +79,7 @@ test('Complex struct unwrapped correctly', () => {
         bytesArray: bytes,
         vec: [Enum.valuable('Opt', Enum.empty('None')), Enum.valuable('Res', Enum.valuable('Err', 'test str'))],
         alias: ['test str'],
-    });
+    })
 
-    expect(input.unwrap()).toEqual(structUnwrapped);
-});
+    expect(input.unwrap()).toEqual(structUnwrapped)
+})

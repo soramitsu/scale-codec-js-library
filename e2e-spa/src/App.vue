@@ -5,13 +5,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue';
-import { Option, Enum, Result } from '@scale-codec/definition-runtime';
-import { encodeAndDecodeReallyComplexData } from './encode-decode';
+import { computed, defineComponent, ref } from 'vue'
+import { Option, Enum, Result } from '@scale-codec/definition-runtime'
+import { encodeAndDecodeReallyComplexData } from './encode-decode'
 
 export default defineComponent({
     setup() {
-        const result = ref<Option<Result<null, Error>>>(Enum.empty('None'));
+        const result = ref<Option<Result<null, Error>>>(Enum.empty('None'))
 
         const resultFormatted = computed<null | string>(() =>
             result.value.match({
@@ -22,16 +22,16 @@ export default defineComponent({
                         Err: ({ message }) => `Not ok: ${message}`,
                     }),
             }),
-        );
+        )
 
         function act() {
-            result.value = Enum.valuable('Some', encodeAndDecodeReallyComplexData());
+            result.value = Enum.valuable('Some', encodeAndDecodeReallyComplexData())
         }
 
         return {
             act,
             resultFormatted,
-        };
+        }
     },
-});
+})
 </script>

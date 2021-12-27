@@ -1,8 +1,8 @@
-import { build, Format } from 'esbuild';
-import { path } from 'zx';
+import { build, Format } from 'esbuild'
+import { path } from 'zx'
 
-const OUT_DIR = path.resolve(__dirname, '../e2e-spa/runtime-rollup');
-const IN_FILE = path.resolve(__dirname, '../packages/definition-runtime/src/lib.ts');
+const OUT_DIR = path.resolve(__dirname, '../e2e-spa/runtime-rollup')
+const IN_FILE = path.resolve(__dirname, '../packages/definition-runtime/src/lib.ts')
 
 async function buildPreset({ format }: { format: Format }) {
     await build({
@@ -12,9 +12,9 @@ async function buildPreset({ format }: { format: Format }) {
         format,
         target: 'esnext',
         logLevel: 'info',
-    });
+    })
 }
 
 export default async function () {
-    await Promise.all([buildPreset({ format: 'esm' }), buildPreset({ format: 'cjs' })]);
+    await Promise.all([buildPreset({ format: 'esm' }), buildPreset({ format: 'cjs' })])
 }

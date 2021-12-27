@@ -42,10 +42,10 @@ import CoreStructResult from './components/CoreStructResult.vue'
 ### Integers
 
 ```ts
-import { encodeBigInt, encodeInt } from '@scale-codec/core';
+import { encodeBigInt, encodeInt } from '@scale-codec/core'
 
-console.log(encodeInt(5_012_009, 'u32'));
-console.log(encodeBigInt(-9_009_000_000_000_000_000n, 'i128'));
+console.log(encodeInt(5_012_009, 'u32'))
+console.log(encodeBigInt(-9_009_000_000_000_000_000n, 'i128'))
 ```
 
 Result:
@@ -58,12 +58,12 @@ Result:
 ### Compact
 
 ```ts
-import { encodeCompact } from '@scale-codec/core';
-import { hexifyBytes } from '@scale-codec/util';
+import { encodeCompact } from '@scale-codec/core'
+import { hexifyBytes } from '@scale-codec/util'
 
 for (const num of [1, 34_000, 891_000_000, '24141828384918234']) {
-    const encoded = encodeCompact(BigInt(num));
-    console.log('%s: %s', num, hexifyBytes(encoded));
+    const encoded = encodeCompact(BigInt(num))
+    console.log('%s: %s', num, hexifyBytes(encoded))
 }
 ```
 
@@ -76,10 +76,10 @@ Result:
 ### Strings
 
 ```ts
-import { encodeStr } from '@scale-codec/core';
-import { hexifyBytes } from '@scale-codec/util';
+import { encodeStr } from '@scale-codec/core'
+import { hexifyBytes } from '@scale-codec/util'
 
-console.log(hexifyBytes(encodeStr('Лев Николаевич Толстой')));
+console.log(hexifyBytes(encodeStr('Лев Николаевич Толстой')))
 ```
 
 Result:
@@ -89,18 +89,18 @@ Result:
 ### Other primitives
 
 ```ts
-import { encodeBool, decodeBool, encodeVoid, decodeVoid } from '@scale-codec/core';
+import { encodeBool, decodeBool, encodeVoid, decodeVoid } from '@scale-codec/core'
 
 function assertEq(a: any, b: any) {
     // asserting deep equality between a & b...
 }
 
-assertEq(encodeBool(false), new Uint8Array([0]));
-assertEq(encodeBool(true), new Uint8Array([1]));
-assertEq(decodeBool(new Uint8Array([1])), [true, 1]);
+assertEq(encodeBool(false), new Uint8Array([0]))
+assertEq(encodeBool(true), new Uint8Array([1]))
+assertEq(decodeBool(new Uint8Array([1])), [true, 1])
 
-assertEq(decodeVoid(new Uint8Array()), [null, 0]);
-assertEq(decodeVoid(new Uint8Array([1, 2, 4, 5])), [null, 0]);
+assertEq(decodeVoid(new Uint8Array()), [null, 0])
+assertEq(decodeVoid(new Uint8Array([1, 2, 4, 5])), [null, 0])
 ```
 
 ### Struct
@@ -120,18 +120,18 @@ struct Message {
 Definition & encoding in JavaScript:
 
 ```ts
-import { encodeStruct, encodeStr, encodeBigInt } from '@scale-codec/core';
-import { hexifyBytes } from '@scale-codec/util';
+import { encodeStruct, encodeStr, encodeBigInt } from '@scale-codec/core'
+import { hexifyBytes } from '@scale-codec/util'
 
 interface Message {
-    author: string;
-    timestamp: bigint;
+    author: string
+    timestamp: bigint
 }
 
 const msg: Message = {
     author: 'Clara',
     timestamp: BigInt('16488182899412'),
-};
+}
 
 const msgEncoded = encodeStruct(
     msg,
@@ -140,9 +140,9 @@ const msgEncoded = encodeStruct(
         timestamp: (v) => encodeBigInt(v, 'u128'),
     },
     ['author', 'timestamp'],
-);
+)
 
-console.log(hexifyBytes(msgEncoded));
+console.log(hexifyBytes(msgEncoded))
 ```
 
 Output:
@@ -158,47 +158,47 @@ Enums handling is based on `@scale-codec/enum` package. More info at [Enums guid
 Enums handling is more low-level then other tools because of typing issues. Thus, the responsibility to define encode & decode schema correctly is on the end user.
 
 ```ts
-import { Enum, Valuable, encodeEnum, decodeEnum, encodeStr, decodeStr } from '@scale-codec/core';
+import { Enum, Valuable, encodeEnum, decodeEnum, encodeStr, decodeStr } from '@scale-codec/core'
 
 type Event = Enum<{
-    Focus: null;
-    KeyPress: Valuable<string>;
-}>;
+    Focus: null
+    KeyPress: Valuable<string>
+}>
 
 const myEvent = decodeEnum<Event>(new Uint8Array(/* ... */), {
     // map from discriminants to variant names
     // + optional decode fn for valuable variants
     0: { v: 'Focus' },
     1: { v: 'KeyPress', decode: decodeStr },
-});
+})
 
 const encoded = encodeEnum(myEvent, {
     // map from variant names to discriminants
     // + optional encode fn for valuable variants
     Focus: { d: 0 },
     KeyPress: { d: 1, encode: encodeStr },
-});
+})
 ```
 
 ### Array, Vec, Tuple
 
 ```ts
-import { decodeTuple, decodeArray, decodeVec, decodeStr, decodeBool } from '@scale-codec/core';
+import { decodeTuple, decodeArray, decodeVec, decodeStr, decodeBool } from '@scale-codec/core'
 
 // [String; 10]
-const strings = decodeArray(new Uint8Array(/* ... */), decodeStr, 10);
+const strings = decodeArray(new Uint8Array(/* ... */), decodeStr, 10)
 
 // (String, bool)
-const [str, bool] = decodeTuple(new Uint8Array(/* ... */), [decodeStr, decodeBool]);
+const [str, bool] = decodeTuple(new Uint8Array(/* ... */), [decodeStr, decodeBool])
 
 // Vec<bool>
-const booleans = decodeVec(new Uint8Array(/* ... */), decodeBool);
+const booleans = decodeVec(new Uint8Array(/* ... */), decodeBool)
 ```
 
 ### Map & Set
 
 ```ts
-import { encodeSet, encodeMap, encodeStr, encodeBool } from '@scale-codec/core';
+import { encodeSet, encodeMap, encodeStr, encodeBool } from '@scale-codec/core'
 
 encodeMap(
     new Map<string, boolean>([
@@ -207,9 +207,9 @@ encodeMap(
     ]),
     encodeStr,
     encodeBool,
-);
+)
 
-encodeSet(new Set<string>(['a', 'b', 'c']), encodeStr);
+encodeSet(new Set<string>(['a', 'b', 'c']), encodeStr)
 ```
 
 ## Play

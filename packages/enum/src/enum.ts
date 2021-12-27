@@ -2,22 +2,21 @@
  * Use it to define valuable variants for {@link Enum}
  */
 export interface Valuable<T> {
-    value: T;
+    value: T
 }
 
-export type TagsEmpty<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V }[keyof Def &
-    string];
+export type TagsEmpty<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V }[keyof Def & string]
 
 export type TagsValuable<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never }[keyof Def &
-    string];
+    string]
 
-export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
+export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never
 
-export type GetEnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never;
+export type GetEnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never
 
 export type EnumMatchMap<V, R = any> = {
-    [K in keyof V]: V[K] extends Valuable<infer T> ? (value: T) => R : () => R;
-};
+    [K in keyof V]: V[K] extends Valuable<infer T> ? (value: T) => R : () => R
+}
 
 /**
  * Typed-wrapper to handle Rust's Enum concept.
@@ -50,7 +49,7 @@ export class Enum<Def> {
      * @param tag - One of enum empty variants' tags
      */
     public static empty<Def>(tag: TagsEmpty<Def>): Enum<Def> {
-        return new Enum(tag, null);
+        return new Enum(tag, null)
     }
 
     /**
@@ -62,26 +61,26 @@ export class Enum<Def> {
         tag: V,
         value: GetValuableVariantValue<Def[V]>,
     ): Enum<Def> {
-        return new Enum(tag, [value]);
+        return new Enum(tag, [value])
     }
 
-    public readonly tag: string;
+    public readonly tag: string
 
     /**
      * Inner value is untyped and should be used with caution
      */
-    public readonly content: null | [some: unknown];
+    public readonly content: null | [some: unknown]
 
     private constructor(tag: string, content: null | [unknown]) {
-        this.content = content ?? null;
-        this.tag = tag;
+        this.content = content ?? null
+        this.tag = tag
     }
 
     /**
      * Check whether an enum instance has this variant name or not
      */
     public is<V extends keyof Def>(tag: V): boolean {
-        return this.tag === tag;
+        return this.tag === tag
     }
 
     /**
@@ -93,10 +92,10 @@ export class Enum<Def> {
      */
     public as<V extends TagsValuable<Def>>(tag: V): Def[V] extends Valuable<infer T> ? T : never {
         if (this.is(tag) && this.content) {
-            return this.content[0] as Def[V];
+            return this.content[0] as Def[V]
         }
 
-        throw new Error(`cast failed - enum is not the "${tag}"`);
+        throw new Error(`cast failed - enum is not the "${tag}"`)
     }
 
     /**
@@ -117,15 +116,15 @@ export class Enum<Def> {
      * ```
      */
     public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
-        const fn = (matchMap as any)[this.tag] as (...args: any[]) => any;
-        return this.content ? fn(this.content[0]) : fn();
+        const fn = (matchMap as any)[this.tag] as (...args: any[]) => any
+        return this.content ? fn(this.content[0]) : fn()
     }
 
     /**
      * @internal
      */
     public toJSON() {
-        const { tag, content } = this;
-        return content ? { tag, value: content[0] } : { tag };
+        const { tag, content } = this
+        return content ? { tag, value: content[0] } : { tag }
     }
 }

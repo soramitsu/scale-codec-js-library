@@ -1,4 +1,4 @@
-import { Enum, Valuable } from '@scale-codec/core';
+import { Enum, Valuable } from '@scale-codec/core'
 import {
     createArrayBuilder,
     createEnumBuilder,
@@ -8,56 +8,56 @@ import {
     createTupleBuilder,
     createVecBuilder,
     dynGetters,
-} from '../builder-creators';
-import { FragmentOrBuilderValue, FragmentFromBuilder, Fragment, FragmentOrBuilderUnwrapped } from '../fragment';
-import { Bool, I128, Str } from '../presets';
+} from '../builder-creators'
+import { FragmentOrBuilderValue, FragmentFromBuilder, Fragment, FragmentOrBuilderUnwrapped } from '../fragment'
+import { Bool, I128, Str } from '../presets'
 
-const Key = createStructBuilder<{ payload: Fragment<bigint> }>('Key', [['payload', I128]]);
+const Key = createStructBuilder<{ payload: Fragment<bigint> }>('Key', [['payload', I128]])
 
 const StructWithKey = createStructBuilder<{
-    key: FragmentFromBuilder<typeof Key>;
-}>('', [['key', Key]]);
+    key: FragmentFromBuilder<typeof Key>
+}>('', [['key', Key]])
 
 const Msg = createEnumBuilder<
     Enum<{
-        Quit: null;
-        Greeting: Valuable<FragmentFromBuilder<typeof Key>>;
+        Quit: null
+        Greeting: Valuable<FragmentFromBuilder<typeof Key>>
     }>
 >('Msg', [
     [0, 'Quit'],
     [1, 'Greeting', Key],
-]);
+])
 
-const Bool2 = createArrayBuilder<Fragment<boolean>[]>('Bool2', Bool, 2);
+const Bool2 = createArrayBuilder<Fragment<boolean>[]>('Bool2', Bool, 2)
 
-const VecBool = createVecBuilder<Fragment<boolean>[]>('VecBool', Bool);
+const VecBool = createVecBuilder<Fragment<boolean>[]>('VecBool', Bool)
 
-const MAP = createMapBuilder<Map<Fragment<boolean>, Fragment<string>>>('Map', Bool, Str);
+const MAP = createMapBuilder<Map<Fragment<boolean>, Fragment<string>>>('Map', Bool, Str)
 
-const SET = createSetBuilder<Set<Fragment<string>>>('Set', Str);
+const SET = createSetBuilder<Set<Fragment<string>>>('Set', Str)
 
-const TUPLE = createTupleBuilder<[Fragment<boolean>, Fragment<string>]>('Tuple', [Bool, Str]);
+const TUPLE = createTupleBuilder<[Fragment<boolean>, Fragment<string>]>('Tuple', [Bool, Str])
 
-type KeyValue = FragmentOrBuilderValue<typeof Key>;
-type KeyUnwrapped = FragmentOrBuilderUnwrapped<typeof Key>;
+type KeyValue = FragmentOrBuilderValue<typeof Key>
+type KeyUnwrapped = FragmentOrBuilderUnwrapped<typeof Key>
 
-const AliasA = dynGetters(() => Key);
-const AliasB = dynGetters(() => AliasA);
+const AliasA = dynGetters(() => Key)
+const AliasB = dynGetters(() => AliasA)
 
 describe('Unwrapping', () => {
     test('Unwraps primitive (Str)', () => {
-        const text = 'Per aspera ad astra';
+        const text = 'Per aspera ad astra'
 
-        expect(Str.fromValue(text).unwrap()).toEqual(text);
-    });
+        expect(Str.fromValue(text).unwrap()).toEqual(text)
+    })
 
     test('Unwraps struct with primitive key', () => {
-        const num = 999767262n;
+        const num = 999767262n
 
-        const unwrapped = Key.fromValue({ payload: I128.fromValue(num) }).unwrap();
+        const unwrapped = Key.fromValue({ payload: I128.fromValue(num) }).unwrap()
 
-        expect(unwrapped).toEqual({ payload: num });
-    });
+        expect(unwrapped).toEqual({ payload: num })
+    })
 
     test('Unwraps struct with non-primitive key', () => {
         expect(
@@ -66,29 +66,29 @@ describe('Unwrapping', () => {
                     payload: I128.fromValue(0n),
                 }),
             }).unwrap(),
-        ).toEqual({ key: { payload: 0n } });
-    });
+        ).toEqual({ key: { payload: 0n } })
+    })
 
     test("Unwraps enum's contents", () => {
-        const num = 789123n;
+        const num = 789123n
 
-        const nonEmpty = Msg.fromValue(Enum.valuable('Greeting', Key.fromValue({ payload: I128.fromValue(num) })));
-        const unwrapped = nonEmpty.unwrap();
+        const nonEmpty = Msg.fromValue(Enum.valuable('Greeting', Key.fromValue({ payload: I128.fromValue(num) })))
+        const unwrapped = nonEmpty.unwrap()
 
-        expect(unwrapped).toEqual(Enum.valuable<any, any>('Greeting', { payload: num }));
-    });
+        expect(unwrapped).toEqual(Enum.valuable<any, any>('Greeting', { payload: num }))
+    })
 
     test('Unwraps empty enum', () => {
-        expect(Msg.fromValue(Enum.empty('Quit')).unwrap()).toEqual(Enum.empty<any>('Quit'));
-    });
+        expect(Msg.fromValue(Enum.empty('Quit')).unwrap()).toEqual(Enum.empty<any>('Quit'))
+    })
 
     test('Unwraps array', () => {
-        expect(Bool2.fromValue([Bool.fromValue(false), Bool.fromValue(false)]).unwrap()).toEqual([false, false]);
-    });
+        expect(Bool2.fromValue([Bool.fromValue(false), Bool.fromValue(false)]).unwrap()).toEqual([false, false])
+    })
 
     test('Unwraps vec', () => {
-        expect(VecBool.fromValue([Bool.fromValue(true)]).unwrap()).toEqual([true]);
-    });
+        expect(VecBool.fromValue([Bool.fromValue(true)]).unwrap()).toEqual([true])
+    })
 
     test('Unwraps Map', () => {
         expect(
@@ -103,32 +103,32 @@ describe('Unwrapping', () => {
                 [false, 'Nope'],
                 [true, 'Yep'],
             ]),
-        );
-    });
+        )
+    })
 
     test('Unwraps Set', () => {
-        expect(SET.fromValue(new Set([Str.fromValue('A'), Str.fromValue('B')])).unwrap()).toEqual(new Set(['A', 'B']));
-    });
+        expect(SET.fromValue(new Set([Str.fromValue('A'), Str.fromValue('B')])).unwrap()).toEqual(new Set(['A', 'B']))
+    })
 
     test('Unwraps tuple', () => {
-        expect(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('._.')]).unwrap()).toEqual([false, '._.']);
-    });
+        expect(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('._.')]).unwrap()).toEqual([false, '._.'])
+    })
 
     test('Unwraps aliases chain', () => {
-        const num = 111n;
+        const num = 111n
 
         expect(
             AliasB.fromValue({
                 payload: I128.fromValue(num),
             }).unwrap(),
-        ).toEqual({ payload: num });
-    });
-});
+        ).toEqual({ payload: num })
+    })
+})
 
 describe('Wrapping back', () => {
     test('Wraps primitive (str)', () => {
-        expect(Str.wrap('kelti')).toEqual(Str.fromValue('kelti'));
-    });
+        expect(Str.wrap('kelti')).toEqual(Str.fromValue('kelti'))
+    })
 
     test('Wraps struct with struct with primitive', () => {
         expect(
@@ -143,8 +143,8 @@ describe('Wrapping back', () => {
                     payload: I128.fromValue(71n),
                 }),
             }),
-        );
-    });
+        )
+    })
 
     test("Wraps enum's contents", () => {
         expect(
@@ -162,20 +162,20 @@ describe('Wrapping back', () => {
                     }),
                 ),
             ),
-        );
-    });
+        )
+    })
 
     test('Wraps empty enum', () => {
-        expect(Msg.wrap(Enum.empty('Quit'))).toEqual(Msg.fromValue(Enum.empty('Quit')));
-    });
+        expect(Msg.wrap(Enum.empty('Quit'))).toEqual(Msg.fromValue(Enum.empty('Quit')))
+    })
 
     test('Wraps array', () => {
-        expect(Bool2.wrap([false, true])).toEqual(Bool2.fromValue([Bool.fromValue(false), Bool.fromValue(true)]));
-    });
+        expect(Bool2.wrap([false, true])).toEqual(Bool2.fromValue([Bool.fromValue(false), Bool.fromValue(true)]))
+    })
 
     test('Wraps vec', () => {
-        expect(VecBool.wrap([true, true])).toEqual(VecBool.fromValue([Bool.fromValue(true), Bool.fromValue(true)]));
-    });
+        expect(VecBool.wrap([true, true])).toEqual(VecBool.fromValue([Bool.fromValue(true), Bool.fromValue(true)]))
+    })
 
     test('Wraps map', () => {
         expect(
@@ -192,16 +192,16 @@ describe('Wrapping back', () => {
                     [Bool.fromValue(true), Str.fromValue('00')],
                 ]),
             ),
-        );
-    });
+        )
+    })
 
     test('Wraps set', () => {
-        expect(SET.wrap(new Set(['a', 'b']))).toEqual(SET.fromValue(new Set([Str.fromValue('a'), Str.fromValue('b')])));
-    });
+        expect(SET.wrap(new Set(['a', 'b']))).toEqual(SET.fromValue(new Set([Str.fromValue('a'), Str.fromValue('b')])))
+    })
 
     test('Wraps tuple', () => {
-        expect(TUPLE.wrap([false, 'true'])).toEqual(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('true')]));
-    });
+        expect(TUPLE.wrap([false, 'true'])).toEqual(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('true')]))
+    })
 
     test('Wraps aliases chain', () => {
         expect(
@@ -212,6 +212,6 @@ describe('Wrapping back', () => {
             AliasB.fromValue({
                 payload: I128.fromValue(787171n),
             }),
-        );
-    });
-});
+        )
+    })
+})

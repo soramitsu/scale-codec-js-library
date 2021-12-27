@@ -36,10 +36,10 @@ import {
     TagsEmpty,
     TagsValuable,
     GetValuableVariantValue,
-} from '@scale-codec/core';
-import { mapGetUnwrap, yieldNTimes } from '@scale-codec/util';
-import { trackRefineDecodeLoc } from './tracking';
-import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragment } from './fragment';
+} from '@scale-codec/core'
+import { mapGetUnwrap, yieldNTimes } from '@scale-codec/util'
+import { trackRefineDecodeLoc } from './tracking'
+import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragment } from './fragment'
 
 /**
  * Creates proxy that dispatches provided object at the moment
@@ -64,29 +64,29 @@ export function dynGetters<T extends { [K in string | symbol]: any }>(dynObject:
         {
             get: (_target, prop) => (dynObject as any)()[prop],
         },
-    ) as any;
+    ) as any
 }
 
 const fragmentEncode: Encode<Fragment<unknown>> = (x) => {
     if (!(x instanceof Fragment)) {
-        throw new Error(`expected Fragment; actually: ${x}`);
+        throw new Error(`expected Fragment; actually: ${x}`)
     }
-    return x.bytes;
-};
+    return x.bytes
+}
 
 const proxyFragmentEncodeGetters: StructEncoders<any> = new Proxy(
     {},
     {
         get: () => fragmentEncode,
     },
-) as any;
+) as any
 
 export function createIntBuilder(name: string, ty: IntTypes): FragmentBuilder<number> {
     return createBuilder(
         name,
         (v) => encodeInt(v, ty),
         (b) => decodeInt(b, ty),
-    );
+    )
 }
 
 export function createBigIntBuilder(name: string, ty: BigIntTypes): FragmentBuilder<bigint> {
@@ -94,35 +94,35 @@ export function createBigIntBuilder(name: string, ty: BigIntTypes): FragmentBuil
         name,
         (v) => encodeBigInt(v, ty),
         (b) => decodeBigInt(b, ty),
-    );
+    )
 }
 
 export type UnwrapScaleStruct<T> = {
-    [K in keyof T]: UnwrapFragment<T[K]>;
-};
+    [K in keyof T]: UnwrapFragment<T[K]>
+}
 
 function unwrapScaleStruct<T>(scale: Fragment<T, UnwrapScaleStruct<T>>): UnwrapScaleStruct<T> {
-    return Object.fromEntries(Object.entries(scale.value).map(([key, item]) => [key, item.unwrap()])) as any;
+    return Object.fromEntries(Object.entries(scale.value).map(([key, item]) => [key, item.unwrap()])) as any
 }
 
 function createScaleStructWrapper<T>(schema: StructBuilderSchema<T>): FragmentWrapFn<T, UnwrapScaleStruct<T>> {
     return (raw) => {
-        const inner: T = {} as any;
+        const inner: T = {} as any
 
         for (const [field, builder] of schema) {
-            (inner as any)[field] = builder.wrap(raw[field]);
+            ;(inner as any)[field] = builder.wrap(raw[field])
         }
 
-        return inner;
-    };
+        return inner
+    }
 }
 
-export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][];
+export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][]
 
 /**
  * Defines builder for struct which fields (in wrapped state) are `Fragment`s
  */
-export type ScaleStructBuilder<T extends { [K in keyof T]: Fragment<any> }> = FragmentBuilder<T, UnwrapScaleStruct<T>>;
+export type ScaleStructBuilder<T extends { [K in keyof T]: Fragment<any> }> = FragmentBuilder<T, UnwrapScaleStruct<T>>
 
 /**
  * @remarks
@@ -141,13 +141,13 @@ export function createStructBuilder<T extends { [K in keyof T]: Fragment<any> }>
     name: string,
     schema: StructBuilderSchema<T>,
 ): ScaleStructBuilder<T> {
-    const decoders: StructDecoders<T> = {} as any;
-    const order: (keyof T & string)[] = [];
+    const decoders: StructDecoders<T> = {} as any
+    const order: (keyof T & string)[] = []
 
     for (const [field, builder] of schema) {
-        order.push(field);
+        order.push(field)
         decoders[field] = (bytes: Uint8Array) =>
-            trackRefineDecodeLoc(`.${field}`, () => builder.decodeRaw(bytes)) as any;
+            trackRefineDecodeLoc(`.${field}`, () => builder.decodeRaw(bytes)) as any
     }
 
     return createBuilder(
@@ -156,7 +156,7 @@ export function createStructBuilder<T extends { [K in keyof T]: Fragment<any> }>
         (bytes) => decodeStruct(bytes, decoders, order),
         unwrapScaleStruct,
         createScaleStructWrapper<T>(schema),
-    );
+    )
 }
 
 export type UnwrapScaleEnum<T extends Enum<any>> = T extends Enum<infer Def>
@@ -165,37 +165,37 @@ export type UnwrapScaleEnum<T extends Enum<any>> = T extends Enum<infer Def>
               ? I extends Fragment<any, infer U>
                   ? Valuable<U>
                   : never
-              : null;
+              : null
       }>
-    : never;
+    : never
 
 function unwrapScaleEnum<T extends Enum<any>>(scale: Fragment<T, any>): UnwrapScaleEnum<T> {
-    const { content, tag } = scale.value;
-    let contentUnwrapped: null | [any] = null;
+    const { content, tag } = scale.value
+    let contentUnwrapped: null | [any] = null
 
     if (content && content[0] instanceof Fragment) {
-        contentUnwrapped = [content[0].unwrap()];
+        contentUnwrapped = [content[0].unwrap()]
     }
 
-    return (contentUnwrapped ? Enum.valuable<any, any>(tag, contentUnwrapped[0]) : Enum.empty<any>(tag)) as any;
+    return (contentUnwrapped ? Enum.valuable<any, any>(tag, contentUnwrapped[0]) : Enum.empty<any>(tag)) as any
 }
 
-export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: FragmentBuilder<any>][];
+export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: FragmentBuilder<any>][]
 
 function createScaleEnumWrapper<T extends Enum<any>>(schema: EnumBuilderSchema): FragmentWrapFn<T, UnwrapScaleEnum<T>> {
-    const wrappers = new Map<string, FragmentBuilder<any>>();
+    const wrappers = new Map<string, FragmentBuilder<any>>()
 
     for (const [, name, builderFn] of schema) {
-        builderFn && wrappers.set(name, builderFn);
+        builderFn && wrappers.set(name, builderFn)
     }
 
     return ({ tag, content }) => {
         if (content) {
-            const builder = mapGetUnwrap(wrappers, tag);
-            return Enum.valuable<any, any>(tag, builder.wrap(content[0]));
+            const builder = mapGetUnwrap(wrappers, tag)
+            return Enum.valuable<any, any>(tag, builder.wrap(content[0]))
         }
-        return Enum.empty<any>(tag as any) as any;
-    };
+        return Enum.empty<any>(tag as any) as any
+    }
 }
 
 export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>> & {
@@ -213,7 +213,7 @@ export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapSca
      * const state2 = State.variantsUnwrapped.Fulfilled('20 coins')
      * ```
      */
-    variantsUnwrapped: ScaleEnumBuilderVariantsUnwrapped<T>;
+    variantsUnwrapped: ScaleEnumBuilderVariantsUnwrapped<T>
 
     /**
      * A set of shorthands to construct fragments from Enum's variants
@@ -229,24 +229,24 @@ export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapSca
      * const state2 = State.variants.Fulfilled(Str.fromValue('30 coins'))
      * ```
      */
-    variants: ScaleEnumBuilderVariants<T>;
-};
+    variants: ScaleEnumBuilderVariants<T>
+}
 
 export type ScaleEnumBuilderVariantsUnwrapped<T extends Enum<any>> = T extends Enum<infer D>
     ? {
-          [K in TagsEmpty<D>]: UnwrapScaleEnum<T>;
+          [K in TagsEmpty<D>]: UnwrapScaleEnum<T>
       } & {
-          [K in TagsValuable<D>]: (value: UnwrapFragment<GetValuableVariantValue<D[K]>>) => UnwrapScaleEnum<T>;
+          [K in TagsValuable<D>]: (value: UnwrapFragment<GetValuableVariantValue<D[K]>>) => UnwrapScaleEnum<T>
       }
-    : never;
+    : never
 
 export type ScaleEnumBuilderVariants<T extends Enum<any>> = T extends Enum<infer D>
     ? {
-          [K in TagsEmpty<D>]: Fragment<T, UnwrapScaleEnum<T>>;
+          [K in TagsEmpty<D>]: Fragment<T, UnwrapScaleEnum<T>>
       } & {
-          [K in TagsValuable<D>]: (value: GetValuableVariantValue<D[K]>) => Fragment<T, UnwrapScaleEnum<T>>;
+          [K in TagsValuable<D>]: (value: GetValuableVariantValue<D[K]>) => Fragment<T, UnwrapScaleEnum<T>>
       }
-    : never;
+    : never
 
 /**
  * @param varsMetadata - key - variant name, value - is it valuable or not
@@ -254,32 +254,32 @@ export type ScaleEnumBuilderVariants<T extends Enum<any>> = T extends Enum<infer
 function createEnumBuilderVariantsUnwrapped<T extends Enum<any>>(
     varsMetadata: Map<string, boolean>,
 ): ScaleEnumBuilderVariantsUnwrapped<T> {
-    type Variant = Readonly<Enum<any> | ((value: any) => Enum<any>)>;
+    type Variant = Readonly<Enum<any> | ((value: any) => Enum<any>)>
 
-    const cache: Map<string, Variant> = new Map();
+    const cache: Map<string, Variant> = new Map()
 
     return new Proxy(
         {},
         {
             get(_target, prop: string) {
-                if (!varsMetadata.has(prop)) return undefined;
+                if (!varsMetadata.has(prop)) return undefined
 
-                let variant: Variant;
+                let variant: Variant
                 if (!cache.has(prop)) {
-                    const isValuable = varsMetadata.get(prop)!;
+                    const isValuable = varsMetadata.get(prop)!
 
                     variant = Object.freeze(
                         isValuable ? (value: any) => Enum.valuable<any, any>(prop, value) : Enum.empty<any>(prop),
-                    );
-                    cache.set(prop, variant);
+                    )
+                    cache.set(prop, variant)
                 } else {
-                    variant = cache.get(prop)!;
+                    variant = cache.get(prop)!
                 }
 
-                return variant;
+                return variant
             },
         },
-    ) as any;
+    ) as any
 }
 
 function createEnumBuilderVariants<T extends Enum<any>>(
@@ -290,16 +290,16 @@ function createEnumBuilderVariants<T extends Enum<any>>(
         {},
         {
             get(_target, prop: string) {
-                if (!varsMetadata.has(prop)) return undefined;
+                if (!varsMetadata.has(prop)) return undefined
 
-                const isValuable = varsMetadata.get(prop)!;
+                const isValuable = varsMetadata.get(prop)!
 
                 return isValuable
                     ? (value: any) => builder.fromValue(Enum.valuable<any, any>(prop, value) as any)
-                    : builder.fromValue(Enum.empty<any>(prop) as any);
+                    : builder.fromValue(Enum.empty<any>(prop) as any)
             },
         },
-    ) as any;
+    ) as any
 }
 
 /**
@@ -312,17 +312,17 @@ function createEnumBuilderVariants<T extends Enum<any>>(
  * ```
  */
 export function createEnumBuilder<T extends Enum<any>>(name: string, schema: EnumBuilderSchema): ScaleEnumBuilder<T> {
-    const encoders: EnumEncoders = {};
-    const decoders: EnumDecoders = {};
-    const varsMetadata = new Map<string, boolean>();
+    const encoders: EnumEncoders = {}
+    const decoders: EnumDecoders = {}
+    const varsMetadata = new Map<string, boolean>()
 
     for (const [dis, name, codec] of schema) {
-        encoders[name] = { d: dis, encode: codec && fragmentEncode };
+        encoders[name] = { d: dis, encode: codec && fragmentEncode }
         decoders[dis] = {
             v: name,
             decode: codec && ((b) => trackRefineDecodeLoc(`::${name}`, () => codec.decodeRaw(b))),
-        };
-        varsMetadata.set(name, !!codec);
+        }
+        varsMetadata.set(name, !!codec)
     }
 
     const builder = createBuilder<T, UnwrapScaleEnum<T>>(
@@ -331,35 +331,35 @@ export function createEnumBuilder<T extends Enum<any>>(name: string, schema: Enu
         (bytes) => decodeEnum(bytes, decoders) as DecodeResult<T>,
         unwrapScaleEnum,
         createScaleEnumWrapper(schema),
-    );
+    )
 
     Reflect.defineProperty(builder, 'variantsUnwrapped', {
         value: createEnumBuilderVariantsUnwrapped(varsMetadata),
-    });
+    })
     Reflect.defineProperty(builder, 'variants', {
         value: createEnumBuilderVariants(varsMetadata, builder),
-    });
+    })
 
-    return builder as any as ScaleEnumBuilder<T>;
+    return builder as any as ScaleEnumBuilder<T>
 }
 
-type UnwrapScaleArray<T> = T extends Fragment<any, infer U>[] ? UnwrapFragment<U>[] : never;
+type UnwrapScaleArray<T> = T extends Fragment<any, infer U>[] ? UnwrapFragment<U>[] : never
 
 function unwrapScaleArray<T>(scale: Fragment<T>): UnwrapScaleArray<T> {
-    return (scale.value as unknown as Fragment<any>[]).map((x) => x.unwrap()) as any;
+    return (scale.value as unknown as Fragment<any>[]).map((x) => x.unwrap()) as any
 }
 
 function createScaleArrayWrapper<T>(builder: ArrayItemBuilder<T>): FragmentWrapFn<T, UnwrapScaleArray<T>> {
-    const mapper = (x: any): Fragment<any> => builder.wrap(x);
+    const mapper = (x: any): Fragment<any> => builder.wrap(x)
 
     return (rawArray) => {
-        return rawArray.map(mapper) as any;
-    };
+        return rawArray.map(mapper) as any
+    }
 }
 
-export type ArrayItemBuilder<T> = T extends Fragment<infer V, infer U>[] ? FragmentBuilder<V, U> : never;
+export type ArrayItemBuilder<T> = T extends Fragment<infer V, infer U>[] ? FragmentBuilder<V, U> : never
 
-export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, UnwrapScaleArray<T>>;
+export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, UnwrapScaleArray<T>>
 
 /**
  * @example
@@ -386,7 +386,7 @@ export function createArrayBuilder<T extends Fragment<any>[]>(
             ) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
-    );
+    )
 }
 
 /**
@@ -410,22 +410,22 @@ export function createVecBuilder<T extends Fragment<any>[]>(
             ) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
-    );
+    )
 }
 
-type UnwrapScaleSet<T> = T extends Set<Fragment<any, infer U>> ? Set<UnwrapFragment<U>> : never;
+type UnwrapScaleSet<T> = T extends Set<Fragment<any, infer U>> ? Set<UnwrapFragment<U>> : never
 
 function unwrapScaleSet<T>(scale: Fragment<T>): UnwrapScaleSet<T> {
-    return new Set([...(scale.value as any as Set<Fragment<any>>)].map((x) => x.unwrap())) as any;
+    return new Set([...(scale.value as any as Set<Fragment<any>>)].map((x) => x.unwrap())) as any
 }
 
 function createScaleSetWrapper<T>(builder: SetEntryBuilder<T>): FragmentWrapFn<T, UnwrapScaleSet<T>> {
-    return (raw) => new Set([...raw].map((x) => builder.wrap(x))) as any;
+    return (raw) => new Set([...raw].map((x) => builder.wrap(x))) as any
 }
 
-type SetEntryBuilder<T> = T extends Set<Fragment<infer V>> ? FragmentBuilder<V> : never;
+type SetEntryBuilder<T> = T extends Set<Fragment<infer V>> ? FragmentBuilder<V> : never
 
-export type ScaleSetBuilder<T extends Set<Fragment<any>>> = FragmentBuilder<T, UnwrapScaleSet<T>>;
+export type ScaleSetBuilder<T extends Set<Fragment<any>>> = FragmentBuilder<T, UnwrapScaleSet<T>>
 
 /**
  * @example
@@ -448,19 +448,19 @@ export function createSetBuilder<T extends Set<Fragment<any>>>(
             ) as any,
         unwrapScaleSet as any,
         createScaleSetWrapper(entryBuilder),
-    );
+    )
 }
 
-type MapKeyInner<T> = T extends Map<Fragment<infer V>, Fragment<any>> ? V : never;
+type MapKeyInner<T> = T extends Map<Fragment<infer V>, Fragment<any>> ? V : never
 
-type MapValueInner<T> = T extends Map<Fragment<any>, Fragment<infer V>> ? V : never;
+type MapValueInner<T> = T extends Map<Fragment<any>, Fragment<infer V>> ? V : never
 
 export type UnwrapScaleMap<T> = T extends Map<Fragment<any, infer K>, Fragment<any, infer V>>
     ? Map<UnwrapFragment<K>, UnwrapFragment<V>>
-    : never;
+    : never
 
 function unwrapScaleMap<T extends Map<Fragment<any>, Fragment<any>>>(scale: Fragment<T>): UnwrapScaleMap<T> {
-    return new Map([...scale.value].map(([key, value]) => [key.unwrap(), value.unwrap()])) as any;
+    return new Map([...scale.value].map(([key, value]) => [key.unwrap(), value.unwrap()])) as any
 }
 
 function createScaleMapWrapper<T extends Map<Fragment<any>, Fragment<any>>>(
@@ -468,11 +468,11 @@ function createScaleMapWrapper<T extends Map<Fragment<any>, Fragment<any>>>(
     value: FragmentBuilder<MapValueInner<T>>,
 ): FragmentWrapFn<T, UnwrapScaleMap<T>> {
     return (raw) => {
-        return new Map([...raw].map(([k, v]) => [key.wrap(k), value.wrap(v)])) as any;
-    };
+        return new Map([...raw].map(([k, v]) => [key.wrap(k), value.wrap(v)])) as any
+    }
 }
 
-export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = FragmentBuilder<T, UnwrapScaleMap<T>>;
+export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = FragmentBuilder<T, UnwrapScaleMap<T>>
 
 /**
  * @example
@@ -497,7 +497,7 @@ export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(
             ) as any,
         unwrapScaleMap as any,
         createScaleMapWrapper(keyBuilder, valueBuilder),
-    );
+    )
 }
 
 export function createBytesArrayBuilder(name: string, len: number): FragmentBuilder<Uint8Array> {
@@ -505,20 +505,20 @@ export function createBytesArrayBuilder(name: string, len: number): FragmentBuil
         name,
         (value) => encodeUint8Array(value, len),
         (bytes) => decodeUint8Array(bytes, len),
-    );
+    )
 }
 
 type UnwrapScaleTuple<T> = T extends Fragment<any>[]
     ? T extends [Fragment<any, infer U>, ...infer Tail]
         ? [UnwrapFragment<U>, ...UnwrapScaleTuple<Tail>]
         : []
-    : never;
+    : never
 
 function createScaleTupleWrapper<T>(builder: FragmentBuilder<any>[]): FragmentWrapFn<T, UnwrapScaleTuple<T>> {
-    return (raw) => raw.map((x, i) => builder[i].wrap(x)) as any;
+    return (raw) => raw.map((x, i) => builder[i].wrap(x)) as any
 }
 
-export type ScaleTupleBuilder<T> = FragmentBuilder<T, UnwrapScaleTuple<T>>;
+export type ScaleTupleBuilder<T> = FragmentBuilder<T, UnwrapScaleTuple<T>>
 
 /**
  * @example
@@ -531,11 +531,11 @@ export function createTupleBuilder<T extends Fragment<any>[]>(
     name: string,
     builders: FragmentBuilder<any>[],
 ): ScaleTupleBuilder<T> {
-    const encoders: TupleEncoders<T> = [...yieldNTimes(fragmentEncode, builders.length)] as any;
+    const encoders: TupleEncoders<T> = [...yieldNTimes(fragmentEncode, builders.length)] as any
 
     const decoders: TupleDecoders<T> = builders.map(
         (x, i) => (part: Uint8Array) => trackRefineDecodeLoc(`.${i}`, () => x.decodeRaw(part)),
-    ) as any;
+    ) as any
 
     return createBuilder(
         name,
@@ -543,10 +543,10 @@ export function createTupleBuilder<T extends Fragment<any>[]>(
         (bytes) => decodeTuple(bytes, decoders),
         unwrapScaleArray as any,
         createScaleTupleWrapper(builders),
-    );
+    )
 }
 
-type OptionBuilder<T> = T extends Option<Fragment<infer V, infer U>> ? FragmentBuilder<V, U> : never;
+type OptionBuilder<T> = T extends Option<Fragment<infer V, infer U>> ? FragmentBuilder<V, U> : never
 
 /**
  * @example
@@ -562,16 +562,16 @@ export function createOptionBuilder<T extends Option<Fragment<any>>>(
     return createEnumBuilder(name, [
         [0, 'None'],
         [1, 'Some', some],
-    ]);
+    ])
 }
 
 type ResultOkBuilder<T> = T extends Result<Fragment<infer V, infer U>, Fragment<any, any>>
     ? FragmentBuilder<V, U>
-    : never;
+    : never
 
 type ResultErrBuilder<T> = T extends Result<Fragment<any, any>, Fragment<infer V, infer U>>
     ? FragmentBuilder<V, U>
-    : never;
+    : never
 
 /**
  * @example
@@ -588,5 +588,5 @@ export function createResultBuilder<T extends Result<Fragment<any>, Fragment<any
     return createEnumBuilder(name, [
         [0, 'Ok', ok],
         [1, 'Err', err],
-    ]);
+    ])
 }

@@ -1,4 +1,4 @@
-const HelpersCounterStateSym = Symbol('CounterState');
+const HelpersCounterStateSym = Symbol('CounterState')
 
 export const StdDefHelpers = {
     Valuable: 'Valuable',
@@ -17,25 +17,25 @@ export const StdDefHelpers = {
     Enum: 'Enum',
     Option: 'Option',
     Result: 'Result',
-};
+}
 
-export type ImportsCounter = typeof StdDefHelpers & { [HelpersCounterStateSym]: { used: Set<string> } };
+export type ImportsCounter = typeof StdDefHelpers & { [HelpersCounterStateSym]: { used: Set<string> } }
 
 export function createImportsCounter(): ImportsCounter {
-    const used = new Set<string>();
+    const used = new Set<string>()
 
     return new Proxy(StdDefHelpers as any, {
         get: (target, key) => {
             if (key === HelpersCounterStateSym) {
-                return { used };
+                return { used }
             }
-            if (!(key in target)) throw new Error('wtf?');
-            used.add(key as string);
-            return target[key];
+            if (!(key in target)) throw new Error('wtf?')
+            used.add(key as string)
+            return target[key]
         },
-    }) as any;
+    }) as any
 }
 
 export function getImportsCounterState(counter: ImportsCounter): { used: Set<string> } {
-    return counter[HelpersCounterStateSym];
+    return counter[HelpersCounterStateSym]
 }

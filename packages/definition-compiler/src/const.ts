@@ -17,4 +17,4 @@ export const DefaultAvailableBuilders = new Set([
     'I32',
     'I64',
     'I128',
-]);
+])

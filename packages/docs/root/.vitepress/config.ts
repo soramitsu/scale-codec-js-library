@@ -1,13 +1,13 @@
-import { defineConfig } from 'vitepress';
-import WindiCSS from 'vite-plugin-windicss';
-import path from 'path';
+import { defineConfig } from 'vitepress'
+import WindiCSS from 'vite-plugin-windicss'
+import path from 'path'
 
-const LIBS = ['core', 'enum', 'util', 'definition-compiler', 'definition-runtime'];
+const LIBS = ['core', 'enum', 'util', 'definition-compiler', 'definition-runtime']
 
 interface SidebarLink {
-    text: string;
-    link?: string;
-    children?: SidebarLink[];
+    text: string
+    link?: string
+    children?: SidebarLink[]
 }
 
 function guideSidebar(): SidebarLink[] {
@@ -47,14 +47,14 @@ function guideSidebar(): SidebarLink[] {
                 },
             ],
         },
-    ];
+    ]
 }
 
 function apiSidebar(): SidebarLink[] {
     return LIBS.map((x) => ({
         text: x,
         link: `/api/${x}`,
-    }));
+    }))
 }
 
 export default defineConfig({
@@ -95,4 +95,4 @@ export default defineConfig({
             target: 'es2020',
         },
     },
-});
+})

@@ -5,9 +5,9 @@
  * @packageDocumentation
  */
 
-export * from './types';
-export * from './codecs';
-export * from './util';
+export * from './types'
+export * from './codecs'
+export * from './util'
 
 // re-export enums
-export * from '@scale-codec/enum';
+export * from '@scale-codec/enum'

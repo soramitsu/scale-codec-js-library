@@ -1,4 +1,4 @@
-import { Enum, Valuable } from './enum';
+import { Enum, Valuable } from './enum'
 
 /**
  * Rust's `Option<T>` analog
@@ -10,6 +10,6 @@ import { Enum, Valuable } from './enum';
  * ```
  */
 export type Option<T> = Enum<{
-    None: undefined;
-    Some: Valuable<T>;
-}>;
+    None: undefined
+    Some: Valuable<T>
+}>

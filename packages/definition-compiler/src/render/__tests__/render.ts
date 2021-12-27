@@ -1,8 +1,8 @@
-import { renderNamespaceDefinition } from '..';
-import { NamespaceDefinition, RenderNamespaceDefinitionParams } from '../../types';
+import { renderNamespaceDefinition } from '..'
+import { NamespaceDefinition, RenderNamespaceDefinitionParams } from '../../types'
 
 function matchSnapshot(def: NamespaceDefinition, params?: RenderNamespaceDefinitionParams) {
-    expect(renderNamespaceDefinition(def, params)).toMatchSnapshot();
+    expect(renderNamespaceDefinition(def, params)).toMatchSnapshot()
 }
 
 it('Renders vec', () => {
@@ -11,8 +11,8 @@ it('Renders vec', () => {
             t: 'vec',
             item: 'Str',
         },
-    });
-});
+    })
+})
 
 it('Renders struct + tuple', () => {
     matchSnapshot({
@@ -33,8 +33,8 @@ it('Renders struct + tuple', () => {
             t: 'tuple',
             items: ['U8', 'I128'],
         },
-    });
-});
+    })
+})
 
 it('Renders enum', () => {
     matchSnapshot({
@@ -52,8 +52,8 @@ it('Renders enum', () => {
                 },
             ],
         },
-    });
-});
+    })
+})
 
 it('Renders set', () => {
     matchSnapshot({
@@ -61,8 +61,8 @@ it('Renders set', () => {
             t: 'set',
             entry: 'Message',
         },
-    });
-});
+    })
+})
 
 it('Renders map', () => {
     matchSnapshot({
@@ -71,8 +71,8 @@ it('Renders map', () => {
             key: 'Str',
             value: 'Message',
         },
-    });
-});
+    })
+})
 
 it('Renders array', () => {
     matchSnapshot({
@@ -81,8 +81,8 @@ it('Renders array', () => {
             item: 'Item',
             len: 15,
         },
-    });
-});
+    })
+})
 
 it('Renders bytes array', () => {
     matchSnapshot({
@@ -90,8 +90,8 @@ it('Renders bytes array', () => {
             t: 'bytes-array',
             len: 64,
         },
-    });
-});
+    })
+})
 
 it('Renders option', () => {
     matchSnapshot({
@@ -99,8 +99,8 @@ it('Renders option', () => {
             t: 'option',
             some: 'Hash',
         },
-    });
-});
+    })
+})
 
 it('Renders empty struct as void alias', () => {
     matchSnapshot({
@@ -108,8 +108,8 @@ it('Renders empty struct as void alias', () => {
             t: 'struct',
             fields: [],
         },
-    });
-});
+    })
+})
 
 it('Renders empty tuple as void alias', () => {
     matchSnapshot({
@@ -117,8 +117,8 @@ it('Renders empty tuple as void alias', () => {
             t: 'tuple',
             items: [],
         },
-    });
-});
+    })
+})
 
 it('Renders an alias for some inner type', () => {
     matchSnapshot({
@@ -126,8 +126,8 @@ it('Renders an alias for some inner type', () => {
             t: 'alias',
             ref: 'Str',
         },
-    });
-});
+    })
+})
 
 it('Renders single tuple as alias in case when the related option is enabled', async () => {
     matchSnapshot(
@@ -138,8 +138,8 @@ it('Renders single tuple as alias in case when the related option is enabled', a
         {
             rollupSingleTuplesIntoAliases: true,
         },
-    );
-});
+    )
+})
 
 it('Render import for the external type as expected', () => {
     matchSnapshot({
@@ -147,8 +147,8 @@ it('Render import for the external type as expected', () => {
             t: 'import',
             module: './module-with-externals',
         },
-    });
-});
+    })
+})
 
 it('Renders imports for the external type using the custom name if provided', () => {
     matchSnapshot({
@@ -157,8 +157,8 @@ it('Renders imports for the external type using the custom name if provided', ()
             module: 'some-package',
             nameInModule: 're_export_me',
         },
-    });
-});
+    })
+})
 
 it('Renders result', () => {
     matchSnapshot({
@@ -167,8 +167,8 @@ it('Renders result', () => {
             ok: 'I128',
             err: 'Str',
         },
-    });
-});
+    })
+})
 
 it('Respects custom `runtimeLib` param', () => {
     matchSnapshot(
@@ -179,8 +179,8 @@ it('Respects custom `runtimeLib` param', () => {
             },
         },
         { runtimeLib: 'custom-runtime-lib' },
-    );
-});
+    )
+})
 
 it('Respects custom set of knowns types set', () => {
     matchSnapshot(
@@ -196,5 +196,5 @@ it('Respects custom set of knowns types set', () => {
             },
         },
         { runtimeTypes: new Set(['Foo']) },
-    );
-});
+    )
+})

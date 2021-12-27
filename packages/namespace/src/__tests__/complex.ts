@@ -1,28 +1,28 @@
-import { Enum, EnumSchema, Option, Valuable } from '@scale-codec/core';
-import { defBytesArray, defEnum, defOption, defStruct, defTuple, StdCodecs, StdTypes } from '../std';
-import JSBI from 'jsbi';
-import { defNamespace } from '../namespace';
-import { defAlias } from '../alias';
-import { yieldNTimes } from '@scale-codec/util';
+import { Enum, EnumSchema, Option, Valuable } from '@scale-codec/core'
+import { defBytesArray, defEnum, defOption, defStruct, defTuple, StdCodecs, StdTypes } from '../std'
+import JSBI from 'jsbi'
+import { defNamespace } from '../namespace'
+import { defAlias } from '../alias'
+import { yieldNTimes } from '@scale-codec/util'
 
 describe('complex namespace', () => {
     type Namespace = StdTypes & {
         Id: {
-            name: string;
-            domain: string;
-        };
-        'Option<Id>': Option<Namespace['Id']>;
+            name: string
+            domain: string
+        }
+        'Option<Id>': Option<Namespace['Id']>
         CustomEnum: Enum<{
-            One: null;
-            Two: Valuable<Namespace['(u64,bool,(string,i32))']>;
-        }>;
-        '(string,i32)': [string, number];
-        '(u64,bool,(string,i32))': [JSBI, boolean, [string, number]];
+            One: null
+            Two: Valuable<Namespace['(u64,bool,(string,i32))']>
+        }>
+        '(string,i32)': [string, number]
+        '(u64,bool,(string,i32))': [JSBI, boolean, [string, number]]
         // alias
-        String: string;
+        String: string
         // bytes fixed
-        '[u8, 5]': Uint8Array;
-    };
+        '[u8, 5]': Uint8Array
+    }
 
     const ns = defNamespace<Namespace>({
         ...StdCodecs,
@@ -44,12 +44,12 @@ describe('complex namespace', () => {
         ),
         String: defAlias('str'),
         '[u8, 5]': defBytesArray(5),
-    });
+    })
 
-    const { encode, decode } = ns;
+    const { encode, decode } = ns
 
     function bytes(...nums: number[]): Uint8Array {
-        return new Uint8Array(nums);
+        return new Uint8Array(nums)
     }
 
     function testCase<K extends keyof Namespace>(
@@ -57,7 +57,7 @@ describe('complex namespace', () => {
         value: Namespace[K],
         encoded: Uint8Array,
     ): [K, Namespace[K], Uint8Array] {
-        return [type, value, encoded];
+        return [type, value, encoded]
     }
 
     test.each([
@@ -107,11 +107,11 @@ describe('complex namespace', () => {
         // vec of bytes
         testCase('Vec<u8>', bytes(1, 2, 3, 4, 5), bytes(20, 1, 2, 3, 4, 5)),
     ])('encode/decode %s', (ref, decoded, encoded) => {
-        expect(encode(ref, decoded)).toEqual(encoded);
-        expect(decode(ref, encoded)).toEqual(decoded);
-    });
+        expect(encode(ref, decoded)).toEqual(encoded)
+        expect(decode(ref, encoded)).toEqual(decoded)
+    })
 
     test('alias', () => {
-        expect(encode('str', 'boop')).toEqual(encode('String', 'boop'));
-    });
-});
+        expect(encode('str', 'boop')).toEqual(encode('String', 'boop'))
+    })
+})
