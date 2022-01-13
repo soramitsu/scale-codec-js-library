@@ -91,11 +91,15 @@ export class Enum<Def> {
      * Use it in pair {@link Enum.is} to avoid runtime errors.
      */
     public as<V extends TagsValuable<Def>>(tag: V): Def[V] extends Valuable<infer T> ? T : never {
-        if (this.is(tag) && this.content) {
-            return this.content[0] as Def[V]
+        if (this.is(tag)) {
+            if (!this.content) {
+                throw new Error(`Enum cast failed - enum "${tag}" is empty`)
+            }
+
+            return this.content[0] as any
         }
 
-        throw new Error(`cast failed - enum is not the "${tag}"`)
+        throw new Error(`Enum cast failed - enum is "${this.tag}", not "${tag}"`)
     }
 
     /**
