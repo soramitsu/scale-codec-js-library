@@ -14,13 +14,13 @@ export function decodeTuple<T extends any[]>(bytes: Uint8Array, decoders: TupleD
     return decodeIteratively(bytes, decoders) as any
 }
 
-export function encodeTuple<T extends any[]>(tuple: T, encoders: TupleEncoders<T>): Uint8Array {
-    function* parts(): Generator<Uint8Array> {
-        let i = 0
-        for (const encode of encoders) {
-            yield (encode as Encode<any>)(tuple[i++])
-        }
+function* tupleParts(tuple: Array<any>, encoders: Iterable<Encode<any>>): Generator<Uint8Array> {
+    let i = 0
+    for (const encode of encoders) {
+        yield (encode as Encode<any>)(tuple[i++])
     }
+}
 
-    return concatUint8Arrays(parts())
+export function encodeTuple<T extends any[]>(tuple: T, encoders: TupleEncoders<T>): Uint8Array {
+    return concatUint8Arrays(tupleParts(tuple, encoders))
 }

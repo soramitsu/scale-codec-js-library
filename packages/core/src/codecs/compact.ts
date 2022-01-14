@@ -1,4 +1,4 @@
-import { assert, concatUint8Arrays } from '@scale-codec/util'
+import { concatUint8Arrays } from '@scale-codec/util'
 import { DecodeResult } from '../types'
 import { decodeBigInt, encodeBigInt, decodeBigIntVarious } from './int'
 

@@ -3,16 +3,17 @@ import { decodeCompact, encodeCompact } from './compact'
 import { decodeIteratively } from './utils'
 import { Encode, Decode, DecodeResult } from '../types'
 
+function* mapEncodeParts<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Generator<Uint8Array> {
+    yield encodeCompact(BigInt(map.size))
+
+    for (const [key, value] of map) {
+        yield KeyEncoder(key)
+        yield ValueEncoder(value)
+    }
+}
+
 export function encodeMap<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Uint8Array {
-    return concatUint8Arrays(
-        Array.from(map).reduce<Uint8Array[]>(
-            (parts, [key, value]) => {
-                parts.push(KeyEncoder(key), ValueEncoder(value))
-                return parts
-            },
-            [encodeCompact(BigInt(map.size))],
-        ),
-    )
+    return concatUint8Arrays(mapEncodeParts(map, KeyEncoder, ValueEncoder))
 }
 
 export function decodeMap<K, V>(

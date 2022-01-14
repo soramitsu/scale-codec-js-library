@@ -142,7 +142,7 @@ class LittleEndianBytesView {
     public transformByTwosComplement() {
         // initial addition
         let addition = 1
-        for (let i = 0; i < this.arr.length; i++) {
+        for (let i = 0, len = this.arr.length; i < len; i++) {
             // negate and add
             const newValue = 255 - this.readAt(i) + addition
             // addition to next digit

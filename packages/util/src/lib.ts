@@ -15,18 +15,33 @@ export function assert(condition: unknown, message: string | (() => string)): as
 /**
  * Creates a concatenated `Uint8Array` from the inputs.
  */
-export function concatUint8Arrays(iterable: Iterable<Uint8Array>): Uint8Array {
-    const list = [...iterable]
+export function concatUint8Arrays(iterable: Iterable<Uint8Array> | Array<Uint8Array>): Uint8Array {
+    // constructing array + computing length
+    let array: Array<Uint8Array>
+    let bytesLength = 0
 
-    const length = list.reduce((l, arr) => l + arr.length, 0)
-    const result = new Uint8Array(length)
-
-    for (let i = 0, offset = 0; i < list.length; i++) {
-        result.set(list[i], offset)
-        offset += list[i].length
+    if (Array.isArray(iterable)) {
+        array = iterable
+        for (let i = 0, arrLen = array.length; i < arrLen; i++) {
+            bytesLength += array[i].byteLength
+        }
+    } else {
+        array = []
+        for (const part of iterable) {
+            array.push(part)
+            bytesLength += part.byteLength
+        }
     }
 
-    return result
+    // filling target
+    const target = new Uint8Array(bytesLength)
+
+    for (let i = 0, offset = 0, arrLen = array.length; i < arrLen; i++) {
+        target.set(array[i], offset)
+        offset += array[i].length
+    }
+
+    return target
 }
 
 /**

@@ -80,16 +80,14 @@ export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders):
         )
     }
     const { d, encode } = encoder
+    const discriminantPart = new Uint8Array([d])
 
-    function* parts(): Generator<Uint8Array> {
-        yield new Uint8Array([d])
-        if (encode) {
-            if (!content) throw new Error(`Encoder for variant with tag "${tag}" defined, but there is no content`)
-            yield encode(content[0])
-        }
+    if (encode) {
+        if (!content) throw new Error(`Encoder for variant with tag "${tag}" defined, but there is no content`)
+        return concatUint8Arrays([discriminantPart, encode(content[0])])
     }
 
-    return concatUint8Arrays(parts())
+    return discriminantPart
 }
 
 export function decodeEnum<T extends Enum<any>>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<T> {
