@@ -7,5 +7,5 @@ def pipeline = new org.js.LibPipeline(
     pushCmds: ['pnpm publish:all'],
     buildDockerImage: 'build-tools/node:14-ubuntu-cypress',
     npmRegistries: ['': 'npm-soramitsu-admin'],
-    npmLoginEmail:'admin@soramitsu.co.jp')
+    npmLoginEmail:'bot@soramitsu.co.jp')
 pipeline.runPipeline()
