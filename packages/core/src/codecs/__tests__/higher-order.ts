@@ -318,6 +318,35 @@ describe('Enum', () => {
             expect(decode(new Uint8Array([1, 0]))).toEqual([some, 2])
         })
     })
+
+    it('meaningfull error if trying to decode data with invalid discriminant', () => {
+        expect(() =>
+            decodeEnum(new Uint8Array([51]), {
+                0: { v: 'Empty' },
+                3: { v: 'Non-empty', decode: decodeBool },
+            }),
+        ).toThrowErrorMatchingInlineSnapshot(
+            `"Decode data for discriminant 51 is undefined. Enum decoders schema: 0 => Empty, 3 => Non-empty(...)"`,
+        )
+    })
+
+    it('meaningfull error if trying to encode data with invalid variant name', () => {
+        type Test = Enum<{
+            Empty: null
+            NonEmpty: Valuable<boolean>
+        }>
+
+        const value: Test = Enum.valuable('NonEmpty', false)
+
+        expect(() =>
+            encodeEnum(value, {
+                Empty: { d: 0 },
+                WrongVar: { d: 1, encode: encodeBool },
+            }),
+        ).toThrowErrorMatchingInlineSnapshot(
+            `"Encode data for variant with tag \\"NonEmpty\\" is undefined. Enum encoders schema: Empty => 0, WrongVar(...) => 1"`,
+        )
+    })
 })
 
 describe('Map', () => {

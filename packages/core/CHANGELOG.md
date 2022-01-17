@@ -1,5 +1,13 @@
 # @scale-codec/core
 
+## 0.4.2
+
+### Patch Changes
+
+-   c944775: **feat**: throw meaningfull errors if there are some problems with enum encoders/decoders schema (`encodeEnum` & `decodeEnum`)
+-   Updated dependencies [b4c91cf]
+    -   @scale-codec/enum@0.2.2
+
 ## 0.4.1
 
 ### Patch Changes

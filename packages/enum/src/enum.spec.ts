@@ -1,7 +1,7 @@
 import { Enum } from './enum'
 
 describe('Enum', () => {
-    test('is returns true', () => {
+    test('.is() returns true', () => {
         const val: Enum<{
             a: null
             b: { value: number }
@@ -10,7 +10,7 @@ describe('Enum', () => {
         expect(val.is('a')).toBe(true)
     })
 
-    test('is returns false', () => {
+    test('.is() returns false', () => {
         const val: Enum<{
             a: null
             b: { value: number }
@@ -19,7 +19,7 @@ describe('Enum', () => {
         expect(val.is('b')).toBe(false)
     })
 
-    test('as works fine', () => {
+    test('.as() works fine', () => {
         const val: Enum<{
             a: null
             b: { value: number }
@@ -28,16 +28,29 @@ describe('Enum', () => {
         expect(val.as('b')).toBe(111)
     })
 
-    test('as throws an error', () => {
+    test('.as() throws an error if trying to cast to wrong variant', () => {
         const val: Enum<{
             a: null
             b: { value: number }
         }> = Enum.empty('a')
 
-        expect(() => val.as('b')).toThrow()
+        expect(() => val.as('b')).toThrowErrorMatchingInlineSnapshot(
+            `"Enum cast failed - enum is \\"a\\", not \\"b\\""`,
+        )
     })
 
-    test.each([['Single'], ['Double']])('match calls the desired callback (%p)', (variant: 'Single' | 'Double') => {
+    test('.as() throws an error if trying to call it with an empty enum', () => {
+        const val: Enum<{
+            a: null
+            b: { value: number }
+        }> = Enum.empty('a')
+
+        expect(() => (val as any).as('a')).toThrowErrorMatchingInlineSnapshot(
+            `"Enum cast failed - enum \\"a\\" is empty"`,
+        )
+    })
+
+    test.each([['Single'], ['Double']])('.match() calls the desired callback (%p)', (variant: 'Single' | 'Double') => {
         interface Variants {
             Single: null
             Double: null
@@ -55,7 +68,7 @@ describe('Enum', () => {
         expect(matchMap[other]).not.toBeCalled()
     })
 
-    test('match calls it with inner value', () => {
+    test('.match() calls it with inner value', () => {
         const val: Enum<{
             a: null
             b: { value: string }
@@ -67,7 +80,7 @@ describe('Enum', () => {
         expect(spy).toBeCalledWith('something')
     })
 
-    test('match calls it with nothing', () => {
+    test('.match() calls it with nothing', () => {
         const val: Enum<{
             a: null
             b: { value: string }
@@ -79,7 +92,7 @@ describe('Enum', () => {
         expect(spy).toBeCalledWith()
     })
 
-    test('match returns the result of callback', () => {
+    test('.match() returns the result of callback', () => {
         const val: Enum<{
             a: null
             b: { value: string }

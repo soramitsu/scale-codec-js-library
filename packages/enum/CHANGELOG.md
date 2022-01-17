@@ -1,5 +1,11 @@
 # @scale-codec/enum
 
+## 0.2.2
+
+### Patch Changes
+
+-   b4c91cf: **feat**: better error messages when use `.as(tag)`
+
 ## 0.2.1
 
 ### Patch Changes
