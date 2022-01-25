@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 
-import { yieldNTimes } from '@scale-codec/util'
+import { concatBytes, yieldNTimes } from '@scale-codec/util'
 import { Enum, Option, Valuable } from '@scale-codec/enum'
 import {
     encodeBool,
@@ -29,15 +29,19 @@ import {
     decodeMap,
     encodeStruct,
     decodeStruct,
+    createBigIntEncode,
+    createIntEncode,
 } from '../'
 import { Encode, Decode, DecodeResult } from '../../types'
-import { BigIntTypes, decodeInt, encodeInt } from '../int'
+import { BigIntTypes, decodeInt } from '../int'
 
 type Codec<T> = { encode: Encode<T>; decode: Decode<T> }
 
 export function bigIntCodec(ty: BigIntTypes): Codec<bigint> {
     return {
-        encode: (bi: bigint) => encodeBigInt(bi, ty),
+        encode: function* (bi: bigint) {
+            yield encodeBigInt(bi, ty)
+        },
         decode: (bytes: Uint8Array) => decodeBigInt(bytes, ty),
     }
 }
@@ -57,11 +61,12 @@ interface OptionDef<T> {
 
 function optionCodec<T>({ encode, decode }: Codec<T>): Codec<Option<T>> {
     return {
-        encode: (v) =>
-            encodeEnum(v, {
+        encode: function* (v) {
+            yield* encodeEnum(v, {
                 None: { d: 0 },
                 Some: { d: 1, encode },
-            }),
+            })
+        },
         decode: (b) =>
             decodeEnum(b, {
                 0: { v: 'None' },
@@ -79,9 +84,7 @@ describe('Vec', () => {
         const hex = '28 00 01 01 02 03 05 08 0d 15 22'
 
         it('encode', () => {
-            const numEncode = (v: bigint) => encodeBigInt(v, 'u8')
-
-            const encoded = encodeVec(numbers, numEncode)
+            const encoded = concatBytes(encodeVec(numbers, createBigIntEncode('u8')))
 
             expect(hexifyBytes(encoded)).toEqual(hex)
         })
@@ -102,10 +105,10 @@ describe('Vec', () => {
         const numbers = [0, 1, -1, 2, -2, 3, -3].map((x) => BigInt(x))
         const hex = '1c 00 00 01 00 ff ff 02 00 fe ff 03 00 fd ff'
 
-        const numEncode = (v: bigint) => encodeBigInt(v, 'i16')
+        const numEncode = createBigIntEncode('i16')
         const numDecode = (b: Uint8Array): [bigint, number] => decodeBigInt(b, 'i16')
 
-        const encoded = encodeVec(numbers, numEncode)
+        const encoded = concatBytes(encodeVec(numbers, numEncode))
         expect(hexifyBytes(encoded)).toEqual(hex)
 
         const [decoded, len] = decodeVec(encoded, numDecode)
@@ -147,20 +150,17 @@ b8 20 d0 bc d0 b8 d1 80 30 e4 b8 89 e5 9b bd e6 bc 94 e4 b9 89 bc d8 a3 d9 8e d9
 d9 81 20 d9 84 d9 8e d9 8a d9 92 d9 84 d9 8e d8 a9 20 d9 88 d9 8e d9 84 d9 8e d9 8a d9 92 \
 d9 84 d9 8e d8 a9 e2 80 8e`
 
-        const encode = (v: string) => encodeStr(v)
-        const decode = (b: Uint8Array) => decodeStr(b)
-
-        const encoded = encodeVec(strings, encode)
+        const encoded = concatBytes(encodeVec(strings, encodeStr))
         expect(hexifyBytes(encoded)).toEqual(hex)
 
-        const [decoded, len] = decodeVec(encoded, decode)
+        const [decoded, len] = decodeVec(encoded, decodeStr)
         expect(decoded).toEqual(strings)
         expect(len).toEqual(encoded.length)
     })
 
     // https://github.com/paritytech/parity-scale-codec/blob/master/src/codec.rs#L1336
     describe('vec of option int encoded as expected', () => {
-        const { encode, decode } = optionCodec<bigint>(bigIntCodec('i8'))
+        const codec = optionCodec<bigint>(bigIntCodec('i8'))
         const vec: Enum<OptionDef<bigint>>[] = [
             Enum.valuable('Some', 1n),
             Enum.valuable('Some', -1n),
@@ -169,11 +169,11 @@ d9 84 d9 8e d8 a9 e2 80 8e`
         const hex = '0c 01 01 01 ff 00'
 
         it('encode', () => {
-            expect(hexifyBytes(encodeVec(vec, encode))).toEqual(hex)
+            expect(hexifyBytes(concatBytes(encodeVec(vec, codec.encode)))).toEqual(hex)
         })
 
         it('decode', () => {
-            expect(decodeVec(prettyHexToBytes(hex), decode)).toEqual([vec, 6])
+            expect(decodeVec(prettyHexToBytes(hex), codec.decode)).toEqual([vec, 6])
         })
     })
 
@@ -190,15 +190,15 @@ d9 84 d9 8e d8 a9 e2 80 8e`
 
         it('encode', () => {
             expect(
-                encodeVec(
-                    vec,
-                    (item) =>
-                        new Uint8Array([
+                concatBytes(
+                    encodeVec(vec, function* (item) {
+                        yield new Uint8Array([
                             item.match({
                                 None: () => 0,
                                 Some: (val) => (val ? 1 : 2),
                             }),
-                        ]),
+                        ])
+                    }),
                 ),
             ).toEqual(prettyHexToBytes(hex))
         })
@@ -224,7 +224,7 @@ d9 84 d9 8e d8 a9 e2 80 8e`
 
 describe('Tuple', () => {
     it('tuple () encoded as expected', () => {
-        const encoded = encodeTuple([], [])
+        const encoded = concatBytes(encodeTuple([], []))
 
         expect(encoded).toEqual(new Uint8Array())
 
@@ -255,7 +255,7 @@ describe('Tuple', () => {
 
         const VALUE = [64n, 'Henno?', [7, 1, 22, 5, -42].map(BigInt), [-4242, 456720].map(BigInt), true]
 
-        expect(encodeTuple(VALUE, TUPLE_CODECS.map((x) => x.encode) as any)).toEqual(ENCODED)
+        expect(concatBytes(encodeTuple(VALUE, TUPLE_CODECS.map((x) => x.encode) as any))).toEqual(ENCODED)
         expect(decodeTuple(ENCODED, TUPLE_CODECS.map((x) => x.decode) as any)).toEqual([VALUE, ENCODED.length])
     })
 })
@@ -274,10 +274,10 @@ describe('Struct', () => {
         it('encode', () => {
             const encoders = {
                 foo: encodeStr,
-                bar: (v: number) => encodeInt(v, 'u32'),
+                bar: createIntEncode('u32'),
             }
 
-            const encoded = encodeStruct(STRUCT, encoders, ORDER)
+            const encoded = concatBytes(encodeStruct(STRUCT, encoders, ORDER))
 
             expect(encoded).toEqual(ENCODED)
         })
@@ -301,7 +301,7 @@ describe('Enum', () => {
         const { encode, decode } = optionCodec({ encode: encodeBool, decode: decodeBool })
 
         it('"None" encoded as expected', () => {
-            expect(encode(Enum.empty('None'))).toEqual(new Uint8Array([0]))
+            expect(concatBytes(encode(Enum.empty('None')))).toEqual(new Uint8Array([0]))
         })
 
         it('"None" decoded as expected', () => {
@@ -310,7 +310,7 @@ describe('Enum', () => {
         })
 
         it('"Some(false)" encoded as expected', () => {
-            expect(encode(Enum.valuable('Some', false))).toEqual(new Uint8Array([1, 0]))
+            expect(concatBytes(encode(Enum.valuable('Some', false)))).toEqual(new Uint8Array([1, 0]))
         })
 
         it('"Some(false)" decoded as expected', () => {
@@ -339,10 +339,12 @@ describe('Enum', () => {
         const value: Test = Enum.valuable('NonEmpty', false)
 
         expect(() =>
-            encodeEnum(value, {
-                Empty: { d: 0 },
-                WrongVar: { d: 1, encode: encodeBool },
-            }),
+            concatBytes(
+                encodeEnum(value, {
+                    Empty: { d: 0 },
+                    WrongVar: { d: 1, encode: encodeBool },
+                }),
+            ),
         ).toThrowErrorMatchingInlineSnapshot(
             `"Encode data for variant with tag \\"NonEmpty\\" is undefined. Enum encoders schema: Empty => 0, WrongVar(...) => 1"`,
         )
@@ -355,7 +357,7 @@ describe('Map', () => {
         const encoded = Uint8Array.from([4, 28, 98, 97, 122, 122, 105, 110, 103, 69, 0, 0, 0])
 
         it('encode', () => {
-            expect(encodeMap(map, encodeStr, (v) => encodeInt(v, 'i32'))).toEqual(encoded)
+            expect(concatBytes(encodeMap(map, encodeStr, createIntEncode('i32')))).toEqual(encoded)
         })
 
         it('decode', () => {
@@ -374,15 +376,15 @@ describe('Map', () => {
             16, 1, 0, 0, 0, 2, 0, 0, 0, 23, 0, 0, 0, 24, 0, 0, 0, 28, 0, 0, 0, 30, 0, 0, 0, 45, 0, 0, 0, 80, 0, 0, 0,
         ])
 
-        const encode: Encode<number> = (v) => encodeInt(v, 'i32')
-        const decode: Decode<number> = (b) => decodeInt(b, 'i32')
+        const encodeKV: Encode<number> = createIntEncode('i32')
+        const decodeKV: Decode<number> = (b) => decodeInt(b, 'i32')
 
         it('encode', () => {
-            expect(encodeMap(map, encode, encode)).toEqual(encoded)
+            expect(concatBytes(encodeMap(map, encodeKV, encodeKV))).toEqual(encoded)
         })
 
         it('decode', () => {
-            expect(decodeMap(encoded, decode, decode)).toEqual([map, encoded.length])
+            expect(decodeMap(encoded, decodeKV, decodeKV)).toEqual([map, encoded.length])
         })
     })
 })
@@ -393,7 +395,7 @@ describe('Array', () => {
         const encoded = Uint8Array.from(nums)
 
         test('encode', () => {
-            expect(encodeArray(nums, (v) => encodeInt(v, 'u8'), 7)).toEqual(encoded)
+            expect(concatBytes(encodeArray(nums, createIntEncode('u8'), 7))).toEqual(encoded)
         })
 
         test('decode', () => {
@@ -421,7 +423,7 @@ describe('OptionBool', () => {
     ])('encode/decode %s', (_label, item, byte) => {
         const bytes = Uint8Array.from([byte])
 
-        expect(encodeOptionBool(item)).toEqual(bytes)
+        expect(concatBytes(encodeOptionBool(item))).toEqual(bytes)
         expect(decodeOptionBool(bytes)).toEqual([item, 1])
     })
 })
@@ -457,7 +459,7 @@ describe('Set', () => {
         const set = new Set(js)
         const arr = new Uint8Array(bytes)
 
-        expect(encodeSet(set, encode)).toEqual(arr)
+        expect(concatBytes(encodeSet(set, encode))).toEqual(arr)
         expect(decodeSet(arr, decode)).toEqual([set, bytes.length])
     })
 })
@@ -469,7 +471,7 @@ describe('Uint8 Array ([u8; x])', () => {
         const source = new Uint8Array([1, 5, 4, 1, 2, 6, 1])
 
         // Act
-        const encoded = encodeUint8Array(source, LEN)
+        const encoded = concatBytes(encodeUint8Array(source, LEN))
 
         // Assert
         expect(encoded).toEqual(source)
@@ -480,7 +482,7 @@ describe('Uint8 Array ([u8; x])', () => {
         const source = new Uint8Array([0, 0, 0, 0, 0])
 
         // Act
-        const encoded = encodeUint8Array(source.subarray(3), 2)
+        const encoded = concatBytes(encodeUint8Array(source.subarray(3), 2))
         encoded[0] = 1
 
         // Assert
@@ -488,7 +490,7 @@ describe('Uint8 Array ([u8; x])', () => {
     })
 
     test('Encoding throws if bytes length is not correct', () => {
-        expect(() => encodeUint8Array(new Uint8Array([5, 1, 2]), 1)).toThrowError()
+        expect(() => concatBytes(encodeUint8Array(new Uint8Array([5, 1, 2]), 1))).toThrowError()
     })
 
     test('Returns part of the source bytes on decode', () => {
@@ -517,7 +519,7 @@ describe('Vec<u8>', () => {
     const vecEncoded = [20, 5, 1, 2, 61, 255]
 
     test('Encodes ok', () => {
-        expect(encodeUint8Vec(new Uint8Array(vec))).toEqual(new Uint8Array(vecEncoded))
+        expect(concatBytes(encodeUint8Vec(new Uint8Array(vec)))).toEqual(new Uint8Array(vecEncoded))
     })
 
     test('Decodes ok', () => {
@@ -529,7 +531,7 @@ describe('Vec<u8>', () => {
         const source = new Uint8Array([1, 2, 3, 4])
 
         // Act
-        const encoded = encodeUint8Vec(source.subarray(1))
+        const encoded = concatBytes(encodeUint8Vec(source.subarray(1)))
         const encodedSaved = [...encoded]
         source[2] = 15
 

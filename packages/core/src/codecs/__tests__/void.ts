@@ -1,7 +1,8 @@
+import { concatBytes } from '@scale-codec/util'
 import { encodeVoid, decodeVoid } from '../void'
 
 test('Encodes into empty bytes', () => {
-    expect(encodeVoid()).toEqual(new Uint8Array())
+    expect(concatBytes(encodeVoid(null))).toEqual(new Uint8Array())
 })
 
 test('Decodes into null result', () => {

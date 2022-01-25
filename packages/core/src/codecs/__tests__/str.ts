@@ -1,3 +1,4 @@
+import { concatBytes } from '@scale-codec/util'
 import { decodeStr, encodeStr, encodeStrRaw, decodeStrRaw } from '../str'
 
 const RUSS_HELLO = new Uint8Array([
@@ -33,7 +34,7 @@ describe('encodeStrCompact', () => {
     it.each([{ text: 'foo', expected: new Uint8Array([12, 102, 111, 111]) }])(
         'can encode $foo',
         ({ text, expected }) => {
-            expect(encodeStr(text)).toEqual(expected)
+            expect(concatBytes(encodeStr(text))).toEqual(expected)
         },
     )
 })
@@ -50,7 +51,7 @@ describe('decodeStrCompact', () => {
 
     it('correct decoded length for ASCII', () => {
         const TEXT = 'abcde'
-        const encoded = encodeStr(TEXT)
+        const encoded = concatBytes(encodeStr(TEXT))
 
         const [_str, len] = decodeStr(encoded)
 
@@ -59,7 +60,7 @@ describe('decodeStrCompact', () => {
 
     it('correct decoded length for non-ASCII', () => {
         const TEXT = '中文'
-        const encoded = encodeStr(TEXT)
+        const encoded = concatBytes(encodeStr(TEXT))
 
         const [_str, len] = decodeStr(encoded)
 

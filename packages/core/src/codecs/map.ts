@@ -1,29 +1,25 @@
-import { concatUint8Arrays, yieldCycleNTimes } from '@scale-codec/util'
+import { yieldCycleNTimes } from '@scale-codec/util'
 import { decodeCompact, encodeCompact } from './compact'
 import { decodeIteratively } from './utils'
 import { Encode, Decode, DecodeResult } from '../types'
 
-function* mapEncodeParts<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Generator<Uint8Array> {
-    yield encodeCompact(BigInt(map.size))
+export function* encodeMap<K, V>(map: Map<K, V>, encodeKey: Encode<K>, encodeValue: Encode<V>): Generator<Uint8Array> {
+    yield* encodeCompact(BigInt(map.size))
 
     for (const [key, value] of map) {
-        yield KeyEncoder(key)
-        yield ValueEncoder(value)
+        yield* encodeKey(key)
+        yield* encodeValue(value)
     }
-}
-
-export function encodeMap<K, V>(map: Map<K, V>, KeyEncoder: Encode<K>, ValueEncoder: Encode<V>): Uint8Array {
-    return concatUint8Arrays(mapEncodeParts(map, KeyEncoder, ValueEncoder))
 }
 
 export function decodeMap<K, V>(
     bytes: Uint8Array,
-    KeyDecoder: Decode<K>,
-    ValueDecoder: Decode<V>,
+    decodeKey: Decode<K>,
+    decodeValue: Decode<V>,
 ): DecodeResult<Map<K, V>> {
     const [length, offset] = decodeCompact(bytes)
 
-    const decoders = yieldCycleNTimes<Decode<K | V>>([KeyDecoder, ValueDecoder], Number(length))
+    const decoders = yieldCycleNTimes<Decode<K | V>>([decodeKey, decodeValue], Number(length))
     const [decodedKeyValuesSequence, kvDecodedBytes] = decodeIteratively(bytes.subarray(offset), decoders)
 
     const totalDecodedBytes = offset + kvDecodedBytes

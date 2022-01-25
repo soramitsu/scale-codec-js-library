@@ -1,5 +1,5 @@
 import { assert } from '@scale-codec/util'
-import { DecodeResult } from '../types'
+import { DecodeResult, Encode } from '../types'
 import { mapDecodeResult } from '../util'
 
 /**
@@ -80,6 +80,12 @@ export function encodeInt(value: number, ty: IntTypes): Uint8Array {
     const view = new DataView(arr.buffer)
     INT_SETTERS[ty](value, view)
     return arr
+}
+
+export function createIntEncode(ty: IntTypes): Encode<number> {
+    return function* (int) {
+        yield encodeInt(int, ty)
+    }
 }
 
 /**
@@ -185,6 +191,12 @@ export function encodeBigInt(bi: bigint, ty: BigIntTypes): Uint8Array {
     isNegative && view.transformByTwosComplement()
 
     return view.arr
+}
+
+export function createBigIntEncode(ty: BigIntTypes): Encode<bigint> {
+    return function* (int) {
+        yield encodeBigInt(int, ty)
+    }
 }
 
 /**

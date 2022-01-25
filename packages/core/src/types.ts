@@ -9,6 +9,6 @@ export type DecodeResult<T> = [value: T, decodedBytes: number]
 export type Decode<T> = (bytes: Uint8Array) => DecodeResult<T>
 
 /**
- * Function that receives value and output encoded bytes of this value
+ * Function that receives value and yields encoded parts of this value
  */
-export type Encode<T> = (value: T) => Uint8Array
+export type Encode<T> = (value: T) => Generator<Uint8Array>

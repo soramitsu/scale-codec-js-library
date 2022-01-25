@@ -1,5 +1,5 @@
 import { decodeUint8Vec, encodeUint8Vec } from './vec'
-import { DecodeResult } from '../types'
+import { DecodeResult, Encode } from '../types'
 import { mapDecodeResult } from '../util'
 
 const encoder = new TextEncoder()
@@ -40,6 +40,6 @@ export function decodeStr(bytes: Uint8Array): DecodeResult<string> {
 /**
  * Encodes string by SCALE spec
  */
-export function encodeStr(str: string): Uint8Array {
-    return encodeUint8Vec(encodeStrRaw(str))
+export const encodeStr: Encode<string> = function* (str) {
+    yield* encodeUint8Vec(encodeStrRaw(str))
 }

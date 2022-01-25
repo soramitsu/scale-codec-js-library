@@ -1,4 +1,3 @@
-import { concatUint8Arrays } from '@scale-codec/util'
 import { Enum, Option } from '@scale-codec/enum'
 import { Decode, DecodeResult, Encode } from '../types'
 
@@ -64,7 +63,7 @@ export type EnumDecoders = Record<
 
 const DISCRIMINANT_BYTES_COUNT = 1
 
-export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders): Uint8Array {
+export function* encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders): Generator<Uint8Array> {
     const { tag, content } = val
     const encoder = encoders[tag]
     if (!encoder) {
@@ -80,14 +79,12 @@ export function encodeEnum<T extends Enum<any>>(val: T, encoders: EnumEncoders):
         )
     }
     const { d, encode } = encoder
-    const discriminantPart = new Uint8Array([d])
+    yield new Uint8Array([d])
 
     if (encode) {
         if (!content) throw new Error(`Encoder for variant with tag "${tag}" defined, but there is no content`)
-        return concatUint8Arrays([discriminantPart, encode(content[0])])
+        yield* encode(content[0])
     }
-
-    return discriminantPart
 }
 
 export function decodeEnum<T extends Enum<any>>(bytes: Uint8Array, decoders: EnumDecoders): DecodeResult<T> {
@@ -134,13 +131,14 @@ function optBoolByteToEnum(byte: number): Option<boolean> {
 /**
  * Special encoder for `OptionBool` type from Rust's parity_scale_codec
  */
-export const encodeOptionBool: Encode<Option<boolean>> = (item) =>
-    new Uint8Array([
+export const encodeOptionBool: Encode<Option<boolean>> = function* (item) {
+    yield new Uint8Array([
         item.match({
             None: () => 0,
             Some: (val) => (val ? 1 : 2),
         }),
     ])
+}
 
 /**
  * Special decoder for `OptionBool` type from Rust's parity_scale_codec

@@ -67,11 +67,11 @@ export function dynGetters<T extends { [K in string | symbol]: any }>(dynObject:
     ) as any
 }
 
-const fragmentEncode: Encode<Fragment<unknown>> = (x) => {
+const fragmentEncode: Encode<Fragment<unknown>> = function* (x) {
     if (!(x instanceof Fragment)) {
         throw new Error(`expected Fragment; actually: ${x}`)
     }
-    return x.bytes
+    yield x.bytes
 }
 
 const proxyFragmentEncodeGetters: StructEncoders<any> = new Proxy(
@@ -84,16 +84,20 @@ const proxyFragmentEncodeGetters: StructEncoders<any> = new Proxy(
 export function createIntBuilder(name: string, ty: IntTypes): FragmentBuilder<number> {
     return createBuilder(
         name,
-        (v) => encodeInt(v, ty),
-        (b) => decodeInt(b, ty),
+        function* (int) {
+            yield encodeInt(int, ty)
+        },
+        (bytes) => decodeInt(bytes, ty),
     )
 }
 
 export function createBigIntBuilder(name: string, ty: BigIntTypes): FragmentBuilder<bigint> {
     return createBuilder<bigint>(
         name,
-        (v) => encodeBigInt(v, ty),
-        (b) => decodeBigInt(b, ty),
+        function* (int) {
+            yield encodeBigInt(int, ty)
+        },
+        (bytes) => decodeBigInt(bytes, ty),
     )
 }
 

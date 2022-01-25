@@ -1,4 +1,3 @@
-import { concatUint8Arrays } from '@scale-codec/util'
 import { DecodeResult } from '../types'
 import { decodeBigInt, encodeBigInt, decodeBigIntVarious } from './int'
 
@@ -28,15 +27,18 @@ export function decodeCompact(input: Uint8Array): DecodeResult<bigint> {
 /**
  * Encodes integer in compact form (efficient for size, unefficient for computations)
  */
-export function encodeCompact(value: bigint): Uint8Array {
+export function* encodeCompact(value: bigint): Generator<Uint8Array> {
     if (value <= MAX_U8) {
-        return new Uint8Array([Number(value) << 2])
+        yield new Uint8Array([Number(value) << 2])
+        return
     }
     if (value <= MAX_U16) {
-        return encodeBigInt(1n + (value << 2n), 'u16')
+        yield encodeBigInt(1n + (value << 2n), 'u16')
+        return
     }
     if (value <= MAX_U32) {
-        return encodeBigInt(2n + (value << 2n), 'u32')
+        yield encodeBigInt(2n + (value << 2n), 'u32')
+        return
     }
 
     const arr = encodeBigInt(value, 'u128')
@@ -47,9 +49,7 @@ export function encodeCompact(value: bigint): Uint8Array {
         length--
     }
 
-    return concatUint8Arrays([
-        // subtract 4 as minimum (also catered for in decoding)
-        Uint8Array.from([((length - 4) << 2) + 0b11]),
-        arr.subarray(0, length),
-    ])
+    // subtract 4 as minimum (also catered for in decoding)
+    yield Uint8Array.from([((length - 4) << 2) + 0b11])
+    yield arr.subarray(0, length)
 }

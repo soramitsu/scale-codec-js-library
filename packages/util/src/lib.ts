@@ -15,7 +15,7 @@ export function assert(condition: unknown, message: string | (() => string)): as
 /**
  * Creates a concatenated `Uint8Array` from the inputs.
  */
-export function concatUint8Arrays(iterable: Iterable<Uint8Array> | Array<Uint8Array>): Uint8Array {
+export function concatBytes(iterable: Iterable<Uint8Array> | Array<Uint8Array>): Uint8Array {
     // constructing array + computing length
     let array: Array<Uint8Array>
     let bytesLength = 0

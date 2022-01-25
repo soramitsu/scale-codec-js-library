@@ -1,7 +1,6 @@
-import { concatUint8Arrays } from '@scale-codec/util'
 import { Decode, DecodeResult, Encode } from '../types'
 import { encodeCompact, decodeCompact } from '../codecs/compact'
-import { decodeArray, encodeArray } from './array'
+import { decodeArray } from './array'
 
 export function decodeVec<T>(bytes: Uint8Array, itemDecoder: Decode<T>): DecodeResult<T[]> {
     const [length, offset] = decodeCompact(bytes)
@@ -9,15 +8,19 @@ export function decodeVec<T>(bytes: Uint8Array, itemDecoder: Decode<T>): DecodeR
     return [items, itemsBytes + offset]
 }
 
-export function encodeVec<T>(items: T[], itemEncoder: Encode<T>): Uint8Array {
-    return concatUint8Arrays([encodeCompact(BigInt(items.length)), encodeArray(items, itemEncoder, items.length)])
+export function* encodeVec<T>(items: T[], encodeItem: Encode<T>): Generator<Uint8Array> {
+    yield* encodeCompact(BigInt(items.length))
+    for (const item of items) {
+        yield* encodeItem(item)
+    }
 }
 
 /**
  * Encode `Vec<u8>` directly from the native `Uint8Array`
  */
-export function encodeUint8Vec(vec: Uint8Array): Uint8Array {
-    return concatUint8Arrays([encodeCompact(BigInt(vec.length)), vec])
+export function* encodeUint8Vec(vec: Uint8Array): Generator<Uint8Array> {
+    yield* encodeCompact(BigInt(vec.length))
+    yield vec
 }
 
 /**

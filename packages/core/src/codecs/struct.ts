@@ -1,4 +1,3 @@
-import { concatUint8Arrays } from '@scale-codec/util'
 import { decodeIteratively } from './utils'
 import { Encode, Decode, DecodeResult } from '../types'
 
@@ -6,23 +5,15 @@ export type StructEncoders<T> = { [K in keyof T & string]: Encode<T[K]> }
 
 export type StructDecoders<T> = { [K in keyof T & string]: Decode<T[K]> }
 
-function* structEncodeParts<T extends {}>(
+// eslint-disable-next-line max-params
+export function* encodeStruct<T extends {}>(
     struct: T,
     encoders: StructEncoders<T>,
     order: (keyof T & string)[],
 ): Generator<Uint8Array> {
-    for (const field of order) {
-        const encoded = encoders[field](struct[field])
-        yield encoded
+    for (const key of order) {
+        yield* encoders[key](struct[key])
     }
-}
-
-export function encodeStruct<T extends {}>(
-    struct: T,
-    encoders: StructEncoders<T>,
-    order: (keyof T & string)[],
-): Uint8Array {
-    return concatUint8Arrays(structEncodeParts(struct, encoders, order))
 }
 
 function* decodersIter<T extends {}>(

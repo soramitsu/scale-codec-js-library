@@ -1,5 +1,5 @@
-import { Encode, Decode, DecodeResult } from '@scale-codec/core'
-import { assert } from '@scale-codec/util'
+import { Encode, Decode, DecodeResult, decodeAndUnwrap } from '@scale-codec/core'
+import { concatBytes } from '@scale-codec/util'
 import { trackDecode, TrackValueInspect, TrackValueInspectable } from './tracking'
 
 type OptionTupleSome<T> = [T]
@@ -91,13 +91,9 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
             const bytes = this.__bytes!
 
             this.__trackDecode(bytes, () => {
-                const [val, len] = this.__decode(bytes)
-                assert(
-                    bytes.length === len,
-                    () => `Decoded bytes mismatch: (actual) ${len} vs (expected) ${bytes.length}`,
-                )
+                const val: Value = decodeAndUnwrap(bytes, this.__decode)
                 this.__value = [val]
-                return [this, len]
+                return [this, bytes.length]
             })
         }
         return this.__value![0]
@@ -105,7 +101,7 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
 
     private getBytes(): Uint8Array {
         if (!this.__bytes) {
-            this.__bytes = this.__encode(this.__value![0])
+            this.__bytes = concatBytes(this.__encode(this.__value![0]))
         }
         return this.__bytes
     }

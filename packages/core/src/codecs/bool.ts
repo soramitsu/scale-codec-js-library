@@ -6,6 +6,6 @@ export function decodeBool(bytes: Uint8Array): DecodeResult<boolean> {
     return [bytes[0] === 1, 1]
 }
 
-export function encodeBool(bool: boolean): Uint8Array {
-    return new Uint8Array([bool ? 1 : 0])
+export function* encodeBool(bool: boolean): Generator<Uint8Array> {
+    yield new Uint8Array([bool ? 1 : 0])
 }
