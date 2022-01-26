@@ -1,5 +1,5 @@
 packages:
-    - 'packages/**'
-    - 'e2e-spa'
-    - '!packages/rust-ints/**'
-    - '!packages/namespace*'
+    - "packages/**"
+    - "e2e-spa"
+    - "!packages/rust-samples/**"
+    - "!packages/namespace*"

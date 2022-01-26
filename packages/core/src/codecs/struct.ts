@@ -1,42 +1,39 @@
-import { decodeIteratively } from './utils'
-import { Encode, Decode, DecodeResult } from '../types'
+import { Encode, Decode, Walker } from '../types'
+import { encodeFactory } from '../util'
 
-export type StructEncoders<T> = { [K in keyof T & string]: Encode<T[K]> }
+export type StructEncoders<T> = { [K in keyof T]: [K, Encode<T[K]>] }[keyof T][]
 
-export type StructDecoders<T> = { [K in keyof T & string]: Decode<T[K]> }
+export type StructDecoders<T> = { [K in keyof T]: [K, Decode<T[K]>] }[keyof T][]
 
-// eslint-disable-next-line max-params
-export function* encodeStruct<T extends {}>(
-    struct: T,
-    encoders: StructEncoders<T>,
-    order: (keyof T & string)[],
-): Generator<Uint8Array> {
-    for (const key of order) {
-        yield* encoders[key](struct[key])
+export function encodeStruct<T extends {}>(struct: T, encoders: StructEncoders<T>, walker: Walker): void {
+    for (const [key, encode] of encoders) {
+        encode(struct[key], walker)
     }
 }
 
-function* decodersIter<T extends {}>(
-    decoders: StructDecoders<T>,
-    order: (keyof T & string)[],
-): Generator<Decode<unknown>> {
-    for (const field of order) {
-        yield decoders[field]
+export function encodeStructSizeHint<T extends {}>(struct: T, encoders: StructEncoders<T>): number {
+    let sum = 0
+    for (const [key, encode] of encoders) {
+        sum += encode.sizeHint(struct[key])
     }
+    return sum
 }
 
-export function decodeStruct<T extends {}>(
-    bytes: Uint8Array,
-    decoders: StructDecoders<T>,
-    order: (keyof T & string)[],
-): DecodeResult<T> {
-    const [values, len] = decodeIteratively(bytes, decodersIter(decoders, order))
+export function createStructEncoder<T extends {}>(encoders: StructEncoders<T>): Encode<T> {
+    return encodeFactory(
+        (val, walker) => encodeStruct(val, encoders, walker),
+        (val) => encodeStructSizeHint(val, encoders),
+    )
+}
 
+export function decodeStruct<T extends {}>(walker: Walker, decoders: StructDecoders<T>): T {
     const struct: T = {} as any
-
-    for (let i = 0, len = order.length; i < len; i++) {
-        struct[order[i]] = values[i] as any
+    for (const [key, decode] of decoders) {
+        struct[key] = decode(walker)
     }
+    return struct
+}
 
-    return [struct, len]
+export function createStructDecoder<T extends {}>(decoders: StructDecoders<T>): Decode<T> {
+    return (walker) => decodeStruct(walker, decoders)
 }

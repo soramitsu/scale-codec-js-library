@@ -1,6 +1,16 @@
 import { prettyHexToBytes } from '@scale-codec/util'
-import ENCODE_TEST_DATA from '../../../../rust-ints/output-ints.json'
-import { encodeInt, decodeInt, IntTypes, encodeBigInt, decodeBigInt, BigIntTypes } from '../int'
+import ENCODE_TEST_DATA from '../../../../rust-samples/output-ints.json'
+import { WalkerImpl as Walker } from '../../util'
+import {
+    encodeInt,
+    IntTypes,
+    encodeBigInt,
+    BigIntTypes,
+    createIntEncode,
+    createIntDecode,
+    createBigIntDecode,
+    createBigIntEncode,
+} from '../int'
 
 describe('Ints (8-32 bits)', () => {
     describe("Rust's samples", () => {
@@ -11,38 +21,38 @@ describe('Ints (8-32 bits)', () => {
             const ty: IntTypes = `${signed ? 'i' : 'u'}${bits}` as any
             const num = Number(decimal)
 
-            expect(encodeInt(num, ty)).toEqual(encoded)
-            expect(decodeInt(encoded, ty)).toEqual([num, bits / 8])
+            expect(Walker.encode(num, createIntEncode(ty))).toEqual(encoded)
+            expect(Walker.decode(encoded, createIntDecode(ty))).toEqual(num)
         })
     })
 
     test('Decode of subarray works (shared ArrayBuffer)', () => {
-        const bytes = new Uint8Array([8, 1, 4, 1, ...encodeInt(55122, 'u32'), 123, 4, 1, 2, 61])
-        const bytesSub = bytes.subarray(4)
+        const bytes = new Uint8Array([8, 1, 4, 1, ...Walker.encode(55122, createIntEncode('u32')), 123, 4, 1, 2, 61])
+        const bytesSub = bytes.subarray(4, 8)
 
-        expect(decodeInt(bytesSub, 'u32')).toEqual([55122, 4])
+        expect(Walker.decode(bytesSub, createIntDecode('u32'))).toEqual(55122)
     })
 
     test('Source array is not mutated during decoding', () => {
-        const source = new Uint8Array([0, 0, 0, 0, ...encodeInt(-123, 'i32')])
+        const source = new Uint8Array([0, 0, 0, 0, ...Walker.encode(-123, createIntEncode('i32'))])
         const sourceCopy = new Uint8Array([...source])
         const sourceSub = source.subarray(4)
 
-        decodeInt(sourceSub, 'i32')
+        Walker.decode(sourceSub, createIntDecode('i32'))
 
         expect(source).toEqual(sourceCopy)
     })
 
     test('Unsigned encoder throws if negative num is passed', () => {
-        expect(() => encodeInt(-1, 'u16')).toThrow()
+        expect(() => encodeInt(-1, 'u16', new Walker(new Uint8Array(20)))).toThrow()
     })
 
     test('Encoder throws if non-integer num is passed', () => {
-        expect(() => encodeInt(3.14, 'i32')).toThrow()
+        expect(() => encodeInt(3.14, 'i32', new Walker(new Uint8Array(20)))).toThrow()
     })
 
     test('Encoder throws if non-safe integer num is passed', () => {
-        expect(() => encodeInt(1e20, 'u32')).toThrow()
+        expect(() => encodeInt(1e20, 'u32', new Walker(new Uint8Array(20)))).toThrow()
     })
 })
 
@@ -55,17 +65,17 @@ describe('Big ints (64-128 bits)', () => {
                 const ty: BigIntTypes = `${signed ? 'i' : 'u'}${bits}` as any
                 const num = BigInt(decimal)
 
-                expect(encodeBigInt(num, ty)).toEqual(encoded)
-                expect(decodeBigInt(encoded, ty)).toEqual([num, bits / 8])
+                expect(Walker.encode(num, createBigIntEncode(ty))).toEqual(encoded)
+                expect(Walker.decode(encoded, createBigIntDecode(ty))).toEqual(num)
             },
         )
     })
 
     test('Decode of subarray works (shared ArrayBuffer)', () => {
-        const bytes = new Uint8Array([8, 1, 4, 1, ...encodeBigInt(-55122n, 'i128')])
-        const bytesSub = bytes.subarray(4)
+        const bytes = new Uint8Array([8, 1, 4, 1, ...Walker.encode(-55122n, createBigIntEncode('i128'))])
+        const bytesSub = bytes.subarray(4, 20)
 
-        expect(decodeBigInt(bytesSub, 'i128')).toEqual([-55122n, 16])
+        expect(Walker.decode(bytesSub, createBigIntDecode('i128'))).toEqual(-55122n)
     })
 
     test('Source array is reusable after decoding', () => {
@@ -78,7 +88,7 @@ describe('Big ints (64-128 bits)', () => {
             42,
 
             // num
-            ...encodeBigInt(num, 'i64'),
+            ...Walker.encode(num, createBigIntEncode('i64')),
 
             // noise again
             51,
@@ -90,19 +100,21 @@ describe('Big ints (64-128 bits)', () => {
         const DECODE_SUBARRAY = SOURCE_COPY.subarray(3, 3 + 8)
 
         // Act
-        const firstResult = decodeBigInt(DECODE_SUBARRAY, 'i64')
-        const secondResult = decodeBigInt(DECODE_SUBARRAY, 'i64')
+        const firstResult = Walker.decode(DECODE_SUBARRAY, createBigIntDecode('i64'))
+        const secondResult = Walker.decode(DECODE_SUBARRAY, createBigIntDecode('i64'))
 
         // Assert
         expect(SOURCE_COPY).toEqual(SOURCE_ARRAY)
         expect(firstResult).toEqual(secondResult)
-        expect(firstResult).toEqual([num, 8])
+        expect(firstResult).toEqual(num)
     })
 
     test.each([['u32'], ['u64'], ['u128']])(
         'Unsigned encoder (%p) throws if a negative bigint is passed',
         (encoding: BigIntTypes) => {
-            expect(() => encodeBigInt(-1n, encoding)).toThrow()
+            expect(() => encodeBigInt(-1n, encoding, new Walker(new Uint8Array(20)))).toThrowError(
+                /Negative num \(-1n?\) is passed/,
+            )
         },
     )
 })

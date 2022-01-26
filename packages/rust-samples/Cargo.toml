@@ -1,5 +1,5 @@
 [package]
-name = "rust-ints"
+name = "rust-samples"
 version = "0.1.0"
 authors = ["0x009922 <a.marcius26@gmail.com>"]
 edition = "2018"

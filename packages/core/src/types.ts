@@ -1,14 +1,18 @@
 /**
- * Unified decode result which is a tuple with a value and a count of decoded bytes
- */
-export type DecodeResult<T> = [value: T, decodedBytes: number]
-
-/**
  * Function that receives bytes and returns {@link DecodeResult}
  */
-export type Decode<T> = (bytes: Uint8Array) => DecodeResult<T>
+export type Decode<T> = (walker: Walker) => T
 
 /**
  * Function that receives value and yields encoded parts of this value
  */
-export type Encode<T> = (value: T) => Generator<Uint8Array>
+export type Encode<T> = {
+    (value: T, walker: Walker): void
+    sizeHint: (value: T) => number
+}
+
+export interface Walker {
+    arr: Uint8Array
+    view: DataView
+    offset: number
+}

@@ -1,16 +1,20 @@
 /* eslint-disable max-nested-callbacks */
 import { encodeCompact, decodeCompact } from '../compact'
-import COMPACTS from '../../../../rust-ints/output-compacts.json'
-import { concatBytes, prettyHexToBytes } from '@scale-codec/util'
+import COMPACTS from '../../../../rust-samples/output-compacts.json'
+import { prettyHexToBytes } from '@scale-codec/util'
+import { WalkerImpl as Walker } from '../../util'
 
 describe('Rust samples', () => {
-    test.each(COMPACTS)('Encode/decode $num', ({ num, hex }) => {
-        const encoded = prettyHexToBytes(hex)
-        const bi = BigInt(num)
+    test.each(COMPACTS.filter(({ num }) => num === '1073741819' || true))(
+        'Encode/decode $num ($hex)',
+        ({ num, hex }) => {
+            const encoded = prettyHexToBytes(hex)
+            const bi = BigInt(num)
 
-        expect(concatBytes(encodeCompact(bi))).toEqual(encoded)
-        expect(decodeCompact(encoded)).toEqual([bi, encoded.length])
-    })
+            expect(Walker.encode(bi, encodeCompact)).toEqual(encoded)
+            expect(Walker.decode(encoded, decodeCompact)).toEqual(bi)
+        },
+    )
 })
 
 describe('encode: from Rust tests', (): void => {
@@ -39,9 +43,9 @@ describe('encode: from Rust tests', (): void => {
             expected: '13 ff ff ff ff ff ff ff ff',
             value: BigInt(`0b${1}${'0'.repeat(64)}`) - 1n,
         },
-    ])('encodes $value', ({ expected, value }) => {
-        expect(concatBytes(encodeCompact(value))).toEqual(
-            Uint8Array.from(expected.split(' ').map((s) => parseInt(s, 16))),
-        )
+    ])('encodes $value to $expected', ({ expected, value }) => {
+        const result = Walker.encode(value, encodeCompact)
+
+        expect(result).toEqual(prettyHexToBytes(expected))
     })
 })

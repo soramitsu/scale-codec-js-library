@@ -1,13 +1,41 @@
-import { Decode, DecodeResult } from './types'
+import { Decode, Encode, Walker } from './types'
 
-export function mapDecodeResult<T, U>([value, len]: DecodeResult<T>, mapFn: (value: T) => U): DecodeResult<U> {
-    return [mapFn(value), len]
+export class SliceWalkerFinalOffsetError extends Error {
+    public constructor(walker: Walker) {
+        super(`offset (${walker.offset}) is not equal to array bytes length (${walker.arr.byteLength})`)
+    }
 }
 
-export function decodeAndUnwrap<T>(bytes: Uint8Array, fn: Decode<T>): T {
-    const [value, decodedLength] = fn(bytes)
-    if (decodedLength !== bytes.byteLength) {
-        throw new Error(`Decoded bytes mismatch: (actual) ${decodedLength} vs (expected) ${bytes.length}`)
+export class WalkerImpl implements Walker {
+    public static encode<T>(value: T, encode: Encode<T>): Uint8Array {
+        const walker = new WalkerImpl(new Uint8Array(encode.sizeHint(value)))
+        encode(value, walker)
+        walker.checkFinalOffset()
+        return walker.arr
     }
-    return value
+
+    public static decode<T>(source: Uint8Array, decode: Decode<T>): T {
+        const walker = new WalkerImpl(source)
+        const value = decode(walker)
+        walker.checkFinalOffset()
+        return value
+    }
+
+    public arr: Uint8Array
+    public view: DataView
+    public offset = 0
+
+    public constructor(arr: Uint8Array) {
+        this.arr = arr
+        this.view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength)
+    }
+
+    public checkFinalOffset() {
+        if (this.offset !== this.arr.byteLength) throw new SliceWalkerFinalOffsetError(this)
+    }
+}
+
+export function encodeFactory<T>(fn: (value: T, walker: Walker) => void, sizeHint: (value: T) => number): Encode<T> {
+    ;(fn as Encode<T>).sizeHint = sizeHint
+    return fn as Encode<T>
 }

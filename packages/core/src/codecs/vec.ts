@@ -1,33 +1,51 @@
-import { Decode, DecodeResult, Encode } from '../types'
+import { Decode, Walker, Encode } from '../types'
 import { encodeCompact, decodeCompact } from '../codecs/compact'
 import { decodeArray } from './array'
+import { encodeFactory } from '../util'
 
-export function decodeVec<T>(bytes: Uint8Array, itemDecoder: Decode<T>): DecodeResult<T[]> {
-    const [length, offset] = decodeCompact(bytes)
-    const [items, itemsBytes] = decodeArray(bytes.subarray(offset), itemDecoder, Number(length))
-    return [items, itemsBytes + offset]
-}
-
-export function* encodeVec<T>(items: T[], encodeItem: Encode<T>): Generator<Uint8Array> {
-    yield* encodeCompact(BigInt(items.length))
-    for (const item of items) {
-        yield* encodeItem(item)
+export function encodeVec<T>(vec: T[], encodeItem: Encode<T>, walker: Walker): void {
+    encodeCompact(BigInt(vec.length), walker)
+    for (const item of vec) {
+        encodeItem(item, walker)
     }
 }
 
-/**
- * Encode `Vec<u8>` directly from the native `Uint8Array`
- */
-export function* encodeUint8Vec(vec: Uint8Array): Generator<Uint8Array> {
-    yield* encodeCompact(BigInt(vec.length))
-    yield vec
+export function encodeVecSizeHint<T>(vec: T[], encodeItem: Encode<T>): number {
+    let size = encodeCompact.sizeHint(vec.length)
+    for (const item of vec) {
+        size += encodeItem.sizeHint(item)
+    }
+    return size
 }
 
-/**
- * Decode `Vec<u8>` directly into the native `Uint8Array`
- */
-export function decodeUint8Vec(bytes: Uint8Array): DecodeResult<Uint8Array> {
-    const [lenBN, offset] = decodeCompact(bytes)
-    const len = Number(lenBN)
-    return [bytes.slice(offset, offset + len), offset + len]
+export function createVecEncoder<T>(encodeItem: Encode<T>): Encode<T[]> {
+    return encodeFactory(
+        (vec, walker) => encodeVec(vec, encodeItem, walker),
+        (vec) => encodeVecSizeHint(vec, encodeItem),
+    )
+}
+
+export function decodeVec<T>(walker: Walker, decodeItem: Decode<T>): T[] {
+    const vecLength = decodeCompact(walker)
+    return decodeArray(walker, decodeItem, Number(vecLength))
+}
+
+export function createVecDecoder<T>(decodeItem: Decode<T>): Decode<T[]> {
+    return (walker) => decodeVec(walker, decodeItem)
+}
+
+export const encodeUint8Vec: Encode<Uint8Array> = encodeFactory(
+    (vec, walker) => {
+        encodeCompact(vec.byteLength, walker)
+        walker.arr.set(vec, walker.offset)
+        walker.offset += vec.byteLength
+    },
+    (vec) => encodeCompact.sizeHint(vec.length) + vec.byteLength,
+)
+
+export const decodeUint8Vec: Decode<Uint8Array> = (walker) => {
+    const len = Number(decodeCompact(walker))
+    const vec = walker.arr.slice(walker.offset, walker.offset + len)
+    walker.offset += len
+    return vec
 }
