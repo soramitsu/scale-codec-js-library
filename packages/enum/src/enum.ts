@@ -1,22 +1,61 @@
+export type DefGeneral = string | [tag: string, value: any]
+
+export type TagsEmpty<Def extends DefGeneral> = Def extends string ? Def : never
+
+export type TagsValuable<Def extends DefGeneral> = Def extends [infer T, any] ? T & string : never
+
+export type Tags<Def extends DefGeneral> = TagsEmpty<Def> | TagsValuable<Def>
+
+export type TagValue<Def extends DefGeneral, T extends TagsValuable<Def>> = Def extends [T, infer V] ? V : never
+
+export type EnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never
+
+export type EnumMatchMap<Def extends DefGeneral, R = any> = {
+    [T in TagsEmpty<Def>]: () => R
+} & {
+    [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => R
+}
+
+export type EnumDefToFactoryArgs<Def extends DefGeneral> = [TagsEmpty<Def>] | (Def extends [string, any] ? Def : never)
+
+// {
+//     class NewEnum<Def extends DefGeneral> {
+//         public static create<D extends DefGeneral>(): EnumVariantsFactory<D> {}
+//     }
+
+//     type EnumVariantsFactory<Def extends DefGeneral> = {
+//         [T in TagsEmpty<Def>]: () => Enum<Def>
+//     } & {
+//         [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => Enum<Def>
+//     }
+
+//     type OptDef<T> = 'None' | ['Some', T]
+//     type OptionBool = Enum<OptDef<boolean>>
+
+//     const val1: OptionBool = NewEnum.create().None()
+//     const val2: OptionBool = NewEnum.create().Some(false)
+
+//     type EnumDefToArgs<Def extends DefGeneral> = [TagsEmpty<Def>] | (Def extends [string, any] ? Def : never)
+
+//     // eslint-disable-next-line no-inner-declarations
+//     function enumFactory<E extends Enum<any>>(...args: EnumDefToArgs<EnumDef<E>>): E {
+//         return null
+//     }
+
+//     const val3: OptionBool = enumFactory('Some', false)
+
+//     // eslint-disable-next-line no-inner-declarations
+//     function enumFactory2<E extends Enum<any>>(tagOrTuple: EnumDef<E>): E {
+//         return null
+//     }
+
+//     const val4: OptionBool = enumFactory2(['Some', false])
+// }
+
 /**
- * Use it to define valuable variants for {@link Enum}
+ * Special unique value to mark enum as empty
  */
-export interface Valuable<T> {
-    value: T
-}
-
-export type TagsEmpty<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V }[keyof Def & string]
-
-export type TagsValuable<Def> = { [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never }[keyof Def &
-    string]
-
-export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never
-
-export type GetEnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never
-
-export type EnumMatchMap<V, R = any> = {
-    [K in keyof V]: V[K] extends Valuable<infer T> ? (value: T) => R : () => R
-}
+export const ENUM_EMPTY_VALUE = Symbol('empty')
 
 /**
  * Typed-wrapper to handle Rust's Enum concept.
@@ -43,25 +82,36 @@ export type EnumMatchMap<V, R = any> = {
  *
  * Also look for {@link Valuable} helper
  */
-export class Enum<Def> {
-    /**
-     * Create an empty variant of enum with it
-     * @param tag - One of enum empty variants' tags
-     */
-    public static empty<Def>(tag: TagsEmpty<Def>): Enum<Def> {
-        return new Enum(tag, null)
-    }
+export class Enum<Def extends DefGeneral> {
+    // /**
+    //  * Create an empty variant of enum with it
+    //  * @param tag - One of enum empty variants' tags
+    //  */
+    // public static empty<Def extends DefGeneral>(tag: TagsEmpty<Def>): Enum<Def> {
+    //     return new Enum(tag, ENUM_EMPTY_VALUE)
+    // }
 
-    /**
-     * Create a valuable variant of enum with it
-     * @param tag - Valuable variant tag
-     * @param value - Value associated with variant
-     */
-    public static valuable<Def, V extends TagsValuable<Def>>(
-        tag: V,
-        value: GetValuableVariantValue<Def[V]>,
-    ): Enum<Def> {
-        return new Enum(tag, [value])
+    // /**
+    //  * Create a valuable variant of enum with it
+    //  * @param tag - Valuable variant tag
+    //  * @param value - Value associated with variant
+    //  */
+    // public static valuable<Def extends DefGeneral, T extends TagsValuable<Def>, V extends TagValue<Def, T>>(
+    //     tag: T,
+    //     value: V,
+    // ): Enum<Def> {
+    //     return new Enum(tag, value)
+    // }
+
+    // public static variant<Def extends DefGeneral>(
+    //     ...args: Def extends [infer T, infer V] ? [T, V] : [tag: Def]
+    // ): Enum<Def> {
+    //     return null
+    // }
+
+    public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
+    public static variant(tag: string, value = ENUM_EMPTY_VALUE) {
+        return new Enum(tag, value)
     }
 
     public readonly tag: string
@@ -69,17 +119,21 @@ export class Enum<Def> {
     /**
      * Inner value is untyped and should be used with caution
      */
-    public readonly content: null | [some: unknown]
+    public readonly value: typeof ENUM_EMPTY_VALUE | unknown
 
-    private constructor(tag: string, content: null | [unknown]) {
-        this.content = content ?? null
+    private constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
         this.tag = tag
+        this.value = value
+    }
+
+    public get isEmpty(): boolean {
+        return this.value === ENUM_EMPTY_VALUE
     }
 
     /**
      * Check whether an enum instance has this variant name or not
      */
-    public is<V extends keyof Def>(tag: V): boolean {
+    public is(tag: Tags<Def>): boolean {
         return this.tag === tag
     }
 
@@ -90,13 +144,13 @@ export class Enum<Def> {
      * @remarks
      * Use it in pair {@link Enum.is} to avoid runtime errors.
      */
-    public as<V extends TagsValuable<Def>>(tag: V): Def[V] extends Valuable<infer T> ? T : never {
+    public as<T extends TagsValuable<Def>>(tag: T): TagValue<DefGeneral, T> {
         if (this.is(tag)) {
-            if (!this.content) {
+            if (this.isEmpty) {
                 throw new Error(`Enum cast failed - enum "${tag}" is empty`)
             }
 
-            return this.content[0] as any
+            return this.value as any
         }
 
         throw new Error(`Enum cast failed - enum is "${this.tag}", not "${tag}"`)
@@ -121,14 +175,11 @@ export class Enum<Def> {
      */
     public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
         const fn = (matchMap as any)[this.tag] as (...args: any[]) => any
-        return this.content ? fn(this.content[0]) : fn()
+        return this.isEmpty ? fn() : fn(this.value)
     }
 
-    /**
-     * @internal
-     */
     public toJSON() {
-        const { tag, content } = this
-        return content ? { tag, value: content[0] } : { tag }
+        const { tag, value, isEmpty } = this
+        return isEmpty ? { tag } : { tag, value }
     }
 }

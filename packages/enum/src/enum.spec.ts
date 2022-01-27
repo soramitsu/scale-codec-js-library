@@ -1,38 +1,29 @@
 import { Enum } from './enum'
 
 describe('Enum', () => {
+    type DefWithNum = 'a' | ['b', number]
+    type DefWithStr = 'a' | ['b', string]
+
     test('.is() returns true', () => {
-        const val: Enum<{
-            a: null
-            b: { value: number }
-        }> = Enum.empty('a')
+        const val: Enum<DefWithNum> = Enum.variant('a')
 
         expect(val.is('a')).toBe(true)
     })
 
     test('.is() returns false', () => {
-        const val: Enum<{
-            a: null
-            b: { value: number }
-        }> = Enum.empty('a')
+        const val: Enum<DefWithNum> = Enum.variant('a')
 
         expect(val.is('b')).toBe(false)
     })
 
     test('.as() works fine', () => {
-        const val: Enum<{
-            a: null
-            b: { value: number }
-        }> = Enum.valuable('b', 111)
+        const val: Enum<DefWithNum> = Enum.variant('b', 111)
 
         expect(val.as('b')).toBe(111)
     })
 
     test('.as() throws an error if trying to cast to wrong variant', () => {
-        const val: Enum<{
-            a: null
-            b: { value: number }
-        }> = Enum.empty('a')
+        const val: Enum<DefWithNum> = Enum.variant('a')
 
         expect(() => val.as('b')).toThrowErrorMatchingInlineSnapshot(
             `"Enum cast failed - enum is \\"a\\", not \\"b\\""`,
@@ -40,10 +31,7 @@ describe('Enum', () => {
     })
 
     test('.as() throws an error if trying to call it with an empty enum', () => {
-        const val: Enum<{
-            a: null
-            b: { value: number }
-        }> = Enum.empty('a')
+        const val: Enum<DefWithNum> = Enum.variant('a')
 
         expect(() => (val as any).as('a')).toThrowErrorMatchingInlineSnapshot(
             `"Enum cast failed - enum \\"a\\" is empty"`,
@@ -51,28 +39,20 @@ describe('Enum', () => {
     })
 
     test.each([['Single'], ['Double']])('.match() calls the desired callback (%p)', (variant: 'Single' | 'Double') => {
-        interface Variants {
-            Single: null
-            Double: null
-        }
-
         const matchMap = {
             Single: jest.fn(),
             Double: jest.fn(),
         }
         const other = variant === 'Double' ? 'Single' : 'Double'
 
-        Enum.empty<Variants>(variant).match(matchMap)
+        Enum.variant<Enum<'Single' | 'Double'>>(variant).match(matchMap)
 
         expect(matchMap[variant]).toBeCalled()
         expect(matchMap[other]).not.toBeCalled()
     })
 
     test('.match() calls it with inner value', () => {
-        const val: Enum<{
-            a: null
-            b: { value: string }
-        }> = Enum.valuable('b', 'something')
+        const val: Enum<DefWithStr> = Enum.variant('b', 'something')
         const spy = jest.fn()
 
         val.match({ a: () => {}, b: spy })
@@ -81,10 +61,7 @@ describe('Enum', () => {
     })
 
     test('.match() calls it with nothing', () => {
-        const val: Enum<{
-            a: null
-            b: { value: string }
-        }> = Enum.empty('a')
+        const val: Enum<DefWithStr> = Enum.variant('a')
         const spy = jest.fn()
 
         val.match({ a: spy, b: () => {} })
@@ -93,10 +70,7 @@ describe('Enum', () => {
     })
 
     test('.match() returns the result of callback', () => {
-        const val: Enum<{
-            a: null
-            b: { value: string }
-        }> = Enum.empty('a')
+        const val: Enum<DefWithStr> = Enum.variant('a')
 
         const result = val.match({ a: () => 'good', b: () => 'bad' })
 
@@ -104,19 +78,13 @@ describe('Enum', () => {
     })
 
     test('JSON repr of empty enum', () => {
-        const val: Enum<{
-            a: null
-            b: { value: string }
-        }> = Enum.empty('a')
+        const val: Enum<DefWithStr> = Enum.variant('a')
 
         expect(val.toJSON()).toEqual({ tag: 'a' })
     })
 
     test('JSON repr of valuable enum', () => {
-        const val: Enum<{
-            a: null
-            b: { value: string }
-        }> = Enum.valuable('b', 'bobobo')
+        const val: Enum<DefWithStr> = Enum.variant('b', 'bobobo')
 
         expect(val.toJSON()).toEqual({ tag: 'b', value: 'bobobo' })
     })

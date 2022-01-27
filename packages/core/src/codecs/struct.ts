@@ -6,15 +6,17 @@ export type StructEncoders<T> = { [K in keyof T]: [K, Encode<T[K]>] }[keyof T][]
 export type StructDecoders<T> = { [K in keyof T]: [K, Decode<T[K]>] }[keyof T][]
 
 export function encodeStruct<T extends {}>(struct: T, encoders: StructEncoders<T>, walker: Walker): void {
-    for (const [key, encode] of encoders) {
-        encode(struct[key], walker)
+    for (let i = 0, len = encoders.length, encoder = null; i < len; i++) {
+        encoder = encoders[i]
+        encoder[1](struct[encoder[0]], walker)
     }
 }
 
 export function encodeStructSizeHint<T extends {}>(struct: T, encoders: StructEncoders<T>): number {
     let sum = 0
-    for (const [key, encode] of encoders) {
-        sum += encode.sizeHint(struct[key])
+    for (let i = encoders.length - 1, encoder = null; i >= 0; i--) {
+        encoder = encoders[i]
+        sum += encoder[1].sizeHint(struct[encoder[0]])
     }
     return sum
 }
@@ -28,8 +30,9 @@ export function createStructEncoder<T extends {}>(encoders: StructEncoders<T>): 
 
 export function decodeStruct<T extends {}>(walker: Walker, decoders: StructDecoders<T>): T {
     const struct: T = {} as any
-    for (const [key, decode] of decoders) {
-        struct[key] = decode(walker)
+    for (let i = 0, len = decoders.length, decoder = null; i < len; i++) {
+        decoder = decoders[i]
+        struct[decoder[0]] = decoder[1](walker)
     }
     return struct
 }

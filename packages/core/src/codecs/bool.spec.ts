@@ -1,6 +1,5 @@
-import { concatBytes } from '@scale-codec/util'
-import { WalkerImpl } from '../../util'
-import { decodeBool, encodeBool } from '../bool'
+import { WalkerImpl } from '../util'
+import { decodeBool, encodeBool } from './bool'
 
 describe.only('booleans', () => {
     for (const flag of [false, true]) {

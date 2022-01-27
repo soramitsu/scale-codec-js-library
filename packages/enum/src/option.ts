@@ -1,4 +1,4 @@
-import { Enum, Valuable } from './enum'
+import { Enum } from './enum'
 
 /**
  * Rust's `Option<T>` analog
@@ -9,7 +9,4 @@ import { Enum, Valuable } from './enum'
  * const maybeString: Option<string> = Enum.empty('None')
  * ```
  */
-export type Option<T> = Enum<{
-    None: undefined
-    Some: Valuable<T>
-}>
+export type Option<T> = Enum<'None' | ['Some', T]>

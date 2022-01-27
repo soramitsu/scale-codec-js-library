@@ -1,14 +1,14 @@
 /* eslint-disable max-nested-callbacks */
-import { encodeCompact, decodeCompact } from '../compact'
-import COMPACTS from '../../../../rust-samples/output-compacts.json'
-import { prettyHexToBytes } from '@scale-codec/util'
-import { WalkerImpl as Walker } from '../../util'
+import { encodeCompact, decodeCompact } from './compact'
+import COMPACTS from '../../../rust-samples/output-compacts.json'
+import { fromHex } from '@scale-codec/util'
+import { WalkerImpl as Walker } from '../util'
 
 describe('Rust samples', () => {
     test.each(COMPACTS.filter(({ num }) => num === '1073741819' || true))(
         'Encode/decode $num ($hex)',
         ({ num, hex }) => {
-            const encoded = prettyHexToBytes(hex)
+            const encoded = fromHex(hex)
             const bi = BigInt(num)
 
             expect(Walker.encode(bi, encodeCompact)).toEqual(encoded)
@@ -46,6 +46,6 @@ describe('encode: from Rust tests', (): void => {
     ])('encodes $value to $expected', ({ expected, value }) => {
         const result = Walker.encode(value, encodeCompact)
 
-        expect(result).toEqual(prettyHexToBytes(expected))
+        expect(result).toEqual(fromHex(expected))
     })
 })

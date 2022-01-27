@@ -96,12 +96,13 @@ export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
 
 /**
  * Makes pretty-hex from bytes array, like `01 a5 f0`
+ *
  * @example
  * ```ts
- * hexifyBytes(new Uint8Array([1, 11, 3])) // '01 a1 03'
+ * toHex(new Uint8Array([1, 11, 3])) // '01 a1 03'
  * ```
  */
-export function hexifyBytes(v: Uint8Array): string {
+export function toHex(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ')
 }
 
@@ -110,9 +111,9 @@ export function hexifyBytes(v: Uint8Array): string {
  * @param hex - Space-separated bytes in hex repr
  * @example
  * ```ts
- * prettyHexToBytes('01 02 03') // new Uint8Array([1, 2, 3])
+ * fromHex('01 02 03') // new Uint8Array([1, 2, 3])
  * ```
  */
-export function prettyHexToBytes(hex: string): Uint8Array {
+export function fromHex(hex: string): Uint8Array {
     return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)))
 }

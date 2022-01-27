@@ -1,4 +1,4 @@
-import { Enum, Valuable } from './enum'
+import { Enum } from './enum'
 
 /**
  * Rust's `Result<O, E>` analog
@@ -9,7 +9,4 @@ import { Enum, Valuable } from './enum'
  * const file: Result<string, Error> = Enum.valuable('Ok', 'file contents')
  * ```
  */
-export type Result<O, E> = Enum<{
-    Ok: Valuable<O>
-    Err: Valuable<E>
-}>
+export type Result<Ok, Err> = Enum<['Ok', Ok] | ['Err', Err]>

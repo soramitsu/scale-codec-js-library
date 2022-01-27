@@ -1,5 +1,5 @@
-import { WalkerImpl } from '../../util'
-import { encodeVoid, decodeVoid } from '../void'
+import { WalkerImpl } from '../util'
+import { encodeVoid, decodeVoid } from './void'
 
 test('Encodes into empty bytes', () => {
     expect(WalkerImpl.encode(null, encodeVoid)).toEqual(new Uint8Array())

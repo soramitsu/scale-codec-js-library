@@ -1,5 +1,5 @@
 import { WalkerImpl as Walker } from './util'
-import { hexifyBytes } from '@scale-codec/util'
+import { toHex } from '@scale-codec/util'
 import { Decode, Encode } from './types'
 
 describe('Walker', () => {
@@ -8,7 +8,7 @@ describe('Walker', () => {
 
         walker.arr[3] = 5
 
-        expect(hexifyBytes(walker.arr)).toEqual('00 00 00 05')
+        expect(toHex(walker.arr)).toEqual('00 00 00 05')
     })
 
     it('When source is a subarray, writing works', () => {
@@ -18,7 +18,7 @@ describe('Walker', () => {
 
         walker.arr[0] = 0xff
 
-        expect(hexifyBytes(sub)).toEqual('ff be 12 34')
+        expect(toHex(sub)).toEqual('ff be 12 34')
     })
 
     it('When source is subarray, DataView setting/getting works correct', () => {
@@ -30,7 +30,7 @@ describe('Walker', () => {
 
         walker.view.setUint8(3, 0xff)
 
-        expect(hexifyBytes(sub)).toEqual('ba be 12 ff')
+        expect(toHex(sub)).toEqual('ba be 12 ff')
     })
 
     describe('static encode()', () => {
@@ -44,7 +44,7 @@ describe('Walker', () => {
 
             const result = Walker.encode(VALUE, ENCODE)
 
-            expect(hexifyBytes(result)).toEqual('05 01 02 03 04')
+            expect(toHex(result)).toEqual('05 01 02 03 04')
         })
 
         it('When allocated array size does not match to actual used bytes, throws', () => {

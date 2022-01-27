@@ -83,14 +83,6 @@ export function encodeInt(value: number, ty: IntTypes, walker: Walker): void {
     walker.offset += INT_BYTES_COUNT_MAP[ty]
 }
 
-export function createIntEncode(ty: IntTypes): Encode<number> {
-    return encodeFactory((value, writer) => encodeInt(value, ty, writer), tySizeHint(ty))
-}
-
-export function createIntDecode(ty: IntTypes): Decode<number> {
-    return (reader) => decodeInt(reader, ty)
-}
-
 /**
  * Decodes signed/unsigned 8/16/32 bits integers in Little-Endian
  */
@@ -233,14 +225,6 @@ export function encodeBigInt(bi: bigint, ty: BigIntTypes, walker: Walker): void 
     walker.offset += bytes
 }
 
-export function createBigIntEncode(ty: BigIntTypes): Encode<bigint> {
-    return encodeFactory((value, writer) => encodeBigInt(value, ty, writer), tySizeHint(ty))
-}
-
-export function createBigIntDecode(ty: BigIntTypes): Decode<bigint> {
-    return (reader) => decodeBigInt(reader, ty)
-}
-
 const DECODE_BUFFER = new Uint8Array(64)
 
 /**
@@ -252,7 +236,6 @@ const DECODE_BUFFER = new Uint8Array(64)
  */
 export function decodeBigIntVarious(walker: Walker, bytes: number, signed: boolean): bigint {
     DECODE_BUFFER.set(walker.arr.subarray(walker.offset, walker.offset + bytes), 0)
-    // const slice = DECODE_BUFFER.subarray(0, bytes)
 
     // negation analysis & transformation
     let isNegative = false
@@ -290,4 +273,20 @@ export function decodeBigInt(walker: Walker, ty: BigIntTypes): bigint {
     const value = decodeBigIntVarious(walker, bytes, isTySigned)
     walker.offset += bytes
     return value
+}
+
+export function createIntEncoder(ty: IntTypes): Encode<number> {
+    return encodeFactory((value, writer) => encodeInt(value, ty, writer), tySizeHint(ty))
+}
+
+export function createIntDecoder(ty: IntTypes): Decode<number> {
+    return (reader) => decodeInt(reader, ty)
+}
+
+export function createBigIntEncoder(ty: BigIntTypes): Encode<bigint> {
+    return encodeFactory((value, writer) => encodeBigInt(value, ty, writer), tySizeHint(ty))
+}
+
+export function createBigIntDecoder(ty: BigIntTypes): Decode<bigint> {
+    return (reader) => decodeBigInt(reader, ty)
 }

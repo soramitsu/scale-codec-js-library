@@ -12,8 +12,8 @@ export function encodeVec<T>(vec: T[], encodeItem: Encode<T>, walker: Walker): v
 
 export function encodeVecSizeHint<T>(vec: T[], encodeItem: Encode<T>): number {
     let size = encodeCompact.sizeHint(vec.length)
-    for (const item of vec) {
-        size += encodeItem.sizeHint(item)
+    for (let i = vec.length - 1; i >= 0; i--) {
+        size += encodeItem.sizeHint(vec[i])
     }
     return size
 }
@@ -40,7 +40,7 @@ export const encodeUint8Vec: Encode<Uint8Array> = encodeFactory(
         walker.arr.set(vec, walker.offset)
         walker.offset += vec.byteLength
     },
-    (vec) => encodeCompact.sizeHint(vec.length) + vec.byteLength,
+    (vec) => encodeCompact.sizeHint(vec.byteLength) + vec.byteLength,
 )
 
 export const decodeUint8Vec: Decode<Uint8Array> = (walker) => {
