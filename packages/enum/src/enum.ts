@@ -18,40 +18,6 @@ export type EnumMatchMap<Def extends DefGeneral, R = any> = {
 
 export type EnumDefToFactoryArgs<Def extends DefGeneral> = [TagsEmpty<Def>] | (Def extends [string, any] ? Def : never)
 
-// {
-//     class NewEnum<Def extends DefGeneral> {
-//         public static create<D extends DefGeneral>(): EnumVariantsFactory<D> {}
-//     }
-
-//     type EnumVariantsFactory<Def extends DefGeneral> = {
-//         [T in TagsEmpty<Def>]: () => Enum<Def>
-//     } & {
-//         [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => Enum<Def>
-//     }
-
-//     type OptDef<T> = 'None' | ['Some', T]
-//     type OptionBool = Enum<OptDef<boolean>>
-
-//     const val1: OptionBool = NewEnum.create().None()
-//     const val2: OptionBool = NewEnum.create().Some(false)
-
-//     type EnumDefToArgs<Def extends DefGeneral> = [TagsEmpty<Def>] | (Def extends [string, any] ? Def : never)
-
-//     // eslint-disable-next-line no-inner-declarations
-//     function enumFactory<E extends Enum<any>>(...args: EnumDefToArgs<EnumDef<E>>): E {
-//         return null
-//     }
-
-//     const val3: OptionBool = enumFactory('Some', false)
-
-//     // eslint-disable-next-line no-inner-declarations
-//     function enumFactory2<E extends Enum<any>>(tagOrTuple: EnumDef<E>): E {
-//         return null
-//     }
-
-//     const val4: OptionBool = enumFactory2(['Some', false])
-// }
-
 /**
  * Special unique value to mark enum as empty
  */
@@ -83,32 +49,6 @@ export const ENUM_EMPTY_VALUE = Symbol('empty')
  * Also look for {@link Valuable} helper
  */
 export class Enum<Def extends DefGeneral> {
-    // /**
-    //  * Create an empty variant of enum with it
-    //  * @param tag - One of enum empty variants' tags
-    //  */
-    // public static empty<Def extends DefGeneral>(tag: TagsEmpty<Def>): Enum<Def> {
-    //     return new Enum(tag, ENUM_EMPTY_VALUE)
-    // }
-
-    // /**
-    //  * Create a valuable variant of enum with it
-    //  * @param tag - Valuable variant tag
-    //  * @param value - Value associated with variant
-    //  */
-    // public static valuable<Def extends DefGeneral, T extends TagsValuable<Def>, V extends TagValue<Def, T>>(
-    //     tag: T,
-    //     value: V,
-    // ): Enum<Def> {
-    //     return new Enum(tag, value)
-    // }
-
-    // public static variant<Def extends DefGeneral>(
-    //     ...args: Def extends [infer T, infer V] ? [T, V] : [tag: Def]
-    // ): Enum<Def> {
-    //     return null
-    // }
-
     public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
     public static variant(tag: string, value = ENUM_EMPTY_VALUE) {
         return new Enum(tag, value)

@@ -1,4 +1,11 @@
-import { createEnumDecoder, createEnumEncoder, encodeOptionBool, decodeOptionBool } from './enum'
+import {
+    createOptionEncoder,
+    createOptionDecoder,
+    createEnumEncoder,
+    createEnumDecoder,
+    encodeOptionBool,
+    decodeOptionBool,
+} from './enum'
 import { encodeBool, decodeBool } from './bool'
 import { WalkerImpl } from '../util'
 import { Enum, Option } from '@scale-codec/enum'
@@ -6,11 +13,11 @@ import { Decode, Encode } from '../types'
 
 describe('Option<bool>', () => {
     function createEncoder(): Encode<Option<boolean>> {
-        return createEnumEncoder({ None: 0, Some: [1, encodeBool] })
+        return createOptionEncoder(encodeBool)
     }
 
     function createDecoder(): Decode<Option<boolean>> {
-        return createEnumDecoder({ 0: 'None', 1: ['Some', decodeBool] })
+        return createOptionDecoder(decodeBool)
     }
 
     it('"None" encoded as expected', () => {

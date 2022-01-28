@@ -290,3 +290,30 @@ export function createBigIntEncoder(ty: BigIntTypes): Encode<bigint> {
 export function createBigIntDecoder(ty: BigIntTypes): Decode<bigint> {
     return (reader) => decodeBigInt(reader, ty)
 }
+
+// pre-defined encoders/decoders
+
+export const encodeU8 = createIntEncoder('u8')
+export const decodeU8 = createIntDecoder('u8')
+export const encodeI8 = createIntEncoder('i8')
+export const decodeI8 = createIntDecoder('i8')
+
+export const encodeU16 = createIntEncoder('u16')
+export const decodeU16 = createIntDecoder('u16')
+export const encodeI16 = createIntEncoder('i16')
+export const decodeI16 = createIntDecoder('i16')
+
+export const encodeU32 = createIntEncoder('u32')
+export const decodeU32 = createIntDecoder('u32')
+export const encodeI32 = createIntEncoder('i32')
+export const decodeI32 = createIntDecoder('i32')
+
+export const encodeU64 = createBigIntEncoder('u64')
+export const decodeU64 = createBigIntDecoder('u64')
+export const encodeI64 = createBigIntEncoder('i64')
+export const decodeI64 = createBigIntDecoder('i64')
+
+export const encodeU128 = createBigIntEncoder('u128')
+export const decodeU128 = createBigIntDecoder('u128')
+export const encodeI128 = createBigIntEncoder('i128')
+export const decodeI128 = createBigIntDecoder('i128')

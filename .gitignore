@@ -8,3 +8,4 @@ report
 .pnpm-debug.log
 tsdoc-metadata.json
 api-extractor/temp
+/coverage

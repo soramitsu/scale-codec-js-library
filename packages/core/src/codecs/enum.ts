@@ -123,6 +123,22 @@ export function createEnumDecoder<E extends Enum<any>>(decoders: EnumDecoders<En
     return (walker) => decodeEnum(walker, decoders)
 }
 
+type OptionSome<T extends Option<any>> = T extends Option<infer V> ? V : never
+
+export function createOptionEncoder<T extends Option<any>>(encodeSome: Encode<OptionSome<T>>): Encode<T> {
+    return createEnumEncoder<Enum<'None' | ['Some', OptionSome<T>]>>({
+        None: 0,
+        Some: [1, encodeSome],
+    })
+}
+
+export function createOptionDecoder<T extends Option<any>>(decodeSome: Decode<OptionSome<T>>): Decode<T> {
+    return createEnumDecoder<Enum<'None' | ['Some', OptionSome<T>]>>({
+        0: 'None',
+        1: ['Some', decodeSome],
+    }) as Decode<T>
+}
+
 function optBoolByteToEnum(byte: number): Option<boolean> {
     switch (byte) {
         case 0:

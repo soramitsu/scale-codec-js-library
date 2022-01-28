@@ -2,7 +2,7 @@
 import { encodeCompact, decodeCompact } from './compact'
 import COMPACTS from '../../../rust-samples/output-compacts.json'
 import { fromHex } from '@scale-codec/util'
-import { WalkerImpl as Walker } from '../util'
+import { WalkerImpl as Walker, WalkerImpl } from '../util'
 
 describe('Rust samples', () => {
     test.each(COMPACTS.filter(({ num }) => num === '1073741819' || true))(
@@ -48,4 +48,16 @@ describe('encode: from Rust tests', (): void => {
 
         expect(result).toEqual(fromHex(expected))
     })
+})
+
+it('When negative num is passed, throws', () => {
+    expect(() => encodeCompact(-12342n, new WalkerImpl(new Uint8Array()))).toThrowError(
+        /Invalid number is passed: -12342. It should be non-negative integer./,
+    )
+})
+
+it('When non-integer is passed, throws', () => {
+    expect(() => encodeCompact(1.42423142, new WalkerImpl(new Uint8Array()))).toThrowError(
+        /Invalid number is passed: 1\.42423142. It should be non-negative integer/,
+    )
 })

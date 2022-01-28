@@ -10,6 +10,6 @@ module.exports = {
         '!**/*.d.ts',
     ],
     roots: ['<rootDir>/packages'],
-    testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/', 'core/src/codecs/__tests__/util.ts'],
     modulePathIgnorePatterns: ['/dist/'],
 }

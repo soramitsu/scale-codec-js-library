@@ -50,7 +50,8 @@ function compactSizeHint(value: bigint | number): number {
 }
 
 export const encodeCompact: Encode<bigint | number> = (value, walker) => {
-    if (value < 0) throw new Error(`Invalid compact input: ${value}. It should be non-negative number`)
+    if (!(value >= 0 && (Number.isInteger(value) || typeof value === 'bigint')))
+        throw new Error(`Invalid number is passed: ${value}. It should be non-negative integer.`)
 
     if (value <= MAX_U8) {
         walker.arr[walker.offset++] = Number(value) << 2
