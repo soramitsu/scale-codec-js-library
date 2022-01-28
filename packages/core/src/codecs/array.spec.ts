@@ -1,6 +1,6 @@
-import { createArrayDecoder, createArrayEncoder, createIntDecoder, createIntEncoder } from '.'
+import { encodeU8, decodeU8 } from './int'
 import { WalkerImpl } from '../util'
-import { createUint8ArrayEncoder, createUint8ArrayDecoder } from './array'
+import { createUint8ArrayEncoder, createUint8ArrayDecoder, createArrayDecoder, createArrayEncoder } from './array'
 import { ensureDecodeImmutability } from './__tests__/util'
 
 describe('[T; x]', () => {
@@ -9,16 +9,22 @@ describe('[T; x]', () => {
         const encoded = Uint8Array.from(nums)
 
         test('encode', () => {
-            expect(WalkerImpl.encode(nums, createArrayEncoder(createIntEncoder('u8'), nums.length))).toEqual(encoded)
+            expect(WalkerImpl.encode(nums, createArrayEncoder(encodeU8, nums.length))).toEqual(encoded)
         })
 
         test('decode', () => {
-            expect(WalkerImpl.decode(encoded, createArrayDecoder(createIntDecoder('u8'), nums.length))).toEqual(nums)
+            expect(WalkerImpl.decode(encoded, createArrayDecoder(decodeU8, nums.length))).toEqual(nums)
         })
 
         test('decode is immutable', () => {
-            ensureDecodeImmutability(encoded, createArrayDecoder(createIntDecoder('u8'), nums.length))
+            ensureDecodeImmutability(encoded, createArrayDecoder(decodeU8, nums.length))
         })
+    })
+
+    test('When array with invalid length is passed, encode throws', () => {
+        expect(() => WalkerImpl.encode([1, 2, 3], createArrayEncoder(encodeU8, 5))).toThrowError(
+            /\[T; 3\] is passed to \[T; 5\] encoder/,
+        )
     })
 })
 

@@ -1,17 +1,13 @@
-import { assert } from '@scale-codec/util'
 import { Decode, Walker, Encode } from '../types'
 import { encodeFactory } from '../util'
-
-const assertArrayLength = (arr: unknown[], len: number) => {
-    if (arr.length !== len) throw new Error(`expected array len: ${len}, actual: ${arr.length}`)
-}
 
 /**
  * Encodes fixed-length arrays of some items
  */
 // eslint-disable-next-line max-params
 export function encodeArray<T>(arr: T[], encodeItem: Encode<T>, len: number, walker: Walker): void {
-    assertArrayLength(arr, len)
+    // array length assertion may be omitted because it is already done during
+    // the size hint computation step
 
     for (const item of arr) {
         encodeItem(item, walker)
@@ -19,7 +15,7 @@ export function encodeArray<T>(arr: T[], encodeItem: Encode<T>, len: number, wal
 }
 
 export function encodeArraySizeHint<T>(arr: T[], encodeItem: Encode<T>, len: number): number {
-    assertArrayLength(arr, len)
+    if (arr.length !== len) throw new Error(`[T; ${arr.length}] is passed to [T; ${len}] encoder`)
 
     let sum = 0
     // eslint-disable-next-line no-param-reassign
@@ -55,9 +51,6 @@ export function createArrayDecoder<T>(decodeItem: Decode<T>, len: number): Decod
  * Encode to `[u8; x]` Rust's array directly from the native `Uint8Array`
  */
 export function encodeUint8Array(value: Uint8Array, len: number, walker: Walker): void {
-    if (value.length !== len) throw new Error(`[u8; ${value.length}] is passed to [u8; ${len}] encoder`)
-
-    assert(value.length === len, () => `expected exactly ${len} bytes, found: ${value.length}`)
     // copy to prevent unexpected mutations
     walker.arr.set(value, walker.offset)
     walker.offset += value.byteLength
@@ -66,7 +59,10 @@ export function encodeUint8Array(value: Uint8Array, len: number, walker: Walker)
 export function createUint8ArrayEncoder(len: number): Encode<Uint8Array> {
     return encodeFactory(
         (value, walker) => encodeUint8Array(value, len, walker),
-        () => len,
+        (value) => {
+            if (value.length !== len) throw new Error(`[u8; ${value.length}] is passed to [u8; ${len}] encoder`)
+            return len
+        },
     )
 }
 

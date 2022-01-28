@@ -45,48 +45,6 @@ export function concatBytes(iterable: Iterable<Uint8Array> | Array<Uint8Array>):
 }
 
 /**
- * Makes iterable with `value` repeated `n` times
- * @example
- * ```ts
- * const a = [...yieldNTimes(100, 3)]
- * // a = [100, 100, 100]
- * ```
- */
-export function* yieldNTimes<T>(value: T, n: number): Generator<T, void> {
-    let i = n
-    while (i-- > 0) yield value
-}
-
-/**
- * Iterable lazy mapping
- * @example
- * ```ts
- * const a = [...yieldMapped([1, 2], x => x * 2)]
- * // a = [2, 4]
- * ```
- */
-export function* yieldMapped<T, R>(items: Iterable<T>, mapFn: (item: T) => R): Generator<R, void> {
-    for (const item of items) {
-        yield mapFn(item)
-    }
-}
-
-/**
- * Yield some iterable n times as a another iterable
- * @example
- * ```ts
- * const a = [...yieldCycleNTimes([0, 1], 3)]
- * // a = [0, 1, 0, 1, 0, 1]
- * ```
- */
-export function* yieldCycleNTimes<T>(items: Iterable<T>, n: number): Generator<T, void> {
-    let i = n
-    while (i-- > 0) {
-        for (const item of items) yield item
-    }
-}
-
-/**
  * Returns value from `map` by `key` and throws if there is no such key
  */
 export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
