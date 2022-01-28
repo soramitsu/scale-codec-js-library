@@ -148,41 +148,19 @@ function decodeBINativeSupported(walker: Walker, ty: BigIntNativeSupported): big
     return value
 }
 
-// TODO compare with data-view implementation
-/**
- * @remarks
- * There was idea to implement it via `DataView`, but `Uint8Array` implementation if faster (in Node)
- * @param slice
- */
-function transformByTwosComplementLittleEndian(slice: Uint8Array, offset: number, len: number) {
-    // initial addition
-    let addition = 1
-    for (let i = offset, end = offset + len; i < end; i++) {
-        // negate and add
-        const newValue = 255 - slice[i] + addition
-        // addition to next digit
-        addition = newValue > 255 ? 1 : 0
-        // writing remainder
-        slice[i] = newValue % 256
-    }
-}
-
-// export function encodeBigIntVarious(biAbs: bigint, bytes: number, isNegative: boolean, writer: Writer) {}
-
 // eslint-disable-next-line max-params
-export function encodePositiveBigIntIntoSlice(
+export function encodePositiveBigIntInto(
     positiveNum: bigint,
     mutSlice: Uint8Array,
     offset: number,
     bytesLimit: number,
 ): number {
     let i = 0
-    let rem: number
     while (positiveNum > 0 && i < bytesLimit) {
-        rem = Number(positiveNum % 256n)
-        mutSlice[offset + i++] = rem
+        // writing last byte into the slice
+        mutSlice[offset + i++] = Number(positiveNum & 0xffn)
         // eslint-disable-next-line no-param-reassign
-        positiveNum /= 256n
+        positiveNum >>= 8n
     }
     if (positiveNum > 0) {
         throw new Error(`Number ${positiveNum} is out of bytes limit (${bytesLimit})`)
@@ -196,7 +174,7 @@ export function countPositiveBigIntEffectiveBytes(positiveNum: bigint): number {
     while (positiveNum > 0) {
         count++
         // eslint-disable-next-line no-param-reassign
-        positiveNum /= 256n
+        positiveNum >>= 8n
     }
     return count
 }
@@ -217,15 +195,16 @@ export function encodeBigInt(bi: bigint, ty: BigIntTypes, walker: Walker): void 
     const isNegative = checkNegative(bi, ty)
     const bytes = INT_BYTES_COUNT_MAP[ty]
 
-    // iteration
-    encodePositiveBigIntIntoSlice(isNegative ? -bi : bi, walker.arr, walker.offset, bytes)
+    // transforming by twos-complement if needed
+    // eslint-disable-next-line no-param-reassign
+    isNegative && (bi = BigInt.asUintN(bytes * 8, bi))
+
+    //
+    encodePositiveBigIntInto(bi, walker.arr, walker.offset, bytes)
 
     // final chords
-    isNegative && transformByTwosComplementLittleEndian(walker.arr, walker.offset, bytes)
     walker.offset += bytes
 }
-
-const DECODE_BUFFER = new Uint8Array(64)
 
 /**
  * Decodes `bigint` in Little-Endian. It is like {@link decodeBigInt} but is not
@@ -235,24 +214,20 @@ const DECODE_BUFFER = new Uint8Array(64)
  * Does not mutate walker's offset!
  */
 export function decodeBigIntVarious(walker: Walker, bytes: number, signed: boolean): bigint {
-    DECODE_BUFFER.set(walker.arr.subarray(walker.offset, walker.offset + bytes), 0)
-
-    // negation analysis & transformation
-    let isNegative = false
-    if (signed) {
-        const mostSignificantBit = (DECODE_BUFFER[bytes - 1] & 0b1000_0000) >> 7
-        isNegative = mostSignificantBit === 1
-        isNegative && transformByTwosComplementLittleEndian(DECODE_BUFFER, 0, bytes)
-    }
+    // negation analysis
+    let isNegative =
+        signed &&
+        // extracting the most significant bit
+        (walker.arr[walker.offset + bytes - 1] & 0b1000_0000) >> 7 === 1
 
     // iteration
     let value = 0n
-    for (let i = 0, mul = 1n; i < bytes; i++, mul *= 256n) {
-        value += mul * BigInt(DECODE_BUFFER[i])
+    for (let i = 0, shift = 0n; i < bytes; i++, shift += 8n) {
+        value += BigInt(walker.arr[walker.offset + i]) << shift
     }
 
     // apply negation
-    isNegative && (value = -value)
+    isNegative && (value = BigInt.asIntN(bytes * 8, value))
 
     return value
 }

@@ -4,7 +4,7 @@ import {
     encodeBigInt,
     decodeBigIntVarious,
     countPositiveBigIntEffectiveBytes,
-    encodePositiveBigIntIntoSlice,
+    encodePositiveBigIntInto,
 } from './int'
 
 const MAX_U8 = 2n ** (8n - 2n) - 1n
@@ -66,7 +66,7 @@ export const encodeCompact: Encode<bigint | number> = (value, walker) => {
         return
     }
 
-    const bytesLength = encodePositiveBigIntIntoSlice(
+    const bytesLength = encodePositiveBigIntInto(
         BigInt(value),
         walker.arr,
         walker.offset + 1,
