@@ -1,5 +1,5 @@
 import { Fmt, fmt } from 'fmt-subs'
-import { DecodeResult, Decode } from '@scale-codec/core'
+import { Walker, Decode } from '@scale-codec/core'
 import { getCurrentTracker, setCurrentTracker } from './current'
 import { buildDecodeTraceStepsFmt, DecodeTraceCollector, BuildTraceStepsFmtParams, DecodeTrace } from './decode-trace'
 import { CodecTracker } from './types'
@@ -55,7 +55,7 @@ export class Logger implements CodecTracker {
         return this.config?.logDecodeSuccesses ?? false
     }
 
-    public decode<T>(loc: string, input: Uint8Array, decode: Decode<T>): DecodeResult<T> {
+    public decode<T>(loc: string, walker: Walker, decode: Decode<T>): T {
         try {
             this.decodeCurrentDepth++
             this.decodeTracer.decodeStart(loc, input)
@@ -91,7 +91,7 @@ export class Logger implements CodecTracker {
         }
     }
 
-    public refineDecodeLoc<T>(loc: string, decode: () => DecodeResult<T>): DecodeResult<T> {
+    public refineDecodeLoc<T>(loc: string, decode: () => T): T {
         this.decodeTracer.refineLoc(loc)
         return decode()
     }

@@ -1,4 +1,4 @@
-import { hexifyBytes } from '@scale-codec/util'
+import { toHex } from '@scale-codec/util'
 import { TrackValueInspectable, TrackValueInspect } from './types'
 
 export interface PrettyDecodeInputParams {
@@ -18,7 +18,7 @@ function hexLimited(bytes: Uint8Array, limit: number): string {
     const len = bytes.length
     const cut = len > limit ? bytes.subarray(0, limit) : bytes
     const ellipsis = len > limit ? '…' : ''
-    return `${hexifyBytes(cut)}${ellipsis}`
+    return `${toHex(cut)}${ellipsis}`
 }
 
 export function prettyDecodeInput(input: Uint8Array, params?: PrettyDecodeInputParams): string {

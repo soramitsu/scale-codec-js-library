@@ -1,34 +1,34 @@
-import { DecodeResult } from '@scale-codec/core'
+import { Walker } from '@scale-codec/core'
 import { assert } from '@scale-codec/util'
 import { Fmt, fmt, sub } from 'fmt-subs'
 import { tryInspectValue, prettyDecodeInput } from './util'
 
-export interface DecodeTraceResult {
-    value: unknown
-    bytes: number
-}
+// export interface DecodeTraceResult {
+//     value: unknown
+//     bytes: number
+// }
 
-class DecodeTraceResultInspector implements DecodeTraceResult {
-    private raw: DecodeResult<unknown>
+// class DecodeTraceResultInspector implements DecodeTraceResult {
+//     private raw: DecodeResult<unknown>
 
-    private inspectedOnce: null | [unknown] = null
+//     private inspectedOnce: null | [unknown] = null
 
-    public constructor(raw: DecodeResult<unknown>) {
-        this.raw = raw
-    }
+//     public constructor(raw: DecodeResult<unknown>) {
+//         this.raw = raw
+//     }
 
-    public get bytes(): number {
-        return this.raw[1]
-    }
+//     public get bytes(): number {
+//         return this.raw[1]
+//     }
 
-    public get value(): unknown {
-        if (!this.inspectedOnce) {
-            this.inspectedOnce = [tryInspectValue(this.raw[0])]
-        }
+//     public get value(): unknown {
+//         if (!this.inspectedOnce) {
+//             this.inspectedOnce = [tryInspectValue(this.raw[0])]
+//         }
 
-        return this.inspectedOnce[0]
-    }
-}
+//         return this.inspectedOnce[0]
+//     }
+// }
 
 export class DecodeTrace {
     public parent: DecodeTrace | null = null
@@ -38,8 +38,8 @@ export class DecodeTrace {
      */
     public loc: string[]
 
-    public input?: Uint8Array
-    public result?: DecodeTraceResult
+    public offsetStart: number
+    public result?: { offsetEnd: number; value: unknown }
     public error?: unknown
     public children: DecodeTrace[] = []
 
@@ -74,7 +74,7 @@ export class DecodeTrace {
 export class DecodeTraceCollector {
     private current: DecodeTrace | null = null
 
-    public decodeStart(loc: string, input: Uint8Array) {
+    public decodeStart(loc: string, walker: Walker) {
         if (this.current && !this.current.input) {
             this.current.setInput(input).refineLoc(loc)
         } else {
@@ -93,9 +93,9 @@ export class DecodeTraceCollector {
     /**
      * @returns the root decode trace if it was the root
      */
-    public decodeSuccess(result: DecodeResult<unknown>): null | DecodeTrace {
+    public decodeSuccess(walker: Walker, decodedValue: unknown): null | DecodeTrace {
         assert(this.current, 'No current')
-        this.current.result = new DecodeTraceResultInspector(result)
+        this.current.result = { value: decodedValue, offsetEnd: walker.offset }
 
         if (!this.current.parent) {
             const trace = this.current
@@ -118,7 +118,6 @@ export class DecodeTraceCollector {
 
     public refineLoc(loc: string) {
         assert(this.current, 'No current')
-
         if (this.current.input) {
             const newTrace = new DecodeTrace(loc).setParent(this.current)
             this.current.children.push(newTrace)

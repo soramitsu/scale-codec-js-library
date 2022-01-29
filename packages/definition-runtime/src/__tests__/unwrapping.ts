@@ -1,4 +1,4 @@
-import { Enum, Valuable } from '@scale-codec/core'
+import { Enum } from '@scale-codec/core'
 import {
     createArrayBuilder,
     createEnumBuilder,
@@ -7,9 +7,8 @@ import {
     createStructBuilder,
     createTupleBuilder,
     createVecBuilder,
-    dynGetters,
 } from '../builder-creators'
-import { FragmentOrBuilderValue, FragmentFromBuilder, Fragment, FragmentOrBuilderUnwrapped } from '../fragment'
+import { FragmentFromBuilder, Fragment } from '../fragment'
 import { Bool, I128, Str } from '../presets'
 
 const Key = createStructBuilder<{ payload: Fragment<bigint> }>('Key', [['payload', I128]])
@@ -18,12 +17,7 @@ const StructWithKey = createStructBuilder<{
     key: FragmentFromBuilder<typeof Key>
 }>('', [['key', Key]])
 
-const Msg = createEnumBuilder<
-    Enum<{
-        Quit: null
-        Greeting: Valuable<FragmentFromBuilder<typeof Key>>
-    }>
->('Msg', [
+const Msg = createEnumBuilder<Enum<'Quit' | ['Greeting', FragmentFromBuilder<typeof Key>]>>('Msg', [
     [0, 'Quit'],
     [1, 'Greeting', Key],
 ])
@@ -37,12 +31,6 @@ const MAP = createMapBuilder<Map<Fragment<boolean>, Fragment<string>>>('Map', Bo
 const SET = createSetBuilder<Set<Fragment<string>>>('Set', Str)
 
 const TUPLE = createTupleBuilder<[Fragment<boolean>, Fragment<string>]>('Tuple', [Bool, Str])
-
-type KeyValue = FragmentOrBuilderValue<typeof Key>
-type KeyUnwrapped = FragmentOrBuilderUnwrapped<typeof Key>
-
-const AliasA = dynGetters(() => Key)
-const AliasB = dynGetters(() => AliasA)
 
 describe('Unwrapping', () => {
     test('Unwraps primitive (Str)', () => {
@@ -72,14 +60,14 @@ describe('Unwrapping', () => {
     test("Unwraps enum's contents", () => {
         const num = 789123n
 
-        const nonEmpty = Msg.fromValue(Enum.valuable('Greeting', Key.fromValue({ payload: I128.fromValue(num) })))
+        const nonEmpty = Msg.fromValue(Enum.variant('Greeting', Key.fromValue({ payload: I128.fromValue(num) })))
         const unwrapped = nonEmpty.unwrap()
 
-        expect(unwrapped).toEqual(Enum.valuable<any, any>('Greeting', { payload: num }))
+        expect(unwrapped).toEqual(Enum.variant('Greeting', { payload: num }))
     })
 
     test('Unwraps empty enum', () => {
-        expect(Msg.fromValue(Enum.empty('Quit')).unwrap()).toEqual(Enum.empty<any>('Quit'))
+        expect(Msg.fromValue(Enum.variant('Quit')).unwrap()).toEqual(Enum.variant('Quit'))
     })
 
     test('Unwraps array', () => {
@@ -113,16 +101,6 @@ describe('Unwrapping', () => {
     test('Unwraps tuple', () => {
         expect(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('._.')]).unwrap()).toEqual([false, '._.'])
     })
-
-    test('Unwraps aliases chain', () => {
-        const num = 111n
-
-        expect(
-            AliasB.fromValue({
-                payload: I128.fromValue(num),
-            }).unwrap(),
-        ).toEqual({ payload: num })
-    })
 })
 
 describe('Wrapping back', () => {
@@ -149,13 +127,13 @@ describe('Wrapping back', () => {
     test("Wraps enum's contents", () => {
         expect(
             Msg.wrap(
-                Enum.valuable('Greeting', {
+                Enum.variant('Greeting', {
                     payload: 67n,
                 }),
             ),
         ).toEqual(
             Msg.fromValue(
-                Enum.valuable(
+                Enum.variant(
                     'Greeting',
                     Key.fromValue({
                         payload: I128.fromValue(67n),
@@ -166,7 +144,7 @@ describe('Wrapping back', () => {
     })
 
     test('Wraps empty enum', () => {
-        expect(Msg.wrap(Enum.empty('Quit'))).toEqual(Msg.fromValue(Enum.empty('Quit')))
+        expect(Msg.wrap(Enum.variant('Quit'))).toEqual(Msg.fromValue(Enum.variant('Quit')))
     })
 
     test('Wraps array', () => {
@@ -201,17 +179,5 @@ describe('Wrapping back', () => {
 
     test('Wraps tuple', () => {
         expect(TUPLE.wrap([false, 'true'])).toEqual(TUPLE.fromValue([Bool.fromValue(false), Str.fromValue('true')]))
-    })
-
-    test('Wraps aliases chain', () => {
-        expect(
-            AliasB.wrap({
-                payload: 787171n,
-            }),
-        ).toEqual(
-            AliasB.fromValue({
-                payload: I128.fromValue(787171n),
-            }),
-        )
     })
 })

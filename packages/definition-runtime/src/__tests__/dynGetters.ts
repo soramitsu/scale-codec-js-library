@@ -21,8 +21,8 @@ describe('Testing DynBool', () => {
 
     test('decodeRaw() the same', () => {
         const bytes = new Uint8Array([0])
-        const [a1, a2] = DynBool.decodeRaw(bytes)
-        const [b1, b2] = Bool.decodeRaw(bytes)
+        const [a1, a2] = DynBool.runDecode(bytes)
+        const [b1, b2] = Bool.runDecode(bytes)
 
         expect(a2).toEqual(b2)
         compareInstances(a1, b1)

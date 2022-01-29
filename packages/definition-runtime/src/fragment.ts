@@ -1,10 +1,15 @@
-import { Encode, Decode, DecodeResult, decodeAndUnwrap } from '@scale-codec/core'
-import { concatBytes } from '@scale-codec/util'
+import { Encode, Decode, WalkerImpl, Walker } from '@scale-codec/core'
+// import { concatBytes } from '@scale-codec/util'
 import { trackDecode, TrackValueInspect, TrackValueInspectable } from './tracking'
 
-type OptionTupleSome<T> = [T]
-type OptionTuple<T> = null | OptionTupleSome<T>
-type FragmentInternalDecodeTrackFn<V, U> = (input: Uint8Array, decode: () => DecodeResult<Fragment<V, U>>) => void
+// type OptionTupleSome<T> = [T]
+// type OptionTuple<T> = null | OptionTupleSome<T>
+// type FragmentInternalDecodeTrackFn<V, U> = (input: Uint8Array, decode: Decode<Fragment<V, U>>) => void
+
+const FRAGMENT_VALUE_EMPTY = Symbol('empty')
+
+const isFragmentValueEmpty = <V>(value: typeof FRAGMENT_VALUE_EMPTY | V): value is typeof FRAGMENT_VALUE_EMPTY =>
+    value === FRAGMENT_VALUE_EMPTY
 
 function offPropsEnumerability(object: object, props: PropertyKey[]) {
     for (const prop of props) {
@@ -35,17 +40,19 @@ function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => a
  * unwrapped to their values.
  */
 export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueInspectable {
-    /**
-     * Some JS-easy-accessible value of the instance
-     */
-    public readonly value: Value
+    // /**
+    //  * Some JS-easy-accessible value of the instance
+    //  */
+    // public readonly value: Value
 
-    /**
-     * SCALE-encoded bytes of the instance
-     */
-    public readonly bytes: Uint8Array
+    // /**
+    //  * SCALE-encoded bytes of the instance
+    //  */
+    // public readonly bytes: Uint8Array
 
-    private __value: null | OptionTuple<Value>
+    // public readonly sizeHint: number;
+
+    private __value: typeof FRAGMENT_VALUE_EMPTY | Value
 
     private __bytes: null | Uint8Array
 
@@ -59,51 +66,68 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
      */
     protected abstract __decode: Decode<Value>
 
-    /**
-     * @internal
-     */
-    protected abstract __trackDecode: FragmentInternalDecodeTrackFn<Value, Unwrapped>
+    // /**
+    //  * @internal
+    //  */
+    // protected abstract __trackDecode: FragmentInternalDecodeTrackFn<Value, Unwrapped>
 
-    /**
-     * @internal
-     */
-    public constructor(value: null | OptionTuple<Value>, bytes: null | Uint8Array) {
-        if (!value && !bytes) throw new Error('Fragment should have either value or bytes or both')
+    // /**
+    //  * @internal
+    //  */
+    public constructor(value: typeof FRAGMENT_VALUE_EMPTY | Value, bytes: null | Uint8Array) {
+        if (value === FRAGMENT_VALUE_EMPTY && !bytes)
+            throw new Error('Fragment should have either value or bytes or both')
 
-        // Firstly gettere were on the class itself, but it turned out that under the hood
-        // they are defined with `{ enumerable: false }`; also not-own keys & getters aren't visible
-        // by default key-traversing ways, so to make these getters behave like regular props or
-        // computed getters, I decided to use this technique
-        defineReadonlyOwnGetter(this, 'bytes', this.getBytes.bind(this))
-        defineReadonlyOwnGetter(this, 'value', this.getValue.bind(this))
+        Reflect.defineProperty(this, '__value', { enumerable: false, value, writable: true })
+        Reflect.defineProperty(this, '__bytes', { enumerable: false, value: bytes, writable: true })
+
+        // // Firstly gettere were on the class itself, but it turned out that under the hood
+        // // they are defined with `{ enumerable: false }`; also not-own keys & getters aren't visible
+        // // by default key-traversing ways, so to make these getters behave like regular props or
+        // // computed getters, I decided to use this technique
+        // defineReadonlyOwnGetter(this, 'bytes', this.getBytes.bind(this))
+        // defineReadonlyOwnGetter(this, 'value', this.getValue.bind(this))
 
         // implementation details
-        offPropEnumerabilityWithValue(this, '__value', value)
-        offPropEnumerabilityWithValue(this, '__bytes', bytes)
+
+        // offPropEnumerabilityWithValue(this, '__value', value)
+        // offPropEnumerabilityWithValue(this, '__bytes', bytes)
     }
 
     public [TrackValueInspect]() {
         return this.unwrap()
     }
 
-    private getValue(): Value {
-        if (!this.__value) {
-            const bytes = this.__bytes!
-
-            this.__trackDecode(bytes, () => {
-                const val: Value = decodeAndUnwrap(bytes, this.__decode)
-                this.__value = [val]
-                return [this, bytes.length]
-            })
+    public get value(): Value {
+        if (isFragmentValueEmpty(this.__value)) {
+            this.__value = WalkerImpl.decode(this.__bytes!, this.__decode)
         }
-        return this.__value![0]
+        return this.__value as Value
     }
 
-    private getBytes(): Uint8Array {
+    public get bytes(): Uint8Array {
         if (!this.__bytes) {
-            this.__bytes = concatBytes(this.__encode(this.__value![0]))
+            this.__bytes = WalkerImpl.encode(this.__value as Value, this.__encode)
         }
         return this.__bytes
+    }
+
+    public get sizeHint(): number {
+        if (this.__bytes) {
+            return this.__bytes.byteLength
+        }
+        return this.__encode.sizeHint(this.__value as Value)
+    }
+
+    public runSmartEncode(walker: Walker): void {
+        if (this.__bytes) {
+            // just copying
+            walker.arr.set(this.__bytes, walker.offset)
+            walker.offset += this.__bytes.byteLength
+        } else {
+            // running actual encode function
+            this.__encode(this.__value as Value, walker)
+        }
     }
 
     /**
@@ -112,7 +136,7 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
     public abstract unwrap(): Unwrapped
 }
 
-export type FragmentCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<T, U>
+// export type FragmentCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<T, U>
 
 /**
  * Defines how a builder for {@link Fragment} should look like
@@ -130,7 +154,12 @@ export interface FragmentBuilder<T, U = T> {
     /**
      * Raw `Decode` function. Primarily used by the builder or by other builders internally
      */
-    decodeRaw: Decode<Fragment<T, U>>
+    runDecode: Decode<Fragment<T, U>>
+    // encodeRaw: (fragment: Fragment<T, U>, walker: Walker) => void
+    // /**
+    //  * TODO doc
+    //  */
+    // encodeSizeHint: (fragment: Fragment<T, U>) => number
     /**
      * Constructs instance back from unwrapped value, i.e. works vice versa from {@link Fragment.unwrap}
      */
@@ -164,17 +193,17 @@ export type FragmentOrBuilderUnwrapped<T extends Fragment<any> | FragmentBuilder
     ? U
     : never
 
-function decodeAndMemorize<T extends Fragment<any>>(
-    bytes: Uint8Array,
-    decode: Decode<FragmentOrBuilderValue<T>>,
-    ctor: FragmentCtor<FragmentOrBuilderValue<T>>,
-): DecodeResult<T> {
-    const [value, bytesCount] = decode(bytes)
-    const usedBytes = bytes.slice(0, bytesCount)
-    // eslint-disable-next-line new-cap
-    const instance = new ctor([value], usedBytes) as T
-    return [instance, bytesCount]
-}
+// function decodeAndMemorize<T extends Fragment<any>>(
+//     bytes: Uint8Array,
+//     decode: Decode<FragmentOrBuilderValue<T>>,
+//     ctor: FragmentCtor<FragmentOrBuilderValue<T>>,
+// ): DecodeResult<T> {
+//     const [value, bytesCount] = decode(bytes)
+//     const usedBytes = bytes.slice(0, bytesCount)
+//     // eslint-disable-next-line new-cap
+//     const instance = new ctor([value], usedBytes) as T
+//     return [instance, bytesCount]
+// }
 
 function unwrapFallback<T>(scale: Fragment<T, any>): any {
     return scale.value
@@ -197,23 +226,36 @@ export function createBuilder<T, U = T>(
 ): FragmentBuilder<T, U> {
     // const decodeTrackable: Decode<T> = (input) => trackDecode(`__decode ${name}`, input, decode);
 
-    const internalTrackDecode: FragmentInternalDecodeTrackFn<T, U> = (bytes, fn) => trackDecode(name, bytes, fn)
+    // const internalTrackDecode: FragmentInternalDecodeTrackFn<T, U> = (bytes, fn) => trackDecode(name, bytes, fn)
 
     const ctor: FragmentBuilder<T, U> = class Self extends Fragment<T, U> {
         public static fromValue(value: T): Self {
-            return new Self([value], null)
+            return new Self(value, null)
         }
 
         public static fromBytes(bytes: Uint8Array): Self {
-            return new Self(null, bytes)
+            return new Self(FRAGMENT_VALUE_EMPTY, bytes)
         }
 
-        public static decodeRaw(bytes: Uint8Array): DecodeResult<Self> {
-            return trackDecode(name, bytes, () => decodeAndMemorize(bytes, decode, Self))
+        // public static encodeRaw(fragment: Fragment<T, U>, walker: Walker): void {
+
+        // }
+
+        public static runDecode(walker: Walker): Fragment<T, U> {
+            const value = decode(walker)
+            return new Self(
+                value,
+                // pass slice here?
+                null,
+            )
         }
+
+        // public static encodeSizeHint(fragment: Fragment<T, U>): number {
+        //     // return fragment.bytes.byteLength
+        // }
 
         public static wrap(unwrappedValue: U): Self {
-            return new Self([wrap ? wrap(unwrappedValue) : (unwrappedValue as any)], null)
+            return new Self(wrap ? wrap(unwrappedValue) : (unwrappedValue as unknown as T), null)
         }
 
         public static defineUnwrap(x: U): U {
@@ -222,9 +264,9 @@ export function createBuilder<T, U = T>(
 
         protected __encode = encode
         protected __decode = decode
-        protected __trackDecode = internalTrackDecode
+        // protected __trackDecode = internalTrackDecode
 
-        public constructor(value: null | OptionTuple<T>, bytes: null | Uint8Array) {
+        public constructor(value: typeof FRAGMENT_VALUE_EMPTY | T, bytes: null | Uint8Array) {
             super(value, bytes)
 
             // implementation details

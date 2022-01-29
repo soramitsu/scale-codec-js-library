@@ -18,6 +18,7 @@ importers:
       esbuild: ^0.13.9
       esbuild-jest: ^0.5.0
       esbuild-register: ^3.0.0
+      esbuild-runner: ^2.2.1
       eslint: ^7.32.0
       eslint-config-alloy: ^4.4.0
       eslint-plugin-cypress: ^2.12.1
@@ -46,6 +47,7 @@ importers:
       esbuild: 0.13.9
       esbuild-jest: 0.5.0_esbuild@0.13.9
       esbuild-register: 3.0.0_esbuild@0.13.9
+      esbuild-runner: 2.2.1_esbuild@0.13.9
       eslint: 7.32.0
       eslint-config-alloy: 4.4.0
       eslint-plugin-cypress: 2.12.1_eslint@7.32.0
@@ -3390,6 +3392,17 @@ packages:
     dependencies:
       esbuild: 0.13.9
       jsonc-parser: 3.0.0
+
+  /esbuild-runner/2.2.1_esbuild@0.13.9:
+    resolution: {integrity: sha512-VP0VfJJZiZ3cKzdOH59ZceDxx/GzBKra7tiGM8MfFMLv6CR1/cpsvtQ3IsJI3pz7HyeYxtbPyecj3fHwR+3XcQ==}
+    hasBin: true
+    peerDependencies:
+      esbuild: '*'
+    dependencies:
+      esbuild: 0.13.9
+      source-map-support: 0.5.19
+      tslib: 2.3.1
+    dev: true
 
   /esbuild-sunos-64/0.13.9:
     resolution: {integrity: sha512-9N0RjZ7cElE8ifrS0nBrLQgBMQNPiIIKO2GzLXy7Ms8AM3KjfLiV2G2+9O0B9paXjRAHchIwazTeOyeWb1vyWA==}
@@ -7240,6 +7253,13 @@ packages:
       source-map-url: 0.4.1
       urix: 0.1.0
 
+  /source-map-support/0.5.19:
+    resolution: {integrity: sha512-Wonm7zOCIJzBGQdB+thsPar0kYuCIzYvxZwlBa87yi/Mdjv7Tip2cyVbLj5o0cFPN4EVkuTwb3GDDyUx2DGnGw==}
+    dependencies:
+      buffer-from: 1.1.2
+      source-map: 0.6.1
+    dev: true
+
   /source-map-support/0.5.20:
     resolution: {integrity: sha512-n1lZZ8Ve4ksRqizaBQgxXDgKwttHDhyfQjA6YZZn8+AroHbsIz+JjwxQDxbp+7y5OYCI8t1Yk7etjD9CRd2hIw==}
     dependencies:
@@ -7718,6 +7738,10 @@ packages:
   /tslib/2.1.0:
     resolution: {integrity: sha512-hcVC3wYEziELGGmEEXue7D75zbwIIVUMWAVbHItGPx0ziyXxrOMQx4rQEVEV45Ut/1IotuEvwqPopzIOkDMf0A==}
     dev: false
+
+  /tslib/2.3.1:
+    resolution: {integrity: sha512-77EbyPPpMz+FRFRuAFlWMtmgUWGe9UOG2Z25NqCwiIjRhOf5iKGuzSe5P2w1laq+FkRy4p+PCuVkJSGkzTEKVw==}
+    dev: true
 
   /tsutils/3.21.0_typescript@3.9.10:
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}

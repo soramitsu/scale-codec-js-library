@@ -1,31 +1,46 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { decodeBool, decodeTuple, encodeBool, encodeTuple } from '@scale-codec/core'
-import { createBuilder, FragmentFromBuilder } from '../fragment'
-import { dynGetters } from '../builder-creators'
+import {
+    createTupleDecoder,
+    createTupleEncoder,
+    Decode,
+    decodeBool,
+    decodeTuple,
+    Encode,
+    encodeBool,
+    encodeFactory,
+    encodeTuple,
+} from '@scale-codec/core'
+import { encodeAnyFragment } from '../builder-creators'
+import { createBuilder, Fragment, FragmentBuilder, FragmentFromBuilder } from '../fragment'
+// import { dynGetters } from '../builder-creators'
 
 describe('Within TupleBool', () => {
+    type TupleBoolTy = [Fragment<boolean>]
+
+    function encodeMock<T extends Encode<any>>(fn: T): T {
+        return encodeFactory(jest.fn(fn.bind({})), jest.fn(fn.sizeHint.bind({}))) as any
+    }
+
+    /**
+     * Returns spies for underlying codecs & builders for `bool` & `(bool)` (tuple with a single bool) types.
+     */
     function prepare(): [
-        // eslint-disable-next-line no-undef
-        typeof Bool,
-        // eslint-disable-next-line no-undef
-        typeof TupleBool,
-        typeof encodeBool,
-        typeof decodeBool,
-        typeof encodeTuple,
-        typeof decodeTuple,
+        FragmentBuilder<boolean>,
+        FragmentBuilder<TupleBoolTy>,
+        Encode<boolean>,
+        Decode<boolean>,
+        Encode<TupleBoolTy>,
+        Decode<TupleBoolTy>,
     ] {
-        const encodeBoolSpy = jest.fn(encodeBool)
+        const encodeBoolSpy = encodeMock(encodeBool)
         const decodeBoolSpy = jest.fn(decodeBool)
-        const encodeTupleSpy = jest.fn(encodeTuple) as typeof encodeTuple
-        const decodeTupleSpy = jest.fn(decodeTuple) as typeof decodeTuple
 
-        const Bool = createBuilder<boolean>('Bool', encodeBoolSpy, decodeBoolSpy)
+        const Bool = createBuilder<boolean, boolean>('Bool', encodeBoolSpy, decodeBoolSpy)
 
-        const TupleBool = createBuilder<[FragmentFromBuilder<typeof Bool>]>(
-            'TupleBool',
-            (val) => encodeTupleSpy(val, [(x) => x.bytes]),
-            (bytes) => decodeTupleSpy(bytes, [(x) => Bool.decodeRaw(x)]),
-        )
+        const encodeTupleSpy = encodeMock(createTupleEncoder<TupleBoolTy>([encodeAnyFragment]))
+        const decodeTupleSpy = jest.fn(createTupleDecoder<TupleBoolTy>([(w) => Bool.runDecode(w)]))
+
+        const TupleBool = createBuilder<[Fragment<boolean>]>('TupleBool', encodeTupleSpy, decodeTupleSpy)
 
         return [Bool, TupleBool, encodeBoolSpy, decodeBoolSpy, encodeTupleSpy, decodeTupleSpy]
     }
@@ -88,16 +103,16 @@ describe('Within TupleBool', () => {
     })
 })
 
-test('Alias decoding is lazy', () => {
-    const decodeBoolSpy = jest.fn(decodeBool)
-    const Bool = createBuilder<boolean>('Bool', encodeBool, decodeBoolSpy)
-    const BoolAlias = dynGetters(() => Bool)
+// test('Alias decoding is lazy', () => {
+//     const decodeBoolSpy = jest.fn(decodeBool)
+//     const Bool = createBuilder<boolean>('Bool', encodeBool, decodeBoolSpy)
+//     const BoolAlias = dynGetters(() => Bool)
 
-    const item = BoolAlias.fromBytes(new Uint8Array([1]))
+//     const item = BoolAlias.fromBytes(new Uint8Array([1]))
 
-    expect(decodeBoolSpy).toBeCalledTimes(0)
+//     expect(decodeBoolSpy).toBeCalledTimes(0)
 
-    item.value
+//     item.value
 
-    expect(decodeBoolSpy).toBeCalledTimes(1)
-})
+//     expect(decodeBoolSpy).toBeCalledTimes(1)
+// })

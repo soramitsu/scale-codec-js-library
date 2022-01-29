@@ -1,4 +1,4 @@
-import { Enum, Option, DefGeneral, TagsEmpty, TagsValuable, TagValue, EnumDef } from '@scale-codec/enum'
+import { Enum, Option, DefGeneral, TagsEmpty, TagsValuable, TagValue, EnumDef, Result } from '@scale-codec/enum'
 import { Decode, Walker, Encode } from '../types'
 import { encodeFactory } from '../util'
 
@@ -136,6 +136,29 @@ export function createOptionDecoder<T extends Option<any>>(decodeSome: Decode<Op
     return createEnumDecoder<Enum<'None' | ['Some', OptionSome<T>]>>({
         0: 'None',
         1: ['Some', decodeSome],
+    }) as Decode<T>
+}
+
+type ResultOk<T> = T extends Result<infer Ok, any> ? Ok : never
+type ResultErr<T> = T extends Result<any, infer Err> ? Err : never
+
+export function createResultEncoder<T extends Result<any, any>>(
+    encodeOk: Encode<ResultOk<T>>,
+    encodeErr: Encode<ResultErr<T>>,
+): Encode<T> {
+    return createEnumEncoder<Enum<['Ok', ResultOk<T>] | ['Err', ResultErr<T>]>>({
+        Ok: [0, encodeOk],
+        Err: [1, encodeErr],
+    })
+}
+
+export function createResultDecoder<T extends Result<any, any>>(
+    decodeOk: Decode<ResultOk<T>>,
+    decodeErr: Decode<ResultErr<T>>,
+): Decode<T> {
+    return createEnumDecoder<Enum<['Ok', ResultOk<T>] | ['Err', ResultErr<T>]>>({
+        0: ['Ok', decodeOk],
+        1: ['Err', decodeErr],
     }) as Decode<T>
 }
 

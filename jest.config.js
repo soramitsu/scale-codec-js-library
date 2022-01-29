@@ -1,7 +1,8 @@
 module.exports = {
     testEnvironment: 'node',
     transform: {
-        '^.+\\.ts$': ['esbuild-jest', { sourcemap: true, target: 'es2020' }],
+        '\\.ts$': ['esbuild-runner/jest'],
+        // '\\.ts$': ['esbuild-jest', { sourcemap: true, target: 'es2020' }],
     },
     testMatch: [
         '**/packages/**/*.spec.ts',

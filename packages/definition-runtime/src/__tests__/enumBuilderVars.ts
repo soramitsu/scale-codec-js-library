@@ -1,4 +1,4 @@
-import { Enum, Valuable } from '@scale-codec/core'
+import { Enum } from '@scale-codec/core'
 import { createEnumBuilder, ScaleEnumBuilder, UnwrapScaleEnum } from '../builder-creators'
 import { Fragment } from '../fragment'
 import { Str } from '../presets'
