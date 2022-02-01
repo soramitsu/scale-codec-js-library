@@ -1,8 +1,7 @@
 module.exports = {
     extends: ['alloy', 'alloy/typescript'],
-    globals: {
-        es2020: true,
-        BigInt: true,
+    env: {
+        es2021: true,
     },
     rules: {
         '@typescript-eslint/consistent-type-definitions': 'off',
