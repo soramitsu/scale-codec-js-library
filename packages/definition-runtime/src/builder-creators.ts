@@ -29,70 +29,67 @@ import {
     createMapDecoder,
     createUint8ArrayEncoder,
     createUint8ArrayDecoder,
+    Walker,
 } from '@scale-codec/core'
 import { mapGetUnwrap } from '@scale-codec/util'
 import { trackRefineDecodeLoc } from './tracking'
-import { createBuilder, FragmentBuilder, FragmentWrapFn, Fragment, UnwrapFragment } from './fragment'
+import {
+    createBuilder,
+    FragmentBuilder,
+    FragmentWrapFn,
+    Fragment,
+    UnwrapFragment,
+    FragmentOrBuilderValue,
+    FragmentOrBuilderUnwrapped,
+} from './fragment'
 
-// /**
-//  * Creates proxy that dispatches provided object at the moment
-//  * when its field is gotten.
-//  *
-//  * @remarks
-//  *
-//  * It is useful for aliases or cyclic dependencies.
-//  *
-//  * @example
-//  * ```ts
-//  * const OptionVec: ScaleEnumBuilder<Option<FragmentFromBuilder<typeof VecOption>>> =
-//  *  createOptionBuilder('OptionVec', dynGetters(() => VecOption))
-//  *
-//  * const VecOption: ScaleArrayBuilder<FragmentFromBuilder<typeof OptionVec>[]> =
-//  *  createVecBuilder('VecOption', OptionVec);
-//  * ```
-//  */
-// export function dynGetters<T extends { [K in string | symbol]: any }>(dynObject: () => T): T {
-//     return new Proxy(
-//         {},
-//         {
-//             get: (_target, prop) => (dynObject as any)()[prop],
-//         },
-//     ) as any
-// }
+/**
+ * Useful for circular dependencies and aliasing
+ */
+export class DynBuilder<T extends FragmentBuilder<any>>
+    implements FragmentBuilder<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>
+{
+    private __fn: () => T
 
-// const fragmentEncode: Encode<Fragment<unknown>> = function* (x) {
-//     if (!(x instanceof Fragment)) {
-//         throw new Error(`expected Fragment; actually: ${x}`)
-//     }
-//     yield x.bytes
-// }
+    public constructor(builderGetter: () => T) {
+        this.__fn = builderGetter
+    }
 
-// const proxyFragmentEncodeGetters: StructEncoders<any> = new Proxy(
-//     {},
-//     {
-//         get: () => fragmentEncode,
-//     },
-// ) as any
+    public wrap(
+        unwrappedValue: FragmentOrBuilderUnwrapped<T>,
+    ): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>> {
+        return this.__fn().wrap(unwrappedValue)
+    }
 
-// export function createIntBuilder(name: string, ty: IntTypes): FragmentBuilder<number> {
-//     return createBuilder(
-//         name,
-//         function* (int) {
-//             yield encodeInt(int, ty)
-//         },
-//         (bytes) => decodeInt(bytes, ty),
-//     )
-// }
+    public defineUnwrap(unwrappedValue: FragmentOrBuilderUnwrapped<T>): FragmentOrBuilderUnwrapped<T> {
+        return this.__fn().defineUnwrap(unwrappedValue)
+    }
 
-// export function createBigIntBuilder(name: string, ty: BigIntTypes): FragmentBuilder<bigint> {
-//     return createBuilder<bigint>(
-//         name,
-//         function* (int) {
-//             yield encodeBigInt(int, ty)
-//         },
-//         (bytes) => decodeBigInt(bytes, ty),
-//     )
-// }
+    public decode(walker: Walker): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>> {
+        return this.__fn().decode(walker)
+    }
+
+    public fromValue(
+        value: FragmentOrBuilderValue<T>,
+    ): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>> {
+        return this.__fn().fromValue(value)
+    }
+
+    public fromBuffer(bytes: Uint8Array): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>> {
+        return this.__fn().fromBuffer(bytes)
+    }
+
+    /**
+     * Just returns the builder itself
+     */
+    public getBuilder(): T {
+        return this.__fn()
+    }
+}
+
+export function dynBuilder<T extends FragmentBuilder<any>>(dyn: () => T): DynBuilder<T> {
+    return new DynBuilder(dyn)
+}
 
 export type UnwrapScaleStruct<T> = {
     [K in keyof T]: UnwrapFragment<T[K]>
@@ -147,7 +144,7 @@ export function createStructBuilder<T extends { [K in keyof T]: Fragment<any> }>
     const encoders: StructEncoders<T> = []
 
     for (const [field, builder] of schema) {
-        decoders.push([field, (walker) => trackRefineDecodeLoc(`.${field}`, () => builder.runDecode(walker)) as any])
+        decoders.push([field, (walker) => trackRefineDecodeLoc(`.${field}`, () => builder.decode(walker)) as any])
         encoders.push([field, encodeAnyFragment])
     }
 
@@ -332,7 +329,7 @@ export function createEnumBuilder<T extends ScaleEnum>(
 
         // const decode: Decode<any> = (walker) => trackRefineDecodeLoc(`::${tag}`, () => builder?.runDecode())
         ;(decoders as any)[dis] = builder
-            ? [tag, ((walker) => trackRefineDecodeLoc(`::${tag}`, () => builder.runDecode(walker))) as Decode<any>]
+            ? [tag, ((walker) => trackRefineDecodeLoc(`::${tag}`, () => builder.decode(walker))) as Decode<any>]
             : tag
 
         // encoders[tag] = { d: dis, encode: codec && fragmentEncode }
@@ -396,7 +393,7 @@ export function createArrayBuilder<T extends Fragment<any>[]>(
     return createBuilder<T, UnwrapScaleArray<T>>(
         name,
         createArrayEncoder(encodeAnyFragment, len),
-        createArrayDecoder((walker) => itemBuilder.runDecode(walker), len) as any,
+        createArrayDecoder((walker) => itemBuilder.decode(walker), len) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
     )
@@ -416,7 +413,7 @@ export function createVecBuilder<T extends Fragment<any>[]>(
     return createBuilder<T, UnwrapScaleArray<T>>(
         name,
         createVecEncoder(encodeAnyFragment),
-        createVecDecoder((walker) => itemBuilder.runDecode(walker)) as any,
+        createVecDecoder((walker) => itemBuilder.decode(walker)) as any,
         unwrapScaleArray as any,
         createScaleArrayWrapper(itemBuilder),
     )
@@ -450,7 +447,7 @@ export function createSetBuilder<T extends Set<Fragment<any>>>(
     return createBuilder(
         name,
         createSetEncoder(encodeAnyFragment),
-        createSetDecoder((walker) => itemBuilder.runDecode(walker)),
+        createSetDecoder((walker) => itemBuilder.decode(walker)),
         unwrapScaleSet as any,
         createScaleSetWrapper(itemBuilder),
     ) as any
@@ -495,8 +492,8 @@ export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(
         name,
         createMapEncoder(encodeAnyFragment, encodeAnyFragment),
         createMapDecoder(
-            (walker) => trackRefineDecodeLoc('<key>', () => keyBuilder.runDecode(walker)),
-            (walker) => trackRefineDecodeLoc('<value>', () => valueBuilder.runDecode(walker)),
+            (walker) => trackRefineDecodeLoc('<key>', () => keyBuilder.decode(walker)),
+            (walker) => trackRefineDecodeLoc('<value>', () => valueBuilder.decode(walker)),
         ),
         unwrapScaleMap as any,
         createScaleMapWrapper(keyBuilder, valueBuilder),
@@ -536,7 +533,7 @@ export function createTupleBuilder<T extends Fragment<any>[]>(
     ) as TupleEncoders<T>
 
     const decoders: TupleDecoders<T> = builders.map<Decode<any>>(
-        (builder, i) => (walker) => trackRefineDecodeLoc(`.${i}`, () => builder.runDecode(walker)),
+        (builder, i) => (walker) => trackRefineDecodeLoc(`.${i}`, () => builder.decode(walker)),
     ) as TupleDecoders<T>
 
     return createBuilder(

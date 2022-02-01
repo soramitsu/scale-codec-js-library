@@ -37,15 +37,15 @@ export function createVecDecoder<T>(decodeItem: Decode<T>): Decode<T[]> {
 export const encodeUint8Vec: Encode<Uint8Array> = encodeFactory(
     (vec, walker) => {
         encodeCompact(vec.byteLength, walker)
-        walker.arr.set(vec, walker.offset)
-        walker.offset += vec.byteLength
+        walker.u8.set(vec, walker.idx)
+        walker.idx += vec.byteLength
     },
     (vec) => encodeCompact.sizeHint(vec.byteLength) + vec.byteLength,
 )
 
 export const decodeUint8Vec: Decode<Uint8Array> = (walker) => {
     const len = Number(decodeCompact(walker))
-    const vec = walker.arr.slice(walker.offset, walker.offset + len)
-    walker.offset += len
+    const vec = walker.u8.slice(walker.idx, walker.idx + len)
+    walker.idx += len
     return vec
 }

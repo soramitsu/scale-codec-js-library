@@ -6,9 +6,9 @@ describe('Walker', () => {
     it('When source is not a subarray, writing works', () => {
         const walker = new Walker(new Uint8Array(4).fill(0))
 
-        walker.arr[3] = 5
+        walker.u8[3] = 5
 
-        expect(toHex(walker.arr)).toEqual('00 00 00 05')
+        expect(toHex(walker.u8)).toEqual('00 00 00 05')
     })
 
     it('When source is a subarray, writing works', () => {
@@ -16,7 +16,7 @@ describe('Walker', () => {
         const sub = source.subarray(2, 6)
         const walker = new Walker(sub)
 
-        walker.arr[0] = 0xff
+        walker.u8[0] = 0xff
 
         expect(toHex(sub)).toEqual('ff be 12 34')
     })
@@ -39,12 +39,12 @@ describe('Walker', () => {
 
         const walker = new Walker(subarray)
 
-        expect(walker.arr[0].toString(16)).toEqual(
+        expect(walker.u8[0].toString(16)).toEqual(
             // little endian - last part of the number
             '78',
         )
 
-        walker.arr[0] = 0x55
+        walker.u8[0] = 0x55
 
         expect(source[1].toString(16)).toEqual('12345655')
     })
@@ -53,8 +53,8 @@ describe('Walker', () => {
         it('When encode is done correctly, returns correct bytes', () => {
             const VALUE = 'hello'
             const ENCODE: Encode<string> = (str, walker) => {
-                walker.arr.set([5, 1, 2, 3, 4])
-                walker.offset += 5
+                walker.u8.set([5, 1, 2, 3, 4])
+                walker.idx += 5
             }
             ENCODE.sizeHint = () => 5
 
@@ -66,7 +66,7 @@ describe('Walker', () => {
         it('When allocated array size does not match to actual used bytes, throws', () => {
             const VALUE = 0
             const ENCODE: Encode<number> = (str, walker) => {
-                walker.offset += 3
+                walker.idx += 3
             }
             ENCODE.sizeHint = () => 5
 
@@ -80,7 +80,7 @@ describe('Walker', () => {
         it('When decode is done correctly, returns decoded value', () => {
             const INPUT = new Uint8Array([1, 2, 3])
             const DECODE: Decode<number> = (walker) => {
-                walker.offset += 3
+                walker.idx += 3
                 return 7
             }
 
@@ -92,7 +92,7 @@ describe('Walker', () => {
         it('When decoded bytes count is not equal to input length, throws', () => {
             const INPUT = new Uint8Array(10)
             const DECODE: Decode<number> = (walker) => {
-                walker.offset += 1
+                walker.idx += 1
                 return 7
             }
 

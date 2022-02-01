@@ -39,8 +39,8 @@ describe('[u8; x]', () => {
         createUint8ArrayEncoder(LEN)(INPUT, walker)
 
         // Assert
-        expect(walker.arr).toEqual(new Uint8Array([1, 5, 4, 1, 2, 6, 1, 0, 0, 0]))
-        expect(walker.offset).toEqual(LEN)
+        expect(walker.u8).toEqual(new Uint8Array([1, 5, 4, 1, 2, 6, 1, 0, 0, 0]))
+        expect(walker.idx).toEqual(LEN)
     })
 
     test('Mutation on encoded does not affect the source', () => {
@@ -66,14 +66,14 @@ describe('[u8; x]', () => {
         const SOURCE = new Uint8Array([65, 12, 43, 12, 43])
         const ARRAY_LEN = 3
         const walker = new WalkerImpl(SOURCE)
-        walker.offset += 1
+        walker.idx += 1
 
         // Act
         const decoded = createUint8ArrayDecoder(ARRAY_LEN)(walker)
 
         // Assert
         expect(decoded).toEqual(new Uint8Array([12, 43, 12]))
-        expect(walker.offset).toEqual(4)
+        expect(walker.idx).toEqual(4)
     })
 
     test('Mutation of decoded part does not affect the source', () => {

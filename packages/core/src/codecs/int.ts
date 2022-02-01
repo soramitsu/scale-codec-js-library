@@ -57,7 +57,7 @@ export function encodeInt(value: number, ty: IntTypes, walker: Walker): void {
     checkNegative(value, ty)
     assert(Number.isSafeInteger(value), () => `Unsafe integer (${value}) is passed into encoder`)
 
-    const { view, offset } = walker
+    const { view, idx: offset } = walker
 
     switch (ty) {
         case 'i8':
@@ -80,14 +80,14 @@ export function encodeInt(value: number, ty: IntTypes, walker: Walker): void {
             break
     }
 
-    walker.offset += INT_BYTES_COUNT_MAP[ty]
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
 }
 
 /**
  * Decodes signed/unsigned 8/16/32 bits integers in Little-Endian
  */
 export function decodeInt(walker: Walker, ty: IntTypes): number {
-    const { view, offset } = walker
+    const { view, idx: offset } = walker
     let value: number
 
     switch (ty) {
@@ -111,14 +111,14 @@ export function decodeInt(walker: Walker, ty: IntTypes): number {
             break
     }
 
-    walker.offset += INT_BYTES_COUNT_MAP[ty]
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
 
     return value
 }
 
 function encodeBINativeSupported(bi: bigint, ty: BigIntNativeSupported, walker: Walker): void {
     checkNegative(bi, ty)
-    const { view, offset } = walker
+    const { view, idx: offset } = walker
     switch (ty) {
         case 'u64':
             view.setBigUint64(offset, bi, true)
@@ -127,11 +127,11 @@ function encodeBINativeSupported(bi: bigint, ty: BigIntNativeSupported, walker: 
             view.setBigInt64(offset, bi, true)
             break
     }
-    walker.offset += INT_BYTES_COUNT_MAP[ty]
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
 }
 
 function decodeBINativeSupported(walker: Walker, ty: BigIntNativeSupported): bigint {
-    const { view, offset } = walker
+    const { view, idx: offset } = walker
     let value: bigint
 
     switch (ty) {
@@ -143,7 +143,7 @@ function decodeBINativeSupported(walker: Walker, ty: BigIntNativeSupported): big
             break
     }
 
-    walker.offset += INT_BYTES_COUNT_MAP[ty]
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
 
     return value
 }
@@ -200,10 +200,10 @@ export function encodeBigInt(bi: bigint, ty: BigIntTypes, walker: Walker): void 
     isNegative && (bi = BigInt.asUintN(bytes * 8, bi))
 
     //
-    encodePositiveBigIntInto(bi, walker.arr, walker.offset, bytes)
+    encodePositiveBigIntInto(bi, walker.u8, walker.idx, bytes)
 
     // final chords
-    walker.offset += bytes
+    walker.idx += bytes
 }
 
 /**
@@ -218,12 +218,12 @@ export function decodeBigIntVarious(walker: Walker, bytes: number, signed: boole
     let isNegative =
         signed &&
         // extracting the most significant bit
-        (walker.arr[walker.offset + bytes - 1] & 0b1000_0000) >> 7 === 1
+        (walker.u8[walker.idx + bytes - 1] & 0b1000_0000) >> 7 === 1
 
     // iteration
     let value = 0n
     for (let i = 0, shift = 0n; i < bytes; i++, shift += 8n) {
-        value += BigInt(walker.arr[walker.offset + i]) << shift
+        value += BigInt(walker.u8[walker.idx + i]) << shift
     }
 
     // apply negation
@@ -246,7 +246,7 @@ export function decodeBigInt(walker: Walker, ty: BigIntTypes): bigint {
     const isTySigned = isIntTypeSigned(ty)
     const bytes = INT_BYTES_COUNT_MAP[ty]
     const value = decodeBigIntVarious(walker, bytes, isTySigned)
-    walker.offset += bytes
+    walker.idx += bytes
     return value
 }
 

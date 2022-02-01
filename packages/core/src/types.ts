@@ -12,7 +12,7 @@ export type Encode<T> = {
 }
 
 export interface Walker {
-    arr: Uint8Array
+    u8: Uint8Array
     view: DataView
-    offset: number
+    idx: number
 }

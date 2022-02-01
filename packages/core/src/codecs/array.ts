@@ -52,8 +52,8 @@ export function createArrayDecoder<T>(decodeItem: Decode<T>, len: number): Decod
  */
 export function encodeUint8Array(value: Uint8Array, len: number, walker: Walker): void {
     // copy to prevent unexpected mutations
-    walker.arr.set(value, walker.offset)
-    walker.offset += value.byteLength
+    walker.u8.set(value, walker.idx)
+    walker.idx += value.byteLength
 }
 
 export function createUint8ArrayEncoder(len: number): Encode<Uint8Array> {
@@ -70,14 +70,14 @@ export function createUint8ArrayEncoder(len: number): Encode<Uint8Array> {
  * decode `[u8; x]` array directly into the native `Uint8Array`
  */
 export function decodeUint8Array(walker: Walker, len: number): Uint8Array {
-    const availableBytesCount = walker.arr.byteLength - walker.offset
+    const availableBytesCount = walker.u8.byteLength - walker.idx
 
     if (availableBytesCount < len)
         throw new Error(`[u8; ${availableBytesCount}] is passed to [u8; ${len}] decoder (len should be >= ${len})`)
 
     // slice to prevent unexpected source mutations
-    const value = walker.arr.slice(walker.offset, walker.offset + len)
-    walker.offset += len
+    const value = walker.u8.slice(walker.idx, walker.idx + len)
+    walker.idx += len
 
     return value
 }

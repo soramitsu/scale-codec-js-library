@@ -122,8 +122,8 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
     public runSmartEncode(walker: Walker): void {
         if (this.__bytes) {
             // just copying
-            walker.arr.set(this.__bytes, walker.offset)
-            walker.offset += this.__bytes.byteLength
+            walker.u8.set(this.__bytes, walker.idx)
+            walker.idx += this.__bytes.byteLength
         } else {
             // running actual encode function
             this.__encode(this.__value as Value, walker)
@@ -150,11 +150,11 @@ export interface FragmentBuilder<T, U = T> {
     /**
      * Constructs instance from SCALE-encoded bytes to give an opportunity to access to its decoded contents
      */
-    fromBytes: (bytes: Uint8Array) => Fragment<T, U>
+    fromBuffer: (bufferView: ArrayBufferView) => Fragment<T, U>
     /**
      * Raw `Decode` function. Primarily used by the builder or by other builders internally
      */
-    runDecode: Decode<Fragment<T, U>>
+    decode: Decode<Fragment<T, U>>
     // encodeRaw: (fragment: Fragment<T, U>, walker: Walker) => void
     // /**
     //  * TODO doc
@@ -233,15 +233,15 @@ export function createBuilder<T, U = T>(
             return new Self(value, null)
         }
 
-        public static fromBytes(bytes: Uint8Array): Self {
-            return new Self(FRAGMENT_VALUE_EMPTY, bytes)
+        public static fromBuffer(bufferView: ArrayBufferView): Self {
+            return new Self(FRAGMENT_VALUE_EMPTY, new Uint8Array(bufferView.buffer))
         }
 
         // public static encodeRaw(fragment: Fragment<T, U>, walker: Walker): void {
 
         // }
 
-        public static runDecode(walker: Walker): Fragment<T, U> {
+        public static decode(walker: Walker): Fragment<T, U> {
             const value = decode(walker)
             return new Self(
                 value,

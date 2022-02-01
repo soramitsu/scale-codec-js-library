@@ -15,12 +15,12 @@ const MAX_U32 = 2n ** (32n - 2n) - 1n
  * Decodes compact-encoded integer
  */
 export function decodeCompact(walker: Walker): bigint {
-    const firstByte = walker.arr[walker.offset]
+    const firstByte = walker.u8[walker.idx]
     const flag = firstByte & 0b11
 
     switch (flag) {
         case 0b00:
-            walker.offset++
+            walker.idx++
             return BigInt(firstByte >> 2)
         case 0b01:
             return decodeBigInt(walker, 'u16') >> 2n
@@ -28,9 +28,9 @@ export function decodeCompact(walker: Walker): bigint {
             return decodeBigInt(walker, 'u32') >> 2n
         default: {
             const bytesCount = (firstByte >> 2) + 4
-            walker.offset++
+            walker.idx++
             const value = decodeBigIntVarious(walker, bytesCount, false)
-            walker.offset += bytesCount
+            walker.idx += bytesCount
             return value
         }
     }
@@ -54,7 +54,7 @@ export const encodeCompact: Encode<bigint | number> = (value, walker) => {
         throw new Error(`Invalid number is passed: ${value}. It should be non-negative integer.`)
 
     if (value <= MAX_U8) {
-        walker.arr[walker.offset++] = Number(value) << 2
+        walker.u8[walker.idx++] = Number(value) << 2
         return
     }
     if (value <= MAX_U16) {
@@ -68,13 +68,13 @@ export const encodeCompact: Encode<bigint | number> = (value, walker) => {
 
     const bytesLength = encodePositiveBigIntInto(
         BigInt(value),
-        walker.arr,
-        walker.offset + 1,
+        walker.u8,
+        walker.idx + 1,
         // No limit
         Infinity,
     )
-    walker.arr[walker.offset] = ((bytesLength - 4) << 2) + 0b11
-    walker.offset += 1 + bytesLength
+    walker.u8[walker.idx] = ((bytesLength - 4) << 2) + 0b11
+    walker.idx += 1 + bytesLength
 }
 
 encodeCompact.sizeHint = compactSizeHint

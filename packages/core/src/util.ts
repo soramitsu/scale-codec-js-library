@@ -2,7 +2,7 @@ import { Decode, Encode, Walker } from './types'
 
 export class SliceWalkerFinalOffsetError extends Error {
     public constructor(walker: Walker) {
-        super(`offset (${walker.offset}) is not equal to array bytes length (${walker.arr.byteLength})`)
+        super(`offset (${walker.idx}) is not equal to array bytes length (${walker.u8.byteLength})`)
     }
 }
 
@@ -11,7 +11,7 @@ export class WalkerImpl implements Walker {
         const walker = new WalkerImpl(new Uint8Array(encode.sizeHint(value)))
         encode(value, walker)
         walker.checkFinalOffset()
-        return walker.arr
+        return walker.u8
     }
 
     public static decode<T>(source: Uint8Array, decode: Decode<T>): T {
@@ -21,22 +21,22 @@ export class WalkerImpl implements Walker {
         return value
     }
 
-    public arr: Uint8Array
+    public u8: Uint8Array
     public view: DataView
-    public offset = 0
+    public idx = 0
 
     public constructor(source: ArrayBufferView) {
         if (!ArrayBuffer.isView(source)) throw new Error(`Passed source is not an ArrayBufferView (${String(source)})`)
-        this.arr = new Uint8Array(source.buffer, source.byteOffset, source.byteLength)
+        this.u8 = new Uint8Array(source.buffer, source.byteOffset, source.byteLength)
         this.view = new DataView(source.buffer, source.byteOffset, source.byteLength)
     }
 
     public checkFinalOffset() {
-        if (this.offset !== this.arr.byteLength) throw new SliceWalkerFinalOffsetError(this)
+        if (this.idx !== this.u8.byteLength) throw new SliceWalkerFinalOffsetError(this)
     }
 
     public setOffset(value: number): this {
-        this.offset = value
+        this.idx = value
         return this
     }
 }

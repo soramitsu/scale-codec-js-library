@@ -37,7 +37,7 @@ export const encodeStr = encodeFactory<string>(
         const byteLength = utf8ByteLength(str)
 
         encodeCompact(byteLength, walker)
-        const result = encoder.encodeInto(str, walker.arr.subarray(walker.offset))
+        const result = encoder.encodeInto(str, walker.u8.subarray(walker.idx))
 
         if (result.written !== byteLength)
             throw new Error(
@@ -46,7 +46,7 @@ export const encodeStr = encodeFactory<string>(
                     `computed: ${byteLength}; please report a bug.`,
             )
 
-        walker.offset += byteLength
+        walker.idx += byteLength
     },
     (str) => {
         const len = utf8ByteLength(str)

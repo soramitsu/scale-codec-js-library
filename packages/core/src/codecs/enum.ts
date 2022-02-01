@@ -52,7 +52,7 @@ export function encodeEnum<E extends Enum<any>>(value: E, encoders: EnumEncoders
     // during the size hint computation step
 
     const [dis, encode] = getEncodeData(encoders, value.tag)!
-    walker.arr[walker.offset++] = dis
+    walker.u8[walker.idx++] = dis
     if (encode) {
         encode(value.value, walker)
     }
@@ -105,7 +105,7 @@ function formatDecoders(decoders: EnumDecoders<any>): string {
 }
 
 export function decodeEnum<E extends Enum<any>>(walker: Walker, decoders: EnumDecoders<EnumDef<E>>): E {
-    const discriminant = walker.arr[walker.offset++]
+    const discriminant = walker.u8[walker.idx++]
 
     const decoder = decoders[discriminant]
     if (!decoder)
@@ -180,7 +180,7 @@ function optBoolByteToEnum(byte: number): Option<boolean> {
  */
 export const encodeOptionBool: Encode<Option<boolean>> = encodeFactory(
     (value, walker) => {
-        walker.arr[walker.offset++] = value.is('None') ? 0 : value.as('Some') ? 1 : 2
+        walker.u8[walker.idx++] = value.is('None') ? 0 : value.as('Some') ? 1 : 2
     },
     () => 1,
 )
@@ -188,4 +188,4 @@ export const encodeOptionBool: Encode<Option<boolean>> = encodeFactory(
 /**
  * Special decoder for `OptionBool` type from Rust's parity_scale_codec
  */
-export const decodeOptionBool: Decode<Option<boolean>> = (walker) => optBoolByteToEnum(walker.arr[walker.offset++])
+export const decodeOptionBool: Decode<Option<boolean>> = (walker) => optBoolByteToEnum(walker.u8[walker.idx++])
