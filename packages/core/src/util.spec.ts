@@ -33,6 +33,22 @@ describe('Walker', () => {
         expect(toHex(sub)).toEqual('ba be 12 ff')
     })
 
+    it('When source is some TypedArray with offset, writing & reading works', () => {
+        const source = new BigInt64Array([0x01n, 0x12_34_56_78n, 0xffn])
+        const subarray = source.subarray(1, 3)
+
+        const walker = new Walker(subarray)
+
+        expect(walker.arr[0].toString(16)).toEqual(
+            // little endian - last part of the number
+            '78',
+        )
+
+        walker.arr[0] = 0x55
+
+        expect(source[1].toString(16)).toEqual('12345655')
+    })
+
     describe('static encode()', () => {
         it('When encode is done correctly, returns correct bytes', () => {
             const VALUE = 'hello'

@@ -25,13 +25,19 @@ export class WalkerImpl implements Walker {
     public view: DataView
     public offset = 0
 
-    public constructor(arr: Uint8Array) {
-        this.arr = arr
-        this.view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength)
+    public constructor(source: ArrayBufferView) {
+        if (!ArrayBuffer.isView(source)) throw new Error(`Passed source is not an ArrayBufferView (${String(source)})`)
+        this.arr = new Uint8Array(source.buffer, source.byteOffset, source.byteLength)
+        this.view = new DataView(source.buffer, source.byteOffset, source.byteLength)
     }
 
     public checkFinalOffset() {
         if (this.offset !== this.arr.byteLength) throw new SliceWalkerFinalOffsetError(this)
+    }
+
+    public setOffset(value: number): this {
+        this.offset = value
+        return this
     }
 }
 
