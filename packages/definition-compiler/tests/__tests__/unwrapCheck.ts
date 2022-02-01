@@ -1,4 +1,4 @@
-import { Bool, Enum, Option, Result, Str, UnwrapFragment, Valuable } from '@scale-codec/definition-runtime'
+import { Bool, Enum, Option, Result, Str, UnwrapFragment } from '@scale-codec/definition-runtime'
 import {
     AliasA,
     ArrayA,
@@ -25,7 +25,7 @@ test('Complex struct unwrapped correctly', () => {
 
     const input = StructA.fromValue({
         primitive: scaleBool,
-        enum: EnumA.fromValue(Enum.empty('Empty')),
+        enum: EnumA.fromValue(Enum.variant('Empty')),
         map: MapA.fromValue(
             new Map([
                 [scaleStr, scaleTuple],
@@ -37,8 +37,8 @@ test('Complex struct unwrapped correctly', () => {
         array: ArrayA.fromValue([scaleBool, scaleBool, scaleBool]),
         bytesArray: BytesArrayA.fromValue(bytes),
         vec: VecEnumA.fromValue([
-            EnumA.fromValue(Enum.valuable('Opt', OptionA.fromValue(Enum.empty('None')))),
-            EnumA.fromValue(Enum.valuable('Res', ResultA.fromValue(Enum.valuable('Err', scaleStr)))),
+            EnumA.fromValue(Enum.variant('Opt', OptionA.fromValue(Enum.variant('None')))),
+            EnumA.fromValue(Enum.variant('Res', ResultA.fromValue(Enum.variant('Err', scaleStr)))),
         ]),
         alias: AliasA.fromValue([scaleStr]),
     })
@@ -47,11 +47,7 @@ test('Complex struct unwrapped correctly', () => {
 
     type UnwrappedOption = Option<UnwrappedTuple>
 
-    type UnwrappedEnumA = Enum<{
-        Empty: null
-        Opt: Valuable<UnwrappedOption>
-        Res: Valuable<Result<UnwrappedTuple, string>>
-    }>
+    type UnwrappedEnumA = Enum<'Empty' | ['Opt', UnwrappedOption] | ['Res', Result<UnwrappedTuple, string>]>
 
     type ExpectedUnwrappedType = {
         primitive: boolean
@@ -68,7 +64,7 @@ test('Complex struct unwrapped correctly', () => {
     // specian construction to evaluate type checking
     const structUnwrapped: ExpectedUnwrappedType = defineUnwrap<typeof input>({
         primitive: true,
-        enum: Enum.empty('Empty'),
+        enum: Enum.variant('Empty'),
         map: new Map([
             ['test str', ['tuple value']],
             ['another key', ['tuple value']],
@@ -77,7 +73,7 @@ test('Complex struct unwrapped correctly', () => {
         tuple: ['tuple value'],
         array: [true, true, true],
         bytesArray: bytes,
-        vec: [Enum.valuable('Opt', Enum.empty('None')), Enum.valuable('Res', Enum.valuable('Err', 'test str'))],
+        vec: [Enum.variant('Opt', Enum.variant('None')), Enum.variant('Res', Enum.variant('Err', 'test str'))],
         alias: ['test str'],
     })
 

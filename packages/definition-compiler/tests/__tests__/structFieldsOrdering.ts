@@ -7,6 +7,8 @@ import {
     Str,
     BytesVec,
     Compact,
+    createStructEncoder,
+    WalkerImpl,
 } from '@scale-codec/definition-runtime'
 import { Mystery } from '../samples/structFieldsOrdering'
 
@@ -40,16 +42,14 @@ function unwrapScale({
     return { A, a, b }
 }
 
+const rawEncoder = createStructEncoder<Raw>([
+    ['b', encodeStr],
+    ['a', encodeCompact],
+    ['A', encodeUint8Vec],
+])
+
 function encodeRaw(value: Raw): Uint8Array {
-    return encodeStruct(
-        value,
-        {
-            A: encodeUint8Vec,
-            a: encodeCompact,
-            b: encodeStr,
-        },
-        ['b', 'a', 'A'],
-    )
+    return WalkerImpl.encode(value, rawEncoder)
 }
 
 test('Encodes as expected', () => {
@@ -71,7 +71,7 @@ test('Decodes as expected', () => {
     })
     const encoded = encodeRaw(raw)
 
-    const scale = Mystery.fromBytes(encoded)
+    const scale = Mystery.fromBuffer(encoded)
 
     expect(unwrapScale(scale)).toEqual(raw)
 })

@@ -178,9 +178,9 @@ export type BuilderFromFragment<T extends Fragment<any>> = T extends Fragment<in
     ? FragmentBuilder<V, U>
     : never
 
-export type FragmentOrBuilderValue<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<infer V>
+export type FragmentOrBuilderValue<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<infer V, any>
     ? V
-    : T extends FragmentBuilder<infer V>
+    : T extends FragmentBuilder<infer V, any>
     ? V
     : never
 
