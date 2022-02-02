@@ -1,4 +1,4 @@
-import { DecodeResult, Decode } from '@scale-codec/core'
+import { Decode, Walker, WalkerImpl } from '@scale-codec/core'
 import { Enum } from '../../lib'
 import { setCurrentTracker, DecodeTraceCollector, buildDecodeTraceStepsFmt, CodecTracker, DecodeTrace } from '../index'
 // useful for tests here too
@@ -7,16 +7,18 @@ import { StructA } from '@scale-codec/definition-compiler/tests/samples/unwrapCh
 describe('Collecting big decode trace and formatting it', () => {
     class TestTracker implements CodecTracker {
         public lastTrace: null | DecodeTrace = null
+        public lastWalker: null | Walker = null
         private errored = false
         private depth = 0
         private tracer = new DecodeTraceCollector()
 
-        public decode<T>(loc: string, input: Uint8Array, decode: Decode<T>): DecodeResult<T> {
+        public decode<T>(loc: string, walker: Walker, decode: Decode<T>): T {
             try {
+                this.lastWalker = walker
                 this.depth++
-                this.tracer.decodeStart(loc, input)
-                const result = decode(input)
-                const trace = this.tracer.decodeSuccess(result)
+                this.tracer.decodeStart(loc, walker)
+                const result = decode(walker)
+                const trace = this.tracer.decodeSuccess(walker, result)
                 trace && (this.lastTrace = trace)
                 return result
             } catch (err) {
@@ -32,7 +34,7 @@ describe('Collecting big decode trace and formatting it', () => {
             }
         }
 
-        public refineDecodeLoc<T>(loc: string, decode: () => DecodeResult<T>) {
+        public refineDecodeLoc<T>(loc: string, decode: () => T) {
             this.tracer.refineLoc(loc)
             return decode()
         }
@@ -40,7 +42,7 @@ describe('Collecting big decode trace and formatting it', () => {
 
     const fragment = StructA.wrap({
         primitive: true,
-        enum: Enum.empty('Empty'),
+        enum: Enum.variant('Empty'),
         map: new Map([
             ['test str', ['tuple value']],
             ['another key', ['tuple value']],
@@ -49,7 +51,7 @@ describe('Collecting big decode trace and formatting it', () => {
         tuple: ['tuple value'],
         array: [true, true, true],
         bytesArray: new Uint8Array([8, 1, 2, 3, 3]),
-        vec: [Enum.valuable('Opt', Enum.empty('None')), Enum.valuable('Res', Enum.valuable('Err', 'test str'))],
+        vec: [Enum.variant('Opt', Enum.variant('None')), Enum.variant('Res', Enum.variant('Err', 'test str'))],
         alias: ['test str'],
     })
 
@@ -62,10 +64,10 @@ describe('Collecting big decode trace and formatting it', () => {
         setCurrentTracker(tracker)
 
         // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        StructA.fromBytes(fragment.bytes).value
+        StructA.fromBuffer(fragment.bytes).value
 
         expect(tracker.lastTrace).toBeTruthy()
-        expect(buildDecodeTraceStepsFmt(tracker.lastTrace!).assemble()).toMatchSnapshot()
+        expect(buildDecodeTraceStepsFmt(tracker.lastTrace!, tracker.lastWalker!).assemble()).toMatchSnapshot()
     })
 
     test('Error case', () => {
@@ -74,9 +76,9 @@ describe('Collecting big decode trace and formatting it', () => {
 
         const bytes = fragment.bytes
         const copy = new Uint8Array([...bytes]).fill(255, 20, 30)
-        expect(() => StructA.fromBytes(copy).value).toThrow()
+        expect(() => StructA.fromBuffer(copy).value).toThrow()
 
         expect(tracker.lastTrace).toBeTruthy()
-        expect(buildDecodeTraceStepsFmt(tracker.lastTrace!).assemble()).toMatchSnapshot()
+        expect(buildDecodeTraceStepsFmt(tracker.lastTrace!, tracker.lastWalker!).assemble()).toMatchSnapshot()
     })
 })

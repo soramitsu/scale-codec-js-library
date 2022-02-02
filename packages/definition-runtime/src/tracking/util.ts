@@ -1,52 +1,46 @@
-import { toHex } from '@scale-codec/util'
+import { Walker } from '@scale-codec/core'
 import { TrackValueInspectable, TrackValueInspect } from './types'
 
-export interface PrettyDecodeInputParams {
+export interface FormatWalkerStepParams {
+    walker: Walker
     /**
-     * Max count of stringified bytes
-     * @default 20
+     * The walker's offset at the start of the step
      */
-    bytesLimit?: number
-
+    offsetStart: number
     /**
-     * How many bytes were used in the `DecodeResult` if there was some
+     * The walker's offset at the end of the step
      */
-    used?: number
+    offsetEnd?: number
 }
 
-function hexLimited(bytes: Uint8Array, limit: number): string {
-    const len = bytes.length
-    const cut = len > limit ? bytes.subarray(0, limit) : bytes
-    const ellipsis = len > limit ? '…' : ''
-    return `${toHex(cut)}${ellipsis}`
+function formatU8(u8: Uint8Array, start: number, end: number | undefined): string {
+    return [...u8]
+        .map((byte, i) => {
+            const hex = byte.toString(16).padStart(2, '0')
+            const prefix = i === start ? '(start) ' : i === end ? '(end) ' : ''
+            return prefix + hex
+        })
+        .join(' ')
 }
 
-export function prettyDecodeInput(input: Uint8Array, params?: PrettyDecodeInputParams): string {
-    const limit = params?.bytesLimit ?? 20
-    const used = params?.used ?? 0
-    const len = input.length
+function formatWalkerOffset(start: number, end?: number): string {
+    const offsetValue = typeof end === 'number' ? `${start}..${end}` : start
 
-    if (!len) {
-        return '<empty>'
+    let deltaSuffix = ''
+    if (typeof end === 'number') {
+        const delta = end - start
+        deltaSuffix = ` (${delta >= 0 ? `+${delta}` : delta})`
     }
 
-    const shallPrintTheUsed = used > 0
-    const computedSpaceForTheUsed = Math.min(used, limit)
-    const shallPrintTheRest = len > used
-    const howMuchSpaceAvailableForTheRest = limit - computedSpaceForTheUsed
-    const howMuchBytesInTheRest = len - used
-    const computedSpaceForTheRest = Math.max(0, Math.min(howMuchBytesInTheRest, howMuchSpaceAvailableForTheRest))
+    return `offset: ${offsetValue}${deltaSuffix}`
+}
 
-    const theUsedFormattedPart =
-        shallPrintTheUsed && `[${hexLimited(input.subarray(0, used), computedSpaceForTheUsed)}]`
-    const theRestFormattedPart =
-        shallPrintTheRest && (computedSpaceForTheRest ? hexLimited(input.subarray(used), computedSpaceForTheRest) : '…')
-    const formattedInput = [theUsedFormattedPart, theRestFormattedPart].filter((x) => !!x).join(' ')
-
-    const summary =
-        len === used ? `len = used = ${len}` : `len: ${len}${used ? `, used: ${used > len ? '(!) ' : ''}${used}` : ''}`
-
-    return `${formattedInput} (${summary})`
+export function formatWalkerStep(params: FormatWalkerStepParams): string {
+    return `${formatWalkerOffset(params.offsetStart, params.offsetEnd)}; ${formatU8(
+        params.walker.u8,
+        params.offsetStart,
+        params.offsetEnd,
+    )}`
 }
 
 export function isTrackValueInspectable(value: unknown): value is TrackValueInspectable {

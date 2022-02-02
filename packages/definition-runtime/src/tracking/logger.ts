@@ -1,10 +1,10 @@
 import { Fmt, fmt } from 'fmt-subs'
 import { Walker, Decode } from '@scale-codec/core'
 import { getCurrentTracker, setCurrentTracker } from './current'
-import { buildDecodeTraceStepsFmt, DecodeTraceCollector, BuildTraceStepsFmtParams, DecodeTrace } from './decode-trace'
+import { buildDecodeTraceStepsFmt, DecodeTraceCollector, DecodeTrace } from './decode-trace'
 import { CodecTracker } from './types'
 
-export interface LoggerConfig extends BuildTraceStepsFmtParams {
+export interface LoggerConfig {
     /**
      * @default true
      */
@@ -58,17 +58,17 @@ export class Logger implements CodecTracker {
     public decode<T>(loc: string, walker: Walker, decode: Decode<T>): T {
         try {
             this.decodeCurrentDepth++
-            this.decodeTracer.decodeStart(loc, input)
+            this.decodeTracer.decodeStart(loc, walker)
 
-            const result = decode(input)
+            const value = decode(walker)
 
-            const maybeRootTrace = this.decodeTracer.decodeSuccess(result)
+            const maybeRootTrace = this.decodeTracer.decodeSuccess(walker, value)
             if (maybeRootTrace && this.logDecodeOk) {
-                const tree = this.buildDecodeTree(maybeRootTrace)
+                const tree = this.buildDecodeTree(maybeRootTrace, walker)
                 logDebug(...fmt`Decode of "${maybeRootTrace.loc}" succeed\n\nDecode steps:\n\n${tree}`.assemble())
             }
 
-            return result
+            return value
         } catch (err) {
             if (!this.decodeErrorHandled) {
                 this.decodeErrorHandled = true
@@ -76,7 +76,7 @@ export class Logger implements CodecTracker {
                 const trace = this.decodeTracer.decodeError(err)
 
                 if (this.logDecodeErrors) {
-                    const tree = this.buildDecodeTree(trace)
+                    const tree = this.buildDecodeTree(trace, walker)
                     logError(
                         ...fmt`Decode of "${trace.loc}" failed with error: ${err}\n\nDecode steps:\n\n${tree}`.assemble(),
                     )
@@ -101,7 +101,7 @@ export class Logger implements CodecTracker {
      */
     public mount() {
         const current = getCurrentTracker()
-        if (current && current !== this) throw new Error('Something already mounted')
+        if (current && current !== this) throw new Error('Something is already mounted')
         if (!current) {
             setCurrentTracker(this)
         }
@@ -118,7 +118,7 @@ export class Logger implements CodecTracker {
         throw new Error('This tracker is not mounted')
     }
 
-    private buildDecodeTree(trace: DecodeTrace): Fmt {
-        return buildDecodeTraceStepsFmt(trace, this.config)
+    private buildDecodeTree(trace: DecodeTrace, walker: Walker): Fmt {
+        return buildDecodeTraceStepsFmt(trace, walker)
     }
 }

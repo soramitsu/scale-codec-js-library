@@ -1,34 +1,7 @@
 import { Walker } from '@scale-codec/core'
 import { assert } from '@scale-codec/util'
 import { Fmt, fmt, sub } from 'fmt-subs'
-import { tryInspectValue, prettyDecodeInput } from './util'
-
-// export interface DecodeTraceResult {
-//     value: unknown
-//     bytes: number
-// }
-
-// class DecodeTraceResultInspector implements DecodeTraceResult {
-//     private raw: DecodeResult<unknown>
-
-//     private inspectedOnce: null | [unknown] = null
-
-//     public constructor(raw: DecodeResult<unknown>) {
-//         this.raw = raw
-//     }
-
-//     public get bytes(): number {
-//         return this.raw[1]
-//     }
-
-//     public get value(): unknown {
-//         if (!this.inspectedOnce) {
-//             this.inspectedOnce = [tryInspectValue(this.raw[0])]
-//         }
-
-//         return this.inspectedOnce[0]
-//     }
-// }
+import { tryInspectValue, formatWalkerStep } from './util'
 
 export class DecodeTrace {
     public parent: DecodeTrace | null = null
@@ -37,9 +10,8 @@ export class DecodeTrace {
      * Location
      */
     public loc: string[]
-
-    public offsetStart: number
-    public result?: { offsetEnd: number; value: unknown }
+    public input?: { offset: number }
+    public result?: { offset: number; value: unknown }
     public error?: unknown
     public children: DecodeTrace[] = []
 
@@ -65,8 +37,8 @@ export class DecodeTrace {
         return this
     }
 
-    public setInput(input: Uint8Array): this {
-        this.input = input
+    public setInput(offset: number): this {
+        this.input = { offset }
         return this
     }
 }
@@ -76,9 +48,9 @@ export class DecodeTraceCollector {
 
     public decodeStart(loc: string, walker: Walker) {
         if (this.current && !this.current.input) {
-            this.current.setInput(input).refineLoc(loc)
+            this.current.setInput(walker.idx).refineLoc(loc)
         } else {
-            const newTrace = new DecodeTrace(loc).setInput(input)
+            const newTrace = new DecodeTrace(loc).setInput(walker.idx)
 
             if (!this.current) {
                 this.current = newTrace
@@ -95,7 +67,7 @@ export class DecodeTraceCollector {
      */
     public decodeSuccess(walker: Walker, decodedValue: unknown): null | DecodeTrace {
         assert(this.current, 'No current')
-        this.current.result = { value: decodedValue, offsetEnd: walker.offset }
+        this.current.result = { value: decodedValue, offset: walker.idx }
 
         if (!this.current.parent) {
             const trace = this.current
@@ -128,11 +100,8 @@ export class DecodeTraceCollector {
     }
 }
 
-export interface BuildTraceStepsFmtParams {
-    /**
-     * See {@link PrettyDecodeInputParams.bytesLimit}
-     */
-    bytesPrintLimit?: number
+interface BuildTraceCtx {
+    walker: Walker
 }
 
 function tracePath(trace: DecodeTrace): string[] {
@@ -151,7 +120,7 @@ function tracePath(trace: DecodeTrace): string[] {
 
 const INDENT = ' '.repeat(4)
 
-function buildStepsRecursive(trace: DecodeTrace, params?: BuildTraceStepsFmtParams): Fmt {
+function buildStepsRecursive(trace: DecodeTrace, ctx: BuildTraceCtx): Fmt {
     const errored = !!trace.error
     const resultVal = trace.result
 
@@ -159,66 +128,28 @@ function buildStepsRecursive(trace: DecodeTrace, params?: BuildTraceStepsFmtPara
     const result = errored
         ? fmt`ERROR - ${sub(trace.error, '%s')}`
         : resultVal
-        ? sub(resultVal.value, '%O')
+        ? sub(tryInspectValue(resultVal.value), '%O')
         : '<not computed>'
     const input = trace.input
-        ? prettyDecodeInput(trace.input, {
-              used: resultVal?.bytes,
-              bytesLimit: params?.bytesPrintLimit,
+        ? formatWalkerStep({
+              walker: ctx.walker,
+              offsetStart: trace.input.offset,
+              offsetEnd: trace.result?.offset,
           })
         : '<no input>'
 
     let acc = Fmt.concat(
         fmt`${path}\n`,
         fmt`${INDENT}Input: ${input}\n`,
-        fmt`${INDENT}Children: ${trace.children.length}\n`,
         fmt`${INDENT}Result: ${result}\n`,
+        fmt`${INDENT}Child steps: ${trace.children.length}\n`,
     )
 
     if (trace.children.length) {
-        acc = acc.concat(
-            ...trace.children.map((x) => buildStepsRecursive(x, params)),
-            // fmt`  ...${path}\n  Result: ${result}\n`,
-        )
-    } else {
-        // acc = acc.concat(fmt`  Result: ${result}\n`);
+        acc = acc.concat(...trace.children.map((x) => buildStepsRecursive(x, ctx)))
     }
 
     return acc
-
-    // if (!trace.children.length) {
-    //     result = result.concat(
-    //         fmt`${
-    //             trace.input
-    //                 ? prettyDecodeInput(trace.input, {
-    //                       used: resultVal?.bytes,
-    //                       bytesLimit: params?.bytesPrintLimit,
-    //                   })
-    //                 : '<no input>'
-    //         }\n`,
-    //     );
-    // } else {
-    //     result = result.concat(...trace.children.map((x) => buildStepsRecursive(x, params)));
-    // }
-
-    // /*
-    //     Value: maybe result or error
-    //       <its input maybe with used bytes>
-    //     Value -> ::U128 -> U128: maybe result or error
-
-    //  */
-
-    // const path = tracePath(trace);
-
-    // const decodeResultFmt = errored
-    //     ? fmt`ERROR - ${sub(trace.error, '%s')}`
-    //     : resultVal
-    //     ? sub(resultVal.value, '%O')
-    //     : '<not computed>';
-
-    // result = result.concat(fmt`  ${path.join(' 🡪 ')}: ${decodeResultFmt}\n`);
-
-    // return result;
 }
 
 /**
@@ -226,6 +157,6 @@ function buildStepsRecursive(trace: DecodeTrace, params?: BuildTraceStepsFmtPara
  * This function shouldn't be in the `DecodeTrace` class itself due to provide a tree-shaking possibility. This is not
  * the main part of this class, but the side tool, used for pretty-print in the console.
  */
-export function buildDecodeTraceStepsFmt(trace: DecodeTrace, params?: BuildTraceStepsFmtParams): Fmt {
-    return buildStepsRecursive(trace, params)
+export function buildDecodeTraceStepsFmt(trace: DecodeTrace, walker: Walker): Fmt {
+    return buildStepsRecursive(trace, { walker })
 }

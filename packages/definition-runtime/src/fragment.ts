@@ -1,10 +1,5 @@
 import { Encode, Decode, WalkerImpl, Walker } from '@scale-codec/core'
-// import { concatBytes } from '@scale-codec/util'
-import { trackDecode, TrackValueInspect, TrackValueInspectable } from './tracking'
-
-// type OptionTupleSome<T> = [T]
-// type OptionTuple<T> = null | OptionTupleSome<T>
-// type FragmentInternalDecodeTrackFn<V, U> = (input: Uint8Array, decode: Decode<Fragment<V, U>>) => void
+import { trackDecode, TrackDecodeFn, TrackValueInspect, TrackValueInspectable } from './tracking'
 
 const FRAGMENT_VALUE_EMPTY = Symbol('empty')
 
@@ -15,17 +10,6 @@ function offPropsEnumerability(object: object, props: PropertyKey[]) {
     for (const prop of props) {
         Reflect.defineProperty(object, prop, { enumerable: false })
     }
-}
-
-function offPropEnumerabilityWithValue(object: object, prop: PropertyKey, value: any) {
-    Reflect.defineProperty(object, prop, { enumerable: false, value, writable: true })
-}
-
-function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => any) {
-    Reflect.defineProperty(object, prop, {
-        enumerable: true,
-        get,
-    })
 }
 
 /**
@@ -40,40 +24,19 @@ function defineReadonlyOwnGetter(object: object, prop: PropertyKey, get: () => a
  * unwrapped to their values.
  */
 export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueInspectable {
-    // /**
-    //  * Some JS-easy-accessible value of the instance
-    //  */
-    // public readonly value: Value
-
-    // /**
-    //  * SCALE-encoded bytes of the instance
-    //  */
-    // public readonly bytes: Uint8Array
-
-    // public readonly sizeHint: number;
-
     private __value: typeof FRAGMENT_VALUE_EMPTY | Value
 
     private __bytes: null | Uint8Array
 
-    /**
-     * @internal
-     */
     protected abstract __encode: Encode<Value>
 
-    /**
-     * @internal
-     */
     protected abstract __decode: Decode<Value>
 
-    // /**
-    //  * @internal
-    //  */
-    // protected abstract __trackDecode: FragmentInternalDecodeTrackFn<Value, Unwrapped>
+    /**
+     * For tracking
+     */
+    protected abstract __name: string
 
-    // /**
-    //  * @internal
-    //  */
     public constructor(value: typeof FRAGMENT_VALUE_EMPTY | Value, bytes: null | Uint8Array) {
         if (value === FRAGMENT_VALUE_EMPTY && !bytes)
             throw new Error('Fragment should have either value or bytes or both')
@@ -100,7 +63,13 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
 
     public get value(): Value {
         if (isFragmentValueEmpty(this.__value)) {
-            this.__value = WalkerImpl.decode(this.__bytes!, this.__decode)
+            // a bit dirty to implement nice tracking
+            WalkerImpl.decode(this.__bytes!, (walker) => {
+                trackDecode(this.__name, walker, () => {
+                    this.__value = this.__decode(walker)
+                    return this
+                })
+            })
         }
         return this.__value as Value
     }
@@ -155,11 +124,6 @@ export interface FragmentBuilder<T, U = T> {
      * Raw `Decode` function. Primarily used by the builder or by other builders internally
      */
     decode: Decode<Fragment<T, U>>
-    // encodeRaw: (fragment: Fragment<T, U>, walker: Walker) => void
-    // /**
-    //  * TODO doc
-    //  */
-    // encodeSizeHint: (fragment: Fragment<T, U>) => number
     /**
      * Constructs instance back from unwrapped value, i.e. works vice versa from {@link Fragment.unwrap}
      */
@@ -193,17 +157,7 @@ export type FragmentOrBuilderUnwrapped<T extends Fragment<any> | FragmentBuilder
     ? U
     : never
 
-// function decodeAndMemorize<T extends Fragment<any>>(
-//     bytes: Uint8Array,
-//     decode: Decode<FragmentOrBuilderValue<T>>,
-//     ctor: FragmentCtor<FragmentOrBuilderValue<T>>,
-// ): DecodeResult<T> {
-//     const [value, bytesCount] = decode(bytes)
-//     const usedBytes = bytes.slice(0, bytesCount)
-//     // eslint-disable-next-line new-cap
-//     const instance = new ctor([value], usedBytes) as T
-//     return [instance, bytesCount]
-// }
+export type UnwrapFragment<T> = T extends Fragment<any, infer U> ? U : T
 
 function unwrapFallback<T>(scale: Fragment<T, any>): any {
     return scale.value
@@ -224,9 +178,11 @@ export function createBuilder<T, U = T>(
     unwrap?: FragmentUnwrapFn<T, U>,
     wrap?: FragmentWrapFn<T, U>,
 ): FragmentBuilder<T, U> {
-    // const decodeTrackable: Decode<T> = (input) => trackDecode(`__decode ${name}`, input, decode);
-
-    // const internalTrackDecode: FragmentInternalDecodeTrackFn<T, U> = (bytes, fn) => trackDecode(name, bytes, fn)
+    // useful for track function to catch an actual fragment instead of its value
+    const decodeToFragment: Decode<Fragment<T, U>> = (walker) => {
+        const value = decode(walker)
+        return ctor.fromValue(value)
+    }
 
     const ctor: FragmentBuilder<T, U> = class Self extends Fragment<T, U> {
         public static fromValue(value: T): Self {
@@ -237,22 +193,9 @@ export function createBuilder<T, U = T>(
             return new Self(FRAGMENT_VALUE_EMPTY, new Uint8Array(bufferView.buffer))
         }
 
-        // public static encodeRaw(fragment: Fragment<T, U>, walker: Walker): void {
-
-        // }
-
         public static decode(walker: Walker): Fragment<T, U> {
-            const value = decode(walker)
-            return new Self(
-                value,
-                // pass slice here?
-                null,
-            )
+            return trackDecode(name, walker, decodeToFragment)
         }
-
-        // public static encodeSizeHint(fragment: Fragment<T, U>): number {
-        //     // return fragment.bytes.byteLength
-        // }
 
         public static wrap(unwrappedValue: U): Self {
             return new Self(wrap ? wrap(unwrappedValue) : (unwrappedValue as unknown as T), null)
@@ -264,7 +207,7 @@ export function createBuilder<T, U = T>(
 
         protected __encode = encode
         protected __decode = decode
-        // protected __trackDecode = internalTrackDecode
+        protected __name = name
 
         public constructor(value: typeof FRAGMENT_VALUE_EMPTY | T, bytes: null | Uint8Array) {
             super(value, bytes)
@@ -286,5 +229,3 @@ export function createBuilder<T, U = T>(
 
     return ctor
 }
-
-export type UnwrapFragment<T> = T extends Fragment<any, infer U> ? U : T
