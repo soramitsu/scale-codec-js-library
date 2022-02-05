@@ -48,3 +48,7 @@ export const PublicKey: ScaleStructBuilder<{
     ['payload', dynBuilder(() => Bytes32)],
 ])
 ```
+
+## TODO
+
+-   [ ] Implement builders sorting due to their dependencies between each other to minimize `dynBuilder()`s' amount.
