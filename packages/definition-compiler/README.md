@@ -52,3 +52,4 @@ export const PublicKey: ScaleStructBuilder<{
 ## TODO
 
 -   [ ] Implement builders sorting due to their dependencies between each other to minimize `dynBuilder()`s' amount.
+-   [ ] Optimize creation of `DynBuilder`s - do it only once per module, hoist them at the beginning of it.
