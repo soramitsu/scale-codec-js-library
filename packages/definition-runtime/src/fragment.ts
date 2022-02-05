@@ -1,5 +1,5 @@
 import { Encode, Decode, WalkerImpl, Walker } from '@scale-codec/core'
-import { trackDecode, TrackDecodeFn, TrackValueInspect, TrackValueInspectable } from './tracking'
+import { trackDecode, TrackValueInspect, TrackValueInspectable } from './tracking'
 
 const FRAGMENT_VALUE_EMPTY = Symbol('empty')
 
@@ -167,10 +167,7 @@ export function createBuilder<T, U = T>(
     wrap?: FragmentWrapFn<T, U>,
 ): FragmentBuilder<T, U> {
     // useful for track function to catch an actual fragment instead of its value
-    const decodeToFragment: Decode<Fragment<T, U>> = (walker) => {
-        const value = decode(walker)
-        return ctor.fromValue(value)
-    }
+    const decodeToFragment: Decode<Fragment<T, U>> = (walker) => ctor.fromValue(decode(walker))
 
     const ctor: FragmentBuilder<T, U> = class Self extends Fragment<T, U> {
         public static fromValue(value: T): Self {
