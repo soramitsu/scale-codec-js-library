@@ -20,7 +20,7 @@
         "lint:eslint-check": "eslint .",
         "lint:eslint-fix": "eslint . --fix",
         "check-code-integrity": "pnpm gulp-ts -- checkCodeIntegrity",
-        "api:extract-local": "pnpm gulp-ts -- extractApisLocalBuild",
+        "api:extract:local": "pnpm gulp-ts -- extractApisLocalBuild",
         "api:extract": "pnpm gulp-ts -- extractApis",
         "api:docs": "pnpm gulp-ts -- documentApis",
         "api:all": "pnpm gulp-ts -- extractAndDocumentApis",

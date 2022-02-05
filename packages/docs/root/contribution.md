@@ -69,11 +69,11 @@ pnpm api:docs
 pnpm api:all
 
 # update reports (for local usage)
-pnpm api:extract-local
+pnpm api:extract:local
 ```
 
 ::: tip
-By default `api:extract` script fails if extracted API reports are not the same as existing ones. It is usefull for CI. To override API reports use `api:extract-local`.
+By default `api:extract` script fails if extracted API reports are not the same as existing ones. It is usefull for CI. To override API reports use `api:extract:local`.
 :::
 
 ### Build
