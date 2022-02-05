@@ -29,7 +29,7 @@
         "docs:compile-ns": "pnpm gulp-ts -- compileDocsNamespace",
         "compiler:update-samples": "pnpm gulp-ts -- compileCompilerSamples",
         "compiler:clean-samples": "pnpm gulp-ts -- cleanCompilerSamples",
-        "core:benchmark": "pnpm run benchmark --filter core"
+        "benchmark": "pnpm --filter benchmark start"
     },
     "devDependencies": {
         "@changesets/cli": "^2.17.0",

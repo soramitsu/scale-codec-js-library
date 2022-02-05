@@ -15,7 +15,12 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['**/packages/**/*.spec.ts', '**/packages/**/__tests__/*.ts', '**/e2e-spa/src/**/*.spec.ts'],
+            files: [
+                '**/packages/**/*.spec.ts',
+                '**/packages/**/__tests__/*.ts',
+                '**/e2e-spa/src/**/*.spec.ts',
+                '**packages/*/test/**/*.ts',
+            ],
             env: {
                 jest: true,
             },
