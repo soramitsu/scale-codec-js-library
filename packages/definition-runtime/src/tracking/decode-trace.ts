@@ -130,17 +130,17 @@ function buildStepsRecursive(trace: DecodeTrace, ctx: BuildTraceCtx): Fmt {
         : resultVal
         ? sub(tryInspectValue(resultVal.value), '%O')
         : '<not computed>'
-    const input = trace.input
-        ? formatWalkerStep({
+    const walk = trace.input
+        ? `<${formatWalkerStep({
               walker: ctx.walker,
               offsetStart: trace.input.offset,
               offsetEnd: trace.result?.offset,
-          })
+          })}>`
         : '<no input>'
 
     let acc = Fmt.concat(
         fmt`${path}\n`,
-        fmt`${INDENT}Input: ${input}\n`,
+        fmt`${INDENT}Walk: ${walk}\n`,
         fmt`${INDENT}Result: ${result}\n`,
         fmt`${INDENT}Child steps: ${trace.children.length}\n`,
     )

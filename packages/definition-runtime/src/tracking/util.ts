@@ -1,4 +1,5 @@
 import { Walker } from '@scale-codec/core'
+import { toHex } from '@scale-codec/util'
 import { TrackValueInspectable, TrackValueInspect } from './types'
 
 export interface FormatWalkerStepParams {
@@ -13,14 +14,11 @@ export interface FormatWalkerStepParams {
     offsetEnd?: number
 }
 
+const ELLIPSIS = '…'
+
 function formatU8(u8: Uint8Array, start: number, end: number | undefined): string {
-    return [...u8]
-        .map((byte, i) => {
-            const hex = byte.toString(16).padStart(2, '0')
-            const prefix = i === start ? '(start) ' : i === end ? '(end) ' : ''
-            return prefix + hex
-        })
-        .join(' ')
+    const hex = toHex(u8.subarray(Math.min(start, end ?? Infinity), Math.max(start, end ?? Infinity)))
+    return `${start > 0 ? ELLIPSIS : ''}${hex}${typeof end === 'number' && end < u8.length ? ELLIPSIS : ''}`
 }
 
 function formatWalkerOffset(start: number, end?: number): string {

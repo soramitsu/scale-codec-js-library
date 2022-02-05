@@ -3,33 +3,33 @@
 exports[`Collecting big decode trace and formatting it Error case 1`] = `
 Array [
   "StructA
-    Input: 01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74… (len: 118)
-    Children: 4
+    Walk: <offset: 0; 01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
     Result: <not computed>
+    Child steps: 4
 StructA / .primitive / Bool
-    Input: [01] 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74… (len: 118, used: 1)
-    Children: 0
+    Walk: <offset: 0..1 (+1); 01…>
     Result: %O
+    Child steps: 0
 StructA / .alias / TupleA
-    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 ff… (len: 117, used: 9)
-    Children: 1
+    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 1
 StructA / .alias / TupleA / .0 / Str
-    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 ff… (len: 117, used: 9)
-    Children: 0
+    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 0
 StructA / .enum / EnumA
-    Input: [02] 08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff… (len: 108, used: 1)
-    Children: 0
+    Walk: <offset: 10..11 (+1); …02…>
     Result: %O
+    Child steps: 0
 StructA / .map / MapA
-    Input: 08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c… (len: 107)
-    Children: 1
+    Walk: <offset: 11; …08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
     Result: <not computed>
+    Child steps: 1
 StructA / .map / MapA / <key> / Str
-    Input: 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75… (len: 106)
-    Children: 0
+    Walk: <offset: 12; …20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
     Result: ERROR - %s
+    Child steps: 0
 ",
   true,
   Array [
@@ -46,125 +46,125 @@ StructA / .map / MapA / <key> / Str
 exports[`Collecting big decode trace and formatting it Success case 1`] = `
 Array [
   "StructA
-    Input: [01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74…] (len = used = 118)
-    Children: 9
+    Walk: <offset: 0..118 (+118); 01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
     Result: %O
+    Child steps: 9
 StructA / .primitive / Bool
-    Input: [01] 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74… (len: 118, used: 1)
-    Children: 0
+    Walk: <offset: 0..1 (+1); 01…>
     Result: %O
+    Child steps: 0
 StructA / .alias / TupleA
-    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 72… (len: 117, used: 9)
-    Children: 1
+    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 1
 StructA / .alias / TupleA / .0 / Str
-    Input: [20 74 65 73 74 20 73 74 72] 02 08 20 74 65 73 74 20 73 74 72… (len: 117, used: 9)
-    Children: 0
+    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 0
 StructA / .enum / EnumA
-    Input: [02] 08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61… (len: 108, used: 1)
-    Children: 0
+    Walk: <offset: 10..11 (+1); …02…>
     Result: %O
+    Child steps: 0
 StructA / .map / MapA
-    Input: [08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c…] … (len: 107, used: 46)
-    Children: 4
+    Walk: <offset: 11..57 (+46); …08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65…>
     Result: %O
+    Child steps: 4
 StructA / .map / MapA / <key> / Str
-    Input: [20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61 6c 75… (len: 106, used: 9)
-    Children: 0
+    Walk: <offset: 12..21 (+9); …20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 0
 StructA / .map / MapA / <value> / TupleA
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 2c 61 6e 6f 74 68 65 72… (len: 97, used: 12)
-    Children: 1
+    Walk: <offset: 21..33 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
     Result: %O
+    Child steps: 1
 StructA / .map / MapA / <value> / TupleA / .0 / Str
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 2c 61 6e 6f 74 68 65 72… (len: 97, used: 12)
-    Children: 0
+    Walk: <offset: 21..33 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
     Result: %O
+    Child steps: 0
 StructA / .map / MapA / <key> / Str
-    Input: [2c 61 6e 6f 74 68 65 72 20 6b 65 79] 2c 74 75 70 6c 65 20 76… (len: 85, used: 12)
-    Children: 0
+    Walk: <offset: 33..45 (+12); …2c 61 6e 6f 74 68 65 72 20 6b 65 79…>
     Result: %O
+    Child steps: 0
 StructA / .map / MapA / <value> / TupleA
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 08 2c 74 75 70 6c 65 20… (len: 73, used: 12)
-    Children: 1
+    Walk: <offset: 45..57 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
     Result: %O
+    Child steps: 1
 StructA / .map / MapA / <value> / TupleA / .0 / Str
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 08 2c 74 75 70 6c 65 20… (len: 73, used: 12)
-    Children: 0
+    Walk: <offset: 45..57 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
     Result: %O
+    Child steps: 0
 StructA / .set / SetA
-    Input: [08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65…] … (len: 61, used: 27)
-    Children: 2
+    Walk: <offset: 57..84 (+27); …08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65…>
     Result: %O
+    Child steps: 2
 StructA / .set / SetA / TupleA
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 34 61 6e 6f 74 68 65 72… (len: 60, used: 12)
-    Children: 1
+    Walk: <offset: 58..70 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
     Result: %O
+    Child steps: 1
 StructA / .set / SetA / TupleA / .0 / Str
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] 34 61 6e 6f 74 68 65 72… (len: 60, used: 12)
-    Children: 0
+    Walk: <offset: 58..70 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
     Result: %O
+    Child steps: 0
 StructA / .set / SetA / TupleA
-    Input: [34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65] 01 01 01 08 01 02… (len: 48, used: 14)
-    Children: 1
+    Walk: <offset: 70..84 (+14); …34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65…>
     Result: %O
+    Child steps: 1
 StructA / .set / SetA / TupleA / .0 / Str
-    Input: [34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65] 01 01 01 08 01 02… (len: 48, used: 14)
-    Children: 0
+    Walk: <offset: 70..84 (+14); …34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65…>
     Result: %O
+    Child steps: 0
 StructA / .array / ArrayA
-    Input: [01 01 01] 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73… (len: 34, used: 3)
-    Children: 3
+    Walk: <offset: 84..87 (+3); …01 01 01…>
     Result: %O
+    Child steps: 3
 StructA / .array / ArrayA / Bool
-    Input: [01] 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73… (len: 34, used: 1)
-    Children: 0
+    Walk: <offset: 84..85 (+1); …01…>
     Result: %O
+    Child steps: 0
 StructA / .array / ArrayA / Bool
-    Input: [01] 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74… (len: 33, used: 1)
-    Children: 0
+    Walk: <offset: 85..86 (+1); …01…>
     Result: %O
+    Child steps: 0
 StructA / .array / ArrayA / Bool
-    Input: [01] 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72… (len: 32, used: 1)
-    Children: 0
+    Walk: <offset: 86..87 (+1); …01…>
     Result: %O
+    Child steps: 0
 StructA / .bytesArray / BytesArrayA
-    Input: [08 01 02 03 03] 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c… (len: 31, used: 5)
-    Children: 0
+    Walk: <offset: 87..92 (+5); …08 01 02 03 03…>
     Result: %O
+    Child steps: 0
 StructA / .vec / VecEnumA
-    Input: [08 00 00 01 01 20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65… (len: 26, used: 14)
-    Children: 2
+    Walk: <offset: 92..106 (+14); …08 00 00 01 01 20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 2
 StructA / .vec / VecEnumA / EnumA
-    Input: [00 00] 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20… (len: 25, used: 2)
-    Children: 1
+    Walk: <offset: 93..95 (+2); …00 00…>
     Result: %O
+    Child steps: 1
 StructA / .vec / VecEnumA / EnumA / ::Opt / OptionA
-    Input: [00] 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76… (len: 24, used: 1)
-    Children: 0
+    Walk: <offset: 94..95 (+1); …00…>
     Result: %O
+    Child steps: 0
 StructA / .vec / VecEnumA / EnumA
-    Input: [01 01 20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61… (len: 23, used: 11)
-    Children: 1
+    Walk: <offset: 95..106 (+11); …01 01 20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 1
 StructA / .vec / VecEnumA / EnumA / ::Res / ResultA
-    Input: [01 20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61 6c… (len: 22, used: 10)
-    Children: 1
+    Walk: <offset: 96..106 (+10); …01 20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 1
 StructA / .vec / VecEnumA / EnumA / ::Res / ResultA / ::Err / Str
-    Input: [20 74 65 73 74 20 73 74 72] 2c 74 75 70 6c 65 20 76 61 6c 75… (len: 21, used: 9)
-    Children: 0
+    Walk: <offset: 97..106 (+9); …20 74 65 73 74 20 73 74 72…>
     Result: %O
+    Child steps: 0
 StructA / .tuple / TupleA
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] (len = used = 12)
-    Children: 1
+    Walk: <offset: 106..118 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65>
     Result: %O
+    Child steps: 1
 StructA / .tuple / TupleA / .0 / Str
-    Input: [2c 74 75 70 6c 65 20 76 61 6c 75 65] (len = used = 12)
-    Children: 0
+    Walk: <offset: 106..118 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65>
     Result: %O
+    Child steps: 0
 ",
   Object {
     "alias": Array [

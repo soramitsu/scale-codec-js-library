@@ -1,21 +1,28 @@
+import { WalkerImpl } from '@scale-codec/core'
 import { setCurrentTracker, Logger, trackDecode } from '../index'
 
 function runSuccessTrack() {
-    trackDecode('First', new Uint8Array([0, 1, 2, 3]), (bytes) => {
-        return trackDecode('Second', bytes, () => {
-            return ['Result', 4]
+    WalkerImpl.decode<string>(new Uint8Array([0, 1, 2, 3]), (walker) => {
+        return trackDecode('First', walker, (walker) => {
+            return trackDecode('Second', walker, (walker) => {
+                walker.idx += 4
+                return 'Result'
+            })
         })
     })
 }
 
 function runFailureTrack() {
-    try {
-        trackDecode('Whoosh', new Uint8Array([4, 2, 3, 1]), (bytes) => {
-            return trackDecode('Shoowh', bytes, () => {
-                throw new Error('Expected inner error')
-            })
-        })
-    } catch {}
+    expect(() =>
+        WalkerImpl.decode(new Uint8Array([4, 2, 3, 1]), (walker) =>
+            trackDecode('Whoosh', walker, (walker) =>
+                // eslint-disable-next-line max-nested-callbacks
+                trackDecode('Shoowh', walker, (walker) => {
+                    throw new Error('Expected inner error')
+                }),
+            ),
+        ),
+    ).toThrowError('Expected inner error')
 }
 const noop = () => {}
 let consoleErrorMock: jest.SpyInstance
@@ -78,12 +85,12 @@ test("Doesn't print error if prop is set", () => {
     expect(consoleErrorMock).not.toBeCalled()
 })
 
-test('Changes bytesLimit if provided some', () => {
-    new Logger({ bytesPrintLimit: 2, logDecodeSuccesses: true }).mount()
+// test('Changes bytesLimit if provided some', () => {
+//     new Logger({ bytesPrintLimit: 2, logDecodeSuccesses: true }).mount()
 
-    runSuccessTrack()
-    runFailureTrack()
+//     runSuccessTrack()
+//     runFailureTrack()
 
-    expect(consoleDebugMock.mock.calls[0]).toMatchSnapshot()
-    expect(consoleErrorMock.mock.calls[0]).toMatchSnapshot()
-})
+//     expect(consoleDebugMock.mock.calls[0]).toMatchSnapshot()
+//     expect(consoleErrorMock.mock.calls[0]).toMatchSnapshot()
+// })

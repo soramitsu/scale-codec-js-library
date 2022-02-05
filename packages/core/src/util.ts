@@ -14,7 +14,7 @@ export class WalkerImpl implements Walker {
         return walker.u8
     }
 
-    public static decode<T>(source: Uint8Array, decode: Decode<T>): T {
+    public static decode<T>(source: ArrayBufferView, decode: Decode<T>): T {
         const walker = new WalkerImpl(source)
         const value = decode(walker)
         walker.checkFinalOffset()
