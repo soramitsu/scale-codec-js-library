@@ -1,16 +1,13 @@
 import { Decode, Walker, Encode } from '../types'
 import { encodeFactory } from '../util'
 
-/**
- * Encodes fixed-length arrays of some items
- */
 // eslint-disable-next-line max-params
 export function encodeArray<T>(arr: T[], encodeItem: Encode<T>, len: number, walker: Walker): void {
     // array length assertion may be omitted because it is already done during
     // the size hint computation step
 
-    for (const item of arr) {
-        encodeItem(item, walker)
+    for (let i = 0; i < len; i++) {
+        encodeItem(arr[i], walker)
     }
 }
 
@@ -32,9 +29,6 @@ export function createArrayEncoder<T>(encodeItem: Encode<T>, len: number): Encod
     )
 }
 
-/**
- * Decoder opposite to {@link encodeArray}
- */
 export function decodeArray<T>(walker: Walker, decodeItem: Decode<T>, len: number): T[] {
     const arr = new Array(len)
     for (let i = 0; i < len; i++) {

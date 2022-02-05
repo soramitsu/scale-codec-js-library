@@ -1,4 +1,4 @@
-import { Enum, Option, DefGeneral, TagsEmpty, TagsValuable, TagValue, EnumDef, Result } from '@scale-codec/enum'
+import { Enum, Option, EnumGenericDef, TagsEmpty, TagsValuable, TagValue, EnumDef, Result } from '@scale-codec/enum'
 import { Decode, Walker, Encode } from '../types'
 import { encodeFactory } from '../util'
 
@@ -6,13 +6,13 @@ type EncodeTuple<V> = [discriminant: number, encode: Encode<V>]
 
 type DecodeTuple<T extends string, V> = [tag: T, decode: Decode<V>]
 
-export type EnumEncoders<Def extends DefGeneral> = {
+export type EnumEncoders<Def extends EnumGenericDef> = {
     [T in TagsEmpty<Def>]: number
 } & {
     [T in TagsValuable<Def>]: EncodeTuple<TagValue<Def, T>>
 }
 
-export type EnumDecoders<Def extends DefGeneral> = {
+export type EnumDecoders<Def extends EnumGenericDef> = {
     [D in number]: TagsEmpty<Def> | (Def extends [infer T & string, infer V] ? DecodeTuple<T & string, V> : never)
 }
 

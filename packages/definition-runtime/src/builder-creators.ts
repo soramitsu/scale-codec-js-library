@@ -12,7 +12,7 @@ import {
     encodeFactory,
     createStructEncoder,
     createStructDecoder,
-    DefGeneral,
+    EnumGenericDef,
     EnumDef,
     Decode,
     createEnumEncoder,
@@ -119,7 +119,7 @@ export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: Frag
 export type ScaleStructBuilder<T extends { [K in keyof T]: Fragment<any> }> = FragmentBuilder<T, UnwrapScaleStruct<T>>
 
 export const encodeAnyFragment: Encode<Fragment<any>> = encodeFactory(
-    (fragment, walker) => fragment.runSmartEncode(walker),
+    (fragment, walker) => fragment.encode(walker),
     (fragment) => fragment.sizeHint,
 )
 
@@ -175,7 +175,7 @@ function unwrapScaleEnum<T extends ScaleEnum>(fragment: Fragment<T, any>): Unwra
     return Enum.variant<any>(tag, value.unwrap())
 }
 
-export type EnumBuilderSchema<Def extends DefGeneral> = (Def extends string
+export type EnumBuilderSchema<Def extends EnumGenericDef> = (Def extends string
     ? [discriminant: number, tag: Def]
     : Def extends [infer T, infer V]
     ? V extends Fragment<infer FT, infer FU>

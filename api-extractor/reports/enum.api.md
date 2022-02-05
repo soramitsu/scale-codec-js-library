@@ -4,64 +4,66 @@
 
 ```ts
 
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@scale-codec/enum" does not have an export "Valuable"
+//
 // @public
-export class Enum<Def> {
-    as<V extends TagsValuable<Def>>(tag: V): Def[V] extends Valuable<infer T> ? T : never;
-    readonly content: null | [some: unknown];
-    static empty<Def>(tag: TagsEmpty<Def>): Enum<Def>;
-    is<V extends keyof Def>(tag: V): boolean;
+export class Enum<Def extends EnumGenericDef> {
+    as<T extends TagsValuable<Def>>(tag: T): TagValue<EnumGenericDef, T>;
+    is(tag: Tags<Def>): boolean;
+    // (undocumented)
+    get isEmpty(): boolean;
     match<R = any>(matchMap: EnumMatchMap<Def, R>): R;
     // (undocumented)
     readonly tag: string;
-    // @internal (undocumented)
+    // (undocumented)
     toJSON(): {
         tag: string;
-        value: unknown;
+        value?: undefined;
     } | {
         tag: string;
-        value?: undefined;
+        value: unknown;
     };
-    static valuable<Def, V extends TagsValuable<Def>>(tag: V, value: GetValuableVariantValue<Def[V]>): Enum<Def>;
+    readonly value: typeof ENUM_EMPTY_VALUE | unknown;
+    // (undocumented)
+    static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E;
 }
 
-// @public (undocumented)
-export type EnumMatchMap<V, R = any> = {
-    [K in keyof V]: V[K] extends Valuable<infer T> ? (value: T) => R : () => R;
-};
+// @public
+export const ENUM_EMPTY_VALUE: unique symbol;
 
 // @public (undocumented)
-export type GetEnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never;
+export type EnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never;
 
 // @public (undocumented)
-export type GetValuableVariantValue<V extends Valuable<any>> = V extends Valuable<infer T> ? T : never;
+export type EnumDefToFactoryArgs<Def extends EnumGenericDef> = [TagsEmpty<Def>] | (Def extends [string, any] ? Def : never);
 
 // @public
-type Option_2<T> = Enum<{
-    None: undefined;
-    Some: Valuable<T>;
-}>;
+export type EnumGenericDef = string | [tag: string, value: any];
+
+// @public (undocumented)
+export type EnumMatchMap<Def extends EnumGenericDef, R = any> = {
+    [T in TagsEmpty<Def>]: () => R;
+} & {
+    [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => R;
+};
+
+// @public
+type Option_2<T> = Enum<'None' | ['Some', T]>;
 export { Option_2 as Option }
 
 // @public
-export type Result<O, E> = Enum<{
-    Ok: Valuable<O>;
-    Err: Valuable<E>;
-}>;
+export type Result<Ok, Err> = Enum<['Ok', Ok] | ['Err', Err]>;
 
 // @public (undocumented)
-export type TagsEmpty<Def> = {
-    [V in keyof Def & string]: Def[V] extends Valuable<any> ? never : V;
-}[keyof Def & string];
+export type Tags<Def extends EnumGenericDef> = TagsEmpty<Def> | TagsValuable<Def>;
 
 // @public (undocumented)
-export type TagsValuable<Def> = {
-    [V in keyof Def & string]: Def[V] extends Valuable<any> ? V : never;
-}[keyof Def & string];
+export type TagsEmpty<Def extends EnumGenericDef> = Def extends string ? Def : never;
 
-// @public
-export interface Valuable<T> {
-    // (undocumented)
-    value: T;
-}
+// @public (undocumented)
+export type TagsValuable<Def extends EnumGenericDef> = Def extends [infer T, any] ? T & string : never;
+
+// @public (undocumented)
+export type TagValue<Def extends EnumGenericDef, T extends TagsValuable<Def>> = Def extends [T, infer V] ? V : never;
 
 ```

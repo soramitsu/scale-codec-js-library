@@ -4,19 +4,15 @@
 
 ```ts
 
-import { BigIntTypes } from '@scale-codec/core';
 import { Decode } from '@scale-codec/core';
-import { DecodeResult } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Enum } from '@scale-codec/core';
+import { EnumDef } from '@scale-codec/core';
+import { EnumGenericDef } from '@scale-codec/core';
 import { Fmt } from 'fmt-subs';
-import { GetValuableVariantValue } from '@scale-codec/core';
-import { IntTypes } from '@scale-codec/core';
 import { Option as Option_2 } from '@scale-codec/core';
 import { Result } from '@scale-codec/core';
-import { TagsEmpty } from '@scale-codec/core';
-import { TagsValuable } from '@scale-codec/core';
-import { Valuable } from '@scale-codec/core';
+import { Walker } from '@scale-codec/core';
 
 // @public (undocumented)
 export type ArrayItemBuilder<T> = T extends Fragment<infer V, infer U>[] ? FragmentBuilder<V, U> : never;
@@ -25,15 +21,10 @@ export type ArrayItemBuilder<T> = T extends Fragment<infer V, infer U>[] ? Fragm
 export const Bool: FragmentBuilder<boolean, boolean>;
 
 // @public (undocumented)
-export function buildDecodeTraceStepsFmt(trace: DecodeTrace, params?: BuildTraceStepsFmtParams): Fmt;
+export function buildDecodeTraceStepsFmt(trace: DecodeTrace, walker: Walker): Fmt;
 
 // @public (undocumented)
 export type BuilderFromFragment<T extends Fragment<any>> = T extends Fragment<infer V, infer U> ? FragmentBuilder<V, U> : never;
-
-// @public (undocumented)
-export interface BuildTraceStepsFmtParams {
-    bytesPrintLimit?: number;
-}
 
 // @public (undocumented)
 export const BytesVec: FragmentBuilder<Uint8Array, Uint8Array>;
@@ -50,9 +41,6 @@ export const Compact: FragmentBuilder<bigint, bigint>;
 // @public (undocumented)
 export function createArrayBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>, len: number): ScaleArrayBuilder<T>;
 
-// @public (undocumented)
-export function createBigIntBuilder(name: string, ty: BigIntTypes): FragmentBuilder<bigint>;
-
 // @public
 export function createBuilder<T, U = T>(name: string, encode: Encode<T>, decode: Decode<T>, unwrap?: FragmentUnwrapFn<T, U>, wrap?: FragmentWrapFn<T, U>): FragmentBuilder<T, U>;
 
@@ -60,10 +48,7 @@ export function createBuilder<T, U = T>(name: string, encode: Encode<T>, decode:
 export function createBytesArrayBuilder(name: string, len: number): FragmentBuilder<Uint8Array>;
 
 // @public (undocumented)
-export function createEnumBuilder<T extends Enum<any>>(name: string, schema: EnumBuilderSchema): ScaleEnumBuilder<T>;
-
-// @public (undocumented)
-export function createIntBuilder(name: string, ty: IntTypes): FragmentBuilder<number>;
+export function createEnumBuilder<T extends ScaleEnum>(name: string, schema: EnumBuilderSchema<EnumDef<T>>): ScaleEnumBuilder<T>;
 
 // Warning: (ae-forgotten-export) The symbol "MapKeyInner" needs to be exported by the entry point lib.d.ts
 // Warning: (ae-forgotten-export) The symbol "MapValueInner" needs to be exported by the entry point lib.d.ts
@@ -85,7 +70,7 @@ export function createResultBuilder<T extends Result<Fragment<any>, Fragment<any
 // Warning: (ae-forgotten-export) The symbol "SetEntryBuilder" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createSetBuilder<T extends Set<Fragment<any>>>(name: string, entryBuilder: SetEntryBuilder<T>): ScaleSetBuilder<T>;
+export function createSetBuilder<T extends Set<Fragment<any>>>(name: string, itemBuilder: SetEntryBuilder<T>): ScaleSetBuilder<T>;
 
 // @public (undocumented)
 export function createStructBuilder<T extends {
@@ -108,7 +93,9 @@ export class DecodeTrace {
     // (undocumented)
     findRoot(): DecodeTrace;
     // (undocumented)
-    input?: Uint8Array;
+    input?: {
+        offset: number;
+    };
     // (undocumented)
     get isRoot(): boolean;
     loc: string[];
@@ -117,9 +104,12 @@ export class DecodeTrace {
     // (undocumented)
     refineLoc(loc: string): this;
     // (undocumented)
-    result?: DecodeTraceResult;
+    result?: {
+        offset: number;
+        value: unknown;
+    };
     // (undocumented)
-    setInput(input: Uint8Array): this;
+    setInput(offset: number): this;
     // (undocumented)
     setParent(trace: DecodeTrace): this;
 }
@@ -129,61 +119,78 @@ export class DecodeTraceCollector {
     // (undocumented)
     decodeError(err: unknown): DecodeTrace;
     // (undocumented)
-    decodeStart(loc: string, input: Uint8Array): void;
+    decodeStart(loc: string, walker: Walker): void;
     // (undocumented)
-    decodeSuccess(result: DecodeResult<unknown>): null | DecodeTrace;
+    decodeSuccess(walker: Walker, decodedValue: unknown): null | DecodeTrace;
     // (undocumented)
     refineLoc(loc: string): void;
 }
 
-// @public (undocumented)
-export interface DecodeTraceResult {
+// @public
+export class DynBuilder<T extends FragmentBuilder<any>> implements FragmentBuilder<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>> {
+    constructor(builderGetter: () => T);
     // (undocumented)
-    bytes: number;
+    decode(walker: Walker): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
     // (undocumented)
-    value: unknown;
+    defineUnwrap(unwrappedValue: FragmentOrBuilderUnwrapped<T>): FragmentOrBuilderUnwrapped<T>;
+    // (undocumented)
+    fromBuffer(bytes: Uint8Array): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
+    // (undocumented)
+    fromValue(value: FragmentOrBuilderValue<T>): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
+    getBuilder(): T;
+    // (undocumented)
+    wrap(unwrappedValue: FragmentOrBuilderUnwrapped<T>): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
 }
 
-// @public
-export function dynGetters<T extends {
-    [K in string | symbol]: any;
-}>(dynObject: () => T): T;
+// @public (undocumented)
+export function dynBuilder<T extends FragmentBuilder<any>>(dyn: () => T): DynBuilder<T>;
 
 // @public (undocumented)
-export type EnumBuilderSchema = [discriminant: number, variantName: string, builder?: FragmentBuilder<any>][];
+export const encodeAnyFragment: Encode<Fragment<any>>;
+
+// @public (undocumented)
+export type EnumBuilderSchema<Def extends EnumGenericDef> = (Def extends string ? [discriminant: number, tag: Def] : Def extends [infer T, infer V] ? V extends Fragment<infer FT, infer FU> ? [discriminant: number, tag: T, builder: FragmentBuilder<FT, FU>] : never : never)[];
+
+// @public (undocumented)
+export function formatWalkerStep(params: FormatWalkerStepParams): string;
+
+// @public (undocumented)
+export interface FormatWalkerStepParams {
+    offsetEnd?: number;
+    offsetStart: number;
+    // (undocumented)
+    walker: Walker;
+}
 
 // @public
 export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueInspectable {
     // (undocumented)
     [TrackValueInspect](): Unwrapped;
-    // Warning: (ae-forgotten-export) The symbol "OptionTuple" needs to be exported by the entry point lib.d.ts
-    //
-    // @internal
-    constructor(value: null | OptionTuple<Value>, bytes: null | Uint8Array);
-    // @internal (undocumented)
+    constructor(value: typeof FRAGMENT_VALUE_EMPTY | Value, bytes: null | Uint8Array);
+    // (undocumented)
     protected abstract __decode: Decode<Value>;
-    // @internal (undocumented)
+    // (undocumented)
     protected abstract __encode: Encode<Value>;
-    // Warning: (ae-forgotten-export) The symbol "FragmentInternalDecodeTrackFn" needs to be exported by the entry point lib.d.ts
-    //
-    // @internal (undocumented)
-    protected abstract __trackDecode: FragmentInternalDecodeTrackFn<Value, Unwrapped>;
-    readonly bytes: Uint8Array;
+    protected abstract __name: string;
+    // (undocumented)
+    get bytes(): Uint8Array;
+    // (undocumented)
+    encode(walker: Walker): void;
+    // (undocumented)
+    get sizeHint(): number;
     abstract unwrap(): Unwrapped;
-    readonly value: Value;
+    // (undocumented)
+    get value(): Value;
 }
 
 // @public
 export interface FragmentBuilder<T, U = T> {
-    decodeRaw: Decode<Fragment<T, U>>;
+    decode: Decode<Fragment<T, U>>;
     defineUnwrap: (unwrappedValue: U) => U;
-    fromBytes: (bytes: Uint8Array) => Fragment<T, U>;
+    fromBuffer: (bufferView: ArrayBufferView) => Fragment<T, U>;
     fromValue: (value: T) => Fragment<T, U>;
     wrap: (unwrappedValue: U) => Fragment<T, U>;
 }
-
-// @public (undocumented)
-export type FragmentCtor<T, U = T> = new (value: null | OptionTuple<T>, bytes: null | Uint8Array) => Fragment<T, U>;
 
 // @public (undocumented)
 export type FragmentFromBuilder<T extends FragmentBuilder<any>> = T extends FragmentBuilder<infer V, infer U> ? Fragment<V, U> : never;
@@ -192,7 +199,7 @@ export type FragmentFromBuilder<T extends FragmentBuilder<any>> = T extends Frag
 export type FragmentOrBuilderUnwrapped<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<any, infer U> ? U : T extends FragmentBuilder<any, infer U> ? U : never;
 
 // @public (undocumented)
-export type FragmentOrBuilderValue<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<infer V> ? V : T extends FragmentBuilder<infer V> ? V : never;
+export type FragmentOrBuilderValue<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<infer V, any> ? V : T extends FragmentBuilder<infer V, any> ? V : never;
 
 // @public (undocumented)
 export type FragmentUnwrapFn<T, U> = (self: Fragment<T, U>) => U;
@@ -227,30 +234,21 @@ export class Logger implements CodecTracker {
     // (undocumented)
     config?: LoggerConfig;
     // (undocumented)
-    decode<T>(loc: string, input: Uint8Array, decode: Decode<T>): DecodeResult<T>;
+    decode<T>(loc: string, walker: Walker, decode: Decode<T>): T;
     mount(): void;
     // (undocumented)
-    refineDecodeLoc<T>(loc: string, decode: () => DecodeResult<T>): DecodeResult<T>;
+    refineDecodeLoc<T>(loc: string, decode: () => T): T;
     unmount(): void;
 }
 
 // @public (undocumented)
-export interface LoggerConfig extends BuildTraceStepsFmtParams {
+export interface LoggerConfig {
     logDecodeErrors?: boolean;
     logDecodeSuccesses?: boolean;
 }
 
 // @public (undocumented)
-export function prettyDecodeInput(input: Uint8Array, params?: PrettyDecodeInputParams): string;
-
-// @public (undocumented)
-export interface PrettyDecodeInputParams {
-    bytesLimit?: number;
-    used?: number;
-}
-
-// @public (undocumented)
-export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => DecodeResult<T>) => DecodeResult<T>;
+export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => T) => T;
 
 // Warning: (ae-forgotten-export) The symbol "UnwrapScaleArray" needs to be exported by the entry point lib.d.ts
 //
@@ -258,24 +256,10 @@ export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => DecodeRes
 export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, UnwrapScaleArray<T>>;
 
 // @public (undocumented)
-export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>> & {
-    variantsUnwrapped: ScaleEnumBuilderVariantsUnwrapped<T>;
-    variants: ScaleEnumBuilderVariants<T>;
-};
+export type ScaleEnum = Enum<string | [string, Fragment<any>]>;
 
 // @public (undocumented)
-export type ScaleEnumBuilderVariants<T extends Enum<any>> = T extends Enum<infer D> ? {
-    [K in TagsEmpty<D>]: Fragment<T, UnwrapScaleEnum<T>>;
-} & {
-    [K in TagsValuable<D>]: (value: GetValuableVariantValue<D[K]>) => Fragment<T, UnwrapScaleEnum<T>>;
-} : never;
-
-// @public (undocumented)
-export type ScaleEnumBuilderVariantsUnwrapped<T extends Enum<any>> = T extends Enum<infer D> ? {
-    [K in TagsEmpty<D>]: UnwrapScaleEnum<T>;
-} & {
-    [K in TagsValuable<D>]: (value: UnwrapFragment<GetValuableVariantValue<D[K]>>) => UnwrapScaleEnum<T>;
-} : never;
+export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>>;
 
 // @public (undocumented)
 export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = FragmentBuilder<T, UnwrapScaleMap<T>>;
@@ -305,13 +289,13 @@ export const Str: FragmentBuilder<string, string>;
 export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][];
 
 // @public
-export function trackDecode<T>(loc: string, input: Uint8Array, decode: Decode<T>): DecodeResult<T>;
+export const trackDecode: TrackDecodeFn;
 
 // @public (undocumented)
-export type TrackDecodeFn = <T>(loc: string, input: Uint8Array, decode: Decode<T>) => DecodeResult<T>;
+export type TrackDecodeFn = <T>(loc: string, walker: Walker, decode: Decode<T>) => T;
 
 // @public
-export function trackRefineDecodeLoc<T>(loc: string, headlessDecode: () => DecodeResult<T>): DecodeResult<T>;
+export const trackRefineDecodeLoc: RefineDecodeLocFn;
 
 // @public
 export const TrackValueInspect: unique symbol;
@@ -344,9 +328,7 @@ export const U8: FragmentBuilder<number, number>;
 export type UnwrapFragment<T> = T extends Fragment<any, infer U> ? U : T;
 
 // @public (undocumented)
-export type UnwrapScaleEnum<T extends Enum<any>> = T extends Enum<infer Def> ? Enum<{
-    [K in keyof Def]: Def[K] extends Valuable<infer I> ? I extends Fragment<any, infer U> ? Valuable<U> : never : null;
-}> : never;
+export type UnwrapScaleEnum<T extends ScaleEnum> = T extends Enum<infer Def> ? Enum<Def extends [infer Tag, infer V] ? (V extends Fragment<any, infer U> ? [Tag, U] : never) : Def> : never;
 
 // @public (undocumented)
 export type UnwrapScaleMap<T> = T extends Map<Fragment<any, infer K>, Fragment<any, infer V>> ? Map<UnwrapFragment<K>, UnwrapFragment<V>> : never;

@@ -43,18 +43,6 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
 
         Reflect.defineProperty(this, '__value', { enumerable: false, value, writable: true })
         Reflect.defineProperty(this, '__bytes', { enumerable: false, value: bytes, writable: true })
-
-        // // Firstly gettere were on the class itself, but it turned out that under the hood
-        // // they are defined with `{ enumerable: false }`; also not-own keys & getters aren't visible
-        // // by default key-traversing ways, so to make these getters behave like regular props or
-        // // computed getters, I decided to use this technique
-        // defineReadonlyOwnGetter(this, 'bytes', this.getBytes.bind(this))
-        // defineReadonlyOwnGetter(this, 'value', this.getValue.bind(this))
-
-        // implementation details
-
-        // offPropEnumerabilityWithValue(this, '__value', value)
-        // offPropEnumerabilityWithValue(this, '__bytes', bytes)
     }
 
     public [TrackValueInspect]() {
@@ -88,7 +76,7 @@ export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueIn
         return this.__encode.sizeHint(this.__value as Value)
     }
 
-    public runSmartEncode(walker: Walker): void {
+    public encode(walker: Walker): void {
         if (this.__bytes) {
             // just copying
             walker.u8.set(this.__bytes, walker.idx)
