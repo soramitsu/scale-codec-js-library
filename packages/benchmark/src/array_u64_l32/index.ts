@@ -1,8 +1,10 @@
+import { Logger, setCurrentTracker } from '@scale-codec/definition-runtime'
 import { suite, complete, cycle, add } from 'benny'
 import { encode as encodePolka } from './polka'
 import { encode as encodeCore } from './scale-codec-core'
 import { encode as encodeCoreV4 } from './scale-codec-core-v4'
 import { encode as encodeRuntime } from './scale-codec-runtime'
+import { encode as encodeRuntimeAlt } from './scale-codec-runtime-alt'
 import { encode as encodeRuntimeV8 } from './scale-codec-runtime-v8'
 
 export default async function () {
@@ -14,7 +16,23 @@ export default async function () {
             encodeCore(INPUT)
         }),
         add('@scale-codec/definition-runtime', () => {
-            encodeRuntime(INPUT)
+            setCurrentTracker(null)
+            return () => {
+                encodeRuntime(INPUT)
+            }
+        }),
+        add('@scale-codec/definition-runtime (alt)', () => {
+            setCurrentTracker(null)
+            return () => {
+                encodeRuntimeAlt(INPUT)
+            }
+        }),
+        add('@scale-codec/definition-runtime with tracking', () => {
+            setCurrentTracker(null)
+            new Logger().mount()
+            return () => {
+                encodeRuntime(INPUT)
+            }
         }),
         add('@scale-codec/core@0.4.1', () => {
             encodeCoreV4(INPUT)
