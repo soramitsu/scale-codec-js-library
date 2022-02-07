@@ -13,7 +13,8 @@
         "@scale-codec/definition-runtime": "workspace:^0.8.2",
         "benny": "^3.7.1",
         "consola": "^2.15.3",
-        "scale-codec-core-v-4": "npm:@scale-codec/core@0.4.1"
+        "scale-codec-core-v-4": "npm:@scale-codec/core@0.4.1",
+        "scale-codec-definition-runtime-v-8": "npm:@scale-codec/definition-runtime@0.8.1"
     },
     "devDependencies": {
         "esbuild": "^0.13.9",

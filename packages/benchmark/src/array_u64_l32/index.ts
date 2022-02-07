@@ -3,6 +3,7 @@ import { encode as encodePolka } from './polka'
 import { encode as encodeCore } from './scale-codec-core'
 import { encode as encodeCoreV4 } from './scale-codec-core-v4'
 import { encode as encodeRuntime } from './scale-codec-runtime'
+import { encode as encodeRuntimeV8 } from './scale-codec-runtime-v8'
 
 export default async function () {
     const INPUT = Array.from({ length: 32 }, (v, i) => BigInt(i * 1e9))
@@ -12,11 +13,14 @@ export default async function () {
         add('@scale-codec/core', () => {
             encodeCore(INPUT)
         }),
+        add('@scale-codec/definition-runtime', () => {
+            encodeRuntime(INPUT)
+        }),
         add('@scale-codec/core@0.4.1', () => {
             encodeCoreV4(INPUT)
         }),
-        add('@scale-codec/definition-runtime', () => {
-            encodeRuntime(INPUT)
+        add('@scale-codec/definition-runtime@0.8.1', () => {
+            encodeRuntimeV8(INPUT)
         }),
         add('@polkadot/types-codec', () => {
             encodePolka(INPUT)
