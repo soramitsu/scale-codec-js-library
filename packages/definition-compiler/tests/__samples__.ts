@@ -83,6 +83,35 @@ export const complexNamespace = defineSample({
             },
         ],
     },
+    AllInOne: {
+        t: 'struct',
+        fields: [
+            {
+                name: 'tuple_with_opts',
+                ref: 'TupleMsgMsg',
+            },
+            {
+                name: 'map',
+                ref: 'MapStrU8',
+            },
+            {
+                name: 'alias',
+                ref: 'StrAlias',
+            },
+            {
+                name: 'another_struct',
+                ref: 'Character',
+            },
+            {
+                name: 'arr',
+                ref: 'ArraySetU8l2',
+            },
+            {
+                name: 'vec',
+                ref: 'VecBool',
+            },
+        ],
+    },
 })
 
 export const structFieldsOrdering = defineSample({

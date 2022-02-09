@@ -2,321 +2,254 @@
 
 exports[`Collecting big decode trace and formatting it Error case 1`] = `
 Array [
-  "StructA
-    Walk: <offset: 0; 01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
+  "AllInOne
+    Walk: <offset: 0; 01 10 47 65 79 21 00 04 10 21 32 33 34 0b 20 59 6f 20 68 6f ff ff ff ff ff ff ff ff ff ff 14 01 06 02 03 04 0c 00 01 00>
     Result: <not computed>
-    Child steps: 4
-StructA / .primitive / Bool
-    Walk: <offset: 0..1 (+1); 01…>
+    Child steps: 3
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg
+    Walk: <offset: 0..7 (+7); 01 10 47 65 79 21 00…>
     Result: %O
-    Child steps: 0
-StructA / .alias / TupleA
-    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
+    Child steps: 2
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg / <tuple>.0 / Msg
+    Walk: <offset: 0..6 (+6); 01 10 47 65 79 21…>
     Result: %O
     Child steps: 1
-StructA / .alias / TupleA / .0 / Str
-    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg / <tuple>.0 / Msg / <enum>::Greeting / str
+    Walk: <offset: 1..6 (+5); …10 47 65 79 21…>
     Result: %O
     Child steps: 0
-StructA / .enum / EnumA
-    Walk: <offset: 10..11 (+1); …02…>
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg / <tuple>.1 / Msg
+    Walk: <offset: 6..7 (+1); …00…>
     Result: %O
     Child steps: 0
-StructA / .map / MapA
-    Walk: <offset: 11; …08 20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
-    Result: <not computed>
-    Child steps: 1
-StructA / .map / MapA / <key> / Str
-    Walk: <offset: 12; …20 74 65 73 74 20 73 74 ff ff ff ff ff ff ff ff ff ff 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
+AllInOne / <struct>.map / MapStrU8
+    Walk: <offset: 7..14 (+7); …04 10 21 32 33 34 0b…>
+    Result: %O
+    Child steps: 2
+AllInOne / <struct>.map / MapStrU8 / <map>.<key> / str
+    Walk: <offset: 8..13 (+5); …10 21 32 33 34…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.map / MapStrU8 / <map>.<value> / u8
+    Walk: <offset: 13..14 (+1); …0b…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.alias / str
+    Walk: <offset: 14; …20 59 6f 20 68 6f ff ff ff ff ff ff ff ff ff ff 14 01 06 02 03 04 0c 00 01 00>
     Result: ERROR - %s
     Child steps: 0
 ",
-  true,
   Array [
-    "test str",
+    Object {
+      "tag": "Greeting",
+      "value": "Gey!",
+    },
+    Object {
+      "tag": "Quit",
+    },
   ],
-  "test str",
   Object {
-    "tag": "Empty",
+    "tag": "Greeting",
+    "value": "Gey!",
   },
+  "Gey!",
+  Object {
+    "tag": "Quit",
+  },
+  Map {
+    "!234" => 11,
+  },
+  "!234",
+  11,
   [TypeError: The encoded data was not valid for encoding utf-8],
 ]
 `;
 
 exports[`Collecting big decode trace and formatting it Success case 1`] = `
 Array [
-  "StructA
-    Walk: <offset: 0..118 (+118); 01 20 74 65 73 74 20 73 74 72 02 08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65 08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65 01 01 01 08 01 02 03 03 08 00 00 01 01 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65>
+  "AllInOne
+    Walk: <offset: 0..40 (+40); 01 10 47 65 79 21 00 04 10 21 32 33 34 0b 20 59 6f 20 68 6f 20 68 6f 14 41 6c 69 63 65 00 14 01 06 02 03 04 0c 00 01 00>
     Result: %O
-    Child steps: 9
-StructA / .primitive / Bool
-    Walk: <offset: 0..1 (+1); 01…>
-    Result: %O
-    Child steps: 0
-StructA / .alias / TupleA
-    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
-    Result: %O
-    Child steps: 1
-StructA / .alias / TupleA / .0 / Str
-    Walk: <offset: 1..10 (+9); …20 74 65 73 74 20 73 74 72…>
-    Result: %O
-    Child steps: 0
-StructA / .enum / EnumA
-    Walk: <offset: 10..11 (+1); …02…>
-    Result: %O
-    Child steps: 0
-StructA / .map / MapA
-    Walk: <offset: 11..57 (+46); …08 20 74 65 73 74 20 73 74 72 2c 74 75 70 6c 65 20 76 61 6c 75 65 2c 61 6e 6f 74 68 65 72 20 6b 65 79 2c 74 75 70 6c 65 20 76 61 6c 75 65…>
-    Result: %O
-    Child steps: 4
-StructA / .map / MapA / <key> / Str
-    Walk: <offset: 12..21 (+9); …20 74 65 73 74 20 73 74 72…>
-    Result: %O
-    Child steps: 0
-StructA / .map / MapA / <value> / TupleA
-    Walk: <offset: 21..33 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
-    Result: %O
-    Child steps: 1
-StructA / .map / MapA / <value> / TupleA / .0 / Str
-    Walk: <offset: 21..33 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
-    Result: %O
-    Child steps: 0
-StructA / .map / MapA / <key> / Str
-    Walk: <offset: 33..45 (+12); …2c 61 6e 6f 74 68 65 72 20 6b 65 79…>
-    Result: %O
-    Child steps: 0
-StructA / .map / MapA / <value> / TupleA
-    Walk: <offset: 45..57 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
-    Result: %O
-    Child steps: 1
-StructA / .map / MapA / <value> / TupleA / .0 / Str
-    Walk: <offset: 45..57 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
-    Result: %O
-    Child steps: 0
-StructA / .set / SetA
-    Walk: <offset: 57..84 (+27); …08 2c 74 75 70 6c 65 20 76 61 6c 75 65 34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65…>
+    Child steps: 6
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg
+    Walk: <offset: 0..7 (+7); 01 10 47 65 79 21 00…>
     Result: %O
     Child steps: 2
-StructA / .set / SetA / TupleA
-    Walk: <offset: 58..70 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg / <tuple>.0 / Msg
+    Walk: <offset: 0..6 (+6); 01 10 47 65 79 21…>
     Result: %O
     Child steps: 1
-StructA / .set / SetA / TupleA / .0 / Str
-    Walk: <offset: 58..70 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65…>
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg / <tuple>.0 / Msg / <enum>::Greeting / str
+    Walk: <offset: 1..6 (+5); …10 47 65 79 21…>
     Result: %O
     Child steps: 0
-StructA / .set / SetA / TupleA
-    Walk: <offset: 70..84 (+14); …34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65…>
+AllInOne / <struct>.tuple_with_opts / TupleMsgMsg / <tuple>.1 / Msg
+    Walk: <offset: 6..7 (+1); …00…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.map / MapStrU8
+    Walk: <offset: 7..14 (+7); …04 10 21 32 33 34 0b…>
+    Result: %O
+    Child steps: 2
+AllInOne / <struct>.map / MapStrU8 / <map>.<key> / str
+    Walk: <offset: 8..13 (+5); …10 21 32 33 34…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.map / MapStrU8 / <map>.<value> / u8
+    Walk: <offset: 13..14 (+1); …0b…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.alias / str
+    Walk: <offset: 14..23 (+9); …20 59 6f 20 68 6f 20 68 6f…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.another_struct / Character
+    Walk: <offset: 23..29 (+6); …14 41 6c 69 63 65…>
     Result: %O
     Child steps: 1
-StructA / .set / SetA / TupleA / .0 / Str
-    Walk: <offset: 70..84 (+14); …34 61 6e 6f 74 68 65 72 20 74 75 70 6c 65…>
+AllInOne / <struct>.another_struct / Character / <struct>.name / str
+    Walk: <offset: 23..29 (+6); …14 41 6c 69 63 65…>
     Result: %O
     Child steps: 0
-StructA / .array / ArrayA
-    Walk: <offset: 84..87 (+3); …01 01 01…>
+AllInOne / <struct>.arr / ArraySetU8l2
+    Walk: <offset: 29..36 (+7); …00 14 01 06 02 03 04…>
+    Result: %O
+    Child steps: 2
+AllInOne / <struct>.arr / ArraySetU8l2 / SetU8
+    Walk: <offset: 29..30 (+1); …00…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.arr / ArraySetU8l2 / SetU8
+    Walk: <offset: 30..36 (+6); …14 01 06 02 03 04…>
+    Result: %O
+    Child steps: 5
+AllInOne / <struct>.arr / ArraySetU8l2 / SetU8 / u8
+    Walk: <offset: 31..32 (+1); …01…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.arr / ArraySetU8l2 / SetU8 / u8
+    Walk: <offset: 32..33 (+1); …06…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.arr / ArraySetU8l2 / SetU8 / u8
+    Walk: <offset: 33..34 (+1); …02…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.arr / ArraySetU8l2 / SetU8 / u8
+    Walk: <offset: 34..35 (+1); …03…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.arr / ArraySetU8l2 / SetU8 / u8
+    Walk: <offset: 35..36 (+1); …04…>
+    Result: %O
+    Child steps: 0
+AllInOne / <struct>.vec / VecBool
+    Walk: <offset: 36..40 (+4); …0c 00 01 00>
     Result: %O
     Child steps: 3
-StructA / .array / ArrayA / Bool
-    Walk: <offset: 84..85 (+1); …01…>
+AllInOne / <struct>.vec / VecBool / bool
+    Walk: <offset: 37..38 (+1); …00…>
     Result: %O
     Child steps: 0
-StructA / .array / ArrayA / Bool
-    Walk: <offset: 85..86 (+1); …01…>
+AllInOne / <struct>.vec / VecBool / bool
+    Walk: <offset: 38..39 (+1); …01…>
     Result: %O
     Child steps: 0
-StructA / .array / ArrayA / Bool
-    Walk: <offset: 86..87 (+1); …01…>
-    Result: %O
-    Child steps: 0
-StructA / .bytesArray / BytesArrayA
-    Walk: <offset: 87..92 (+5); …08 01 02 03 03…>
-    Result: %O
-    Child steps: 0
-StructA / .vec / VecEnumA
-    Walk: <offset: 92..106 (+14); …08 00 00 01 01 20 74 65 73 74 20 73 74 72…>
-    Result: %O
-    Child steps: 2
-StructA / .vec / VecEnumA / EnumA
-    Walk: <offset: 93..95 (+2); …00 00…>
-    Result: %O
-    Child steps: 1
-StructA / .vec / VecEnumA / EnumA / ::Opt / OptionA
-    Walk: <offset: 94..95 (+1); …00…>
-    Result: %O
-    Child steps: 0
-StructA / .vec / VecEnumA / EnumA
-    Walk: <offset: 95..106 (+11); …01 01 20 74 65 73 74 20 73 74 72…>
-    Result: %O
-    Child steps: 1
-StructA / .vec / VecEnumA / EnumA / ::Res / ResultA
-    Walk: <offset: 96..106 (+10); …01 20 74 65 73 74 20 73 74 72…>
-    Result: %O
-    Child steps: 1
-StructA / .vec / VecEnumA / EnumA / ::Res / ResultA / ::Err / Str
-    Walk: <offset: 97..106 (+9); …20 74 65 73 74 20 73 74 72…>
-    Result: %O
-    Child steps: 0
-StructA / .tuple / TupleA
-    Walk: <offset: 106..118 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65>
-    Result: %O
-    Child steps: 1
-StructA / .tuple / TupleA / .0 / Str
-    Walk: <offset: 106..118 (+12); …2c 74 75 70 6c 65 20 76 61 6c 75 65>
+AllInOne / <struct>.vec / VecBool / bool
+    Walk: <offset: 39..40 (+1); …00>
     Result: %O
     Child steps: 0
 ",
   Object {
-    "alias": Array [
-      "test str",
-    ],
-    "array": Array [
-      true,
-      true,
-      true,
-    ],
-    "bytesArray": Uint8Array [
-      8,
-      1,
-      2,
-      3,
-      3,
-    ],
-    "enum": Object {
-      "tag": "Empty",
+    "alias": "Yo ho ho",
+    "another_struct": Object {
+      "name": "Alice",
     },
+    "arr": Array [
+      Set {},
+      Set {
+        1,
+        6,
+        2,
+        3,
+        4,
+      },
+    ],
     "map": Map {
-      "test str" => Array [
-        "tuple value",
-      ],
-      "another key" => Array [
-        "tuple value",
-      ],
+      "!234" => 11,
     },
-    "primitive": true,
-    "set": Set {
-      Array [
-        "tuple value",
-      ],
-      Array [
-        "another tuple",
-      ],
-    },
-    "tuple": Array [
-      "tuple value",
+    "tuple_with_opts": Array [
+      Object {
+        "tag": "Greeting",
+        "value": "Gey!",
+      },
+      Object {
+        "tag": "Quit",
+      },
     ],
     "vec": Array [
-      Object {
-        "tag": "Opt",
-        "value": Object {
-          "tag": "None",
-        },
-      },
-      Object {
-        "tag": "Res",
-        "value": Object {
-          "tag": "Err",
-          "value": "test str",
-        },
-      },
+      false,
+      true,
+      false,
     ],
   },
-  true,
   Array [
-    "test str",
+    Object {
+      "tag": "Greeting",
+      "value": "Gey!",
+    },
+    Object {
+      "tag": "Quit",
+    },
   ],
-  "test str",
   Object {
-    "tag": "Empty",
+    "tag": "Greeting",
+    "value": "Gey!",
+  },
+  "Gey!",
+  Object {
+    "tag": "Quit",
   },
   Map {
-    "test str" => Array [
-      "tuple value",
-    ],
-    "another key" => Array [
-      "tuple value",
-    ],
+    "!234" => 11,
   },
-  "test str",
+  "!234",
+  11,
+  "Yo ho ho",
+  Object {
+    "name": "Alice",
+  },
+  "Alice",
   Array [
-    "tuple value",
+    Set {},
+    Set {
+      1,
+      6,
+      2,
+      3,
+      4,
+    },
   ],
-  "tuple value",
-  "another key",
-  Array [
-    "tuple value",
-  ],
-  "tuple value",
+  Set {},
   Set {
-    Array [
-      "tuple value",
-    ],
-    Array [
-      "another tuple",
-    ],
-  },
-  Array [
-    "tuple value",
-  ],
-  "tuple value",
-  Array [
-    "another tuple",
-  ],
-  "another tuple",
-  Array [
-    true,
-    true,
-    true,
-  ],
-  true,
-  true,
-  true,
-  Uint8Array [
-    8,
     1,
+    6,
     2,
     3,
-    3,
-  ],
+    4,
+  },
+  1,
+  6,
+  2,
+  3,
+  4,
   Array [
-    Object {
-      "tag": "Opt",
-      "value": Object {
-        "tag": "None",
-      },
-    },
-    Object {
-      "tag": "Res",
-      "value": Object {
-        "tag": "Err",
-        "value": "test str",
-      },
-    },
+    false,
+    true,
+    false,
   ],
-  Object {
-    "tag": "Opt",
-    "value": Object {
-      "tag": "None",
-    },
-  },
-  Object {
-    "tag": "None",
-  },
-  Object {
-    "tag": "Res",
-    "value": Object {
-      "tag": "Err",
-      "value": "test str",
-    },
-  },
-  Object {
-    "tag": "Err",
-    "value": "test str",
-  },
-  "test str",
-  Array [
-    "tuple value",
-  ],
-  "tuple value",
+  false,
+  true,
+  false,
 ]
 `;
