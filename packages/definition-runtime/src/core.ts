@@ -5,8 +5,8 @@ import { trackDecode } from './tracking'
  * General interface for any codec
  */
 export interface Codec<Encoded, Decoded = Encoded> {
-    encode: Encode<Encoded>
-    decode: Decode<Decoded>
+    encodeRaw: Encode<Encoded>
+    decodeRaw: Decode<Decoded>
     fromBuffer: (this: this, src: ArrayBufferView) => Decoded
     toBuffer: (this: this, value: Encoded) => Uint8Array
     name: (this: this) => string
@@ -43,14 +43,14 @@ export type FragmentCodec<E, D = E> = Codec<E | Fragment, D>
  * General {@link Codec} implementation that includes fragments & tracking functionality
  */
 export class CodecImpl<E, D = E> implements FragmentCodec<E, D> {
-    public encode: Encode<E | Fragment>
+    public encodeRaw: Encode<E | Fragment>
 
-    public decode: Decode<D>
+    public decodeRaw: Decode<D>
 
     private _name: string
 
     public constructor(name: string, encode: Encode<E>, decode: Decode<D>) {
-        this.encode = encodeFactory(
+        this.encodeRaw = encodeFactory(
             (val, walker) => {
                 if (val instanceof Fragment) return val.encode(walker)
                 else encode(val, walker)
@@ -61,17 +61,17 @@ export class CodecImpl<E, D = E> implements FragmentCodec<E, D> {
             },
         )
 
-        this.decode = (walker) => trackDecode(name, walker, decode)
+        this.decodeRaw = (walker) => trackDecode(name, walker, decode)
 
         this._name = name
     }
 
     public fromBuffer(this: this, src: ArrayBufferView): D {
-        return WalkerImpl.decode(src, this.decode)
+        return WalkerImpl.decode(src, this.decodeRaw)
     }
 
     public toBuffer(this: this, val: E | Fragment): Uint8Array {
-        return WalkerImpl.encode(val, this.encode)
+        return WalkerImpl.encode(val, this.encodeRaw)
     }
 
     public name(this: this): string {
@@ -86,23 +86,27 @@ export type CodecValueDecoded<T extends Codec<any>> = T extends Codec<any, infer
 /**
  * Special {@link Codec} implementation to that wraps another codec and dispatches it via its getter.
  * With this utility it is easy to implement cyclic dependencies between codecs.
+ *
+ * @remarks
+ *
+ * TODO optimize and cache got codec after the first dispatch?
  */
 export class DynCodec<C extends Codec<any, any>> implements Codec<CodecValueEncodable<C>, CodecValueDecoded<C>> {
-    public encode: Encode<CodecValueEncodable<C>>
+    public encodeRaw: Encode<CodecValueEncodable<C>>
 
-    public decode: Decode<CodecValueDecoded<C>>
+    public decodeRaw: Decode<CodecValueDecoded<C>>
 
     public readonly codecGetter: () => C
 
     public constructor(getter: () => C) {
         this.codecGetter = getter
 
-        this.encode = encodeFactory(
-            (val, walker) => getter().encode(val, walker),
-            (val) => getter().encode.sizeHint(val),
+        this.encodeRaw = encodeFactory(
+            (val, walker) => getter().encodeRaw(val, walker),
+            (val) => getter().encodeRaw.sizeHint(val),
         )
 
-        this.decode = (walker) => getter().decode(walker)
+        this.decodeRaw = (walker) => getter().decodeRaw(walker)
     }
 
     public fromBuffer(this: this, src: ArrayBufferView): CodecValueDecoded<C> {

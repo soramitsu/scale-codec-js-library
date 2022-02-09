@@ -31,7 +31,11 @@ import { trackRefineDecodeLoc } from './tracking'
 import { Codec, CodecImpl, CodecValueEncodable, CodecValueDecoded, CodecAny } from './core'
 
 export function createArrayCodec<T extends CodecAny>(name: string, itemCodec: T, len: number): VecCodec<T> {
-    return new CodecImpl(name, createArrayEncoder(itemCodec.encode, len), createArrayDecoder(itemCodec.decode, len))
+    return new CodecImpl(
+        name,
+        createArrayEncoder(itemCodec.encodeRaw, len),
+        createArrayDecoder(itemCodec.decodeRaw, len),
+    )
 }
 
 export function createUint8ArrayCodec(name: string, len: number): Codec<Uint8Array> {
@@ -41,7 +45,7 @@ export function createUint8ArrayCodec(name: string, len: number): Codec<Uint8Arr
 export type VecCodec<T extends CodecAny> = Codec<CodecValueEncodable<T>[], CodecValueDecoded<T>[]>
 
 export function createVecCodec<T extends CodecAny>(name: string, itemCodec: T): VecCodec<T> {
-    return new CodecImpl(name, createVecEncoder(itemCodec.encode), createVecDecoder(itemCodec.decode))
+    return new CodecImpl(name, createVecEncoder(itemCodec.encodeRaw), createVecDecoder(itemCodec.decodeRaw))
 }
 
 type TupleEncodable<T extends CodecAny[]> = T extends [infer Head, ...infer Tail]
@@ -67,8 +71,8 @@ export function createTupleCodec<T extends CodecAny[]>(name: string, codecs: T):
     const decoders: Decode<any>[] = []
 
     for (let i = 0, len = codecs.length, codec: Codec<any> = codecs[i]; i < len; i++, codec = codecs[i]) {
-        encoders.push(codec.encode)
-        decoders.push((walker) => trackRefineDecodeLoc(`<tuple>.${i}`, () => codec.decode(walker)))
+        encoders.push(codec.encodeRaw)
+        decoders.push((walker) => trackRefineDecodeLoc(`<tuple>.${i}`, () => codec.decodeRaw(walker)))
     }
 
     return new CodecImpl(name, createTupleEncoder(encoders as any), createTupleDecoder(decoders as any))
@@ -86,10 +90,10 @@ export function createMapCodec<K extends CodecAny, V extends CodecAny>(
 ): MapCodec<K, V> {
     return new CodecImpl(
         name,
-        createMapEncoder(keyCodec.encode, valueCodec.encode),
+        createMapEncoder(keyCodec.encodeRaw, valueCodec.encodeRaw),
         createMapDecoder(
-            (walker) => trackRefineDecodeLoc('<map>.<key>', () => keyCodec.decode(walker)),
-            (walker) => trackRefineDecodeLoc('<map>.<value>', () => valueCodec.decode(walker)),
+            (walker) => trackRefineDecodeLoc('<map>.<key>', () => keyCodec.decodeRaw(walker)),
+            (walker) => trackRefineDecodeLoc('<map>.<value>', () => valueCodec.decodeRaw(walker)),
         ),
     )
 }
@@ -97,7 +101,7 @@ export function createMapCodec<K extends CodecAny, V extends CodecAny>(
 export type SetCodec<T extends CodecAny> = Codec<Set<CodecValueEncodable<T>>, Set<CodecValueDecoded<T>>>
 
 export function createSetCodec<T extends CodecAny>(name: string, itemCodec: T): SetCodec<T> {
-    return new CodecImpl(name, createSetEncoder(itemCodec.encode), createSetDecoder(itemCodec.decode))
+    return new CodecImpl(name, createSetEncoder(itemCodec.encodeRaw), createSetDecoder(itemCodec.decodeRaw))
 }
 
 export type EnumCodecs<Def extends EnumGenericDef> = (Def extends string
@@ -127,9 +131,9 @@ export function createEnumCodec<Def extends EnumCodecGenericDef>(
     const decoders: EnumDecoders<any> = {}
 
     for (const [dis, tag, codec] of codecs) {
-        ;(encoders as any)[tag] = codec ? [dis, codec.encode] : dis
+        ;(encoders as any)[tag] = codec ? [dis, codec.encodeRaw] : dis
         ;(decoders as any)[dis] = codec
-            ? [tag, ((walker) => trackRefineDecodeLoc(`<enum>::${tag}`, () => codec.decode(walker))) as Decode<any>]
+            ? [tag, ((walker) => trackRefineDecodeLoc(`<enum>::${tag}`, () => codec.decodeRaw(walker))) as Decode<any>]
             : tag
     }
 
@@ -185,8 +189,11 @@ export function createStructCodec<T extends { [K in string]: CodecAny }>(
     const encoders: StructEncoders<any> = []
 
     for (const [field, codec] of orderedCodecs as [string, Codec<any>][]) {
-        decoders.push([field, (walker) => trackRefineDecodeLoc(`<struct>.${field}`, () => codec.decode(walker)) as any])
-        encoders.push([field, codec.encode])
+        decoders.push([
+            field,
+            (walker) => trackRefineDecodeLoc(`<struct>.${field}`, () => codec.decodeRaw(walker)) as any,
+        ])
+        encoders.push([field, codec.encodeRaw])
     }
 
     return new CodecImpl(name, createStructEncoder(encoders), createStructDecoder(decoders))
