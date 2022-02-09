@@ -1,47 +1,67 @@
 import { Logger, setCurrentTracker } from '@scale-codec/definition-runtime'
 import { suite, complete, cycle, add } from 'benny'
-import { encode as encodePolka } from './polka'
-import { encode as encodeCore } from './scale-codec-core'
-import { encode as encodeCoreV4 } from './scale-codec-core-v4'
-import { encode as encodeRuntime } from './scale-codec-runtime'
-import { encode as encodeRuntimeAlt } from './scale-codec-runtime-alt'
-import { encode as encodeRuntimeV8 } from './scale-codec-runtime-v8'
+import { decode as decodePolka, encode as encodePolka } from './polka'
+import { decode as decodeCore, encode as encodeCore } from './scale-codec-core'
+import { decode as decodeCoreV4, encode as encodeCoreV4 } from './scale-codec-core-v4'
+import { decode as decodeRuntime, encode as encodeRuntime } from './scale-codec-runtime'
+import { decode as decodeRuntimeV8, encode as encodeRuntimeV8 } from './scale-codec-runtime-v8'
 
 export default async function () {
-    const INPUT = Array.from({ length: 32 }, (v, i) => BigInt(i * 1e9))
+    const NUMBERS = Array.from({ length: 32 }, (v, i) => BigInt(i * 1e9))
+    const NUMBERS_ENCODED = encodeCore(NUMBERS)
 
     await suite(
         'Encode [u64; 32]',
         add('@scale-codec/core', () => {
-            encodeCore(INPUT)
+            encodeCore(NUMBERS)
         }),
         add('@scale-codec/definition-runtime', () => {
             setCurrentTracker(null)
-            return () => {
-                encodeRuntime(INPUT)
-            }
+            encodeRuntime(NUMBERS)
         }),
-        add('@scale-codec/definition-runtime (alt)', () => {
+
+        // Encoding is not currently tracked
+        // add('@scale-codec/definition-runtime with tracking', () => {
+        //     setCurrentTracker(null)
+        //     new Logger().mount()
+        //     encodeRuntime(NUMBERS)
+        // }),
+
+        add('@scale-codec/core@0.4.1', () => {
+            encodeCoreV4(NUMBERS)
+        }),
+        add('@scale-codec/definition-runtime@0.8.1', () => {
+            encodeRuntimeV8(NUMBERS)
+        }),
+        add('@polkadot/types-codec', () => {
+            encodePolka(NUMBERS)
+        }),
+        cycle(),
+        complete(),
+    )
+
+    await suite(
+        'Decode [u64; 32]',
+        add('@scale-codec/core', () => {
+            decodeCore(NUMBERS_ENCODED.slice())
+        }),
+        add('@scale-codec/definition-runtime', () => {
             setCurrentTracker(null)
-            return () => {
-                encodeRuntimeAlt(INPUT)
-            }
+            decodeRuntime(NUMBERS_ENCODED.slice())
         }),
         add('@scale-codec/definition-runtime with tracking', () => {
             setCurrentTracker(null)
             new Logger().mount()
-            return () => {
-                encodeRuntime(INPUT)
-            }
+            decodeRuntime(NUMBERS_ENCODED.slice())
         }),
         add('@scale-codec/core@0.4.1', () => {
-            encodeCoreV4(INPUT)
+            decodeCoreV4(NUMBERS_ENCODED.slice())
         }),
         add('@scale-codec/definition-runtime@0.8.1', () => {
-            encodeRuntimeV8(INPUT)
+            decodeRuntimeV8(NUMBERS_ENCODED.slice())
         }),
         add('@polkadot/types-codec', () => {
-            encodePolka(INPUT)
+            decodePolka(NUMBERS_ENCODED.slice())
         }),
         cycle(),
         complete(),

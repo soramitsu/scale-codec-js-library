@@ -1,17 +1,38 @@
 import { allArrayItemsShouldBeTheSame } from '../../test/util'
-import { encode as encodePolka } from './polka'
-import { encode as encodeCore } from './scale-codec-core'
-import { encode as encodeCoreV4 } from './scale-codec-core-v4'
-import { encode as encodeRuntime } from './scale-codec-runtime'
-import { encode as encodeRuntimeAlt } from './scale-codec-runtime-alt'
-import { encode as encodeRuntimeV8 } from './scale-codec-runtime-v8'
+import * as polka from './polka'
+import * as core from './scale-codec-core'
+import * as coreV4 from './scale-codec-core-v4'
+import * as runtime from './scale-codec-runtime'
+import * as runtimeV8 from './scale-codec-runtime-v8'
+
+const ENCODERS: ((arr: bigint[]) => Uint8Array)[] = [
+    polka.encode,
+    core.encode,
+    coreV4.encode,
+    runtime.encode,
+    runtimeV8.encode,
+]
+const DECODERS: ((input: Uint8Array) => bigint[])[] = [
+    polka.decode,
+    core.decode,
+    coreV4.decode,
+    runtime.decode,
+    runtimeV8.decode,
+]
 
 test('Different encoders are identical', () => {
     const INPUT = Array.from({ length: 32 }, (_, i) => BigInt(i))
 
-    const result = [encodeCore, encodeCoreV4, encodeRuntime, encodeRuntimeV8, encodePolka, encodeRuntimeAlt].map((fn) =>
-        fn(INPUT),
-    )
+    const result = ENCODERS.map((fn) => fn(INPUT))
+
+    allArrayItemsShouldBeTheSame(result)
+})
+
+test('Different decoders are identical', () => {
+    const NUMBERS = Array.from({ length: 32 }, (_, i) => BigInt(i))
+    const ENCODED = ENCODERS[0](NUMBERS)
+
+    const result = DECODERS.map((fn) => fn(ENCODED.slice()))
 
     allArrayItemsShouldBeTheSame(result)
 })
