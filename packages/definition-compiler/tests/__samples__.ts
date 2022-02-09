@@ -91,74 +91,74 @@ export const structFieldsOrdering = defineSample({
         fields: [
             { name: 'b', ref: 'Str' },
             { name: 'a', ref: 'Compact' },
-            { name: 'A', ref: 'BytesVec' },
+            { name: 'A', ref: 'VecU8' },
         ],
     },
 })
 
-export const unwrapCheck = defineSample({
-    StructA: {
-        t: 'struct',
-        fields: [
-            { name: 'primitive', ref: 'Bool' },
-            { name: 'alias', ref: 'AliasA' },
-            { name: 'enum', ref: 'EnumA' },
-            { name: 'map', ref: 'MapA' },
-            { name: 'set', ref: 'SetA' },
-            { name: 'array', ref: 'ArrayA' },
-            { name: 'bytesArray', ref: 'BytesArrayA' },
-            { name: 'vec', ref: 'VecEnumA' },
-            { name: 'tuple', ref: 'TupleA' },
-        ],
-    },
-    TupleA: {
-        t: 'tuple',
-        items: ['Str'],
-    },
-    AliasA: {
-        t: 'alias',
-        ref: 'TupleA',
-    },
-    MapA: {
-        t: 'map',
-        key: 'Str',
-        value: 'TupleA',
-    },
-    SetA: {
-        t: 'set',
-        entry: 'TupleA',
-    },
-    ArrayA: {
-        t: 'array',
-        item: 'Bool',
-        len: 3,
-    },
-    BytesArrayA: {
-        t: 'bytes-array',
-        len: 5,
-    },
-    VecEnumA: {
-        t: 'vec',
-        item: 'EnumA',
-    },
-    OptionA: {
-        t: 'option',
-        some: 'TupleA',
-    },
-    ResultA: {
-        t: 'result',
-        ok: 'TupleA',
-        err: 'Str',
-    },
-    EnumA: {
-        t: 'enum',
-        variants: [
-            { name: 'Opt', discriminant: 0, ref: 'OptionA' },
-            { name: 'Res', discriminant: 1, ref: 'ResultA' },
-            { name: 'Empty', discriminant: 2 },
-        ],
-    },
-})
+// export const unwrapCheck = defineSample({
+//     StructA: {
+//         t: 'struct',
+//         fields: [
+//             { name: 'primitive', ref: 'Bool' },
+//             { name: 'alias', ref: 'AliasA' },
+//             { name: 'enum', ref: 'EnumA' },
+//             { name: 'map', ref: 'MapA' },
+//             { name: 'set', ref: 'SetA' },
+//             { name: 'array', ref: 'ArrayA' },
+//             { name: 'bytesArray', ref: 'BytesArrayA' },
+//             { name: 'vec', ref: 'VecEnumA' },
+//             { name: 'tuple', ref: 'TupleA' },
+//         ],
+//     },
+//     TupleA: {
+//         t: 'tuple',
+//         items: ['Str'],
+//     },
+//     AliasA: {
+//         t: 'alias',
+//         ref: 'TupleA',
+//     },
+//     MapA: {
+//         t: 'map',
+//         key: 'Str',
+//         value: 'TupleA',
+//     },
+//     SetA: {
+//         t: 'set',
+//         entry: 'TupleA',
+//     },
+//     ArrayA: {
+//         t: 'array',
+//         item: 'Bool',
+//         len: 3,
+//     },
+//     BytesArrayA: {
+//         t: 'bytes-array',
+//         len: 5,
+//     },
+//     VecEnumA: {
+//         t: 'vec',
+//         item: 'EnumA',
+//     },
+//     OptionA: {
+//         t: 'option',
+//         some: 'TupleA',
+//     },
+//     ResultA: {
+//         t: 'result',
+//         ok: 'TupleA',
+//         err: 'Str',
+//     },
+//     EnumA: {
+//         t: 'enum',
+//         variants: [
+//             { name: 'Opt', discriminant: 0, ref: 'OptionA' },
+//             { name: 'Res', discriminant: 1, ref: 'ResultA' },
+//             { name: 'Empty', discriminant: 2 },
+//         ],
+//     },
+// })
 
 /**
  * Some builder could be extended, e.g. enum builder.

@@ -53,6 +53,6 @@ export const Bool = new CodecImpl('bool', encodeBool, decodeBool)
 
 export const Void = new CodecImpl('void', encodeVoid, decodeVoid)
 
-export const Uint8Vec = new CodecImpl('VecU8', encodeUint8Vec, decodeUint8Vec)
+export const VecU8 = new CodecImpl('VecU8', encodeUint8Vec, decodeUint8Vec)
 
 export const Compact = new CodecImpl('compact', encodeCompact, decodeCompact)

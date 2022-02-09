@@ -91,7 +91,7 @@ export type CodecValueDecoded<T extends Codec<any>> = T extends Codec<any, infer
  *
  * TODO optimize and cache got codec after the first dispatch?
  */
-export class DynCodec<C extends Codec<any, any>> implements Codec<CodecValueEncodable<C>, CodecValueDecoded<C>> {
+export class DynCodec<C extends CodecAny> implements Codec<CodecValueEncodable<C>, CodecValueDecoded<C>> {
     public encodeRaw: Encode<CodecValueEncodable<C>>
 
     public decodeRaw: Decode<CodecValueDecoded<C>>
@@ -120,4 +120,11 @@ export class DynCodec<C extends Codec<any, any>> implements Codec<CodecValueEnco
     public name(this: this): string {
         return this.codecGetter().name()
     }
+}
+
+/**
+ * See {@link DynCodec}. It is a shorthand factory that is more minimize-friendly than `new DynCodec(...)`
+ */
+export function dynCodec<C extends CodecAny>(getter: () => C): DynCodec<C> {
+    return new DynCodec(getter)
 }

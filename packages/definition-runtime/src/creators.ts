@@ -38,7 +38,7 @@ export function createArrayCodec<T extends CodecAny>(name: string, itemCodec: T,
     )
 }
 
-export function createUint8ArrayCodec(name: string, len: number): Codec<Uint8Array> {
+export function createArrayU8Codec(name: string, len: number): Codec<Uint8Array> {
     return new CodecImpl(name, createUint8ArrayEncoder(len), createUint8ArrayDecoder(len))
 }
 
@@ -178,7 +178,7 @@ export type StructCodec<T> = Codec<
 >
 
 type StructCodecAsSchema<T> = {
-    [K in keyof T]: [K, T[K] extends CodecAny ? T[K] : never]
+    [K in keyof T]: [K, T[K] extends Codec<infer E, infer D> ? Codec<E, D> : never]
 }[keyof T][]
 
 export function createStructCodec<T extends { [K in string]: CodecAny }>(
