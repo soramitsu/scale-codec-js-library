@@ -1,38 +1,38 @@
 import { add, complete, cycle, suite } from 'benny'
 import core from './core'
-import coreV4 from './core-v4'
+import coreV04 from './core-v04'
 import runtime from './runtime'
-import { setFactory } from './util'
+import { factory } from './util'
 
 export default async function () {
-    const VALUE = setFactory()
+    const VALUE = factory()
     const ENCODED = core.encode(VALUE)
 
     await suite(
-        'Encode Set<Compact> (with 50 entries)',
+        'Encode Map<string, boolean>',
         add('core', () => {
             core.encode(VALUE)
         }),
+        add('core v 0.4', () => {
+            coreV04.encode(VALUE)
+        }),
         add('runtime', () => {
             runtime.encode(VALUE)
-        }),
-        add('core@0.4', () => {
-            coreV4.encode(VALUE)
         }),
         cycle(),
         complete(),
     )
 
     await suite(
-        'Decode Set<Compact> with 50 entries',
+        'Decode Map<string, boolean>',
         add('core', () => {
             core.decode(ENCODED)
         }),
+        add('core v 0.4', () => {
+            coreV04.decode(ENCODED)
+        }),
         add('runtime', () => {
             runtime.decode(ENCODED)
-        }),
-        add('core 0.4', () => {
-            coreV4.decode(ENCODED)
         }),
         cycle(),
         complete(),
