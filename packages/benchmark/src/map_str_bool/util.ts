@@ -1,3 +1,5 @@
+import { MapType, reg } from './polka'
+
 export function factory(): Map<string, boolean> {
     return new Map(
         Array.from({ length: 20 }, (_, i) => [
@@ -5,4 +7,8 @@ export function factory(): Map<string, boolean> {
             i % 2 === 0,
         ]),
     )
+}
+
+export function factoryPolka() {
+    return new MapType(reg, factory())
 }

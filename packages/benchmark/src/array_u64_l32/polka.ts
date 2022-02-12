@@ -1,15 +1,14 @@
-import { U64, VecFixed } from '@polkadot/types-codec'
+import { U64, VecFixed, TypeRegistry } from '@polkadot/types'
 import { defineCodec } from '../types'
 
-const ArrU64L32 = VecFixed.with(U64, 32)
+export const reg = new TypeRegistry()
+export const Arr = reg.createClass('[u64; 32]')
 
-export default defineCodec({
-    encode: (arr: bigint[]): Uint8Array => {
-        return new ArrU64L32(null as any, arr).toU8a()
+export default defineCodec<VecFixed<U64>>({
+    encode(arr) {
+        return new Arr(reg, arr).toU8a()
     },
-    decode: (input: Uint8Array): bigint[] => {
-        const arr = new ArrU64L32(null as any, input)
-        // not very fair, but this is the Polka's way
-        return arr.map((x) => x.toBigInt())
+    decode(input: Uint8Array) {
+        return new Arr(reg, input) as any
     },
 })

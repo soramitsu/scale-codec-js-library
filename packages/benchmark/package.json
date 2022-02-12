@@ -8,6 +8,7 @@
         "start:run": "node dist/main.js"
     },
     "dependencies": {
+        "@polkadot/types": "^7.7.1",
         "@polkadot/types-codec": "^7.7.1",
         "@scale-codec/core": "workspace:^0.4.2",
         "@scale-codec/definition-runtime": "workspace:^0.8.2",

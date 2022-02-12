@@ -2,10 +2,10 @@ import { add, complete, cycle, suite } from 'benny'
 import core from './core'
 import coreV4 from './core-v4'
 import runtime from './runtime'
-import { setFactory } from './util'
+import { factory } from './util'
 
 export default async function () {
-    const VALUE = setFactory()
+    const VALUE = factory()
     const ENCODED = core.encode(VALUE)
 
     await suite(
