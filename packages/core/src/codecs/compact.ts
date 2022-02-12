@@ -7,9 +7,9 @@ import {
     encodePositiveBigIntInto,
 } from './int'
 
-const MAX_U8 = 2n ** (8n - 2n) - 1n
-const MAX_U16 = 2n ** (16n - 2n) - 1n
-const MAX_U32 = 2n ** (32n - 2n) - 1n
+const MAX_U8 = 2 ** (8 - 2) - 1
+const MAX_U16 = 2 ** (16 - 2) - 1
+const MAX_U32 = 2 ** (32 - 2) - 1
 
 /**
  * Decodes compact-encoded integer
