@@ -7,7 +7,6 @@
 import { Decode } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Enum } from '@scale-codec/core';
-import { EnumDef } from '@scale-codec/core';
 import { EnumGenericDef } from '@scale-codec/core';
 import { Fmt } from 'fmt-subs';
 import { Option as Option_2 } from '@scale-codec/core';
@@ -15,19 +14,42 @@ import { Result } from '@scale-codec/core';
 import { Walker } from '@scale-codec/core';
 
 // @public (undocumented)
-export type ArrayItemBuilder<T> = T extends Fragment<infer V, infer U>[] ? FragmentBuilder<V, U> : never;
-
-// @public (undocumented)
-export const Bool: FragmentBuilder<boolean, boolean>;
+export const Bool: CodecImpl<boolean, boolean>;
 
 // @public (undocumented)
 export function buildDecodeTraceStepsFmt(trace: DecodeTrace, walker: Walker): Fmt;
 
-// @public (undocumented)
-export type BuilderFromFragment<T extends Fragment<any>> = T extends Fragment<infer V, infer U> ? FragmentBuilder<V, U> : never;
+// @public
+export interface Codec<Encoded, Decoded = Encoded> {
+    // (undocumented)
+    decodeRaw: Decode<Decoded>;
+    // (undocumented)
+    encodeRaw: Encode<Encoded>;
+    // (undocumented)
+    fromBuffer: (this: this, src: ArrayBufferView) => Decoded;
+    // (undocumented)
+    name: (this: this) => string;
+    // (undocumented)
+    toBuffer: (this: this, value: Encoded) => Uint8Array;
+}
 
 // @public (undocumented)
-export const BytesVec: FragmentBuilder<Uint8Array, Uint8Array>;
+export type CodecAny = Codec<any, any>;
+
+// @public
+export class CodecImpl<E, D = E> implements Codec<E, D> {
+    constructor(name: string, encode: Encode<E>, decode: Decode<D>);
+    // (undocumented)
+    decodeRaw: Decode<D>;
+    // (undocumented)
+    encodeRaw: Encode<E>;
+    // (undocumented)
+    fromBuffer(this: this, src: ArrayBufferView): D;
+    // (undocumented)
+    name(this: this): string;
+    // (undocumented)
+    toBuffer(this: this, value: E): Uint8Array;
+}
 
 // @public
 export interface CodecTracker {
@@ -36,52 +58,49 @@ export interface CodecTracker {
 }
 
 // @public (undocumented)
-export const Compact: FragmentBuilder<bigint, bigint>;
+export type CodecValueDecoded<T extends Codec<any>> = T extends Codec<any, infer D> ? D : never;
 
 // @public (undocumented)
-export function createArrayBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>, len: number): ScaleArrayBuilder<T>;
-
-// @public
-export function createBuilder<T, U = T>(name: string, encode: Encode<T>, decode: Decode<T>, unwrap?: FragmentUnwrapFn<T, U>, wrap?: FragmentWrapFn<T, U>): FragmentBuilder<T, U>;
+export type CodecValueEncodable<T extends Codec<any>> = T extends Codec<infer E, any> ? E : never;
 
 // @public (undocumented)
-export function createBytesArrayBuilder(name: string, len: number): FragmentBuilder<Uint8Array>;
+export const Compact: CodecImpl<number | bigint, bigint>;
 
 // @public (undocumented)
-export function createEnumBuilder<T extends ScaleEnum>(name: string, schema: EnumBuilderSchema<EnumDef<T>>): ScaleEnumBuilder<T>;
+export function createArrayCodec<T extends CodecAny>(name: string, itemCodec: T, len: number): VecCodec<T>;
 
-// Warning: (ae-forgotten-export) The symbol "MapKeyInner" needs to be exported by the entry point lib.d.ts
-// Warning: (ae-forgotten-export) The symbol "MapValueInner" needs to be exported by the entry point lib.d.ts
+// @public (undocumented)
+export function createArrayU8Codec(name: string, len: number): Codec<Uint8Array>;
+
+// Warning: (ae-forgotten-export) The symbol "EnumCodecGenericDefAsSchema" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createMapBuilder<T extends Map<Fragment<any>, Fragment<any>>>(name: string, keyBuilder: FragmentBuilder<MapKeyInner<T>>, valueBuilder: FragmentBuilder<MapValueInner<T>>): ScaleMapBuilder<T>;
+export function createEnumCodec<Def extends EnumCodecGenericDef>(name: string, codecs: EnumCodecGenericDefAsSchema<Def>): EnumCodec<Def>;
 
-// Warning: (ae-forgotten-export) The symbol "OptionBuilder" needs to be exported by the entry point lib.d.ts
+// @public (undocumented)
+export function createMapCodec<K extends CodecAny, V extends CodecAny>(name: string, keyCodec: K, valueCodec: V): MapCodec<K, V>;
+
+// @public (undocumented)
+export function createOptionCodec<Some extends CodecAny>(name: string, someCodec: Some): OptionCodec<Some>;
+
+// @public (undocumented)
+export function createResultCodec<Ok extends CodecAny, Err extends CodecAny>(name: string, okCodec: Ok, errCodec: Err): ResultCodec<Ok, Err>;
+
+// @public (undocumented)
+export function createSetCodec<T extends CodecAny>(name: string, itemCodec: T): SetCodec<T>;
+
+// Warning: (ae-forgotten-export) The symbol "StructCodecAsSchema" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createOptionBuilder<T extends Option_2<Fragment<any>>>(name: string, some: OptionBuilder<T>): ScaleEnumBuilder<T>;
-
-// Warning: (ae-forgotten-export) The symbol "ResultOkBuilder" needs to be exported by the entry point lib.d.ts
-// Warning: (ae-forgotten-export) The symbol "ResultErrBuilder" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export function createResultBuilder<T extends Result<Fragment<any>, Fragment<any>>>(name: string, ok: ResultOkBuilder<T>, err: ResultErrBuilder<T>): ScaleEnumBuilder<T>;
-
-// Warning: (ae-forgotten-export) The symbol "SetEntryBuilder" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export function createSetBuilder<T extends Set<Fragment<any>>>(name: string, itemBuilder: SetEntryBuilder<T>): ScaleSetBuilder<T>;
+export function createStructCodec<T extends {
+    [K in string]: CodecAny;
+}>(name: string, orderedCodecs: StructCodecAsSchema<T>): StructCodec<T>;
 
 // @public (undocumented)
-export function createStructBuilder<T extends {
-    [K in keyof T]: Fragment<any>;
-}>(name: string, schema: StructBuilderSchema<T>): ScaleStructBuilder<T>;
+export function createTupleCodec<T extends CodecAny[]>(name: string, codecs: T): TupleCodec<T>;
 
 // @public (undocumented)
-export function createTupleBuilder<T extends Fragment<any>[]>(name: string, builders: FragmentBuilder<any>[]): ScaleTupleBuilder<T>;
-
-// @public (undocumented)
-export function createVecBuilder<T extends Fragment<any>[]>(name: string, itemBuilder: ArrayItemBuilder<T>): ScaleArrayBuilder<T>;
+export function createVecCodec<T extends CodecAny>(name: string, itemCodec: T): VecCodec<T>;
 
 // @public (undocumented)
 export class DecodeTrace {
@@ -127,29 +146,33 @@ export class DecodeTraceCollector {
 }
 
 // @public
-export class DynBuilder<T extends FragmentBuilder<any>> implements FragmentBuilder<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>> {
-    constructor(builderGetter: () => T);
+export class DynCodec<C extends CodecAny> implements Codec<CodecValueEncodable<C>, CodecValueDecoded<C>> {
+    constructor(getter: () => C);
     // (undocumented)
-    decode(walker: Walker): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
+    readonly codecGetter: () => C;
     // (undocumented)
-    defineUnwrap(unwrappedValue: FragmentOrBuilderUnwrapped<T>): FragmentOrBuilderUnwrapped<T>;
+    decodeRaw: Decode<CodecValueDecoded<C>>;
     // (undocumented)
-    fromBuffer(bytes: Uint8Array): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
+    encodeRaw: Encode<CodecValueEncodable<C>>;
     // (undocumented)
-    fromValue(value: FragmentOrBuilderValue<T>): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
-    getBuilder(): T;
+    fromBuffer(this: this, src: ArrayBufferView): CodecValueDecoded<C>;
     // (undocumented)
-    wrap(unwrappedValue: FragmentOrBuilderUnwrapped<T>): Fragment<FragmentOrBuilderValue<T>, FragmentOrBuilderUnwrapped<T>>;
+    name(this: this): string;
+    // (undocumented)
+    toBuffer(this: this, value: CodecValueEncodable<C>): Uint8Array;
 }
 
-// @public (undocumented)
-export function dynBuilder<T extends FragmentBuilder<any>>(dyn: () => T): DynBuilder<T>;
+// @public
+export function dynCodec<C extends CodecAny>(getter: () => C): DynCodec<C>;
 
 // @public (undocumented)
-export const encodeAnyFragment: Encode<Fragment<any>>;
+export type EnumCodec<Def extends EnumCodecGenericDef> = Codec<Enum<Def extends [infer Tag, Codec<infer E, any>] ? [Tag, E] : Def>, Enum<Def extends [infer Tag, Codec<any, infer D>] ? [Tag, D] : Def>>;
 
 // @public (undocumented)
-export type EnumBuilderSchema<Def extends EnumGenericDef> = (Def extends string ? [discriminant: number, tag: Def] : Def extends [infer T, infer V] ? V extends Fragment<infer FT, infer FU> ? [discriminant: number, tag: T, builder: FragmentBuilder<FT, FU>] : never : never)[];
+export type EnumCodecGenericDef = string | [string, CodecAny];
+
+// @public (undocumented)
+export type EnumCodecs<Def extends EnumGenericDef> = (Def extends string ? [discriminant: number, tag: Def] : Def extends [infer T, infer V] ? [discriminant: number, tag: T, codec: Codec<V>] : never)[];
 
 // @public (undocumented)
 export function formatWalkerStep(params: FormatWalkerStepParams): string;
@@ -163,67 +186,22 @@ export interface FormatWalkerStepParams {
 }
 
 // @public
-export abstract class Fragment<Value, Unwrapped = Value> implements TrackValueInspectable {
-    // (undocumented)
-    [TrackValueInspect](): Unwrapped;
-    constructor(value: typeof FRAGMENT_VALUE_EMPTY | Value, bytes: null | Uint8Array);
-    // (undocumented)
-    protected abstract __decode: Decode<Value>;
-    // (undocumented)
-    protected abstract __encode: Encode<Value>;
-    protected abstract __name: string;
-    // (undocumented)
-    get bytes(): Uint8Array;
-    // (undocumented)
-    encode(walker: Walker): void;
-    // (undocumented)
-    get sizeHint(): number;
-    abstract unwrap(): Unwrapped;
-    // (undocumented)
-    get value(): Value;
-}
-
-// @public
-export interface FragmentBuilder<T, U = T> {
-    decode: Decode<Fragment<T, U>>;
-    defineUnwrap: (unwrappedValue: U) => U;
-    fromBuffer: (bufferView: ArrayBufferView) => Fragment<T, U>;
-    fromValue: (value: T) => Fragment<T, U>;
-    wrap: (unwrappedValue: U) => Fragment<T, U>;
-}
-
-// @public (undocumented)
-export type FragmentFromBuilder<T extends FragmentBuilder<any>> = T extends FragmentBuilder<infer V, infer U> ? Fragment<V, U> : never;
-
-// @public (undocumented)
-export type FragmentOrBuilderUnwrapped<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<any, infer U> ? U : T extends FragmentBuilder<any, infer U> ? U : never;
-
-// @public (undocumented)
-export type FragmentOrBuilderValue<T extends Fragment<any> | FragmentBuilder<any>> = T extends Fragment<infer V, any> ? V : T extends FragmentBuilder<infer V, any> ? V : never;
-
-// @public (undocumented)
-export type FragmentUnwrapFn<T, U> = (self: Fragment<T, U>) => U;
-
-// @public (undocumented)
-export type FragmentWrapFn<T, U> = (unwrapped: U) => T;
-
-// @public
 export function getCurrentTracker(): null | CodecTracker;
 
 // @public (undocumented)
-export const I128: FragmentBuilder<bigint, bigint>;
+export const I128: CodecImpl<bigint, bigint>;
 
 // @public (undocumented)
-export const I16: FragmentBuilder<number, number>;
+export const I16: CodecImpl<number, number>;
 
 // @public (undocumented)
-export const I32: FragmentBuilder<number, number>;
+export const I32: CodecImpl<number, number>;
 
 // @public (undocumented)
-export const I64: FragmentBuilder<bigint, bigint>;
+export const I64: CodecImpl<bigint, bigint>;
 
 // @public (undocumented)
-export const I8: FragmentBuilder<number, number>;
+export const I8: CodecImpl<number, number>;
 
 // @public (undocumented)
 export function isTrackValueInspectable(value: unknown): value is TrackValueInspectable;
@@ -248,45 +226,32 @@ export interface LoggerConfig {
 }
 
 // @public (undocumented)
+export type MapCodec<K extends CodecAny, V extends CodecAny> = Codec<Map<CodecValueEncodable<K>, CodecValueEncodable<V>>, Map<CodecValueDecoded<K>, CodecValueDecoded<V>>>;
+
+// @public (undocumented)
+export type OptionCodec<Some extends CodecAny> = Codec<Option_2<CodecValueEncodable<Some>>, Option_2<CodecValueDecoded<Some>>>;
+
+// @public (undocumented)
 export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => T) => T;
 
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleArray" needs to be exported by the entry point lib.d.ts
-//
 // @public (undocumented)
-export type ScaleArrayBuilder<T extends Fragment<any>[]> = FragmentBuilder<T, UnwrapScaleArray<T>>;
+export type ResultCodec<Ok extends CodecAny, Err extends CodecAny> = Codec<Result<CodecValueEncodable<Ok>, CodecValueEncodable<Err>>, Result<CodecValueDecoded<Ok>, CodecValueDecoded<Err>>>;
 
 // @public (undocumented)
-export type ScaleEnum = Enum<string | [string, Fragment<any>]>;
-
-// @public (undocumented)
-export type ScaleEnumBuilder<T extends Enum<any>> = FragmentBuilder<T, UnwrapScaleEnum<T>>;
-
-// @public (undocumented)
-export type ScaleMapBuilder<T extends Map<Fragment<any>, Fragment<any>>> = FragmentBuilder<T, UnwrapScaleMap<T>>;
-
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleSet" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export type ScaleSetBuilder<T extends Set<Fragment<any>>> = FragmentBuilder<T, UnwrapScaleSet<T>>;
-
-// @public
-export type ScaleStructBuilder<T extends {
-    [K in keyof T]: Fragment<any>;
-}> = FragmentBuilder<T, UnwrapScaleStruct<T>>;
-
-// Warning: (ae-forgotten-export) The symbol "UnwrapScaleTuple" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export type ScaleTupleBuilder<T> = FragmentBuilder<T, UnwrapScaleTuple<T>>;
+export type SetCodec<T extends CodecAny> = Codec<Set<CodecValueEncodable<T>>, Set<CodecValueDecoded<T>>>;
 
 // @public
 export function setCurrentTracker(tracker: null | CodecTracker): void;
 
 // @public (undocumented)
-export const Str: FragmentBuilder<string, string>;
+export const Str: CodecImpl<string, string>;
 
 // @public (undocumented)
-export type StructBuilderSchema<T> = [fieldName: keyof T & string, builder: FragmentBuilder<any>][];
+export type StructCodec<T> = Codec<{
+    [K in keyof T]: T[K] extends Codec<infer E, any> ? E : never;
+}, {
+    [K in keyof T]: T[K] extends Codec<any, infer D> ? D : never;
+}>;
 
 // @public
 export const trackDecode: TrackDecodeFn;
@@ -309,37 +274,35 @@ export interface TrackValueInspectable {
 // @public (undocumented)
 export function tryInspectValue(value: any): any;
 
+// Warning: (ae-forgotten-export) The symbol "TupleEncodable" needs to be exported by the entry point lib.d.ts
+// Warning: (ae-forgotten-export) The symbol "TupleDecoded" needs to be exported by the entry point lib.d.ts
+//
 // @public (undocumented)
-export const U128: FragmentBuilder<bigint, bigint>;
+export type TupleCodec<T extends CodecAny[]> = Codec<TupleEncodable<T>, TupleDecoded<T>>;
 
 // @public (undocumented)
-export const U16: FragmentBuilder<number, number>;
+export const U128: CodecImpl<bigint, bigint>;
 
 // @public (undocumented)
-export const U32: FragmentBuilder<number, number>;
+export const U16: CodecImpl<number, number>;
 
 // @public (undocumented)
-export const U64: FragmentBuilder<bigint, bigint>;
+export const U32: CodecImpl<number, number>;
 
 // @public (undocumented)
-export const U8: FragmentBuilder<number, number>;
+export const U64: CodecImpl<bigint, bigint>;
 
 // @public (undocumented)
-export type UnwrapFragment<T> = T extends Fragment<any, infer U> ? U : T;
+export const U8: CodecImpl<number, number>;
 
 // @public (undocumented)
-export type UnwrapScaleEnum<T extends ScaleEnum> = T extends Enum<infer Def> ? Enum<Def extends [infer Tag, infer V] ? (V extends Fragment<any, infer U> ? [Tag, U] : never) : Def> : never;
+export type VecCodec<T extends CodecAny> = Codec<CodecValueEncodable<T>[], CodecValueDecoded<T>[]>;
 
 // @public (undocumented)
-export type UnwrapScaleMap<T> = T extends Map<Fragment<any, infer K>, Fragment<any, infer V>> ? Map<UnwrapFragment<K>, UnwrapFragment<V>> : never;
+export const VecU8: CodecImpl<Uint8Array, Uint8Array>;
 
 // @public (undocumented)
-export type UnwrapScaleStruct<T> = {
-    [K in keyof T]: UnwrapFragment<T[K]>;
-};
-
-// @public (undocumented)
-export const Void: FragmentBuilder<null, null>;
+export const Void: CodecImpl<null, null>;
 
 
 export * from "@scale-codec/core";
