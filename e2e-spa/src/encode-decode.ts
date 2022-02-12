@@ -1,10 +1,10 @@
 import { Array_Vec_HashMap_str_Id_8 } from './namespace'
-import { Enum, Result } from '@scale-codec/definition-runtime'
+import { CodecValueDecoded, Enum, Result } from '@scale-codec/definition-runtime'
 import deepEqual from 'fast-deep-equal'
 
 export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
     try {
-        const data = Array_Vec_HashMap_str_Id_8.wrap([
+        const data: CodecValueDecoded<typeof Array_Vec_HashMap_str_Id_8> = [
             [
                 new Map([
                     [
@@ -34,12 +34,12 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
             [],
             [],
             [],
-        ])
+        ]
 
-        const encoded = data.bytes
+        const encoded = Array_Vec_HashMap_str_Id_8.toBuffer(data)
         const decoded = Array_Vec_HashMap_str_Id_8.fromBuffer(encoded)
 
-        if (!deepEqual(data.unwrap(), decoded.unwrap())) {
+        if (!deepEqual(data, decoded)) {
             throw new Error('Not equals >:(')
         }
 
