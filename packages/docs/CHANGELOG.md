@@ -1,5 +1,14 @@
 # @scale-codec/docs
 
+## 0.1.3
+
+### Patch Changes
+
+-   Updated dependencies
+-   Updated dependencies
+    -   @scale-codec/core@1.0.0
+    -   @scale-codec/util@1.0.0
+
 ## 0.1.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/enum",
-    "version": "0.2.2",
+    "version": "1.0.0",
     "description": "Simple JavaScript abstraction around Rust Enums",
     "keywords": [
         "rust",

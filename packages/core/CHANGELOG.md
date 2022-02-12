@@ -1,5 +1,91 @@
 # @scale-codec/core
 
+## 1.0.0
+
+### Major Changes
+
+-   **BREAKING**: refactor all codecs, use new encoding & decoding approach
+
+    -   **What is the change**
+
+        Previously this package was built on the top of these core types:
+
+        ```ts
+        type Encode<T> = (value: T) => Uint8Array
+
+        type Decode<T> = (input: Uint8Array) => DecodeResult<T>
+
+        type DecodeResult<T> = [value: T, bytesDecoded: number]
+        ```
+
+        While encoding, each codec was creating it's own `Uint8Array` instance that is concatenated with other ones. It produces a huge performace goal, because you create a lot of intermediate objects, a lot of memory is allocated during the encoding process.
+
+        Now this package is build on the top of these types:
+
+        ```ts
+        interface Walker {
+            u8: Uint8Array
+            // current walker offset
+            idx: number
+            // DataView associated with `u8`. Useful for (u)ints
+            view: DataView
+        }
+
+        interface Encode<T> {
+            (value: T, walker: Walker): void
+            sizeHint: (value: T) => number
+        }
+
+        type Decode<T> = (walker: Walker) => T
+        ```
+
+        With a special `Walker` type codecs now are much more performant and writing/reading data without a lot of additional allocations, but they are now much less functional and "pure".
+
+        With size hints its now possible to allocate buffer only once.
+
+    -   **Why the change was made**
+
+        This change increases performance incredibly.
+
+    -   **How to migrate existing code**
+
+        The library exports special `WalkerImpl` utility class to work with codecs. For example, if previously to encode an array of strings, you were doing it like this:
+
+        ```ts
+        import { encodeArray, encodeStr } from '@scale-codec/core'
+
+        const encoded = encodeArray(
+            [
+                /* ... */
+            ],
+            encodeStr,
+            32,
+        )
+        ```
+
+        Now the same action you can perform in this way:
+
+        ```ts
+        import { createArrayEncoder, encodeStr, WalkerImpl } from '@scale-codec/core'
+
+        const encoder = createArrayEncoder(encodeStr, 32)
+
+        const encoded = WalkerImpl.encode(
+            [
+                /* ... */
+            ],
+            encoder,
+        )
+        ```
+
+### Patch Changes
+
+-   Updated dependencies
+-   Updated dependencies
+-   Updated dependencies
+    -   @scale-codec/util@1.0.0
+    -   @scale-codec/enum@1.0.0
+
 ## 0.4.2
 
 ### Patch Changes

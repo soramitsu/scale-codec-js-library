@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/core",
-    "version": "0.4.2",
+    "version": "1.0.0",
     "description": "Low-level tools to perform serialization and deserialization via SCALE spec",
     "license": "Apache-2.0",
     "keywords": [
@@ -42,8 +42,8 @@
         "dist"
     ],
     "dependencies": {
-        "@scale-codec/enum": "workspace:^0.2.2",
-        "@scale-codec/util": "workspace:^0.1.3"
+        "@scale-codec/enum": "workspace:^1.0.0",
+        "@scale-codec/util": "workspace:^1.0.0"
     },
     "devDependencies": {
         "hada": "^0.0.8",

@@ -1,5 +1,46 @@
 # @scale-codec/enum
 
+## 1.0.0
+
+### Major Changes
+
+-   **feat**: **BREAKING** `Enum` now uses new definitions approach.
+
+    For example, instead of:
+
+    ```ts
+    type OptNum = Enum<{
+        None: null
+        Some: { value: number }
+    }>
+    ```
+
+    it should be:
+
+    ```ts
+    type OptNum = Enum<'None' | ['Some', number]>
+    ```
+
+    This definition way is much more easier for TypeScript to handle, and it allows to avoid some constraints and auto-inference problems
+
+-   **feat**: **BREAKING** `empty()` and `valuable()` static methods are replaced with a single `variant()` creation factory. It is type-safe and easy to use thanks to the new definitions approach.
+
+    For example, instead of:
+
+    ```ts
+    type OptNum = Option<number>
+
+    const opt1: OptNum = Enum.empty('None')
+    const opt2: OptNum = Enum.valuable('Some', 42)
+    ```
+
+    it should be:
+
+    ```ts
+    const opt3: OptNum = Enum.variant('None')
+    const opt4: OptNum = Enum.variant('Some', 42)
+    ```
+
 ## 0.2.2
 
 ### Patch Changes
