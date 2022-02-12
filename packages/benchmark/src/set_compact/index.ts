@@ -1,4 +1,5 @@
 import { add, complete, cycle, suite } from 'benny'
+import { saveCustom } from '../shared'
 import core from './core'
 import coreV4 from './core-v4'
 import runtime from './runtime'
@@ -21,6 +22,7 @@ export default async function () {
         }),
         cycle(),
         complete(),
+        saveCustom('set-compact-encode'),
     )
 
     await suite(
@@ -36,5 +38,6 @@ export default async function () {
         }),
         cycle(),
         complete(),
+        saveCustom('set-compact-decode'),
     )
 }

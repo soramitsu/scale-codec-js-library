@@ -1,0 +1,39 @@
+{
+  "name": "Encode options chain",
+  "date": "2022-02-12T07:12:30.385Z",
+  "version": null,
+  "results": [
+    {
+      "name": "core",
+      "ops": 319262,
+      "margin": 1.57,
+      "percentSlower": 1.84
+    },
+    {
+      "name": "runtime",
+      "ops": 325241,
+      "margin": 0.43,
+      "percentSlower": 0
+    },
+    {
+      "name": "core 0.4",
+      "ops": 21461,
+      "margin": 1.67,
+      "percentSlower": 93.4
+    },
+    {
+      "name": "@polkadot/types",
+      "ops": 55537,
+      "margin": 0.68,
+      "percentSlower": 82.92
+    }
+  ],
+  "fastest": {
+    "name": "runtime",
+    "index": 1
+  },
+  "slowest": {
+    "name": "core 0.4",
+    "index": 2
+  }
+}

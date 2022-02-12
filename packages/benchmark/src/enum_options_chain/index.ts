@@ -1,4 +1,5 @@
 import { add, complete, cycle, suite } from 'benny'
+import { saveCustom } from '../shared'
 import core from './core'
 import coreV04 from './core-v04'
 import polka from './polka'
@@ -27,6 +28,7 @@ export default async function () {
         }),
         cycle(),
         complete(),
+        saveCustom('options-chain-encode'),
     )
 
     await suite(
@@ -45,5 +47,6 @@ export default async function () {
         }),
         cycle(),
         complete(),
+        saveCustom('options-chain-decode'),
     )
 }

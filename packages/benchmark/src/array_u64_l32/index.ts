@@ -7,6 +7,7 @@ import scaleCodecCoreV4 from './scale-codec-core-v4'
 import scaleCodecRuntime from './scale-codec-runtime'
 import scaleCodecRuntimeV8 from './scale-codec-runtime-v8'
 import { nativeToPolka } from './util'
+import { saveCustom } from '../shared'
 
 export default async function () {
     const INPUT_BIGINTS = Array.from({ length: 32 }, (v, i) => BigInt(i * 1e9))
@@ -34,6 +35,7 @@ export default async function () {
         }),
         cycle(),
         complete(),
+        saveCustom('arr-u64-32-encode'),
     )
 
     await suite(
@@ -55,5 +57,6 @@ export default async function () {
         }),
         cycle(),
         complete(),
+        saveCustom('arr-u64-32-decode'),
     )
 }

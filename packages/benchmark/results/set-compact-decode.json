@@ -1,0 +1,33 @@
+{
+  "name": "Decode Set<Compact> with 50 entries",
+  "date": "2022-02-12T07:11:24.796Z",
+  "version": null,
+  "results": [
+    {
+      "name": "core",
+      "ops": 26879,
+      "margin": 0.48,
+      "percentSlower": 0
+    },
+    {
+      "name": "runtime",
+      "ops": 26235,
+      "margin": 0.41,
+      "percentSlower": 2.4
+    },
+    {
+      "name": "core 0.4",
+      "ops": 14963,
+      "margin": 0.14,
+      "percentSlower": 44.33
+    }
+  ],
+  "fastest": {
+    "name": "core",
+    "index": 0
+  },
+  "slowest": {
+    "name": "core 0.4",
+    "index": 2
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "Encoding struct",
+  "date": "2022-02-12T07:13:08.794Z",
+  "version": null,
+  "results": [
+    {
+      "name": "core",
+      "ops": 362656,
+      "margin": 0.2,
+      "percentSlower": 0
+    },
+    {
+      "name": "runtime",
+      "ops": 344857,
+      "margin": 0.15,
+      "percentSlower": 4.91
+    },
+    {
+      "name": "@polkadot/types",
+      "ops": 17406,
+      "margin": 1.66,
+      "percentSlower": 95.2
+    }
+  ],
+  "fastest": {
+    "name": "core",
+    "index": 0
+  },
+  "slowest": {
+    "name": "@polkadot/types",
+    "index": 2
+  }
+}
