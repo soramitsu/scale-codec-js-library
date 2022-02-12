@@ -15,52 +15,17 @@ export interface Codec<Encoded, Decoded = Encoded> {
 export type CodecAny = Codec<any, any>
 
 /**
- * Utility class to skip encoding of some data fragment
- */
-export class Fragment {
-    public readonly bytes: Uint8Array
-
-    public constructor(bytes: Uint8Array) {
-        this.bytes = bytes
-    }
-
-    public encode(this: this, walker: Walker): void {
-        walker.u8.set(this.bytes, walker.idx)
-        walker.idx += this.bytes.byteLength
-    }
-
-    public encodeSizeHint(this: this): number {
-        return this.bytes.byteLength
-    }
-}
-
-/**
- * Codec that allows {@link Fragment} as its encode input
- */
-export type FragmentCodec<E, D = E> = Codec<E | Fragment, D>
-
-/**
  * General {@link Codec} implementation that includes fragments & tracking functionality
  */
-export class CodecImpl<E, D = E> implements FragmentCodec<E, D> {
-    public encodeRaw: Encode<E | Fragment>
+export class CodecImpl<E, D = E> implements Codec<E, D> {
+    public encodeRaw: Encode<E>
 
     public decodeRaw: Decode<D>
 
     private _name: string
 
     public constructor(name: string, encode: Encode<E>, decode: Decode<D>) {
-        this.encodeRaw = encodeFactory(
-            (val, walker) => {
-                if (val instanceof Fragment) return val.encode(walker)
-                else encode(val, walker)
-            },
-            (val) => {
-                if (val instanceof Fragment) return val.encodeSizeHint()
-                return encode.sizeHint(val)
-            },
-        )
-
+        this.encodeRaw = encode
         this.decodeRaw = (walker) => trackDecode(name, walker, decode)
 
         this._name = name
@@ -70,8 +35,8 @@ export class CodecImpl<E, D = E> implements FragmentCodec<E, D> {
         return WalkerImpl.decode(src, this.decodeRaw)
     }
 
-    public toBuffer(this: this, val: E | Fragment): Uint8Array {
-        return WalkerImpl.encode(val, this.encodeRaw)
+    public toBuffer(this: this, value: E): Uint8Array {
+        return WalkerImpl.encode(value, this.encodeRaw)
     }
 
     public name(this: this): string {
@@ -123,7 +88,7 @@ export class DynCodec<C extends CodecAny> implements Codec<CodecValueEncodable<C
 }
 
 /**
- * See {@link DynCodec}. It is a shorthand factory that is more minimize-friendly than `new DynCodec(...)`
+ * See {@link DynCodec}. This function is a shorthand factory that is more minimize-friendly than `new DynCodec(...)`
  */
 export function dynCodec<C extends CodecAny>(getter: () => C): DynCodec<C> {
     return new DynCodec(getter)

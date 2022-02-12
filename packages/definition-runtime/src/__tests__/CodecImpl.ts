@@ -1,5 +1,5 @@
 import { Decode, decodeBool, encodeBool, Walker } from '@scale-codec/core'
-import { CodecImpl, Fragment } from '../core'
+import { CodecImpl } from '../core'
 import { CodecTracker, setCurrentTracker } from '../tracking'
 
 test('When constructing a value from a buffer, it works', () => {
@@ -22,20 +22,20 @@ test('When constructing a buffer from a value, it works', () => {
     expect(output).toEqual(EXPECTED_OUTPUT)
 })
 
-test("When constructing value from a fragment, a fragment's copy is just returned", () => {
-    const BUFF = new Uint8Array([1, 2, 3, 4])
-    const FRAGMENT = new Fragment(BUFF)
+// test.skip("When constructing value from a fragment, a fragment's copy is just returned", () => {
+//     const BUFF = new Uint8Array([1, 2, 3, 4])
+//     const FRAGMENT = new Fragment(BUFF)
 
-    const codec = new CodecImpl('bool', encodeBool, decodeBool)
-    const buffer = codec.toBuffer(FRAGMENT)
+//     const codec = new CodecImpl('bool', encodeBool, decodeBool)
+//     const buffer = codec.toBuffer(FRAGMENT)
 
-    expect(buffer).toEqual(BUFF)
+//     expect(buffer).toEqual(BUFF)
 
-    // assert that it is a copy
-    buffer[0] = 99
+//     // assert that it is a copy
+//     buffer[0] = 99
 
-    expect(BUFF[0]).toEqual(1)
-})
+//     expect(BUFF[0]).toEqual(1)
+// })
 
 describe('When it is being tracked', () => {
     // class TestTracker implements CodecTracker {
