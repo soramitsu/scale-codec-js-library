@@ -2,38 +2,22 @@
 
 Low-level tools to perform serialization and deserialization via SCALE spec.
 
-Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/core)!
+<!-- TODO -->
+<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/core)! -->
 
 ## Example
 
 ```ts
-import { encodeVec, encodeBool, encodeStr, encodeStruct, Encode, encodeInt } from '@scale-codec/core'
+import { createStructEncoder, encodeU8, encodeBool, createTupleEncoder, WalkerImpl } from '@scale-codec/core'
 
-const encodeInt32: Encode<number> = (num) => encodeInt(num, 'i32')
+type SampleTuple = [number, boolean]
 
-const bytes = encodeStruct(
-    {
-        name: 'Hey',
-        coins: [5, 0, -88178782],
-        adult: true,
-    },
-    {
-        name: encodeStr,
-        coins: (arr) => encodeVec(arr, encodeInt32),
-        adult: encodeBool,
-    },
-    ['name', 'coins', 'adult'],
-)
+type SampleStruct = {
+    tuple: SampleTuple
+}
 
-console.log(bytes)
+const tupleEncoder = createTupleEncoder<SampleTuple>([encodeU8, encodeBool])
+const structEncoder = createStructEncoder<SampleStruct>([['tuple', tupleEncoder]])
+
+const bytes: Uint8Array = WalkerImpl.encode<SampleStruct>({ tuple: [5, false] }, structEncoder)
 ```
-
-```
-Uint8Array(18) [
-   12,  72, 101, 121, 12, 5,   0,
-    0,   0,   0,   0,  0, 0, 162,
-  127, 190, 250,   1
-]
-```
-
-And there is more!

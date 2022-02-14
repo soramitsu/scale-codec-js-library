@@ -8,24 +8,15 @@
 export function assert(condition: unknown, message: string | (() => string)): asserts condition;
 
 // @public
-export function concatUint8Arrays(iterable: Iterable<Uint8Array>): Uint8Array;
+export function concatBytes(iterable: Iterable<Uint8Array> | Array<Uint8Array>): Uint8Array;
 
 // @public
-export function hexifyBytes(v: Uint8Array): string;
+export function fromHex(hex: string): Uint8Array;
 
 // @public
 export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V;
 
 // @public
-export function prettyHexToBytes(hex: string): Uint8Array;
-
-// @public
-export function yieldCycleNTimes<T>(items: Iterable<T>, n: number): Generator<T, void>;
-
-// @public
-export function yieldMapped<T, R>(items: Iterable<T>, mapFn: (item: T) => R): Generator<R, void>;
-
-// @public
-export function yieldNTimes<T>(value: T, n: number): Generator<T, void>;
+export function toHex(v: Uint8Array): string;
 
 ```

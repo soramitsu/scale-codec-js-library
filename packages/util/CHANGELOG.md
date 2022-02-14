@@ -1,5 +1,11 @@
 # @scale-codec/util
 
+## 1.0.0
+
+### Major Changes
+
+-   **refactor**: **BREAKING** drop some unused methods, also refactor `concatBytes`
+
 ## 0.1.3
 
 ### Patch Changes

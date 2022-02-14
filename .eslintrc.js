@@ -1,8 +1,7 @@
 module.exports = {
     extends: ['alloy', 'alloy/typescript'],
-    globals: {
-        es2020: true,
-        BigInt: true,
+    env: {
+        es2021: true,
     },
     rules: {
         '@typescript-eslint/consistent-type-definitions': 'off',
@@ -16,7 +15,12 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['**/packages/**/*.spec.ts', '**/packages/**/__tests__/*.ts', '**/e2e-spa/src/**/*.spec.ts'],
+            files: [
+                '**/packages/**/*.spec.ts',
+                '**/packages/**/__tests__/*.ts',
+                '**/e2e-spa/src/**/*.spec.ts',
+                '**packages/*/test/**/*.ts',
+            ],
             env: {
                 jest: true,
             },

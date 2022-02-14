@@ -1,0 +1,39 @@
+{
+  "name": "Decode options chain",
+  "date": "2022-02-12T07:12:52.403Z",
+  "version": null,
+  "results": [
+    {
+      "name": "core",
+      "ops": 672509,
+      "margin": 0.3,
+      "percentSlower": 12.38
+    },
+    {
+      "name": "runtime",
+      "ops": 767558,
+      "margin": 0.36,
+      "percentSlower": 0
+    },
+    {
+      "name": "core 0.4",
+      "ops": 97022,
+      "margin": 0.19,
+      "percentSlower": 87.36
+    },
+    {
+      "name": "@polkadot/types",
+      "ops": 5698,
+      "margin": 1.28,
+      "percentSlower": 99.26
+    }
+  ],
+  "fastest": {
+    "name": "runtime",
+    "index": 1
+  },
+  "slowest": {
+    "name": "@polkadot/types",
+    "index": 3
+  }
+}

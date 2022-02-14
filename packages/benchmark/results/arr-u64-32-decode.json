@@ -1,0 +1,45 @@
+{
+  "name": "Decode [u64; 32]",
+  "date": "2022-02-12T07:10:51.689Z",
+  "version": null,
+  "results": [
+    {
+      "name": "core",
+      "ops": 879368,
+      "margin": 0.32,
+      "percentSlower": 0
+    },
+    {
+      "name": "runtime",
+      "ops": 486212,
+      "margin": 0.12,
+      "percentSlower": 44.71
+    },
+    {
+      "name": "core 0.4",
+      "ops": 184255,
+      "margin": 0.45,
+      "percentSlower": 79.05
+    },
+    {
+      "name": "runtime 0.8",
+      "ops": 8726,
+      "margin": 0.76,
+      "percentSlower": 99.01
+    },
+    {
+      "name": "@polkadot/types-codec",
+      "ops": 12394,
+      "margin": 0.2,
+      "percentSlower": 98.59
+    }
+  ],
+  "fastest": {
+    "name": "core",
+    "index": 0
+  },
+  "slowest": {
+    "name": "runtime 0.8",
+    "index": 3
+  }
+}

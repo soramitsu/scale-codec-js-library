@@ -2,7 +2,8 @@
 
 Compiler for `@scale-codec/definition-runtime`.
 
-Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/namespaces)!
+<!-- TODO -->
+<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/namespaces)! -->
 
 ## Example
 
@@ -29,22 +30,20 @@ fs.writeFileSync('./output.ts', code)
 
 ```ts
 // output.ts
-import {
-    FragmentFromBuilder,
-    ScaleStructBuilder,
-    Str,
-    createBytesArrayBuilder,
-    createStructBuilder,
-    dynBuilder,
-} from '@scale-codec/definition-runtime'
+import { Str, StructCodec, createArrayU8Codec, createStructCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const Bytes32 = createBytesArrayBuilder('Bytes32', 32)
+export const Bytes32 = createArrayU8Codec('Bytes32', 32)
 
-export const PublicKey: ScaleStructBuilder<{
-    digest: FragmentFromBuilder<typeof Str>
-    payload: FragmentFromBuilder<typeof Bytes32>
-}> = createStructBuilder('PublicKey', [
-    ['digest', dynBuilder(() => Str)],
-    ['payload', dynBuilder(() => Bytes32)],
+export const PublicKey: StructCodec<{
+    digest: typeof Str
+    payload: typeof Bytes32
+}> = createStructCodec('PublicKey', [
+    ['digest', dynCodec(() => Str)],
+    ['payload', dynCodec(() => Bytes32)],
 ])
 ```
+
+## TODO
+
+-   [ ] Implement builders sorting due to their dependencies between each other to minimize `dynBuilder()`s' amount.
+-   [ ] Optimize creation of `DynBuilder`s - do it only once per module, hoist them at the beginning of it.

@@ -10,23 +10,19 @@ function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; 
     return items.map(([tyName, def]) => ({ tyName, def }))
 }
 
-enum BaseType {
-    Fragment = 'Fragment',
-    Builder = 'FragmentBuilder',
-    FragmentFromBuilder = 'FragmentFromBuilder',
-    InnerValue = 'FragmentOrBuilderValue',
-    UnwrappedValue = 'FragmentOrBuilderUnwrapped',
-    Enum = 'Enum',
-    Valuable = 'Valuable',
-    Option = 'Option',
-    Result = 'Result',
-    ScaleSetBuilder = 'ScaleSetBuilder',
-    ScaleMapBuilder = 'ScaleMapBuilder',
-    ScaleArrayBuilder = 'ScaleArrayBuilder',
-    ScaleStructBuilder = 'ScaleStructBuilder',
-    ScaleEnumBuilder = 'ScaleEnumBuilder',
-    ScaleTupleBuilder = 'ScaleTupleBuilder',
-}
+type CodecTypes = `${'Map' | 'Set' | 'Vec' | 'Struct' | 'Enum' | 'Option' | 'Result' | 'Tuple'}Codec`
+
+type KnownCreators = `create${
+    | 'Map'
+    | 'Set'
+    | 'Array'
+    | 'ArrayU8'
+    | 'Vec'
+    | 'Struct'
+    | 'Enum'
+    | 'Option'
+    | 'Tuple'
+    | 'Result'}Codec`
 
 // =========
 
@@ -44,10 +40,6 @@ interface ImportsCollector {
     collectRef: (ref: string) => void
     collectImport: (name: string) => void
     getRuntimeLibImports: () => Set<string>
-}
-
-function instanceViaBuilder(ref: string): string {
-    return `${touchBase(BaseType.FragmentFromBuilder)}<typeof ${touchRef(ref)}>`
 }
 
 function createImportsCollector(): ImportsCollector {
@@ -76,13 +68,6 @@ const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<
 
 // =========
 
-function renderBuilder(props: { builderTy: string | null; createFn: string; createArgs: string }): string {
-    const ty = useCurrentTyName()
-    const tyDeclaration = props.builderTy ? `: ${props.builderTy}` : ''
-
-    return `export const ${ty}${tyDeclaration} = ${touchImport(props.createFn)}('${ty}', ${props.createArgs})`
-}
-
 function touchRef(ref: string): string {
     useCollector().collectRef(ref)
     return ref
@@ -93,27 +78,48 @@ function touchImport(name: string): string {
     return name
 }
 
-function touchBase(ty: BaseType): string {
+function touchCodecTy(ty: CodecTypes): string {
     useCollector().collectImport(ty)
     return ty
 }
 
-/**
- * ref -> `dynGetters(() => ${ref})` (with touches)
- */
-function refDynGetters(ref: string): string {
-    return `${touchImport('dynGetters')}(() => ${touchRef(ref)})`
+function touchRefAsDyn(ref: string): string {
+    return `${touchImport('dynCodec')}(() => ${touchRef(ref)})`
+}
+
+function touchRefAsType(ref: string): string {
+    return `typeof ${touchRef(ref)}`
 }
 
 function linesJoin(lines: string[], joiner = '\n\n'): string {
     return lines.join(joiner)
 }
 
+function renderCreator(props: {
+    ty: { codec: CodecTypes; args: string } | null
+    createFn: KnownCreators
+    createFnTy?: string
+    createArgs: string
+}): string {
+    const ty = useCurrentTyName()
+
+    return (
+        `export const ${ty}` +
+        (props.ty ? `: ${touchCodecTy(props.ty.codec)}<${props.ty.args}>` : '') +
+        ` = ${touchImport(props.createFn)}` +
+        (props.createFnTy ? `<${props.createFnTy}>` : '') +
+        `('${ty}', ${props.createArgs})`
+    )
+}
+
 // =========
 
 function renderAlias(to: string): string {
     // special builder
-    return `export const ${useCurrentTyName()}: typeof ${touchRef(to)} = ${refDynGetters(to)}`
+    return (
+        `export const ${useCurrentTyName()}: ${touchImport('DynCodec')}<${touchRefAsType(to)}>` +
+        ` = ${touchRefAsDyn(to)}`
+    )
 }
 
 function renderVoidAlias(): string {
@@ -123,10 +129,13 @@ function renderVoidAlias(): string {
 }
 
 function renderVec(item: string): string {
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
-        createFn: 'createVecBuilder',
-        createArgs: refDynGetters(item),
+    return renderCreator({
+        ty: {
+            codec: 'VecCodec',
+            args: touchRefAsType(item),
+        },
+        createFn: 'createVecCodec',
+        createArgs: touchRefAsDyn(item),
     })
 }
 
@@ -135,14 +144,17 @@ function renderStruct(fields: DefStructField[]): string {
         return renderVoidAlias()
     }
 
-    const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${instanceViaBuilder(x.ref)}`)
+    const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${touchRefAsType(x.ref)}`)
 
-    const schemaItems = fields.map((x) => `['${x.name}', ${refDynGetters(x.ref)}]`)
+    const schemaItems = fields.map((x) => `['${x.name}', ${touchRefAsDyn(x.ref)}]`)
     const schema = `[${schemaItems.join(', ')}]`
 
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleStructBuilder)}<{\n    ${valueTypeFields.join(',\n    ')}\n}>`,
-        createFn: 'createStructBuilder',
+    return renderCreator({
+        ty: {
+            codec: 'StructCodec',
+            args: `{\n    ${valueTypeFields.join(',\n    ')}\n}`,
+        },
+        createFn: 'createStructCodec',
         createArgs: `${schema}`,
     })
 }
@@ -155,86 +167,103 @@ function renderTuple(refs: string[]): string {
     const { rollupSingleTuples } = useRenderParams()
     if (rollupSingleTuples && refs.length === 1) return renderAlias(refs[0])
 
-    const valueEntries: string[] = refs.map(instanceViaBuilder)
-    const codecs: string[] = refs.map(refDynGetters)
-
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleTupleBuilder)}<[\n    ${valueEntries.join(',\n    ')}\n]>`,
-        createFn: 'createTupleBuilder',
-        createArgs: `[${codecs.join(', ')}]`,
+    return renderCreator({
+        ty: {
+            codec: 'TupleCodec',
+            args: `[${refs.map(touchRefAsType).join(', ')}]`,
+        },
+        createFn: 'createTupleCodec',
+        createArgs: `[${refs.map(touchRefAsDyn).join(', ')}]`,
     })
 }
 
 function renderEnum(variants: DefEnumVariant[]): string {
-    const definitionTyLines: string[] = variants.map((x) => {
-        const right = x.ref ? `${touchBase(BaseType.Valuable)}<${instanceViaBuilder(x.ref)}>` : 'null'
-        return `${x.name}: ${right}`
-    })
-
-    const schemaLines: string[] = variants.map((x) => {
+    const schemaItems: string[] = variants.map((x) => {
         const items = [x.discriminant, `'${x.name}'`]
-        x.ref && items.push(refDynGetters(x.ref))
+        x.ref && items.push(touchRefAsDyn(x.ref))
         return `[${items.join(', ')}]`
     })
 
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleEnumBuilder)}<${touchBase(BaseType.Enum)}<{\n    ${definitionTyLines.join(
-            ',\n    ',
-        )}\n}>>`,
-        createFn: 'createEnumBuilder',
-        createArgs: `[${schemaLines.join(', ')}]`,
+    const enumDefinition =
+        `\n    ` +
+        variants
+            .map((x) => {
+                return x.ref ? `| ['${x.name}', ${touchRefAsType(x.ref)}]` : `| '${x.name}'`
+            })
+            .join('\n    ') +
+        `\n`
+
+    return renderCreator({
+        ty: {
+            codec: 'EnumCodec',
+            args: enumDefinition,
+        },
+        createFn: 'createEnumCodec',
+        createFnTy: 'any',
+        createArgs: `[${schemaItems.join(', ')}]`,
     })
 }
 
 function renderSet(item: string): string {
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleSetBuilder)}<Set<${instanceViaBuilder(item)}>>`,
-        createFn: 'createSetBuilder',
-        createArgs: refDynGetters(item),
+    return renderCreator({
+        ty: {
+            codec: 'SetCodec',
+            args: touchRefAsType(item),
+        },
+        createFn: 'createSetCodec',
+        createArgs: touchRefAsDyn(item),
     })
 }
 
 function renderMap(key: string, value: string): string {
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleMapBuilder)}<Map<${[key, value].map(instanceViaBuilder).join(', ')}>>`,
-        createFn: 'createMapBuilder',
-        createArgs: [key, value].map(refDynGetters).join(', '),
+    return renderCreator({
+        ty: {
+            codec: 'MapCodec',
+            args: [key, value].map(touchRefAsType).join(', '),
+        },
+        createFn: 'createMapCodec',
+        createArgs: [key, value].map(touchRefAsDyn).join(', '),
     })
 }
 
 function renderArray(item: string, len: number): string {
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleArrayBuilder)}<${instanceViaBuilder(item)}[]>`,
-        createFn: `createArrayBuilder`,
-        createArgs: `${refDynGetters(item)}, ${len}`,
+    return renderCreator({
+        ty: {
+            codec: 'VecCodec',
+            args: touchRefAsType(item),
+        },
+        createFn: `createArrayCodec`,
+        createArgs: `${touchRefAsDyn(item)}, ${len}`,
     })
 }
 
 function renderBytesArray(len: number): string {
-    return renderBuilder({
-        builderTy: null,
-        createFn: 'createBytesArrayBuilder',
+    return renderCreator({
+        ty: null,
+        createFn: 'createArrayU8Codec',
         createArgs: `${len}`,
     })
 }
 
 function renderOption(some: string): string {
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleEnumBuilder)}<${touchBase(BaseType.Option)}<${instanceViaBuilder(
-            some,
-        )}>>`,
-        createFn: 'createOptionBuilder',
-        createArgs: refDynGetters(some),
+    return renderCreator({
+        ty: {
+            codec: 'OptionCodec',
+            args: touchRefAsType(some),
+        },
+        createFn: 'createOptionCodec',
+        createArgs: touchRefAsDyn(some),
     })
 }
 
 function renderResult(ok: string, err: string): string {
-    return renderBuilder({
-        builderTy: `${touchBase(BaseType.ScaleEnumBuilder)}<${touchBase(BaseType.Result)}<${[ok, err]
-            .map(instanceViaBuilder)
-            .join(', ')}>>`,
-        createFn: 'createResultBuilder',
-        createArgs: [ok, err].map(refDynGetters).join(', '),
+    return renderCreator({
+        ty: {
+            codec: 'ResultCodec',
+            args: [ok, err].map(touchRefAsType).join(', '),
+        },
+        createFn: 'createResultCodec',
+        createArgs: [ok, err].map(touchRefAsDyn).join(', '),
     })
 }
 

@@ -7,23 +7,23 @@ export { MyCustomExternal }
 `;
 
 exports[`Renders an alias for some inner type 1`] = `
-"import { Str, dynGetters } from '@scale-codec/definition-runtime'
+"import { DynCodec, Str, dynCodec } from '@scale-codec/definition-runtime'
 
-export const StringAlias: typeof Str = dynGetters(() => Str)
+export const StringAlias: DynCodec<typeof Str> = dynCodec(() => Str)
 "
 `;
 
 exports[`Renders array 1`] = `
-"import { FragmentFromBuilder, ScaleArrayBuilder, createArrayBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { VecCodec, createArrayCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const Array_Item_15: ScaleArrayBuilder<FragmentFromBuilder<typeof Item>[]> = createArrayBuilder('Array_Item_15', dynGetters(() => Item), 15)
+export const Array_Item_15: VecCodec<typeof Item> = createArrayCodec('Array_Item_15', dynCodec(() => Item), 15)
 "
 `;
 
 exports[`Renders bytes array 1`] = `
-"import { createBytesArrayBuilder } from '@scale-codec/definition-runtime'
+"import { createArrayU8Codec } from '@scale-codec/definition-runtime'
 
-export const Hash = createBytesArrayBuilder('Hash', 64)
+export const Hash = createArrayU8Codec('Hash', 64)
 "
 `;
 
@@ -40,12 +40,12 @@ export { EmptyTuple }
 `;
 
 exports[`Renders enum 1`] = `
-"import { Enum, FragmentFromBuilder, ScaleEnumBuilder, Str, Valuable, createEnumBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { EnumCodec, Str, createEnumCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const Message: ScaleEnumBuilder<Enum<{
-    Quit: null,
-    Greeting: Valuable<FragmentFromBuilder<typeof Str>>
-}>> = createEnumBuilder('Message', [[0, 'Quit'], [1, 'Greeting', dynGetters(() => Str)]])
+export const Message: EnumCodec<
+    | 'Quit'
+    | ['Greeting', typeof Str]
+> = createEnumCodec<any>('Message', [[0, 'Quit'], [1, 'Greeting', dynCodec(() => Str)]])
 "
 `;
 
@@ -56,79 +56,73 @@ export { ReExportMe }
 `;
 
 exports[`Renders map 1`] = `
-"import { FragmentFromBuilder, ScaleMapBuilder, Str, createMapBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { MapCodec, Str, createMapCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const Map_str_Message: ScaleMapBuilder<Map<FragmentFromBuilder<typeof Str>, FragmentFromBuilder<typeof Message>>> = createMapBuilder('Map_str_Message', dynGetters(() => Str), dynGetters(() => Message))
+export const Map_str_Message: MapCodec<typeof Str, typeof Message> = createMapCodec('Map_str_Message', dynCodec(() => Str), dynCodec(() => Message))
 "
 `;
 
 exports[`Renders option 1`] = `
-"import { FragmentFromBuilder, Option, ScaleEnumBuilder, createOptionBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { OptionCodec, createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const OptionHash: ScaleEnumBuilder<Option<FragmentFromBuilder<typeof Hash>>> = createOptionBuilder('OptionHash', dynGetters(() => Hash))
+export const OptionHash: OptionCodec<typeof Hash> = createOptionCodec('OptionHash', dynCodec(() => Hash))
 "
 `;
 
 exports[`Renders result 1`] = `
-"import { FragmentFromBuilder, I128, Result, ScaleEnumBuilder, Str, createResultBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { I128, ResultCodec, Str, createResultCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const ResultI128Str: ScaleEnumBuilder<Result<FragmentFromBuilder<typeof I128>, FragmentFromBuilder<typeof Str>>> = createResultBuilder('ResultI128Str', dynGetters(() => I128), dynGetters(() => Str))
+export const ResultI128Str: ResultCodec<typeof I128, typeof Str> = createResultCodec('ResultI128Str', dynCodec(() => I128), dynCodec(() => Str))
 "
 `;
 
 exports[`Renders set 1`] = `
-"import { FragmentFromBuilder, ScaleSetBuilder, createSetBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { SetCodec, createSetCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const Set_Message: ScaleSetBuilder<Set<FragmentFromBuilder<typeof Message>>> = createSetBuilder('Set_Message', dynGetters(() => Message))
+export const Set_Message: SetCodec<typeof Message> = createSetCodec('Set_Message', dynCodec(() => Message))
 "
 `;
 
 exports[`Renders single tuple as alias in case when the related option is enabled 1`] = `
-"import { Bool, FragmentFromBuilder, ScaleTupleBuilder, U128, U8, createTupleBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { Bool, DynCodec, TupleCodec, U128, U8, createTupleCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const MultiTuple: ScaleTupleBuilder<[
-    FragmentFromBuilder<typeof U8>,
-    FragmentFromBuilder<typeof Bool>
-]> = createTupleBuilder('MultiTuple', [dynGetters(() => U8), dynGetters(() => Bool)])
+export const MultiTuple: TupleCodec<[typeof U8, typeof Bool]> = createTupleCodec('MultiTuple', [dynCodec(() => U8), dynCodec(() => Bool)])
 
-export const SingleTuple: typeof U128 = dynGetters(() => U128)
+export const SingleTuple: DynCodec<typeof U128> = dynCodec(() => U128)
 "
 `;
 
 exports[`Renders struct + tuple 1`] = `
-"import { Bool, FragmentFromBuilder, I128, ScaleStructBuilder, ScaleTupleBuilder, U8, createStructBuilder, createTupleBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { Bool, I128, StructCodec, TupleCodec, U8, createStructCodec, createTupleCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const Structural: ScaleStructBuilder<{
-    nums: FragmentFromBuilder<typeof Tuple_u8_i128>,
-    mur: FragmentFromBuilder<typeof Bool>
-}> = createStructBuilder('Structural', [['nums', dynGetters(() => Tuple_u8_i128)], ['mur', dynGetters(() => Bool)]])
+export const Structural: StructCodec<{
+    nums: typeof Tuple_u8_i128,
+    mur: typeof Bool
+}> = createStructCodec('Structural', [['nums', dynCodec(() => Tuple_u8_i128)], ['mur', dynCodec(() => Bool)]])
 
-export const Tuple_u8_i128: ScaleTupleBuilder<[
-    FragmentFromBuilder<typeof U8>,
-    FragmentFromBuilder<typeof I128>
-]> = createTupleBuilder('Tuple_u8_i128', [dynGetters(() => U8), dynGetters(() => I128)])
+export const Tuple_u8_i128: TupleCodec<[typeof U8, typeof I128]> = createTupleCodec('Tuple_u8_i128', [dynCodec(() => U8), dynCodec(() => I128)])
 "
 `;
 
 exports[`Renders vec 1`] = `
-"import { FragmentFromBuilder, ScaleArrayBuilder, Str, createVecBuilder, dynGetters } from '@scale-codec/definition-runtime'
+"import { Str, VecCodec, createVecCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-export const Vec_str: ScaleArrayBuilder<FragmentFromBuilder<typeof Str>[]> = createVecBuilder('Vec_str', dynGetters(() => Str))
+export const Vec_str: VecCodec<typeof Str> = createVecCodec('Vec_str', dynCodec(() => Str))
 "
 `;
 
 exports[`Respects custom \`runtimeLib\` param 1`] = `
-"import { Str, dynGetters } from 'custom-runtime-lib'
+"import { DynCodec, Str, dynCodec } from 'custom-runtime-lib'
 
-export const S: typeof Str = dynGetters(() => Str)
+export const S: DynCodec<typeof Str> = dynCodec(() => Str)
 "
 `;
 
 exports[`Respects custom set of knowns types set 1`] = `
-"import { Foo, dynGetters } from '@scale-codec/definition-runtime'
+"import { DynCodec, Foo, dynCodec } from '@scale-codec/definition-runtime'
 
-export const FooAlias: typeof Foo = dynGetters(() => Foo)
+export const FooAlias: DynCodec<typeof Foo> = dynCodec(() => Foo)
 
-export const StrAlias: typeof Str = dynGetters(() => Str)
+export const StrAlias: DynCodec<typeof Str> = dynCodec(() => Str)
 "
 `;

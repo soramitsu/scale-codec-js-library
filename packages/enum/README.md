@@ -1,27 +1,34 @@
 # enum ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![version](https://img.shields.io/npm/v/@scale-codec/enum) ![license](https://img.shields.io/npm/l/@scale-codec/enum)
 
-Lightweight tool for working with Rust-style enums in JavaScript (with TypeScript support).
+Lightweight tool for working with Rust enums in JavaScript (with TypeScript support).
 
-Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/enum)!
+<!-- TODO -->
+<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/enum)! -->
 
 ## Example
 
 ```ts
-import { Enum, Valuable } from '@scale-codec/enum'
+import { Enum } from '@scale-codec/enum'
 
-// 1. Define enum
-type Event = Enum<{
-    MouseClick: Valuable<{ x: number; y: number }>
-    PageLoaded: null
-    KeyPress: Valuable<string>
-}>
+// Define enum
+type Event = Enum<
+    | 'PageLoaded'
+    | ['KeyPress', string]
+    | [
+          'MouseClick',
+          {
+              x: number
+              y: number
+          },
+      ]
+>
 
-// 2. Construct typed enum (100% typed)
-const event1: Event = Enum.valuable('KeyPress', '<enter>')
-const event2: Event = Enum.valuable('MouseClick', { x: 5, y: 10 })
-const event3: Event = Enum.empty('PageLoaded')
+// Construct actual value (100% typed)
+const event1: Event = Enum.variant('KeyPress', '<enter>')
+const event2: Event = Enum.variant('MouseClick', { x: 5, y: 10 })
+const event3: Event = Enum.variant('PageLoaded')
 
-// 3. Access enum's contents
+// Access to the content
 
 // with `is` & `as`
 if (event1.is('MouseClick')) {

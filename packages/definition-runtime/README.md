@@ -2,59 +2,32 @@
 
 Base tool to build complex type namespaces with SCALE-codec.
 
-Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/namespaces)!
+<!-- TODO -->
+<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/namespaces)! -->
 
 ## Example
 
 ```ts
 import {
-    createStructBuilder,
-    createOptionBuilder,
-    ScaleStructBuilder,
-    ScaleEnumBuilder,
-    Option,
-    dynBuilder,
-    Str,
-    Fragment,
-    FragmentFromBuilder,
-    Enum,
+    createTupleCodec,
+    createStructCodec,
+    TupleCodec,
+    StructCodec,
+    U8,
+    Bool,
+    CodecValueDecoded,
 } from '@scale-codec/definition-runtime'
 
-// 1. Create builders
+const SampleTuple: TupleCodec<[typeof U8, typeof Bool]> = createTupleCodec('SampleTuple', [U8, Bool])
 
-const MaybePerson: ScaleEnumBuilder<Option<FragmentFromBuilder<typeof Person>>> = createOptionBuilder(
-    'MaybePerson',
-    // `dynBuilder` is needed for cyclic deps
-    dynBuilder(() => Person),
-)
+const SampleStruct: StructCodec<{
+    tuple: typeof SampleTuple
+}> = createStructCodec('SampleStruct', [['tuple', SampleTuple]])
 
-const Person: ScaleStructBuilder<{
-    name: Fragment<string>
-    child: FragmentFromBuilder<typeof MaybePerson>
-}> = createStructBuilder('Person', [
-    ['name', Str],
-    ['child', MaybePerson],
-])
+const bytes: Uint8Array = SampleStruct.toBuffer({ tuple: [5, false] })
 
-// 2. Use them
+const value: CodecValueDecoded<typeof SampleStruct> = SampleStruct.fromBuffer(bytes)
 
-const person = Person.wrap({
-    name: 'Jane',
-    child: Enum.valuable('Some', {
-        name: 'Ron',
-        child: Enum.empty('None'),
-    }),
-})
-
-// encode
-const encoded = person.bytes
-
-// decode
-const decoded = Person.fromBytes(encoded)
-
-// access - long way with direct access to fragments
-const childName = decoded.value.child.value.as('Some').value.name.value
-
-// access - short way with unwrapping feature
-const childNameAgain = decoded.unwrap().child.as('Some').name
+// actual type
+const actual: { tuple: [number, boolean] } = value
 ```

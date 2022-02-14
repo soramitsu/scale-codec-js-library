@@ -1,8 +1,10 @@
 module.exports = {
     testEnvironment: 'node',
     transform: {
-        '^.+\\.ts$': ['esbuild-jest', { sourcemap: true, target: 'es2020' }],
+        '\\.(ts|js)$': ['esbuild-runner/jest'],
+        // '\\.ts$': ['esbuild-jest', { sourcemap: true, target: 'es2020' }],
     },
+    transformIgnorePatterns: [],
     testMatch: [
         '**/packages/**/*.spec.ts',
         '**/packages/**/__tests__/**/*.ts',
@@ -10,6 +12,6 @@ module.exports = {
         '!**/*.d.ts',
     ],
     roots: ['<rootDir>/packages'],
-    testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/', 'core/src/codecs/__tests__/util.ts'],
     modulePathIgnorePatterns: ['/dist/'],
 }

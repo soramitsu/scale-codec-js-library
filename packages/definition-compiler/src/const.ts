@@ -6,7 +6,7 @@ export const DefaultAvailableBuilders = new Set([
     'Bool',
     'Void',
     'Compact',
-    'BytesVec',
+    'VecU8',
     'U8',
     'U16',
     'U32',

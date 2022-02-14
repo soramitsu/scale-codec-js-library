@@ -4,7 +4,7 @@ api-extractor/
 CHANGELOG.md
 dist
 dist-tsc
-packages/rust-ints
+packages/rust-samples
 e2e-spa/runtime-rollup
 e2e-spa/src/namespace.ts
 packages/docs/root/api

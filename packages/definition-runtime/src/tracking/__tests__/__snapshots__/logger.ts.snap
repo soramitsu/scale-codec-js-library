@@ -1,44 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Changes bytesLimit if provided some 1`] = `
-Array [
-  "[SCALE] Decode of \\"First\\" succeed
-
-Decode steps:
-
-First
-    Input: [00 01…] (len = used = 4)
-    Children: 1
-    Result: %O
-First / Second
-    Input: [00 01…] (len = used = 4)
-    Children: 0
-    Result: %O
-",
-  "Result",
-  "Result",
-]
-`;
-
-exports[`Changes bytesLimit if provided some 2`] = `
-Array [
-  "[SCALE] Decode of \\"Whoosh\\" failed with error: Error: Expected inner error
-
-Decode steps:
-
-Whoosh
-    Input: 04 02… (len: 4)
-    Children: 1
-    Result: <not computed>
-Whoosh / Shoowh
-    Input: 04 02… (len: 4)
-    Children: 0
-    Result: ERROR - %s
-",
-  [Error: Expected inner error],
-]
-`;
-
 exports[`Prints debug log if related prop is set 1`] = `
 Array [
   "[SCALE] Decode of \\"First\\" succeed
@@ -46,13 +7,13 @@ Array [
 Decode steps:
 
 First
-    Input: [00 01 02 03] (len = used = 4)
-    Children: 1
+    Walk: <offset: 0..4 (+4); 00 01 02 03>
     Result: %O
+    Child steps: 1
 First / Second
-    Input: [00 01 02 03] (len = used = 4)
-    Children: 0
+    Walk: <offset: 0..4 (+4); 00 01 02 03>
     Result: %O
+    Child steps: 0
 ",
   "Result",
   "Result",
@@ -66,13 +27,13 @@ Array [
 Decode steps:
 
 Whoosh
-    Input: 04 02 03 01 (len: 4)
-    Children: 1
+    Walk: <offset: 0; 04 02 03 01>
     Result: <not computed>
+    Child steps: 1
 Whoosh / Shoowh
-    Input: 04 02 03 01 (len: 4)
-    Children: 0
+    Walk: <offset: 0; 04 02 03 01>
     Result: ERROR - %s
+    Child steps: 0
 ",
   [Error: Expected inner error],
 ]

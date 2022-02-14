@@ -15,60 +15,33 @@ export function assert(condition: unknown, message: string | (() => string)): as
 /**
  * Creates a concatenated `Uint8Array` from the inputs.
  */
-export function concatUint8Arrays(iterable: Iterable<Uint8Array>): Uint8Array {
-    const list = [...iterable]
+export function concatBytes(iterable: Iterable<Uint8Array> | Array<Uint8Array>): Uint8Array {
+    // constructing array + computing length
+    let array: Array<Uint8Array>
+    let bytesLength = 0
 
-    const length = list.reduce((l, arr) => l + arr.length, 0)
-    const result = new Uint8Array(length)
-
-    for (let i = 0, offset = 0; i < list.length; i++) {
-        result.set(list[i], offset)
-        offset += list[i].length
+    if (Array.isArray(iterable)) {
+        array = iterable
+        for (let i = 0, arrLen = array.length; i < arrLen; i++) {
+            bytesLength += array[i].byteLength
+        }
+    } else {
+        array = []
+        for (const part of iterable) {
+            array.push(part)
+            bytesLength += part.byteLength
+        }
     }
 
-    return result
-}
+    // filling target
+    const target = new Uint8Array(bytesLength)
 
-/**
- * Makes iterable with `value` repeated `n` times
- * @example
- * ```ts
- * const a = [...yieldNTimes(100, 3)]
- * // a = [100, 100, 100]
- * ```
- */
-export function* yieldNTimes<T>(value: T, n: number): Generator<T, void> {
-    let i = n
-    while (i-- > 0) yield value
-}
-
-/**
- * Iterable lazy mapping
- * @example
- * ```ts
- * const a = [...yieldMapped([1, 2], x => x * 2)]
- * // a = [2, 4]
- * ```
- */
-export function* yieldMapped<T, R>(items: Iterable<T>, mapFn: (item: T) => R): Generator<R, void> {
-    for (const item of items) {
-        yield mapFn(item)
+    for (let i = 0, offset = 0, arrLen = array.length; i < arrLen; i++) {
+        target.set(array[i], offset)
+        offset += array[i].length
     }
-}
 
-/**
- * Yield some iterable n times as a another iterable
- * @example
- * ```ts
- * const a = [...yieldCycleNTimes([0, 1], 3)]
- * // a = [0, 1, 0, 1, 0, 1]
- * ```
- */
-export function* yieldCycleNTimes<T>(items: Iterable<T>, n: number): Generator<T, void> {
-    let i = n
-    while (i-- > 0) {
-        for (const item of items) yield item
-    }
+    return target
 }
 
 /**
@@ -81,12 +54,13 @@ export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
 
 /**
  * Makes pretty-hex from bytes array, like `01 a5 f0`
+ *
  * @example
  * ```ts
- * hexifyBytes(new Uint8Array([1, 11, 3])) // '01 a1 03'
+ * toHex(new Uint8Array([1, 11, 3])) // '01 a1 03'
  * ```
  */
-export function hexifyBytes(v: Uint8Array): string {
+export function toHex(v: Uint8Array): string {
     return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ')
 }
 
@@ -95,9 +69,9 @@ export function hexifyBytes(v: Uint8Array): string {
  * @param hex - Space-separated bytes in hex repr
  * @example
  * ```ts
- * prettyHexToBytes('01 02 03') // new Uint8Array([1, 2, 3])
+ * fromHex('01 02 03') // new Uint8Array([1, 2, 3])
  * ```
  */
-export function prettyHexToBytes(hex: string): Uint8Array {
+export function fromHex(hex: string): Uint8Array {
     return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)))
 }

@@ -1,6 +1,6 @@
 import { assert } from '@scale-codec/util'
-import { DecodeResult } from '../types'
-import { mapDecodeResult } from '../util'
+import { Walker, Encode, Decode } from '../types'
+import { encodeFactory } from '../util'
 
 /**
  * Set of integer types that are supported by codec for `number`
@@ -31,40 +31,21 @@ const INT_BYTES_COUNT_MAP: { [K in IntTypes | BigIntTypes]: number } = {
     u512: 64,
 }
 
-function isBigIntTyNativeSupported(ty: BigIntTypes): ty is BigIntNativeSupported {
-    return INT_BYTES_COUNT_MAP[ty] === 8
-}
+const tySizeHint =
+    (ty: IntTypes | BigIntTypes): (() => number) =>
+    () =>
+        INT_BYTES_COUNT_MAP[ty]
 
-function isIntTy(ty: BigIntTypes): ty is IntTypes {
-    return INT_BYTES_COUNT_MAP[ty] <= 4
-}
+const isBigIntTyNativeSupported = (ty: BigIntTypes): ty is BigIntNativeSupported => INT_BYTES_COUNT_MAP[ty] === 8
 
-const INT_SETTERS: { [K in IntTypes]: (value: number, view: DataView) => void } = {
-    u8: (n, v) => v.setUint8(0, n),
-    i8: (n, v) => v.setInt8(0, n),
-    u16: (n, v) => v.setUint16(0, n, true),
-    i16: (n, v) => v.setInt16(0, n, true),
-    u32: (n, v) => v.setUint32(0, n, true),
-    i32: (n, v) => v.setInt32(0, n, true),
-}
+const isIntTy = (ty: BigIntTypes): ty is IntTypes => INT_BYTES_COUNT_MAP[ty] <= 4
 
-const INT_GETTERS: { [K in IntTypes]: (view: DataView) => number } = {
-    u8: (d) => d.getUint8(0),
-    i8: (d) => d.getInt8(0),
-    u16: (d) => d.getUint16(0, true),
-    i16: (d) => d.getInt16(0, true),
-    u32: (d) => d.getUint32(0, true),
-    i32: (d) => d.getInt32(0, true),
-}
+const isIntTypeSigned = (ty: IntTypes | BigIntTypes): boolean => ty[0] === 'i'
 
-function isIntTypeSigned(ty: IntTypes | BigIntTypes): boolean {
-    return ty[0] === 'i'
-}
-
-function checkAndAssertNegation(value: number | bigint, ty: BigIntTypes): boolean {
+function checkNegative(value: number | bigint, ty: BigIntTypes): boolean {
     const isNegative = value < 0
     const isTySigned = isIntTypeSigned(ty)
-    assert(!isNegative || isTySigned, () => `Negative num (${value}) passed to unsigned ("${ty}") encoder`)
+    assert(!isNegative || isTySigned, () => `Negative num (${value}) is passed to unsigned ("${ty}") encoder`)
 
     return isNegative
 }
@@ -72,160 +53,242 @@ function checkAndAssertNegation(value: number | bigint, ty: BigIntTypes): boolea
 /**
  * Encodes signed/unsigned 8/16/32 bits integers in Little-Endian
  */
-export function encodeInt(value: number, ty: IntTypes): Uint8Array {
-    checkAndAssertNegation(value, ty)
+export function encodeInt(value: number, ty: IntTypes, walker: Walker): void {
+    checkNegative(value, ty)
     assert(Number.isSafeInteger(value), () => `Unsafe integer (${value}) is passed into encoder`)
 
-    const arr = new Uint8Array(INT_BYTES_COUNT_MAP[ty])
-    const view = new DataView(arr.buffer)
-    INT_SETTERS[ty](value, view)
-    return arr
+    const { view, idx: offset } = walker
+
+    switch (ty) {
+        case 'i8':
+            view.setInt8(offset, value)
+            break
+        case 'u8':
+            view.setUint8(offset, value)
+            break
+        case 'i16':
+            view.setInt16(offset, value, true)
+            break
+        case 'u16':
+            view.setUint16(offset, value, true)
+            break
+        case 'i32':
+            view.setInt32(offset, value, true)
+            break
+        case 'u32':
+            view.setUint32(offset, value, true)
+            break
+    }
+
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
 }
 
 /**
  * Decodes signed/unsigned 8/16/32 bits integers in Little-Endian
  */
-export function decodeInt(input: Uint8Array, ty: IntTypes): DecodeResult<number> {
-    const bytes = INT_BYTES_COUNT_MAP[ty]
-    const view = new DataView(input.buffer, input.byteOffset)
-    const value = INT_GETTERS[ty](view)
-    return [value, bytes]
-}
+export function decodeInt(walker: Walker, ty: IntTypes): number {
+    const { view, idx: offset } = walker
+    let value: number
 
-const BIG_INT_SETTERS: { [K in BigIntNativeSupported]: (value: bigint, view: DataView) => void } = {
-    u64: (i, v) => v.setBigUint64(0, i, true),
-    i64: (i, v) => v.setBigInt64(0, i, true),
-}
-
-const BIG_INT_GETTERS: { [K in BigIntNativeSupported]: (view: DataView) => bigint } = {
-    u64: (v) => v.getBigUint64(0, true),
-    i64: (v) => v.getBigInt64(0, true),
-}
-
-function encodeBINativeSupported(bi: bigint, ty: BigIntNativeSupported): Uint8Array {
-    const arr = new Uint8Array(INT_BYTES_COUNT_MAP[ty])
-    const view = new DataView(arr.buffer)
-    BIG_INT_SETTERS[ty](bi, view)
-    return arr
-}
-
-function decodeBINativeSupported(bytes: Uint8Array, ty: BigIntNativeSupported): DecodeResult<bigint> {
-    const bytesCount = INT_BYTES_COUNT_MAP[ty]
-    const view = new DataView(bytes.buffer, bytes.byteOffset)
-    const value = BIG_INT_GETTERS[ty](view)
-    return [value, bytesCount]
-}
-
-class LittleEndianBytesView {
-    public readonly arr: Uint8Array
-
-    public constructor(bytes: number, source?: Uint8Array) {
-        if (source) {
-            assert(source.length >= bytes, () => `expected at least ${bytes} bytes, received: ${source.length}`)
-
-            // it is important to get slice copy of array, not a subarray of the source, because
-            // mutations on subarray will affect source.
-            this.arr = source.slice(0, bytes)
-        } else {
-            this.arr = new Uint8Array(bytes)
-        }
+    switch (ty) {
+        case 'i8':
+            value = view.getInt8(offset)
+            break
+        case 'u8':
+            value = view.getUint8(offset)
+            break
+        case 'i16':
+            value = view.getInt16(offset, true)
+            break
+        case 'u16':
+            value = view.getUint16(offset, true)
+            break
+        case 'i32':
+            value = view.getInt32(offset, true)
+            break
+        case 'u32':
+            value = view.getUint32(offset, true)
+            break
     }
 
-    public readAt(index: number): number {
-        return this.arr[index]
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
+
+    return value
+}
+
+function encodeBINativeSupported(bi: bigint, ty: BigIntNativeSupported, walker: Walker): void {
+    checkNegative(bi, ty)
+    const { view, idx: offset } = walker
+    switch (ty) {
+        case 'u64':
+            view.setBigUint64(offset, bi, true)
+            break
+        case 'i64':
+            view.setBigInt64(offset, bi, true)
+            break
+    }
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
+}
+
+function decodeBINativeSupported(walker: Walker, ty: BigIntNativeSupported): bigint {
+    const { view, idx: offset } = walker
+    let value: bigint
+
+    switch (ty) {
+        case 'u64':
+            value = view.getBigUint64(offset, true)
+            break
+        case 'i64':
+            value = view.getBigInt64(offset, true)
+            break
     }
 
-    public writeAt(index: number, byte: number) {
-        this.arr[index] = byte
+    walker.idx += INT_BYTES_COUNT_MAP[ty]
+
+    return value
+}
+
+// eslint-disable-next-line max-params
+export function encodePositiveBigIntInto(
+    positiveNum: bigint,
+    mutSlice: Uint8Array,
+    offset: number,
+    bytesLimit: number,
+): number {
+    let i = 0
+    while (positiveNum > 0 && i < bytesLimit) {
+        // writing last byte into the slice
+        mutSlice[offset + i++] = Number(positiveNum & 0xffn)
+        // eslint-disable-next-line no-param-reassign
+        positiveNum >>= 8n
+    }
+    if (positiveNum > 0) {
+        throw new Error(`Number ${positiveNum} is out of bytes limit (${bytesLimit})`)
     }
 
-    public transformByTwosComplement() {
-        // initial addition
-        let addition = 1
-        for (let i = 0; i < this.arr.length; i++) {
-            // negate and add
-            const newValue = 255 - this.readAt(i) + addition
-            // addition to next digit
-            addition = newValue > 255 ? 1 : 0
-            // writing remainder
-            this.writeAt(i, newValue % 256)
-        }
+    return i
+}
+
+export function countPositiveBigIntEffectiveBytes(positiveNum: bigint): number {
+    let count = 0
+    while (positiveNum > 0) {
+        count++
+        // eslint-disable-next-line no-param-reassign
+        positiveNum >>= 8n
     }
+    return count
 }
 
 /**
  * Encodes `bigint` in Little-Endian
  */
-export function encodeBigInt(bi: bigint, ty: BigIntTypes): Uint8Array {
-    const isNegative = checkAndAssertNegation(bi, ty)
-
-    // check for more optimized ways first
+export function encodeBigInt(bi: bigint, ty: BigIntTypes, walker: Walker): void {
+    // check for more optimal ways first
     if (isIntTy(ty)) {
-        return encodeInt(Number(bi), ty)
+        return encodeInt(Number(bi), ty, walker)
     }
     if (isBigIntTyNativeSupported(ty)) {
-        return encodeBINativeSupported(bi, ty)
+        return encodeBINativeSupported(bi, ty, walker)
     }
 
     // prepare
+    const isNegative = checkNegative(bi, ty)
     const bytes = INT_BYTES_COUNT_MAP[ty]
-    const view = new LittleEndianBytesView(bytes)
 
-    // iteration
-    let iterValue = isNegative ? -bi : bi
-    let i = 0
-    let rem: number
-    while (iterValue > 0) {
-        rem = Number(iterValue % 256n)
-        view.writeAt(i++, rem)
-        iterValue /= 256n
-    }
+    // transforming by twos-complement if needed
+    // eslint-disable-next-line no-param-reassign
+    isNegative && (bi = BigInt.asUintN(bytes * 8, bi))
+
+    //
+    encodePositiveBigIntInto(bi, walker.u8, walker.idx, bytes)
 
     // final chords
-    isNegative && view.transformByTwosComplement()
-
-    return view.arr
+    walker.idx += bytes
 }
 
 /**
  * Decodes `bigint` in Little-Endian. It is like {@link decodeBigInt} but is not
  * binded to strict bytes count (1, 2, 4, 8, 16 etc)
+ *
+ * @remarks
+ * Does not mutate walker's offset!
  */
-export function decodeBigIntVarious(input: Uint8Array, bytes: number, signed: boolean): DecodeResult<bigint> {
-    const view = new LittleEndianBytesView(bytes, input)
-
-    // negation analysis & transformation
-    let isNegative = false
-    if (signed) {
-        const mostSignificantBit = (view.readAt(bytes - 1) & 0b1000_0000) >> 7
-        isNegative = mostSignificantBit === 1
-        isNegative && view.transformByTwosComplement()
-    }
+export function decodeBigIntVarious(walker: Walker, bytes: number, signed: boolean): bigint {
+    // negation analysis
+    let isNegative =
+        signed &&
+        // extracting the most significant bit
+        (walker.u8[walker.idx + bytes - 1] & 0b1000_0000) >> 7 === 1
 
     // iteration
     let value = 0n
-    for (let i = 0, mul = 1n; i < bytes; i++, mul *= 256n) {
-        value += mul * BigInt(view.readAt(i))
+    for (let i = 0, shift = 0n; i < bytes; i++, shift += 8n) {
+        value += BigInt(walker.u8[walker.idx + i]) << shift
     }
 
     // apply negation
-    isNegative && (value = -value)
+    isNegative && (value = BigInt.asIntN(bytes * 8, value))
 
-    return [value, bytes]
+    return value
 }
 
 /**
  * Decodes `bigint` in Little-Endian
  */
-export function decodeBigInt(input: Uint8Array, ty: BigIntTypes): DecodeResult<bigint> {
+export function decodeBigInt(walker: Walker, ty: BigIntTypes): bigint {
     if (isIntTy(ty)) {
-        return mapDecodeResult(decodeInt(input, ty), (num) => BigInt(num))
+        return BigInt(decodeInt(walker, ty))
     }
     if (isBigIntTyNativeSupported(ty)) {
-        return decodeBINativeSupported(input, ty)
+        return decodeBINativeSupported(walker, ty)
     }
 
     const isTySigned = isIntTypeSigned(ty)
     const bytes = INT_BYTES_COUNT_MAP[ty]
-    return decodeBigIntVarious(input, bytes, isTySigned)
+    const value = decodeBigIntVarious(walker, bytes, isTySigned)
+    walker.idx += bytes
+    return value
 }
+
+export function createIntEncoder(ty: IntTypes): Encode<number> {
+    return encodeFactory((value, writer) => encodeInt(value, ty, writer), tySizeHint(ty))
+}
+
+export function createIntDecoder(ty: IntTypes): Decode<number> {
+    return (reader) => decodeInt(reader, ty)
+}
+
+export function createBigIntEncoder(ty: BigIntTypes): Encode<bigint> {
+    return encodeFactory((value, writer) => encodeBigInt(value, ty, writer), tySizeHint(ty))
+}
+
+export function createBigIntDecoder(ty: BigIntTypes): Decode<bigint> {
+    return (reader) => decodeBigInt(reader, ty)
+}
+
+// pre-defined encoders/decoders
+
+export const encodeU8 = createIntEncoder('u8')
+export const decodeU8 = createIntDecoder('u8')
+export const encodeI8 = createIntEncoder('i8')
+export const decodeI8 = createIntDecoder('i8')
+
+export const encodeU16 = createIntEncoder('u16')
+export const decodeU16 = createIntDecoder('u16')
+export const encodeI16 = createIntEncoder('i16')
+export const decodeI16 = createIntDecoder('i16')
+
+export const encodeU32 = createIntEncoder('u32')
+export const decodeU32 = createIntDecoder('u32')
+export const encodeI32 = createIntEncoder('i32')
+export const decodeI32 = createIntDecoder('i32')
+
+export const encodeU64 = createBigIntEncoder('u64')
+export const decodeU64 = createBigIntDecoder('u64')
+export const encodeI64 = createBigIntEncoder('i64')
+export const decodeI64 = createBigIntDecoder('i64')
+
+export const encodeU128 = createBigIntEncoder('u128')
+export const decodeU128 = createBigIntDecoder('u128')
+export const encodeI128 = createBigIntEncoder('i128')
+export const decodeI128 = createBigIntDecoder('i128')

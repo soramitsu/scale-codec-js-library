@@ -1,5 +1,16 @@
 # @scale-codec/definition-compiler
 
+## 1.0.0
+
+### Major Changes
+
+-   **BREAKING** - update compiler due to the slightly updated runtime package.
+
+### Patch Changes
+
+-   Updated dependencies
+    -   @scale-codec/util@1.0.0
+
 ## 0.8.1
 
 ### Patch Changes

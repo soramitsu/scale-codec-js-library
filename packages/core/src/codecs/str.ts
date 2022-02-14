@@ -1,6 +1,7 @@
-import { decodeUint8Vec, encodeUint8Vec } from './vec'
-import { DecodeResult } from '../types'
-import { mapDecodeResult } from '../util'
+import { decodeUint8Vec } from './vec'
+import { Walker } from '../types'
+import { encodeFactory } from '../util'
+import { encodeCompact } from './compact'
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder('utf-8', {
@@ -8,38 +9,47 @@ const decoder = new TextDecoder('utf-8', {
     fatal: true,
 })
 
+export function decodeStr(walker: Walker): string {
+    const utf8Bytes = decodeUint8Vec(walker)
+    const str = decoder.decode(utf8Bytes)
+    return str
+}
+
 /**
- * Decodes UTF-8 sequence of bytes into as string
+ * Returns the byte length of an UTF-8 string
  *
  * @remarks
- * Uses **whole** received buffer. Note that in SCALE strings represented with a `Compact` prefix so use
- * {@link decodeStr} for it.
+ * Source: https://stackoverflow.com/a/23329386
  */
-export function decodeStrRaw(bytes: Uint8Array): string {
-    return decoder.decode(bytes)
+function utf8ByteLength(str: string): number {
+    let acc = str.length
+    for (let i = str.length - 1; i >= 0; i--) {
+        const code = str.charCodeAt(i)
+        if (code > 0x7f && code <= 0x7ff) acc++
+        else if (code > 0x7ff && code <= 0xffff) acc += 2
+        if (code >= 0xdc00 && code <= 0xdfff) i-- // trail surrogate
+    }
+    return acc
 }
 
-/**
- * Encodes string to a UTF-8 sequence of bytes
- *
- * @remarks
- * Do not use it within SCALE spec directly, because strings require compact length prefix. Use
- * {@link encodeStr} instead.
- */
-export function encodeStrRaw(str: string): Uint8Array {
-    return encoder.encode(str)
-}
+export const encodeStr = encodeFactory<string>(
+    (str, walker) => {
+        const byteLength = utf8ByteLength(str)
 
-/**
- * Decodes string by SCALE spec
- */
-export function decodeStr(bytes: Uint8Array): DecodeResult<string> {
-    return mapDecodeResult(decodeUint8Vec(bytes), decodeStrRaw)
-}
+        encodeCompact(byteLength, walker)
+        const result = encoder.encodeInto(str, walker.u8.subarray(walker.idx))
 
-/**
- * Encodes string by SCALE spec
- */
-export function encodeStr(str: string): Uint8Array {
-    return encodeUint8Vec(encodeStrRaw(str))
-}
+        if (result.written !== byteLength)
+            throw new Error(
+                `SCALE internal error: counting of string bytes length is incorrect; ` +
+                    `string: "${str}"; actual bytes length: ${result.written}; ` +
+                    `computed: ${byteLength}; please report a bug.`,
+            )
+
+        walker.idx += byteLength
+    },
+    (str) => {
+        const len = utf8ByteLength(str)
+        return len + encodeCompact.sizeHint(len)
+    },
+)

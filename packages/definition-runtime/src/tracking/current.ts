@@ -1,5 +1,5 @@
-import { Decode, DecodeResult } from '@scale-codec/core'
-import { CodecTracker } from './types'
+import { Decode, Walker } from '@scale-codec/core'
+import { CodecTracker, TrackDecodeFn, RefineDecodeLocFn } from './types'
 
 let __currentTracker: null | CodecTracker = null
 
@@ -20,13 +20,13 @@ export function setCurrentTracker(tracker: null | CodecTracker) {
 /**
  * **Caution**: uses global state
  */
-export function trackDecode<T>(loc: string, input: Uint8Array, decode: Decode<T>): DecodeResult<T> {
-    return __currentTracker?.decode?.(loc, input, decode) ?? decode(input)
+export const trackDecode: TrackDecodeFn = <T>(loc: string, walker: Walker, decode: Decode<T>): T => {
+    return __currentTracker?.decode?.(loc, walker, decode) ?? decode(walker)
 }
 
 /**
  * **Caution**: uses global state
  */
-export function trackRefineDecodeLoc<T>(loc: string, headlessDecode: () => DecodeResult<T>): DecodeResult<T> {
+export const trackRefineDecodeLoc: RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => T): T => {
     return __currentTracker?.refineDecodeLoc?.(loc, headlessDecode) ?? headlessDecode()
 }

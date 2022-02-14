@@ -1,4 +1,4 @@
-import { Decode, DecodeResult } from '@scale-codec/core'
+import { Decode, Walker } from '@scale-codec/core'
 
 /**
  * This symbol could be used by tracker to inspect value
@@ -12,9 +12,9 @@ export interface TrackValueInspectable {
     [TrackValueInspect]: () => any
 }
 
-export type TrackDecodeFn = <T>(loc: string, input: Uint8Array, decode: Decode<T>) => DecodeResult<T>
+export type TrackDecodeFn = <T>(loc: string, walker: Walker, decode: Decode<T>) => T
 
-export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => DecodeResult<T>) => DecodeResult<T>
+export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => T) => T
 
 /**
  * Instance that defines method to track decoding flow

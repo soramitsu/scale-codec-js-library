@@ -1,5 +1,27 @@
 # @scale-codec/definition-runtime
 
+## 1.0.0
+
+### Major Changes
+
+-   **BREAKING**
+
+    -   **What is the change**
+
+        -   `Fragment`s are dropped - they produced a lot of performance overhead
+        -   Simple codecs built on top of the new performant `core` library
+
+    -   **Why the change was made**
+
+        Due to performance reasons.
+
+### Patch Changes
+
+-   Updated dependencies
+-   Updated dependencies
+    -   @scale-codec/core@1.0.0
+    -   @scale-codec/util@1.0.0
+
 ## 0.8.2
 
 ### Patch Changes

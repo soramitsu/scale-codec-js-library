@@ -1,0 +1,33 @@
+{
+  "name": "Decoding struct",
+  "date": "2022-02-12T07:13:25.165Z",
+  "version": null,
+  "results": [
+    {
+      "name": "core",
+      "ops": 427607,
+      "margin": 1.62,
+      "percentSlower": 0
+    },
+    {
+      "name": "runtime",
+      "ops": 384877,
+      "margin": 1.17,
+      "percentSlower": 9.99
+    },
+    {
+      "name": "@polkadot/types",
+      "ops": 18902,
+      "margin": 1.53,
+      "percentSlower": 95.58
+    }
+  ],
+  "fastest": {
+    "name": "core",
+    "index": 0
+  },
+  "slowest": {
+    "name": "@polkadot/types",
+    "index": 2
+  }
+}

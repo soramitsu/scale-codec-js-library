@@ -3,10 +3,11 @@ import {
     encodeUint8Vec,
     encodeCompact,
     encodeStr,
-    FragmentFromBuilder,
     Str,
-    BytesVec,
+    VecU8,
     Compact,
+    createStructEncoder,
+    WalkerImpl,
 } from '@scale-codec/definition-runtime'
 import { Mystery } from '../samples/structFieldsOrdering'
 
@@ -16,40 +17,38 @@ interface Raw {
     A: Uint8Array
 }
 
-type Scale = FragmentFromBuilder<typeof Mystery>
+// type Scale = FragmentFromBuilder<typeof Mystery>
 
 function makeRaw(value: Raw): Raw {
     return value
 }
 
-function makeScale(value: Raw): Scale {
-    return Mystery.fromValue({
-        A: BytesVec.fromValue(value.A),
-        a: Compact.fromValue(value.a),
-        b: Str.fromValue(value.b),
-    })
-}
+// function makeScale(value: Raw): Scale {
+//     return Mystery.fromValue({
+//         A: BytesVec.fromValue(value.A),
+//         a: Compact.fromValue(value.a),
+//         b: Str.fromValue(value.b),
+//     })
+// }
 
-function unwrapScale({
-    value: {
-        A: { value: A },
-        a: { value: a },
-        b: { value: b },
-    },
-}: Scale): Raw {
-    return { A, a, b }
-}
+// function unwrapScale({
+//     value: {
+//         A: { value: A },
+//         a: { value: a },
+//         b: { value: b },
+//     },
+// }: Scale): Raw {
+//     return { A, a, b }
+// }
+
+const rawEncoder = createStructEncoder<Raw>([
+    ['b', encodeStr],
+    ['a', encodeCompact],
+    ['A', encodeUint8Vec],
+])
 
 function encodeRaw(value: Raw): Uint8Array {
-    return encodeStruct(
-        value,
-        {
-            A: encodeUint8Vec,
-            a: encodeCompact,
-            b: encodeStr,
-        },
-        ['b', 'a', 'A'],
-    )
+    return WalkerImpl.encode(value, rawEncoder)
 }
 
 test('Encodes as expected', () => {
@@ -58,9 +57,8 @@ test('Encodes as expected', () => {
         a: BigInt('81818273'),
         b: 'Nyanpasu',
     })
-    const scale = makeScale(raw)
 
-    expect(scale.bytes).toEqual(encodeRaw(raw))
+    expect(Mystery.toBuffer(raw)).toEqual(encodeRaw(raw))
 })
 
 test('Decodes as expected', () => {
@@ -71,7 +69,7 @@ test('Decodes as expected', () => {
     })
     const encoded = encodeRaw(raw)
 
-    const scale = Mystery.fromBytes(encoded)
+    const value = Mystery.fromBuffer(encoded)
 
-    expect(unwrapScale(scale)).toEqual(raw)
+    expect(value).toEqual(raw)
 })

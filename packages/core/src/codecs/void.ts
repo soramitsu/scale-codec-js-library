@@ -1,15 +1,15 @@
-import { DecodeResult } from '../types'
+import { Decode, Encode } from '../types'
+import { encodeFactory } from '../util'
 
 /**
  * Encoder to handle void types like `()` from Rust
  */
-export function encodeVoid(voidValue?: null): Uint8Array {
-    return new Uint8Array()
-}
+export const encodeVoid: Encode<null> = encodeFactory(
+    () => {},
+    () => 0,
+)
 
 /**
  * Decoder to handle void types like `()` from Rust
  */
-export function decodeVoid(bytes?: Uint8Array): DecodeResult<null> {
-    return [null, 0]
-}
+export const decodeVoid: Decode<null> = () => null

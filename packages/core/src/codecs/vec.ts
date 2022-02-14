@@ -1,30 +1,51 @@
-import { concatUint8Arrays } from '@scale-codec/util'
-import { Decode, DecodeResult, Encode } from '../types'
+import { Decode, Walker, Encode } from '../types'
 import { encodeCompact, decodeCompact } from '../codecs/compact'
-import { decodeArray, encodeArray } from './array'
+import { decodeArray } from './array'
+import { encodeFactory } from '../util'
 
-export function decodeVec<T>(bytes: Uint8Array, itemDecoder: Decode<T>): DecodeResult<T[]> {
-    const [length, offset] = decodeCompact(bytes)
-    const [items, itemsBytes] = decodeArray(bytes.subarray(offset), itemDecoder, Number(length))
-    return [items, itemsBytes + offset]
+export function encodeVec<T>(vec: T[], encodeItem: Encode<T>, walker: Walker): void {
+    encodeCompact(BigInt(vec.length), walker)
+    for (const item of vec) {
+        encodeItem(item, walker)
+    }
 }
 
-export function encodeVec<T>(items: T[], itemEncoder: Encode<T>): Uint8Array {
-    return concatUint8Arrays([encodeCompact(BigInt(items.length)), encodeArray(items, itemEncoder, items.length)])
+export function encodeVecSizeHint<T>(vec: T[], encodeItem: Encode<T>): number {
+    let size = encodeCompact.sizeHint(vec.length)
+    for (let i = vec.length - 1; i >= 0; i--) {
+        size += encodeItem.sizeHint(vec[i])
+    }
+    return size
 }
 
-/**
- * Encode `Vec<u8>` directly from the native `Uint8Array`
- */
-export function encodeUint8Vec(vec: Uint8Array): Uint8Array {
-    return concatUint8Arrays([encodeCompact(BigInt(vec.length)), vec])
+export function createVecEncoder<T>(encodeItem: Encode<T>): Encode<T[]> {
+    return encodeFactory(
+        (vec, walker) => encodeVec(vec, encodeItem, walker),
+        (vec) => encodeVecSizeHint(vec, encodeItem),
+    )
 }
 
-/**
- * Decode `Vec<u8>` directly into the native `Uint8Array`
- */
-export function decodeUint8Vec(bytes: Uint8Array): DecodeResult<Uint8Array> {
-    const [lenBN, offset] = decodeCompact(bytes)
-    const len = Number(lenBN)
-    return [bytes.slice(offset, offset + len), offset + len]
+export function decodeVec<T>(walker: Walker, decodeItem: Decode<T>): T[] {
+    const vecLength = decodeCompact(walker)
+    return decodeArray(walker, decodeItem, Number(vecLength))
+}
+
+export function createVecDecoder<T>(decodeItem: Decode<T>): Decode<T[]> {
+    return (walker) => decodeVec(walker, decodeItem)
+}
+
+export const encodeUint8Vec: Encode<Uint8Array> = encodeFactory(
+    (vec, walker) => {
+        encodeCompact(vec.byteLength, walker)
+        walker.u8.set(vec, walker.idx)
+        walker.idx += vec.byteLength
+    },
+    (vec) => encodeCompact.sizeHint(vec.byteLength) + vec.byteLength,
+)
+
+export const decodeUint8Vec: Decode<Uint8Array> = (walker) => {
+    const len = Number(decodeCompact(walker))
+    const vec = walker.u8.slice(walker.idx, walker.idx + len)
+    walker.idx += len
+    return vec
 }
