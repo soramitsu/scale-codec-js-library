@@ -34,7 +34,8 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "CHANGELOG.md"
     ],
     "dependencies": {
         "@scale-codec/core": "workspace:^1.0.0",

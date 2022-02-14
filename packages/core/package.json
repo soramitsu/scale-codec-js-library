@@ -39,7 +39,8 @@
         }
     },
     "files": [
-        "dist"
+        "dist",
+        "CHANGELOG.md"
     ],
     "dependencies": {
         "@scale-codec/enum": "workspace:^1.0.0",
