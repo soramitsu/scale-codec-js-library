@@ -15,5 +15,10 @@
         "resolveJsonModule": true
     },
     "include": ["packages"],
-    "exclude": ["**/dist", "packages/namespace*/**"]
+    "exclude": [
+        "**/dist",
+        "packages/namespace*/**",
+        // temporary
+        "packages/docs/**"
+    ]
 }
