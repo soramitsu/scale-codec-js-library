@@ -63,7 +63,7 @@ export function resolveTSCPackageOutputMove(name: ScaleCodecPackageUnscopedName)
     return resolve('packages', name, 'dist-tsc')
 }
 
-export const API_EXTRACTOR_TMP_DIR = resolve('api-extractor/temp')
+export const API_EXTRACTOR_TMP_DIR = resolve('etc/api/tmp')
 
 export const E2E_ROOT = resolve('e2e-spa')
 

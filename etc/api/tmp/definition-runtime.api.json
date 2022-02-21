@@ -1,0 +1,5166 @@
+{
+  "metadata": {
+    "toolPackage": "@microsoft/api-extractor",
+    "toolVersion": "7.19.4",
+    "schemaVersion": 1004,
+    "oldestForwardsCompatibleVersion": 1001,
+    "tsdocConfig": {
+      "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+      "noStandardTags": true,
+      "tagDefinitions": [
+        {
+          "tagName": "@alpha",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@beta",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@defaultValue",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@decorator",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@deprecated",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@eventProperty",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@example",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@experimental",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@inheritDoc",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@internal",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@label",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@link",
+          "syntaxKind": "inline",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@override",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@packageDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@param",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@privateRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@public",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@readonly",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@remarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@returns",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@sealed",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@see",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@throws",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@typeParam",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@virtual",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@betaDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@internalRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@preapproved",
+          "syntaxKind": "modifier"
+        }
+      ],
+      "supportForTags": {
+        "@alpha": true,
+        "@beta": true,
+        "@defaultValue": true,
+        "@decorator": true,
+        "@deprecated": true,
+        "@eventProperty": true,
+        "@example": true,
+        "@experimental": true,
+        "@inheritDoc": true,
+        "@internal": true,
+        "@label": true,
+        "@link": true,
+        "@override": true,
+        "@packageDocumentation": true,
+        "@param": true,
+        "@privateRemarks": true,
+        "@public": true,
+        "@readonly": true,
+        "@remarks": true,
+        "@returns": true,
+        "@sealed": true,
+        "@see": true,
+        "@throws": true,
+        "@typeParam": true,
+        "@virtual": true,
+        "@betaDocumentation": true,
+        "@internalRemarks": true,
+        "@preapproved": true
+      }
+    }
+  },
+  "kind": "Package",
+  "canonicalReference": "@scale-codec/definition-runtime!",
+  "docComment": "/**\n * Runtime for the output of `@scale-codec/definition-compiler`\n *\n * @remarks\n *\n * Reexports the whole core library and defines codecs for STD types.\n *\n * @packageDocumentation\n */\n",
+  "name": "@scale-codec/definition-runtime",
+  "members": [
+    {
+      "kind": "EntryPoint",
+      "canonicalReference": "@scale-codec/definition-runtime!",
+      "name": "",
+      "members": [
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!Bool:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "Bool: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<boolean, boolean>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Bool",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!buildDecodeTraceStepsFmt:function(1)",
+          "docComment": "/**\n * @remarks\n *\n * This function shouldn't be in the `DecodeTrace` class itself due to provide a tree-shaking possibility. This is not the main part of this class, but the side tool, used for pretty-print in the console.\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function buildDecodeTraceStepsFmt(trace: "
+            },
+            {
+              "kind": "Reference",
+              "text": "DecodeTrace",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class"
+            },
+            {
+              "kind": "Content",
+              "text": ", walker: "
+            },
+            {
+              "kind": "Reference",
+              "text": "Walker",
+              "canonicalReference": "@scale-codec/core!Walker:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "Fmt",
+              "canonicalReference": "fmt-subs!Fmt:class"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 6
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "trace",
+              "parameterTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "parameterName": "walker",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "name": "buildDecodeTraceStepsFmt"
+        },
+        {
+          "kind": "Interface",
+          "canonicalReference": "@scale-codec/definition-runtime!Codec:interface",
+          "docComment": "/**\n * General interface for any codec\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export interface Codec<Encoded, Decoded = "
+            },
+            {
+              "kind": "Content",
+              "text": "Encoded"
+            },
+            {
+              "kind": "Content",
+              "text": "> "
+            }
+          ],
+          "releaseTag": "Public",
+          "typeParameters": [
+            {
+              "typeParameterName": "Encoded",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "Decoded",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "name": "Codec",
+          "members": [
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec#decodeRaw:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decodeRaw: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Decode",
+                  "canonicalReference": "@scale-codec/core!Decode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<Decoded>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "decodeRaw",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec#encodeRaw:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "encodeRaw: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Encode",
+                  "canonicalReference": "@scale-codec/core!Encode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<Encoded>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "encodeRaw",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec#fromBuffer:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "fromBuffer: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "(this: this, src: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "ArrayBufferView",
+                  "canonicalReference": "!ArrayBufferView:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ") => Decoded"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "fromBuffer",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec#name:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "name: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "(this: this) => string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "name",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec#toBuffer:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "toBuffer: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "(this: this, value: Encoded) => "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Uint8Array",
+                  "canonicalReference": "!Uint8Array:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "toBuffer",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              }
+            }
+          ],
+          "extendsTokenRanges": []
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type CodecAny = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<any, any>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "CodecAny",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Class",
+          "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class",
+          "docComment": "/**\n * General {@link Codec} implementation that includes fragments & tracking functionality\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare class CodecImpl<E, D = "
+            },
+            {
+              "kind": "Content",
+              "text": "E"
+            },
+            {
+              "kind": "Content",
+              "text": "> implements "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<E, D> "
+            }
+          ],
+          "releaseTag": "Public",
+          "typeParameters": [
+            {
+              "typeParameterName": "E",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "D",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "name": "CodecImpl",
+          "members": [
+            {
+              "kind": "Constructor",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:constructor(1)",
+              "docComment": "/**\n * Constructs a new instance of the `CodecImpl` class\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "constructor(name: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", encode: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Encode",
+                  "canonicalReference": "@scale-codec/core!Encode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<E>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", decode: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Decode",
+                  "canonicalReference": "@scale-codec/core!Decode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<D>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ");"
+                }
+              ],
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "name",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "encode",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 5
+                  }
+                },
+                {
+                  "parameterName": "decode",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 6,
+                    "endIndex": 8
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl#decodeRaw:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decodeRaw: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Decode",
+                  "canonicalReference": "@scale-codec/core!Decode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<D>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "decodeRaw",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl#encodeRaw:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "encodeRaw: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Encode",
+                  "canonicalReference": "@scale-codec/core!Encode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<E>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "encodeRaw",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl#fromBuffer:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "fromBuffer(this: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", src: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "ArrayBufferView",
+                  "canonicalReference": "!ArrayBufferView:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "D"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "this",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "src",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 4
+                  }
+                }
+              ],
+              "name": "fromBuffer"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl#name:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "name(this: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "this",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "name"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl#toBuffer:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "toBuffer(this: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", value: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "E"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Uint8Array",
+                  "canonicalReference": "!Uint8Array:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "this",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "value",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 4
+                  }
+                }
+              ],
+              "name": "toBuffer"
+            }
+          ],
+          "implementsTokenRanges": [
+            {
+              "startIndex": 3,
+              "endIndex": 5
+            }
+          ]
+        },
+        {
+          "kind": "Interface",
+          "canonicalReference": "@scale-codec/definition-runtime!CodecTracker:interface",
+          "docComment": "/**\n * Instance that defines method to track decoding flow\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export interface CodecTracker "
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "CodecTracker",
+          "members": [
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecTracker#decode:member",
+              "docComment": "/**\n * Used to track decode step: location, input, and result\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decode?: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "TrackDecodeFn",
+                  "canonicalReference": "@scale-codec/definition-runtime!TrackDecodeFn:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "decode",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecTracker#refineDecodeLoc:member",
+              "docComment": "/**\n * Used to clarify decode location without tracking of the input and the output\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "refineDecodeLoc?: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "RefineDecodeLocFn",
+                  "canonicalReference": "@scale-codec/definition-runtime!RefineDecodeLocFn:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "refineDecodeLoc",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "extendsTokenRanges": []
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type CodecValueDecoded<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<any>"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<any, infer D> ? D : never"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "CodecValueDecoded",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 4,
+            "endIndex": 7
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type CodecValueEncodable<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<any>"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<infer E, any> ? E : never"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "CodecValueEncodable",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 4,
+            "endIndex": 7
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!Compact:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "Compact: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<number | bigint, bigint>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Compact",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createArrayCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createArrayCodec<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", itemCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "T"
+            },
+            {
+              "kind": "Content",
+              "text": ", len: "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "VecCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!VecCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 9,
+            "endIndex": 11
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            },
+            {
+              "parameterName": "itemCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              }
+            },
+            {
+              "parameterName": "len",
+              "parameterTypeTokenRange": {
+                "startIndex": 7,
+                "endIndex": 8
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createArrayCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createArrayU8Codec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createArrayU8Codec(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", len: "
+            },
+            {
+              "kind": "Content",
+              "text": "number"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Uint8Array",
+              "canonicalReference": "!Uint8Array:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ">"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 9
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "parameterName": "len",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "name": "createArrayU8Codec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createEnumCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createEnumCodec<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumCodecGenericDef",
+              "canonicalReference": "@scale-codec/definition-runtime!EnumCodecGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", codecs: "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumCodecGenericDefAsSchema",
+              "canonicalReference": "@scale-codec/definition-runtime!~EnumCodecGenericDefAsSchema:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def>"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!EnumCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 8,
+            "endIndex": 10
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            },
+            {
+              "parameterName": "codecs",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 7
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createEnumCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createMapCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createMapCodec<K extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ", V extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", keyCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "K"
+            },
+            {
+              "kind": "Content",
+              "text": ", valueCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "V"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "MapCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!MapCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<K, V>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 11,
+            "endIndex": 13
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              }
+            },
+            {
+              "parameterName": "keyCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 7,
+                "endIndex": 8
+              }
+            },
+            {
+              "parameterName": "valueCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 9,
+                "endIndex": 10
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "K",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "V",
+              "constraintTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createMapCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createOptionCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createOptionCodec<Some extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", someCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "Some"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "OptionCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!OptionCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Some>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 7,
+            "endIndex": 9
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            },
+            {
+              "parameterName": "someCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "Some",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createOptionCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createResultCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createResultCodec<Ok extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ", Err extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", okCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "Ok"
+            },
+            {
+              "kind": "Content",
+              "text": ", errCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "Err"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "ResultCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!ResultCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Ok, Err>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 11,
+            "endIndex": 13
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              }
+            },
+            {
+              "parameterName": "okCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 7,
+                "endIndex": 8
+              }
+            },
+            {
+              "parameterName": "errCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 9,
+                "endIndex": 10
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "Ok",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "Err",
+              "constraintTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createResultCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createSetCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createSetCodec<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", itemCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "T"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "SetCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!SetCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 7,
+            "endIndex": 9
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            },
+            {
+              "parameterName": "itemCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createSetCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createStructCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createStructCodec<T extends "
+            },
+            {
+              "kind": "Content",
+              "text": "{\n    [K in string]: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ";\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", orderedCodecs: "
+            },
+            {
+              "kind": "Reference",
+              "text": "StructCodecAsSchema",
+              "canonicalReference": "@scale-codec/definition-runtime!~StructCodecAsSchema:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "StructCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!StructCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 10,
+            "endIndex": 12
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              }
+            },
+            {
+              "parameterName": "orderedCodecs",
+              "parameterTypeTokenRange": {
+                "startIndex": 7,
+                "endIndex": 9
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createStructCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createTupleCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createTupleCodec<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "[]"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", codecs: "
+            },
+            {
+              "kind": "Content",
+              "text": "T"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "TupleCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!TupleCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 8,
+            "endIndex": 10
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 4,
+                "endIndex": 5
+              }
+            },
+            {
+              "parameterName": "codecs",
+              "parameterTypeTokenRange": {
+                "startIndex": 6,
+                "endIndex": 7
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createTupleCodec"
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!createVecCodec:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function createVecCodec<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(name: "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ", itemCodec: "
+            },
+            {
+              "kind": "Content",
+              "text": "T"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "VecCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!VecCodec:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 7,
+            "endIndex": 9
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "name",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            },
+            {
+              "parameterName": "itemCodec",
+              "parameterTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "createVecCodec"
+        },
+        {
+          "kind": "Class",
+          "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare class DecodeTrace "
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "DecodeTrace",
+          "members": [
+            {
+              "kind": "Constructor",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:constructor(1)",
+              "docComment": "/**\n * Constructs a new instance of the `DecodeTrace` class\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "constructor(loc: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ");"
+                }
+              ],
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "loc",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#children:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "children: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DecodeTrace",
+                  "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class"
+                },
+                {
+                  "kind": "Content",
+                  "text": "[]"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "children",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#error:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "error?: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "unknown"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "error",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#findRoot:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "findRoot(): "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DecodeTrace",
+                  "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [],
+              "name": "findRoot"
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#input:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "input?: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "{\n        offset: number;\n    }"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "input",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#isRoot:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "get isRoot(): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "boolean"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "isRoot",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#loc:member",
+              "docComment": "/**\n * Location\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "loc: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string[]"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "loc",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#parent:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "parent: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DecodeTrace",
+                  "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class"
+                },
+                {
+                  "kind": "Content",
+                  "text": " | null"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "parent",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#refineLoc:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "refineLoc(loc: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "loc",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "refineLoc"
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#result:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "result?: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "{\n        offset: number;\n        value: unknown;\n    }"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "result",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#setInput:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "setInput(offset: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "number"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "offset",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "setInput"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace#setParent:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "setParent(trace: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DecodeTrace",
+                  "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "trace",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "setParent"
+            }
+          ],
+          "implementsTokenRanges": []
+        },
+        {
+          "kind": "Class",
+          "canonicalReference": "@scale-codec/definition-runtime!DecodeTraceCollector:class",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare class DecodeTraceCollector "
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "DecodeTraceCollector",
+          "members": [
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTraceCollector#decodeError:member(1)",
+              "docComment": "/**\n * @returns Returns root trace\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decodeError(err: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "unknown"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DecodeTrace",
+                  "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "err",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "decodeError"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTraceCollector#decodeStart:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decodeStart(loc: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", walker: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Walker",
+                  "canonicalReference": "@scale-codec/core!Walker:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "loc",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "walker",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 4
+                  }
+                }
+              ],
+              "name": "decodeStart"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTraceCollector#decodeSuccess:member(1)",
+              "docComment": "/**\n * @returns the root decode trace if it was the root\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decodeSuccess(walker: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Walker",
+                  "canonicalReference": "@scale-codec/core!Walker:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", decodedValue: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "unknown"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "null | "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "DecodeTrace",
+                  "canonicalReference": "@scale-codec/definition-runtime!DecodeTrace:class"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 7
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "walker",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "decodedValue",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 4
+                  }
+                }
+              ],
+              "name": "decodeSuccess"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DecodeTraceCollector#refineLoc:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "refineLoc(loc: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "loc",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "refineLoc"
+            }
+          ],
+          "implementsTokenRanges": []
+        },
+        {
+          "kind": "Class",
+          "canonicalReference": "@scale-codec/definition-runtime!DynCodec:class",
+          "docComment": "/**\n * Special {@link Codec} implementation to that wraps another codec and dispatches it via its getter. With this utility it is easy to implement cyclic dependencies between codecs.\n *\n * @remarks\n *\n * TODO optimize and cache got codec after the first dispatch?\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare class DynCodec<C extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> implements "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<C>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<C>> "
+            }
+          ],
+          "releaseTag": "Public",
+          "typeParameters": [
+            {
+              "typeParameterName": "C",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "DynCodec",
+          "members": [
+            {
+              "kind": "Constructor",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec:constructor(1)",
+              "docComment": "/**\n * Constructs a new instance of the `DynCodec` class\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "constructor(getter: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "() => C"
+                },
+                {
+                  "kind": "Content",
+                  "text": ");"
+                }
+              ],
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "getter",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec#codecGetter:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "readonly codecGetter: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "() => C"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "codecGetter",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec#decodeRaw:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decodeRaw: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Decode",
+                  "canonicalReference": "@scale-codec/core!Decode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<"
+                },
+                {
+                  "kind": "Reference",
+                  "text": "CodecValueDecoded",
+                  "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<C>>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "decodeRaw",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 5
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec#encodeRaw:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "encodeRaw: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Encode",
+                  "canonicalReference": "@scale-codec/core!Encode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<"
+                },
+                {
+                  "kind": "Reference",
+                  "text": "CodecValueEncodable",
+                  "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<C>>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "encodeRaw",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 5
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec#fromBuffer:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "fromBuffer(this: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", src: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "ArrayBufferView",
+                  "canonicalReference": "!ArrayBufferView:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "CodecValueDecoded",
+                  "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<C>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 7
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "this",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "src",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 4
+                  }
+                }
+              ],
+              "name": "fromBuffer"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec#name:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "name(this: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "this",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "name"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec#toBuffer:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "toBuffer(this: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "this"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", value: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "CodecValueEncodable",
+                  "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<C>"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Uint8Array",
+                  "canonicalReference": "!Uint8Array:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 6,
+                "endIndex": 7
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "this",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "value",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 5
+                  }
+                }
+              ],
+              "name": "toBuffer"
+            }
+          ],
+          "implementsTokenRanges": [
+            {
+              "startIndex": 3,
+              "endIndex": 9
+            }
+          ]
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!dynCodec:function(1)",
+          "docComment": "/**\n * See {@link DynCodec}. This function is a shorthand factory that is more minimize-friendly than `new DynCodec(...)`\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function dynCodec<C extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ">(getter: "
+            },
+            {
+              "kind": "Content",
+              "text": "() => C"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "DynCodec",
+              "canonicalReference": "@scale-codec/definition-runtime!DynCodec:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<C>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 7
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "getter",
+              "parameterTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeParameters": [
+            {
+              "typeParameterName": "C",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "dynCodec"
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!EnumCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type EnumCodec<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumCodecGenericDef",
+              "canonicalReference": "@scale-codec/definition-runtime!EnumCodecGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Enum",
+              "canonicalReference": "@scale-codec/enum!Enum:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def extends [infer Tag, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<infer E, any>] ? [Tag, E] : Def>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Enum",
+              "canonicalReference": "@scale-codec/enum!Enum:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def extends [infer Tag, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<any, infer D>] ? [Tag, D] : Def>>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "EnumCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 13
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!EnumCodecGenericDef:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type EnumCodecGenericDef = "
+            },
+            {
+              "kind": "Content",
+              "text": "string | [string, "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "]"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "EnumCodecGenericDef",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 4
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!EnumCodecs:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type EnumCodecs<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "(Def extends string ? [discriminant: number, tag: Def] : Def extends [infer T, infer V] ? [discriminant: number, tag: T, codec: "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<V>] : never)[]"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "EnumCodecs",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!formatWalkerStep:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function formatWalkerStep(params: "
+            },
+            {
+              "kind": "Reference",
+              "text": "FormatWalkerStepParams",
+              "canonicalReference": "@scale-codec/definition-runtime!FormatWalkerStepParams:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Content",
+              "text": "string"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 4
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "params",
+              "parameterTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "name": "formatWalkerStep"
+        },
+        {
+          "kind": "Interface",
+          "canonicalReference": "@scale-codec/definition-runtime!FormatWalkerStepParams:interface",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export interface FormatWalkerStepParams "
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "FormatWalkerStepParams",
+          "members": [
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!FormatWalkerStepParams#offsetEnd:member",
+              "docComment": "/**\n * The walker's offset at the end of the step\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "offsetEnd?: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "number"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "offsetEnd",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!FormatWalkerStepParams#offsetStart:member",
+              "docComment": "/**\n * The walker's offset at the start of the step\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "offsetStart: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "number"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "offsetStart",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!FormatWalkerStepParams#walker:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "walker: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Walker",
+                  "canonicalReference": "@scale-codec/core!Walker:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "walker",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "extendsTokenRanges": []
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!getCurrentTracker:function(1)",
+          "docComment": "/**\n * **Caution**: uses global state\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function getCurrentTracker(): "
+            },
+            {
+              "kind": "Content",
+              "text": "null | "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecTracker",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecTracker:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [],
+          "name": "getCurrentTracker"
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!I128:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "I128: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<bigint, bigint>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "I128",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!I16:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "I16: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<number, number>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "I16",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!I32:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "I32: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<number, number>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "I32",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!I64:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "I64: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<bigint, bigint>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "I64",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!I8:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "I8: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<number, number>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "I8",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!isTrackValueInspectable:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function isTrackValueInspectable(value: "
+            },
+            {
+              "kind": "Content",
+              "text": "unknown"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Reference",
+              "text": "value",
+              "canonicalReference": "@scale-codec/definition-runtime!~value"
+            },
+            {
+              "kind": "Content",
+              "text": " is "
+            },
+            {
+              "kind": "Reference",
+              "text": "TrackValueInspectable",
+              "canonicalReference": "@scale-codec/definition-runtime!TrackValueInspectable:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 6
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "value",
+              "parameterTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "name": "isTrackValueInspectable"
+        },
+        {
+          "kind": "Class",
+          "canonicalReference": "@scale-codec/definition-runtime!Logger:class",
+          "docComment": "/**\n * Prints tracked info to console\n *\n * @example\n * ```ts\n * import { Logger } from 'lib'\n *\n * new Logger().mount()\n *\n * // use decoding functions and see console output\n * ```\n *\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare class Logger implements "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecTracker",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecTracker:interface"
+            },
+            {
+              "kind": "Content",
+              "text": " "
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Logger",
+          "members": [
+            {
+              "kind": "Constructor",
+              "canonicalReference": "@scale-codec/definition-runtime!Logger:constructor(1)",
+              "docComment": "/**\n * Constructs a new instance of the `Logger` class\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "constructor(config?: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "LoggerConfig",
+                  "canonicalReference": "@scale-codec/definition-runtime!LoggerConfig:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ");"
+                }
+              ],
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "config",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/definition-runtime!Logger#config:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "config?: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "LoggerConfig",
+                  "canonicalReference": "@scale-codec/definition-runtime!LoggerConfig:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "config",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!Logger#decode:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "decode<T>(loc: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", walker: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Walker",
+                  "canonicalReference": "@scale-codec/core!Walker:interface"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", decode: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Decode",
+                  "canonicalReference": "@scale-codec/core!Decode:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<T>"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "T"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 8,
+                "endIndex": 9
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "loc",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "walker",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 4
+                  }
+                },
+                {
+                  "parameterName": "decode",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 5,
+                    "endIndex": 7
+                  }
+                }
+              ],
+              "typeParameters": [
+                {
+                  "typeParameterName": "T",
+                  "constraintTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  }
+                }
+              ],
+              "name": "decode"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!Logger#mount:member(1)",
+              "docComment": "/**\n * Sets itself as current global tracker\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "mount(): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [],
+              "name": "mount"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!Logger#refineDecodeLoc:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "refineDecodeLoc<T>(loc: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", decode: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "() => T"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "T"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 5,
+                "endIndex": 6
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "loc",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                },
+                {
+                  "parameterName": "decode",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 4
+                  }
+                }
+              ],
+              "typeParameters": [
+                {
+                  "typeParameterName": "T",
+                  "constraintTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  }
+                }
+              ],
+              "name": "refineDecodeLoc"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/definition-runtime!Logger#unmount:member(1)",
+              "docComment": "/**\n * Unmounts itself from 'current tracker' position. If it is not current, it throws\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "unmount(): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "void"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [],
+              "name": "unmount"
+            }
+          ],
+          "implementsTokenRanges": [
+            {
+              "startIndex": 1,
+              "endIndex": 3
+            }
+          ]
+        },
+        {
+          "kind": "Interface",
+          "canonicalReference": "@scale-codec/definition-runtime!LoggerConfig:interface",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export interface LoggerConfig "
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "LoggerConfig",
+          "members": [
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!LoggerConfig#logDecodeErrors:member",
+              "docComment": "/**\n * @default true\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "logDecodeErrors?: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "boolean"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "logDecodeErrors",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            },
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!LoggerConfig#logDecodeSuccesses:member",
+              "docComment": "/**\n * @default false\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "logDecodeSuccesses?: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "boolean"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": true,
+              "releaseTag": "Public",
+              "name": "logDecodeSuccesses",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "extendsTokenRanges": []
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!MapCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type MapCodec<K extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ", V extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Map",
+              "canonicalReference": "!Map:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<K>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<V>>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Map",
+              "canonicalReference": "!Map:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<K>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<V>>>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "MapCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "K",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "V",
+              "constraintTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 19
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!OptionCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type OptionCodec<Some extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Option",
+              "canonicalReference": "@scale-codec/enum!Option:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Some>>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Option",
+              "canonicalReference": "@scale-codec/enum!Option:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Some>>>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "OptionCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "Some",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 13
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!RefineDecodeLocFn:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type RefineDecodeLocFn = "
+            },
+            {
+              "kind": "Content",
+              "text": "<T>(loc: string, headlessDecode: () => T) => T"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "RefineDecodeLocFn",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!ResultCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type ResultCodec<Ok extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": ", Err extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Result",
+              "canonicalReference": "@scale-codec/enum!Result:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Ok>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Err>>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Result",
+              "canonicalReference": "@scale-codec/enum!Result:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Ok>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Err>>>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "ResultCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "Ok",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "Err",
+              "constraintTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 19
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!SetCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type SetCodec<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Set",
+              "canonicalReference": "!Set:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "Set",
+              "canonicalReference": "!Set:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>>>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "SetCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 13
+          }
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!setCurrentTracker:function(1)",
+          "docComment": "/**\n * **Caution**: uses global state\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function setCurrentTracker(tracker: "
+            },
+            {
+              "kind": "Content",
+              "text": "null | "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecTracker",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecTracker:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Content",
+              "text": "void"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 4,
+            "endIndex": 5
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "tracker",
+              "parameterTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              }
+            }
+          ],
+          "name": "setCurrentTracker"
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!Str:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "Str: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<string, string>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Str",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!StructCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type StructCodec<T> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<{\n    [K in keyof T]: T[K] extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<infer E, any> ? E : never;\n}, {\n    [K in keyof T]: T[K] extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<any, infer D> ? D : never;\n}>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "StructCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 7
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!trackDecode:var",
+          "docComment": "/**\n * **Caution**: uses global state\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "trackDecode: "
+            },
+            {
+              "kind": "Reference",
+              "text": "TrackDecodeFn",
+              "canonicalReference": "@scale-codec/definition-runtime!TrackDecodeFn:type"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "trackDecode",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!TrackDecodeFn:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type TrackDecodeFn = "
+            },
+            {
+              "kind": "Content",
+              "text": "<T>(loc: string, walker: "
+            },
+            {
+              "kind": "Reference",
+              "text": "Walker",
+              "canonicalReference": "@scale-codec/core!Walker:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ", decode: "
+            },
+            {
+              "kind": "Reference",
+              "text": "Decode",
+              "canonicalReference": "@scale-codec/core!Decode:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>) => T"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "TrackDecodeFn",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!trackRefineDecodeLoc:var",
+          "docComment": "/**\n * **Caution**: uses global state\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "trackRefineDecodeLoc: "
+            },
+            {
+              "kind": "Reference",
+              "text": "RefineDecodeLocFn",
+              "canonicalReference": "@scale-codec/definition-runtime!RefineDecodeLocFn:type"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "trackRefineDecodeLoc",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!TrackValueInspect:var",
+          "docComment": "/**\n * This symbol could be used by tracker to inspect value\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "TrackValueInspect: "
+            },
+            {
+              "kind": "Content",
+              "text": "unique symbol"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "TrackValueInspect",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "Interface",
+          "canonicalReference": "@scale-codec/definition-runtime!TrackValueInspectable:interface",
+          "docComment": "/**\n * Implement this for the object if you want to handle its inspection in the console\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export interface TrackValueInspectable "
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "TrackValueInspectable",
+          "members": [
+            {
+              "kind": "PropertySignature",
+              "canonicalReference": "@scale-codec/definition-runtime!TrackValueInspectable#[TrackValueInspect]:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "["
+                },
+                {
+                  "kind": "Reference",
+                  "text": "TrackValueInspect",
+                  "canonicalReference": "@scale-codec/definition-runtime!TrackValueInspect"
+                },
+                {
+                  "kind": "Content",
+                  "text": "]: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "() => any"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "[TrackValueInspect]",
+              "propertyTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "extendsTokenRanges": []
+        },
+        {
+          "kind": "Function",
+          "canonicalReference": "@scale-codec/definition-runtime!tryInspectValue:function(1)",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare function tryInspectValue(value: "
+            },
+            {
+              "kind": "Content",
+              "text": "any"
+            },
+            {
+              "kind": "Content",
+              "text": "): "
+            },
+            {
+              "kind": "Content",
+              "text": "any"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "returnTypeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 4
+          },
+          "releaseTag": "Public",
+          "overloadIndex": 1,
+          "parameters": [
+            {
+              "parameterName": "value",
+              "parameterTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              }
+            }
+          ],
+          "name": "tryInspectValue"
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!TupleCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type TupleCodec<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "[]"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "TupleEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!~TupleEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>, "
+            },
+            {
+              "kind": "Reference",
+              "text": "TupleDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!~TupleDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "TupleCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 4,
+            "endIndex": 10
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!U128:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "U128: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<bigint, bigint>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "U128",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!U16:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "U16: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<number, number>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "U16",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!U32:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "U32: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<number, number>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "U32",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!U64:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "U64: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<bigint, bigint>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "U64",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!U8:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "U8: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<number, number>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "U8",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/definition-runtime!VecCodec:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type VecCodec<T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecAny",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecAny:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Codec",
+              "canonicalReference": "@scale-codec/definition-runtime!Codec:interface"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueEncodable",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueEncodable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>[], "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecValueDecoded",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecValueDecoded:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<T>[]>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "VecCodec",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 9
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!VecU8:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "VecU8: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<"
+            },
+            {
+              "kind": "Reference",
+              "text": "Uint8Array",
+              "canonicalReference": "!Uint8Array:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ", "
+            },
+            {
+              "kind": "Reference",
+              "text": "Uint8Array",
+              "canonicalReference": "!Uint8Array:interface"
+            },
+            {
+              "kind": "Content",
+              "text": ">"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "VecU8",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 7
+          }
+        },
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/definition-runtime!Void:var",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "Void: "
+            },
+            {
+              "kind": "Reference",
+              "text": "CodecImpl",
+              "canonicalReference": "@scale-codec/definition-runtime!CodecImpl:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<null, null>"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Void",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        }
+      ]
+    }
+  ]
+}

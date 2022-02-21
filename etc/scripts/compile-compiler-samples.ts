@@ -5,8 +5,8 @@ import makeDir from 'make-dir'
 import fs from 'fs/promises'
 import consola from 'consola'
 import chalk from 'chalk'
-import * as samples from '../packages/definition-compiler/tests/__samples__'
-import { renderNamespaceDefinition } from '../packages/definition-compiler/src/lib'
+import * as samples from '../../packages/definition-compiler/tests/__samples__'
+import { renderNamespaceDefinition } from '../../packages/definition-compiler/src/lib'
 import { COMPILER_SAMPLES_OUTPUT_DIR as OUTPUT_DIR } from '../meta'
 
 async function clean() {

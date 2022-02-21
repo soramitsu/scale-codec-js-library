@@ -3,10 +3,10 @@ import del from 'del'
 import { series, parallel } from 'gulp'
 import consola from 'consola'
 import { ExtractorConfig, Extractor } from '@microsoft/api-extractor'
-import compileDocsNamespace from './scripts/compile-docs-namespace'
-import compileCompilerSamples from './scripts/compile-compiler-samples'
-import bundle from './scripts/bundle'
-import bundleForE2e from './scripts/bundle-for-e2e'
+import compileDocsNamespace from './etc/scripts/compile-docs-namespace'
+import compileCompilerSamples from './etc/scripts/compile-compiler-samples'
+import bundle from './etc/scripts/bundle'
+import bundleForE2e from './etc/scripts/bundle-for-e2e'
 import {
     BUILD_ARTIFACTS_GLOBS,
     COMPILER_SAMPLES_OUTPUT_DIR,
@@ -19,7 +19,7 @@ import {
     resolveTSCPackageOutputMove,
     API_EXTRACTOR_TMP_DIR,
     E2E_ROOT,
-} from './meta'
+} from './etc/meta'
 
 async function clean() {
     await del(BUILD_ARTIFACTS_GLOBS)

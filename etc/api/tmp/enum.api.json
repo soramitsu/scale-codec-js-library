@@ -1,0 +1,1201 @@
+{
+  "metadata": {
+    "toolPackage": "@microsoft/api-extractor",
+    "toolVersion": "7.19.4",
+    "schemaVersion": 1004,
+    "oldestForwardsCompatibleVersion": 1001,
+    "tsdocConfig": {
+      "$schema": "https://developer.microsoft.com/json-schemas/tsdoc/v0/tsdoc.schema.json",
+      "noStandardTags": true,
+      "tagDefinitions": [
+        {
+          "tagName": "@alpha",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@beta",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@defaultValue",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@decorator",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@deprecated",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@eventProperty",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@example",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@experimental",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@inheritDoc",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@internal",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@label",
+          "syntaxKind": "inline"
+        },
+        {
+          "tagName": "@link",
+          "syntaxKind": "inline",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@override",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@packageDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@param",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@privateRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@public",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@readonly",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@remarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@returns",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@sealed",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@see",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@throws",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@typeParam",
+          "syntaxKind": "block",
+          "allowMultiple": true
+        },
+        {
+          "tagName": "@virtual",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@betaDocumentation",
+          "syntaxKind": "modifier"
+        },
+        {
+          "tagName": "@internalRemarks",
+          "syntaxKind": "block"
+        },
+        {
+          "tagName": "@preapproved",
+          "syntaxKind": "modifier"
+        }
+      ],
+      "supportForTags": {
+        "@alpha": true,
+        "@beta": true,
+        "@defaultValue": true,
+        "@decorator": true,
+        "@deprecated": true,
+        "@eventProperty": true,
+        "@example": true,
+        "@experimental": true,
+        "@inheritDoc": true,
+        "@internal": true,
+        "@label": true,
+        "@link": true,
+        "@override": true,
+        "@packageDocumentation": true,
+        "@param": true,
+        "@privateRemarks": true,
+        "@public": true,
+        "@readonly": true,
+        "@remarks": true,
+        "@returns": true,
+        "@sealed": true,
+        "@see": true,
+        "@throws": true,
+        "@typeParam": true,
+        "@virtual": true,
+        "@betaDocumentation": true,
+        "@internalRemarks": true,
+        "@preapproved": true
+      }
+    }
+  },
+  "kind": "Package",
+  "canonicalReference": "@scale-codec/enum!",
+  "docComment": "/**\n * Minimal tool to work with Rust's Enums.\n *\n * @packageDocumentation\n */\n",
+  "name": "@scale-codec/enum",
+  "members": [
+    {
+      "kind": "EntryPoint",
+      "canonicalReference": "@scale-codec/enum!",
+      "name": "",
+      "members": [
+        {
+          "kind": "Variable",
+          "canonicalReference": "@scale-codec/enum!ENUM_EMPTY_VALUE:var",
+          "docComment": "/**\n * Special unique value to mark enum as empty\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "ENUM_EMPTY_VALUE: "
+            },
+            {
+              "kind": "Content",
+              "text": "unique symbol"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "ENUM_EMPTY_VALUE",
+          "variableTypeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "Class",
+          "canonicalReference": "@scale-codec/enum!Enum:class",
+          "docComment": "/**\n * Typed-wrapper to handle Rust's Enum concept.\n *\n * @remarks\n *\n * `Def` generic type is a **definition of enum variants**. It should be defined like this:\n * ```ts\n * type MyDef = 'EmptyVariant' | ['VarWithBool', boolean]\n *\n * type MyEnum = Enum<MyDef>\n * ```\n *\n * Then you could create enums with that definition type-safely:\n * ```ts\n * const val1: MyEnum = Enum.variant('EmptyVariant')\n * const val2: MyEnum = Enum.variant('VarWithBool', true)\n * ```\n *\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare class Enum<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> "
+            }
+          ],
+          "releaseTag": "Public",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "name": "Enum",
+          "members": [
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/enum!Enum#as:member(1)",
+              "docComment": "/**\n * Returns enum's content if **it exists** and **provided variant name matches with the enum's one**. If not, it throws.\n *\n * @remarks\n *\n * Use it in pair {@link Enum.is} to avoid runtime errors.\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "as<T extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "TagsValuable",
+                  "canonicalReference": "@scale-codec/enum!TagsValuable:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<Def>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ">(tag: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "T"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "TagValue",
+                  "canonicalReference": "@scale-codec/enum!TagValue:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<"
+                },
+                {
+                  "kind": "Reference",
+                  "text": "EnumGenericDef",
+                  "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": ", T>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 6,
+                "endIndex": 10
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "tag",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 4,
+                    "endIndex": 5
+                  }
+                }
+              ],
+              "typeParameters": [
+                {
+                  "typeParameterName": "T",
+                  "constraintTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 3
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  }
+                }
+              ],
+              "name": "as"
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/enum!Enum#is:member(1)",
+              "docComment": "/**\n * Check whether an enum instance has this variant name or not\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "is(tag: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Tags",
+                  "canonicalReference": "@scale-codec/enum!Tags:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<Def>"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "boolean"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 4,
+                "endIndex": 5
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "tag",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 3
+                  }
+                }
+              ],
+              "name": "is"
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/enum!Enum#isEmpty:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "get isEmpty(): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "boolean"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "isEmpty",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/enum!Enum#match:member(1)",
+              "docComment": "/**\n * Pretty simple alternative for 'pattern matching'\n *\n * @example\n * ```ts\n * const file: Result<string, Error> = Enum.variant('Err', new Error('Oops!'))\n *\n * const fileContents = file.match({\n *     Ok: (txt) => txt,\n *     Err: (err) => {\n *         console.error(err)\n *         throw new Error('Bad file')\n *     }\n * })\n * ```\n *\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "match<R = "
+                },
+                {
+                  "kind": "Content",
+                  "text": "any"
+                },
+                {
+                  "kind": "Content",
+                  "text": ">(matchMap: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "EnumMatchMap",
+                  "canonicalReference": "@scale-codec/enum!EnumMatchMap:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<Def, R>"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "R"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 6,
+                "endIndex": 7
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "matchMap",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 3,
+                    "endIndex": 5
+                  }
+                }
+              ],
+              "typeParameters": [
+                {
+                  "typeParameterName": "R",
+                  "constraintTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 2
+                  }
+                }
+              ],
+              "name": "match"
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/enum!Enum#tag:member",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "readonly tag: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "string"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "tag",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/enum!Enum#toJSON:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "toJSON(): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "{\n        tag: string;\n        value?: undefined;\n    } | {\n        tag: string;\n        value: unknown;\n    }"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": false,
+              "returnTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [],
+              "name": "toJSON"
+            },
+            {
+              "kind": "Property",
+              "canonicalReference": "@scale-codec/enum!Enum#value:member",
+              "docComment": "/**\n * Inner value is untyped and should be used with caution\n */\n",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "readonly value: "
+                },
+                {
+                  "kind": "Content",
+                  "text": "typeof "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "ENUM_EMPTY_VALUE",
+                  "canonicalReference": "@scale-codec/enum!ENUM_EMPTY_VALUE:var"
+                },
+                {
+                  "kind": "Content",
+                  "text": " | unknown"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "releaseTag": "Public",
+              "name": "value",
+              "propertyTypeTokenRange": {
+                "startIndex": 1,
+                "endIndex": 4
+              },
+              "isStatic": false
+            },
+            {
+              "kind": "Method",
+              "canonicalReference": "@scale-codec/enum!Enum.variant:member(1)",
+              "docComment": "",
+              "excerptTokens": [
+                {
+                  "kind": "Content",
+                  "text": "static variant<E extends "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "Enum",
+                  "canonicalReference": "@scale-codec/enum!Enum:class"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<any>"
+                },
+                {
+                  "kind": "Content",
+                  "text": ">(...args: "
+                },
+                {
+                  "kind": "Reference",
+                  "text": "EnumDefToFactoryArgs",
+                  "canonicalReference": "@scale-codec/enum!EnumDefToFactoryArgs:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<"
+                },
+                {
+                  "kind": "Reference",
+                  "text": "EnumDef",
+                  "canonicalReference": "@scale-codec/enum!EnumDef:type"
+                },
+                {
+                  "kind": "Content",
+                  "text": "<E>>"
+                },
+                {
+                  "kind": "Content",
+                  "text": "): "
+                },
+                {
+                  "kind": "Content",
+                  "text": "E"
+                },
+                {
+                  "kind": "Content",
+                  "text": ";"
+                }
+              ],
+              "isOptional": false,
+              "isStatic": true,
+              "returnTypeTokenRange": {
+                "startIndex": 9,
+                "endIndex": 10
+              },
+              "releaseTag": "Public",
+              "overloadIndex": 1,
+              "parameters": [
+                {
+                  "parameterName": "args",
+                  "parameterTypeTokenRange": {
+                    "startIndex": 4,
+                    "endIndex": 8
+                  }
+                }
+              ],
+              "typeParameters": [
+                {
+                  "typeParameterName": "E",
+                  "constraintTokenRange": {
+                    "startIndex": 1,
+                    "endIndex": 3
+                  },
+                  "defaultTypeTokenRange": {
+                    "startIndex": 0,
+                    "endIndex": 0
+                  }
+                }
+              ],
+              "name": "variant"
+            }
+          ],
+          "implementsTokenRanges": []
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!EnumDef:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type EnumDef<E extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Enum",
+              "canonicalReference": "@scale-codec/enum!Enum:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<any>"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "E extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "Enum",
+              "canonicalReference": "@scale-codec/enum!Enum:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<infer Def> ? Def : never"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "EnumDef",
+          "typeParameters": [
+            {
+              "typeParameterName": "E",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 3
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 4,
+            "endIndex": 7
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!EnumDefToFactoryArgs:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type EnumDefToFactoryArgs<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "["
+            },
+            {
+              "kind": "Reference",
+              "text": "TagsEmpty",
+              "canonicalReference": "@scale-codec/enum!TagsEmpty:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def>] | (Def extends [string, any] ? Def : never)"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "EnumDefToFactoryArgs",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 6
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!EnumGenericDef:type",
+          "docComment": "/**\n * Minimal tool to work with Rust's Enums.\n *\n * @packageDocumentation\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type EnumGenericDef = "
+            },
+            {
+              "kind": "Content",
+              "text": "string | [tag: string, value: any]"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "EnumGenericDef",
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 2
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!EnumMatchMap:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type EnumMatchMap<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": ", R = "
+            },
+            {
+              "kind": "Content",
+              "text": "any"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "{\n    [T in "
+            },
+            {
+              "kind": "Reference",
+              "text": "TagsEmpty",
+              "canonicalReference": "@scale-codec/enum!TagsEmpty:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def>]: () => R;\n} & {\n    [T in "
+            },
+            {
+              "kind": "Reference",
+              "text": "TagsValuable",
+              "canonicalReference": "@scale-codec/enum!TagsValuable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def>]: (value: "
+            },
+            {
+              "kind": "Reference",
+              "text": "TagValue",
+              "canonicalReference": "@scale-codec/enum!TagValue:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def, T>) => R;\n}"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "EnumMatchMap",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "R",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 3,
+                "endIndex": 4
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 5,
+            "endIndex": 12
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!Option_2:type",
+          "docComment": "/**\n * Rust's `Option<T>` analog\n *\n * @example\n * ```ts\n * const maybeString: Option<string> = Enum.variant('None')\n * ```\n *\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type Option<T> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Enum",
+              "canonicalReference": "@scale-codec/enum!Enum:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<'None' | ['Some', T]>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Option_2",
+          "typeParameters": [
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!Result:type",
+          "docComment": "/**\n * Rust's `Result<O, E>` analog\n *\n * @example\n * ```ts\n * const file: Result<string, Error> = Enum.variant('Ok', 'file contents')\n * ```\n *\n */\n",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type Result<Ok, Err> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "Enum",
+              "canonicalReference": "@scale-codec/enum!Enum:class"
+            },
+            {
+              "kind": "Content",
+              "text": "<['Ok', Ok] | ['Err', Err]>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Result",
+          "typeParameters": [
+            {
+              "typeParameterName": "Ok",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "Err",
+              "constraintTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 1,
+            "endIndex": 3
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!Tags:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type Tags<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Reference",
+              "text": "TagsEmpty",
+              "canonicalReference": "@scale-codec/enum!TagsEmpty:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def> | "
+            },
+            {
+              "kind": "Reference",
+              "text": "TagsValuable",
+              "canonicalReference": "@scale-codec/enum!TagsValuable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def>"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "Tags",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 7
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!TagsEmpty:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type TagsEmpty<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "Def extends string ? Def : never"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "TagsEmpty",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 4
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!TagsValuable:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type TagsValuable<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "Def extends [infer T, any] ? T & string : never"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "TagsValuable",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 3,
+            "endIndex": 4
+          }
+        },
+        {
+          "kind": "TypeAlias",
+          "canonicalReference": "@scale-codec/enum!TagValue:type",
+          "docComment": "",
+          "excerptTokens": [
+            {
+              "kind": "Content",
+              "text": "export declare type TagValue<Def extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "EnumGenericDef",
+              "canonicalReference": "@scale-codec/enum!EnumGenericDef:type"
+            },
+            {
+              "kind": "Content",
+              "text": ", T extends "
+            },
+            {
+              "kind": "Reference",
+              "text": "TagsValuable",
+              "canonicalReference": "@scale-codec/enum!TagsValuable:type"
+            },
+            {
+              "kind": "Content",
+              "text": "<Def>"
+            },
+            {
+              "kind": "Content",
+              "text": "> = "
+            },
+            {
+              "kind": "Content",
+              "text": "Def extends [T, infer V] ? V : never"
+            },
+            {
+              "kind": "Content",
+              "text": ";"
+            }
+          ],
+          "releaseTag": "Public",
+          "name": "TagValue",
+          "typeParameters": [
+            {
+              "typeParameterName": "Def",
+              "constraintTokenRange": {
+                "startIndex": 1,
+                "endIndex": 2
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            },
+            {
+              "typeParameterName": "T",
+              "constraintTokenRange": {
+                "startIndex": 3,
+                "endIndex": 5
+              },
+              "defaultTypeTokenRange": {
+                "startIndex": 0,
+                "endIndex": 0
+              }
+            }
+          ],
+          "typeTokenRange": {
+            "startIndex": 6,
+            "endIndex": 7
+          }
+        }
+      ]
+    }
+  ]
+}
