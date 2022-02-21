@@ -97,39 +97,17 @@ TODO
 
 `@scale-codec/definition-runtime` provides special Tracking API and one of its possible implementations - Logger. With it, you can enable logging of decode process and/or decode failures. Its usage may look like this:
 
-```ts
-import {
-    Logger,
-    createStructBuilder,
-} from '@scale-codec/definition-runtime'
+<<< @/../logger-demo/main.ts
 
-// some complex builder
-const StructBuilder = createStructBuilder('Struct' /* ...args */)
+Output in CLI:
 
-// creating logger and mounting it as a current tracker
-const logger = new Logger({
-    logDecodeSuccesses: true,
-})
-logger.mount()
+![CLI output](/img/logger-output-cli.png)
 
-// Decode some bytes
-const decodedAndUnwrapped = StructBuilder.fromBytes(
-    new Uint8Array([
-        /* ...bytes */
-    ]),
-).unwrap()
+Output in Browser DevTools:
 
-// Unmount logger if you don't need it more
-logger.unmount()
-```
+![DevTools output](/img/logger-output-devtools.png)
 
-Example of its output in Node.js console:
-
-![Example of logger output in node](/img/logger-node-err.png)
-
-And in browser dev tools:
-
-![Example of logger output in Devtools](/img/logger-devtools-err.png)
+### Custom Trackers
 
 You can use Tracking API to implement any logic you need. Example of usage:
 
@@ -137,26 +115,36 @@ You can use Tracking API to implement any logic you need. Example of usage:
 import { setCurrentTracker } from '@scale-codec/definition-runtime'
 
 setCurrentTracker({
-    decode(loc, input, decodeFn) {
-        console.log('Decode step: %o\nInput: %o', loc, input)
-        return decodeFn(input)
+    decode(loc, walker, decode) {
+        try {
+            console.log(
+                'Decode location: %s. Walker idx: %s',
+                loc,
+                walker.idx,
+            )
+            return decode(walker)
+        } catch (err) {
+            debugger
+        } finally {
+            console.log('Walker idx then: %s', walker.idx)
+        }
     },
 })
 ```
 
-#### Possible questions
+### Possible questions
 
 -   Is there any runtime overhead if I don't use tracking?
 
-Yes, there is some, but it is reduced as possible.
+    Yes, there is some, but it is reduced as possible.
 
 -   Is `Logger` tree-shakable?
 
-Yes, it is.
+    Yes, it is.
 
-## Compiler's Playground
+-   Why encoding is not tracked?
 
-Todo?
+    There was no any reason to do so yet. It is possible to implement.
 
 ## Also
 

@@ -5,21 +5,22 @@
     "scripts": {
         "dev": "vitepress dev",
         "build": "vitepress build",
-        "serve": "vitepress serve"
+        "serve": "vitepress serve",
+        "logger-demo:vite": "vite dev logger-demo",
+        "logger-demo:node": "esno logger-demo/main"
     },
     "dependencies": {
-        "@scale-codec/core": "workspace:^1.0.0",
-        "@scale-codec/util": "workspace:^1.0.0",
         "@vueuse/core": "^7.6.1",
-        "object-inspect": "^1.12.0",
         "vue": "^3.2.30"
     },
     "devDependencies": {
         "@scale-codec/definition-compiler": "workspace:^1.0.0",
         "@scale-codec/definition-runtime": "workspace:^1.0.0",
         "@types/object-inspect": "^1.8.1",
+        "esno": "^0.14.1",
         "sass": "^1.49.8",
         "shiki": "^0.10.1",
+        "vite": "^2.8.4",
         "vite-plugin-windicss": "^1.7.0",
         "vitepress": "^0.22.0",
         "windicss": "^3.4.3"

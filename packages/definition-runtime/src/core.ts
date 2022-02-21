@@ -7,9 +7,9 @@ import { trackDecode } from './tracking'
 export interface Codec<Encoded, Decoded = Encoded> {
     encodeRaw: Encode<Encoded>
     decodeRaw: Decode<Decoded>
-    fromBuffer: (this: this, src: ArrayBufferView) => Decoded
-    toBuffer: (this: this, value: Encoded) => Uint8Array
-    name: (this: this) => string
+    fromBuffer: (src: ArrayBufferView) => Decoded
+    toBuffer: (value: Encoded) => Uint8Array
+    name: () => string
 }
 
 export type CodecAny = Codec<any, any>
@@ -31,15 +31,15 @@ export class CodecImpl<E, D = E> implements Codec<E, D> {
         this._name = name
     }
 
-    public fromBuffer(this: this, src: ArrayBufferView): D {
+    public fromBuffer(src: ArrayBufferView): D {
         return WalkerImpl.decode(src, this.decodeRaw)
     }
 
-    public toBuffer(this: this, value: E): Uint8Array {
+    public toBuffer(value: E): Uint8Array {
         return WalkerImpl.encode(value, this.encodeRaw)
     }
 
-    public name(this: this): string {
+    public name(): string {
         return this._name
     }
 }
