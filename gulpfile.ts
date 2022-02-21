@@ -20,7 +20,7 @@ async function clean() {
             'dist-tsc',
             'packages/*/dist',
             'packages/*/dist-tsc',
-            'packages/docs/root/api',
+            'packages/docs/src/api',
             'api-extractor/temp',
             'e2e-spa/runtime-rollup',
         ].map((x) => path.resolve(ROOT, x)),
@@ -79,7 +79,7 @@ function extractApis() {
  * Should be fired after {@link extractApis}
  */
 async function documentApis() {
-    await $`pnpx api-documenter markdown -i api-extractor/temp -o packages/docs/root/api`
+    await $`pnpx api-documenter markdown -i api-extractor/temp -o packages/docs/src/api`
 }
 
 function testUnit() {

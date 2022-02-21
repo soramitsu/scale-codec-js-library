@@ -39,10 +39,7 @@ export const ENUM_EMPTY_VALUE = Symbol('empty')
  * `Def` generic type is a **definition of enum variants**. It should be defined like this:
  *
  * ```ts
- * type MyDef = {
- *     EmptyVariant: null // or undefined or anything else but not { value: T }
- *     VarWithBool: Valuable<boolean>
- * }
+ * type MyDef = 'EmptyVariant' | ['VarWithBool', boolean]
  *
  * type MyEnum = Enum<MyDef>
  * ```
@@ -50,11 +47,9 @@ export const ENUM_EMPTY_VALUE = Symbol('empty')
  * Then you could create enums with that definition type-safely:
  *
  * ```ts
- * const val1: MyEnum = Enum.empty('EmptyVariant')
- * const val2: MyEnum = Enum.valuable('VarWithBool', true)
+ * const val1: MyEnum = Enum.variant('EmptyVariant')
+ * const val2: MyEnum = Enum.variant('VarWithBool', true)
  * ```
- *
- * Also look for {@link Valuable} helper
  */
 export class Enum<Def extends EnumGenericDef> {
     public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
@@ -110,7 +105,7 @@ export class Enum<Def extends EnumGenericDef> {
      * @example
      *
      * ```ts
-     * const file: Result<string, Error> = Enum.valuable('Err', new Error('Oops!'))
+     * const file: Result<string, Error> = Enum.variant('Err', new Error('Oops!'))
      *
      * const fileContents = file.match({
      *     Ok: (txt) => txt,
@@ -138,7 +133,7 @@ export class Enum<Def extends EnumGenericDef> {
  * @example
  *
  * ```ts
- * const maybeString: Option<string> = Enum.empty('None')
+ * const maybeString: Option<string> = Enum.variant('None')
  * ```
  */
 export type Option<T> = Enum<'None' | ['Some', T]>
@@ -149,7 +144,7 @@ export type Option<T> = Enum<'None' | ['Some', T]>
  * @example
  *
  * ```ts
- * const file: Result<string, Error> = Enum.valuable('Ok', 'file contents')
+ * const file: Result<string, Error> = Enum.variant('Ok', 'file contents')
  * ```
  */
 export type Result<Ok, Err> = Enum<['Ok', Ok] | ['Err', Err]>

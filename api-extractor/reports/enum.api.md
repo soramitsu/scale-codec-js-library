@@ -4,8 +4,6 @@
 
 ```ts
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@scale-codec/enum" does not have an export "Valuable"
-//
 // @public
 export class Enum<Def extends EnumGenericDef> {
     as<T extends TagsValuable<Def>>(tag: T): TagValue<EnumGenericDef, T>;
