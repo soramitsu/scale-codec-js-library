@@ -176,6 +176,7 @@ importers:
       '@scale-codec/definition-runtime': workspace:^1.0.0
       '@types/object-inspect': ^1.8.1
       '@vueuse/core': ^7.6.1
+      chart.js: ^3.7.1
       esno: ^0.14.1
       sass: ^1.49.8
       shiki: ^0.10.1
@@ -186,6 +187,7 @@ importers:
       windicss: ^3.4.3
     dependencies:
       '@vueuse/core': 7.6.1_vue@3.2.30
+      chart.js: 3.7.1
       vue: 3.2.30
     devDependencies:
       '@scale-codec/definition-compiler': link:../definition-compiler
@@ -1926,7 +1928,7 @@ packages:
       vite: ^2.5.10
       vue: ^3.2.25
     dependencies:
-      vite: 2.8.4
+      vite: 2.8.4_sass@1.49.8
       vue: 3.2.30
 
   /@vue/compiler-core/3.2.30:
@@ -2785,6 +2787,10 @@ packages:
   /chardet/0.7.0:
     resolution: {integrity: sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==}
     dev: true
+
+  /chart.js/3.7.1:
+    resolution: {integrity: sha512-8knRegQLFnPQAheZV8MjxIXc5gQEfDFD897BJgv/klO/vtIyFFmgMXrNfgrXpbTr/XbTturxRgxIXx/Y+ASJBA==}
+    dev: false
 
   /check-more-types/2.24.0:
     resolution: {integrity: sha1-FCD/sQ/URNz8ebQ4kbv//TKoRgA=}

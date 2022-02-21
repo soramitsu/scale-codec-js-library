@@ -55,30 +55,50 @@ function apiSidebar(): SidebarLink[] {
     ]
 }
 
-const nav = [
-    {
-        text: 'Guide',
-        link: '/guide/introduction',
-        activeMatch: '^/guide/',
-    },
-    {
-        text: 'API',
-        link: '/api/',
-    },
-    {
-        text: 'Misc',
-        items: [
-            {
-                text: 'Benchmarks',
-                link: '/misc/benchmarks',
-            },
-            {
-                text: 'Contribution',
-                link: '/misc/contribution',
-            },
-        ],
-    },
-]
+function miscSidebar(): SidebarLink[] {
+    return [
+        {
+            text: 'Miscellaneous',
+            children: [
+                {
+                    text: 'Benchmarks',
+                    link: '/misc/benchmarks',
+                },
+                {
+                    text: 'Maintanence',
+                    link: '/misc/contribution',
+                },
+            ],
+        },
+    ]
+}
+
+function nav() {
+    return [
+        {
+            text: 'Guide',
+            link: '/guide/introduction',
+            activeMatch: '^/guide/',
+        },
+        {
+            text: 'API',
+            link: '/api/',
+        },
+        {
+            text: 'Misc',
+            items: [
+                {
+                    text: 'Benchmarks',
+                    link: '/misc/benchmarks',
+                },
+                {
+                    text: 'Contribution',
+                    link: '/misc/contribution',
+                },
+            ],
+        },
+    ]
+}
 
 export default async () =>
     defineConfigWithTheme({
@@ -86,6 +106,7 @@ export default async () =>
         base: process.env.PUBLIC_PATH || '/',
         title: 'SCALE Codec JavaScript',
         description: 'JavaScript Implementation of the SCALE Codec',
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
         markdown: {
             attrs: {
                 // `@microsoft/api-documenter` uses curly braces and markdown breaks because of it
@@ -101,16 +122,22 @@ export default async () =>
             editLinkText: 'Edit this page',
             lastUpdated: 'Last Updated',
 
-            nav,
+            nav: nav(),
             sidebar: {
                 '/guide/': guideSidebar(),
                 '/api/': apiSidebar(),
+                '/misc/': miscSidebar(),
             },
         },
         vite: {
             plugins: [WindiCSS({ config: path.resolve(__dirname, '../windi.config.ts') })],
             build: {
                 target: 'es2020',
+            },
+            server: {
+                fs: {
+                    allow: [path.resolve(__dirname, '../../benchmark/results')],
+                },
             },
         },
     })

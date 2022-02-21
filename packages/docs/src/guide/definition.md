@@ -93,8 +93,6 @@ import { Str } from '@scale-codec/definition-runtime'
 
 ## Debugging
 
-TODO
-
 `@scale-codec/definition-runtime` provides special Tracking API and one of its possible implementations - Logger. With it, you can enable logging of decode process and/or decode failures. Its usage may look like this:
 
 <<< @/../logger-demo/main.ts
