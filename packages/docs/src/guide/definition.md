@@ -22,6 +22,12 @@ npm i @scale-codec/definition-runtime
 
 The main usa case for SCALE is to use type schema from Rust in another language, in our case in JavaScript. Compiler receives such schema and generates TypeScript code that is compatible with Runtime package.
 
+The package is vailable on NPM:
+
+```bash
+npm i --save-dev @scale-codec/definition-compiler
+```
+
 ### Example: schema & compiled output
 
 **Rust types definition:**

@@ -7,8 +7,7 @@ import consola from 'consola'
 import chalk from 'chalk'
 import * as samples from '../packages/definition-compiler/tests/__samples__'
 import { renderNamespaceDefinition } from '../packages/definition-compiler/src/lib'
-
-const OUTPUT_DIR = path.resolve(__dirname, '../packages/definition-compiler/tests/samples')
+import { COMPILER_SAMPLES_OUTPUT_DIR as OUTPUT_DIR } from '../meta'
 
 async function clean() {
     const cleanPath = path.join(OUTPUT_DIR, '*')

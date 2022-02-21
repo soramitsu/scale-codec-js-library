@@ -179,6 +179,8 @@ importers:
       '@types/object-inspect': ^1.8.1
       '@vueuse/core': ^7.6.1
       object-inspect: ^1.12.0
+      sass: ^1.49.8
+      shiki: ^0.10.1
       vite-plugin-windicss: ^1.7.0
       vitepress: ^0.22.0
       vue: ^3.2.30
@@ -193,8 +195,10 @@ importers:
       '@scale-codec/definition-compiler': link:../definition-compiler
       '@scale-codec/definition-runtime': link:../definition-runtime
       '@types/object-inspect': 1.8.1
+      sass: 1.49.8
+      shiki: 0.10.1
       vite-plugin-windicss: 1.7.0
-      vitepress: 0.22.0
+      vitepress: 0.22.0_sass@1.49.8
       windicss: 3.4.3
 
   packages/enum:
@@ -1924,7 +1928,7 @@ packages:
       vite: ^2.5.10
       vue: ^3.2.25
     dependencies:
-      vite: 2.8.1
+      vite: 2.8.1_sass@1.49.8
       vue: 3.2.30
 
   /@vue/compiler-core/3.2.30:
@@ -4794,7 +4798,6 @@ packages:
 
   /immutable/4.0.0:
     resolution: {integrity: sha512-zIE9hX70qew5qTUjSS7wi1iwj/l7+m54KWU247nhM3v806UdGj1yDndXj+IOYxxtW9zyLI+xqFNZjTuDaLUqFw==}
-    dev: false
 
   /import-fresh/3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
@@ -5853,6 +5856,10 @@ packages:
     hasBin: true
     dependencies:
       minimist: 1.2.5
+
+  /jsonc-parser/3.0.0:
+    resolution: {integrity: sha512-fQzRfAbIBnR0IQvftw9FJveWiHp72Fg20giDrHz6TdfB12UH/uue0D3hm57UB5KgAVuniLMCaS8P1IMj9NR7cA==}
+    dev: true
 
   /jsonfile/4.0.0:
     resolution: {integrity: sha1-h3Gq4HmbZAdrdmQPygWPnBDjPss=}
@@ -7272,6 +7279,16 @@ packages:
       minimist: 1.2.5
       walker: 1.0.8
 
+  /sass/1.49.8:
+    resolution: {integrity: sha512-NoGOjvDDOU9og9oAxhRnap71QaTjjlzrvLnKecUJ3GxhaQBrV6e7gPuSPF28u1OcVAArVojPAe4ZhOXwwC4tGw==}
+    engines: {node: '>=12.0.0'}
+    hasBin: true
+    dependencies:
+      chokidar: 3.5.3
+      immutable: 4.0.0
+      source-map-js: 1.0.2
+    dev: true
+
   /saxes/5.0.1:
     resolution: {integrity: sha512-5LBh1Tls8c9xgGjw3QrMwETmTMVk0oFgvrFSvWx62llR2hcEInrKNZ2GZCCuuy2lvWrdl5jhbpeqc5hRYKFOcw==}
     engines: {node: '>=10'}
@@ -7335,6 +7352,14 @@ packages:
 
   /shell-quote/1.7.3:
     resolution: {integrity: sha512-Vpfqwm4EnqGdlsBFNmHhxhElJYrdfcxPThu+ryKS5J8L/fhAwLazFZtq+S+TWZ9ANj2piSQLGj6NQg+lKPmxrw==}
+    dev: true
+
+  /shiki/0.10.1:
+    resolution: {integrity: sha512-VsY7QJVzU51j5o1+DguUd+6vmCmZ5v/6gYu4vyYAhzjuNQU6P/vmSy4uQaOhvje031qQMiW0d2BwgMH52vqMng==}
+    dependencies:
+      jsonc-parser: 3.0.0
+      vscode-oniguruma: 1.6.1
+      vscode-textmate: 5.2.0
     dev: true
 
   /side-channel/1.0.4:
@@ -8256,8 +8281,34 @@ packages:
       rollup: 2.67.2
     optionalDependencies:
       fsevents: 2.3.2
+    dev: false
 
-  /vitepress/0.22.0:
+  /vite/2.8.1_sass@1.49.8:
+    resolution: {integrity: sha512-Typ8qjUnW0p53gBsJpisrKcZlEbUPZATja9BG6Z09QZjg9YrnEn/htkr/VH4WhnH7eNUQeSD+wKI1lHzQRWskw==}
+    engines: {node: '>=12.2.0'}
+    hasBin: true
+    peerDependencies:
+      less: '*'
+      sass: '*'
+      stylus: '*'
+    peerDependenciesMeta:
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+    dependencies:
+      esbuild: 0.14.21
+      postcss: 8.4.6
+      resolve: 1.22.0
+      rollup: 2.67.2
+      sass: 1.49.8
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /vitepress/0.22.0_sass@1.49.8:
     resolution: {integrity: sha512-0q8OFO6mO1q6o33m7RkHl03Ef3qt2eRM3ZlkO19Q6QNC1m0fAPnV32DHLeq432IaHOfjmFo3bIJb9rptqv7VLQ==}
     engines: {node: '>=12.0.0'}
     hasBin: true
@@ -8266,7 +8317,7 @@ packages:
       '@docsearch/js': 3.0.0-alpha.50
       '@vitejs/plugin-vue': 2.2.0_vite@2.8.1+vue@3.2.30
       prismjs: 1.26.0
-      vite: 2.8.1
+      vite: 2.8.1_sass@1.49.8
       vue: 3.2.30
     transitivePeerDependencies:
       - '@algolia/client-search'
@@ -8276,6 +8327,14 @@ packages:
       - react-dom
       - sass
       - stylus
+    dev: true
+
+  /vscode-oniguruma/1.6.1:
+    resolution: {integrity: sha512-vc4WhSIaVpgJ0jJIejjYxPvURJavX6QG41vu0mGhqywMkQqulezEqEQ3cO3gc8GvcOpX6ycmKGqRoROEMBNXTQ==}
+    dev: true
+
+  /vscode-textmate/5.2.0:
+    resolution: {integrity: sha512-Uw5ooOQxRASHgu6C7GVvUxisKXfSgW4oFlO+aa+PAkgmH89O3CXxEEzNRNtHSqtXFTl0nAC1uYj0GMSH27uwtQ==}
     dev: true
 
   /vue-demi/0.12.1_vue@3.2.30:

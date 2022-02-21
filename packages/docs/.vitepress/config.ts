@@ -1,6 +1,7 @@
-import { defineConfigWithTheme } from 'vitepress'
+import { defineConfigWithTheme, MarkdownOptions } from 'vitepress'
 import WindiCSS from 'vite-plugin-windicss'
 import path from 'path'
+import customHighlight from './highlight'
 
 const LIBS = ['core', 'enum', 'util', 'definition-compiler', 'definition-runtime']
 
@@ -33,20 +34,6 @@ function guideSidebar(): SidebarLink[] {
                 },
             ],
         },
-        // {
-        //     text: 'API',
-        //     link: '/api/',
-        //     children: apiSidebar(),
-        // },
-        // {
-        //     text: 'Misc',
-        //     children: [
-        //         {
-        //             text: 'Contribution',
-        //             link: '/contribution',
-        //         },
-        //     ],
-        // },
     ]
 }
 
@@ -68,59 +55,62 @@ function apiSidebar(): SidebarLink[] {
     ]
 }
 
-export default defineConfigWithTheme({
-    srcDir: 'src',
-    base: process.env.PUBLIC_PATH || '/',
-    title: 'SCALE Codec JavaScript',
-    description: 'JavaScript Implementation of the SCALE Codec',
-    markdown: {
-        attrs: {
-            // `@microsoft/api-documenter` uses curly braces and markdown breaks because of it
-            leftDelimiter: '.{',
-            rightDelimiter: '}.',
-        },
+const nav = [
+    {
+        text: 'Guide',
+        link: '/guide/introduction',
+        activeMatch: '^/guide/',
     },
-    themeConfig: {
-        repo: 'soramitsu/scale-codec-js-library',
-        docsDir: 'packages/docs/src',
-        editLinks: true,
-        editLinkText: 'Edit this page',
-        lastUpdated: 'Last Updated',
-
-        nav: [
+    {
+        text: 'API',
+        link: '/api/',
+    },
+    {
+        text: 'Misc',
+        items: [
             {
-                text: 'Guide',
-                link: '/guide/introduction',
-                activeMatch: '^/guide/',
+                text: 'Benchmarks',
+                link: '/misc/benchmarks',
             },
             {
-                text: 'API',
-                link: '/api/',
-                // activeMatch: '^/api/',
-            },
-            {
-                text: 'Misc',
-                items: [
-                    {
-                        text: 'Benchmarks',
-                        link: '/misc/benchmarks',
-                    },
-                    {
-                        text: 'Contribution',
-                        link: '/misc/contribution',
-                    },
-                ],
+                text: 'Contribution',
+                link: '/misc/contribution',
             },
         ],
-        sidebar: {
-            '/guide/': guideSidebar(),
-            '/api/': apiSidebar(),
-        },
     },
-    vite: {
-        plugins: [WindiCSS({ config: path.resolve(__dirname, '../windi.config.ts') })],
-        build: {
-            target: 'es2020',
+]
+
+export default async () =>
+    defineConfigWithTheme({
+        srcDir: 'src',
+        base: process.env.PUBLIC_PATH || '/',
+        title: 'SCALE Codec JavaScript',
+        description: 'JavaScript Implementation of the SCALE Codec',
+        markdown: {
+            attrs: {
+                // `@microsoft/api-documenter` uses curly braces and markdown breaks because of it
+                leftDelimiter: '.{',
+                rightDelimiter: '}.',
+            },
+            highlight: await customHighlight(),
+        } as MarkdownOptions & { highlight: any },
+        themeConfig: {
+            repo: 'soramitsu/scale-codec-js-library',
+            docsDir: 'packages/docs/src',
+            editLinks: true,
+            editLinkText: 'Edit this page',
+            lastUpdated: 'Last Updated',
+
+            nav,
+            sidebar: {
+                '/guide/': guideSidebar(),
+                '/api/': apiSidebar(),
+            },
         },
-    },
-})
+        vite: {
+            plugins: [WindiCSS({ config: path.resolve(__dirname, '../windi.config.ts') })],
+            build: {
+                target: 'es2020',
+            },
+        },
+    })

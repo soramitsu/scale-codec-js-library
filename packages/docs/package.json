@@ -18,6 +18,8 @@
         "@scale-codec/definition-compiler": "workspace:^1.0.0",
         "@scale-codec/definition-runtime": "workspace:^1.0.0",
         "@types/object-inspect": "^1.8.1",
+        "sass": "^1.49.8",
+        "shiki": "^0.10.1",
         "vite-plugin-windicss": "^1.7.0",
         "vitepress": "^0.22.0",
         "windicss": "^3.4.3"

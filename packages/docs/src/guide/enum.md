@@ -1,14 +1,5 @@
 # Enums
 
-::: tip
-`@scale-codec/core` package re-exports everything from `@scale-codec/enum`:
-
-```ts
-import { Enum, Option /* and other */ } from '@scale-codec/core'
-```
-
-:::
-
 ## The Why
 
 SCALE spec comes from Rust programming language that has [Enums](https://doc.rust-lang.org/book/ch06-01-defining-an-enum.html), so any implementation of this codec has to work with this concept. Obviously, JavaScript doesn't have any native syntax/semantics to handle it. TypeScript's enums don't suit here neither because of the difference between them and Rust's ones (primarily because they don't have values associated with variants like in Rust). Thus, this library exists and tries to solve the problem of enums definition, creation and handling.
@@ -50,51 +41,50 @@ let msg: Message = Enum.variant('Quit')
 msg = Enum.variant('Log', 'hello')
 ```
 
-Enum variants are defined with `string | [tag: string, value: any]` signature, and enum instances could be created via `.variant()` factory.
+Variants are defined with `string | [tag: string, value: any]` signature
+
+Enum value could be **created** with `.variant()` factory:
+
+```ts
+let msg: Message = Enum.variant('Quit')
+msg = Enum.variant('Log', 'hello')
+```
 
 ## Working with created enums
 
--   `.is(tag)` - to check for enum's actual tag
--   `.as(tag)` - to extract enum value if its tag is appropriate, throw otherwise
+-   `.is(tag)` - to check for enum's actual tag, and `.as(tag)` - to extract enum value if its tag is appropriate, throw otherwise
+
+    ```ts
+    const result: Result<number, string> = /* --snip-- */ ___
+
+    if (result.is('Ok')) {
+        const num = result.as('Ok')
+        console.log('Task result num:', num)
+    } else {
+        const errorMessage = result.as('Err')
+        console.error('Task resulted with an error:', errorMessage)
+    }
+    ```
+
 -   `.match(matchMap)` - to use a poor analogy of pattern matching
 
-```ts
-import { Result, Option, Enum } from '@scale-codec/enum'
+    ```ts
+    const result: Result<number, string> = /* --snip-- */ ___
 
-function makeSomeTask(): Result<number, string> {
-    const randomNum = Math.random()
+    const mapped: Option<number> = result.match({
+        Ok(num) {
+            return Enum.variant('Some', num)
+        },
+        Err() {
+            return Enum.variant('None')
+        },
+    })
+    ```
 
-    if (randomNum > 0.5) {
-        return Enum.variant('Ok', randomNum)
-    }
+    ::: tip
+    You can use `match` method just for side-effects without returning anything from it.
+    :::
 
-    return Enum.variant('Err', 'Oops, bad luck :<')
-}
+## Conclusion
 
-const result = makeSomeTask()
-
-if (result.is('Ok')) {
-    const num = result.as('Ok')
-    console.log('Task result num:', num)
-} else {
-    const errorMessage = result.as('Err')
-    console.error('Task resulted with an error:', errorMessage)
-}
-
-const mapped: Option<number> = result.match({
-    Ok(num) {
-        return Enum.valuable('Some', num)
-    },
-    Err() {
-        return Enum.empty('None')
-    },
-})
-```
-
-::: tip
-You can use `match` method just for side-effects without returning anything from it.
-:::
-
----
-
-Well, now its time to overview the core library, which enum codecs are implemented with this package.
+Enums are just a part of SCALE. Let's dive into the core library.

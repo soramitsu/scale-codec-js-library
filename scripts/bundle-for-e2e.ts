@@ -1,8 +1,8 @@
 import { build, Format } from 'esbuild'
 import { path } from 'zx'
+import { E2E_RUNTIME_ROLLUP_OUTPUT_DIR as OUT_DIR, resolvePackageEntrypoint } from '../meta'
 
-const OUT_DIR = path.resolve(__dirname, '../e2e-spa/runtime-rollup')
-const IN_FILE = path.resolve(__dirname, '../packages/definition-runtime/src/lib.ts')
+const IN_FILE = resolvePackageEntrypoint('definition-runtime')
 
 async function buildPreset({ format }: { format: Format }) {
     await build({
