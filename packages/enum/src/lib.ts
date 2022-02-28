@@ -92,7 +92,7 @@ export class Enum<Def extends EnumGenericDef> {
      * @remarks
      * Use it in pair {@link Enum.is} to avoid runtime errors.
      */
-    public as<T extends TagsValuable<Def>>(tag: T): TagValue<EnumGenericDef, T> {
+    public as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T> {
         if (this.is(tag)) {
             if (this.isEmpty) {
                 throw new Error(`Enum cast failed - enum "${tag}" is empty`)
