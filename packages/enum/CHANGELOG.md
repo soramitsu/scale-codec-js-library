@@ -1,5 +1,11 @@
 # @scale-codec/enum
 
+## 1.0.1
+
+### Patch Changes
+
+-   eeeb481: **fix**: fix typing for `.as()` return value
+
 ## 1.0.0
 
 ### Major Changes

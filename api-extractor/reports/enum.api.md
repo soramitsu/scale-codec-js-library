@@ -8,7 +8,7 @@
 //
 // @public
 export class Enum<Def extends EnumGenericDef> {
-    as<T extends TagsValuable<Def>>(tag: T): TagValue<EnumGenericDef, T>;
+    as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T>;
     is(tag: Tags<Def>): boolean;
     // (undocumented)
     get isEmpty(): boolean;
