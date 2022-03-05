@@ -147,10 +147,12 @@ importers:
   packages/definition-compiler:
     specifiers:
       '@scale-codec/definition-runtime': workspace:^1.0.0
+      '@scale-codec/enum': workspace:^1.0.1
       '@scale-codec/util': workspace:^1.0.0
       immutable: ^4.0.0
       sort-es: ^1.4.6
     dependencies:
+      '@scale-codec/enum': link:../enum
       '@scale-codec/util': link:../util
       immutable: 4.0.0
       sort-es: 1.4.6
@@ -163,12 +165,14 @@ importers:
       '@scale-codec/definition-compiler': workspace:^1.0.0
       '@scale-codec/util': workspace:^1.0.0
       fmt-subs: ^1.0.2
+      type-fest: ^2.11.2
     dependencies:
       '@scale-codec/core': link:../core
       '@scale-codec/util': link:../util
       fmt-subs: 1.0.2
     devDependencies:
       '@scale-codec/definition-compiler': link:../definition-compiler
+      type-fest: 2.11.2
 
   packages/docs:
     specifiers:

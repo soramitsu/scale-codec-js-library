@@ -14,7 +14,7 @@ export type Tags<Def extends EnumGenericDef> = TagsEmpty<Def> | TagsValuable<Def
 
 export type TagValue<Def extends EnumGenericDef, T extends TagsValuable<Def>> = Def extends [T, infer V] ? V : never
 
-export type EnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never
+export type EnumDef<E> = E extends Enum<infer Def> ? Def : never
 
 export type EnumMatchMap<Def extends EnumGenericDef, R = any> = {
     [T in TagsEmpty<Def>]: () => R
@@ -69,7 +69,7 @@ export class Enum<Def extends EnumGenericDef> {
      */
     public readonly value: typeof ENUM_EMPTY_VALUE | unknown
 
-    private constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
+    public constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
         this.tag = tag
         this.value = value
     }
