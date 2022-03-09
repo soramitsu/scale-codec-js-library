@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import {
     createArrayEncoder,
     createArrayDecoder,
@@ -5,7 +6,6 @@ import {
     Option,
     Result,
     EnumGenericDef,
-    EnumDef,
     createUint8ArrayEncoder,
     createUint8ArrayDecoder,
     createVecEncoder,
@@ -26,9 +26,12 @@ import {
     StructEncoders,
     createStructEncoder,
     createStructDecoder,
+    EnumDefToFactoryArgs,
 } from '@scale-codec/core'
 import { trackRefineDecodeLoc } from './tracking'
 import { Codec, CodecImpl, CodecValueEncodable, CodecValueDecoded, CodecAny } from './core'
+import { U32 } from '../dist-tsc/codecs'
+import { Opaque } from 'type-fest'
 
 export function createArrayCodec<T extends CodecAny>(name: string, itemCodec: T, len: number): VecCodec<T> {
     return new CodecImpl(
@@ -42,7 +45,7 @@ export function createArrayU8Codec(name: string, len: number): Codec<Uint8Array>
     return new CodecImpl(name, createUint8ArrayEncoder(len), createUint8ArrayDecoder(len))
 }
 
-export type VecCodec<T extends CodecAny> = Codec<CodecValueEncodable<T>[], CodecValueDecoded<T>[]>
+export interface VecCodec<T extends CodecAny> extends Codec<CodecValueEncodable<T>[], CodecValueDecoded<T>[]> {}
 
 export function createVecCodec<T extends CodecAny>(name: string, itemCodec: T): VecCodec<T> {
     return new CodecImpl(name, createVecEncoder(itemCodec.encodeRaw), createVecDecoder(itemCodec.decodeRaw))
@@ -64,7 +67,7 @@ type TupleDecoded<T extends CodecAny[]> = T extends [infer Head, ...infer Tail]
         : never
     : []
 
-export type TupleCodec<T extends CodecAny[]> = Codec<TupleEncodable<T>, TupleDecoded<T>>
+export interface TupleCodec<T extends CodecAny[]> extends Codec<TupleEncodable<T>, TupleDecoded<T>> {}
 
 export function createTupleCodec<T extends CodecAny[]>(name: string, codecs: T): TupleCodec<T> {
     const encoders: Encode<any>[] = []
@@ -78,10 +81,11 @@ export function createTupleCodec<T extends CodecAny[]>(name: string, codecs: T):
     return new CodecImpl(name, createTupleEncoder(encoders as any), createTupleDecoder(decoders as any))
 }
 
-export type MapCodec<K extends CodecAny, V extends CodecAny> = Codec<
-    Map<CodecValueEncodable<K>, CodecValueEncodable<V>>,
-    Map<CodecValueDecoded<K>, CodecValueDecoded<V>>
->
+export interface MapCodec<K extends CodecAny, V extends CodecAny>
+    extends Codec<
+        Map<CodecValueEncodable<K>, CodecValueEncodable<V>>,
+        Map<CodecValueDecoded<K>, CodecValueDecoded<V>>
+    > {}
 
 export function createMapCodec<K extends CodecAny, V extends CodecAny>(
     name: string,
@@ -98,7 +102,7 @@ export function createMapCodec<K extends CodecAny, V extends CodecAny>(
     )
 }
 
-export type SetCodec<T extends CodecAny> = Codec<Set<CodecValueEncodable<T>>, Set<CodecValueDecoded<T>>>
+export interface SetCodec<T extends CodecAny> extends Codec<Set<CodecValueEncodable<T>>, Set<CodecValueDecoded<T>>> {}
 
 export function createSetCodec<T extends CodecAny>(name: string, itemCodec: T): SetCodec<T> {
     return new CodecImpl(name, createSetEncoder(itemCodec.encodeRaw), createSetDecoder(itemCodec.decodeRaw))
@@ -118,10 +122,11 @@ type EnumCodecGenericDefAsSchema<T extends EnumCodecGenericDef> = (T extends str
     ? [discriminant: number, tag: T, codec: V]
     : never)[]
 
-export type EnumCodec<Def extends EnumCodecGenericDef> = Codec<
-    Enum<Def extends [infer Tag, Codec<infer E, any>] ? [Tag, E] : Def>,
-    Enum<Def extends [infer Tag, Codec<any, infer D>] ? [Tag, D] : Def>
->
+export interface EnumCodec<Def extends EnumCodecGenericDef>
+    extends Codec<
+        Enum<Def extends [infer Tag, Codec<infer E, any>] ? [Tag, E] : Def>,
+        Enum<Def extends [infer Tag, Codec<any, infer D>] ? [Tag, D] : Def>
+    > {}
 
 export function createEnumCodec<Def extends EnumCodecGenericDef>(
     name: string,
@@ -140,10 +145,8 @@ export function createEnumCodec<Def extends EnumCodecGenericDef>(
     return new CodecImpl(name, createEnumEncoder(encoders as any), createEnumDecoder(decoders))
 }
 
-export type OptionCodec<Some extends CodecAny> = Codec<
-    Option<CodecValueEncodable<Some>>,
-    Option<CodecValueDecoded<Some>>
->
+export interface OptionCodec<Some extends CodecAny>
+    extends Codec<Option<CodecValueEncodable<Some>>, Option<CodecValueDecoded<Some>>> {}
 
 export function createOptionCodec<Some extends CodecAny>(name: string, someCodec: Some): OptionCodec<Some> {
     return createEnumCodec<'None' | ['Some', Some]>(name, [
@@ -152,10 +155,11 @@ export function createOptionCodec<Some extends CodecAny>(name: string, someCodec
     ]) as OptionCodec<Some>
 }
 
-export type ResultCodec<Ok extends CodecAny, Err extends CodecAny> = Codec<
-    Result<CodecValueEncodable<Ok>, CodecValueEncodable<Err>>,
-    Result<CodecValueDecoded<Ok>, CodecValueDecoded<Err>>
->
+export interface ResultCodec<Ok extends CodecAny, Err extends CodecAny>
+    extends Codec<
+        Result<CodecValueEncodable<Ok>, CodecValueEncodable<Err>>,
+        Result<CodecValueDecoded<Ok>, CodecValueDecoded<Err>>
+    > {}
 
 export function createResultCodec<Ok extends CodecAny, Err extends CodecAny>(
     name: string,
@@ -168,14 +172,15 @@ export function createResultCodec<Ok extends CodecAny, Err extends CodecAny>(
     ]) as ResultCodec<Ok, Err>
 }
 
-export type StructCodec<T> = Codec<
-    {
-        [K in keyof T]: T[K] extends Codec<infer E, any> ? E : never
-    },
-    {
-        [K in keyof T]: T[K] extends Codec<any, infer D> ? D : never
-    }
->
+export interface StructCodec<T>
+    extends Codec<
+        {
+            [K in keyof T]: T[K] extends Codec<infer E, any> ? E : never
+        },
+        {
+            [K in keyof T]: T[K] extends Codec<any, infer D> ? D : never
+        }
+    > {}
 
 type StructCodecAsSchema<T> = {
     [K in keyof T]: [K, T[K] extends Codec<infer E, infer D> ? Codec<E, D> : never]
@@ -198,3 +203,94 @@ export function createStructCodec<T extends { [K in string]: CodecAny }>(
 
     return new CodecImpl(name, createStructEncoder(encoders), createStructDecoder(decoders))
 }
+
+// {
+//     //     abstract class ScaleArray<T> extends Array<T> {}
+
+//     //     interface Branded<T extends string> {
+//     //         // __brand
+//     //     }
+
+//     //     interface ArrayCodec<Name extends string, T> extends Codec<Opaque<ScaleArray<T>, Name>> {
+//     //         new (): Opaque<ScaleArray<T>, Name>
+//     //     }
+
+//     // eslint-disable-next-line no-inner-declarations
+//     function createArrayCodec<T, Name extends string>(
+//         name: Name,
+//         itemCodec: Codec<T>,
+//         len: number,
+//     ): ArrayCodec<Name, T> {
+//         // const ite
+
+//         const codec = new CodecImpl(
+//             name,
+//             createArrayEncoder(itemCodec.encodeRaw, len),
+//             createArrayDecoder(itemCodec.decodeRaw, len),
+//         )
+
+//         return null
+//     }
+
+//     // class ArrU32 extends createArrayCodec('ArrU32', U32, 5) {}
+
+//     interface ScaleArray<T, Token> extends Opaque<T[], Token> {}
+
+//     interface ScaleArrayConstructor<T, Token> extends Codec<ScaleArray<T, Token>> {
+//         new (): ScaleArray<T, Token>
+//     }
+
+//     interface ScaleEnum<Def extends EnumGenericDef, Token> extends Opaque<Enum<Def>, Token> {}
+
+//     interface ScaleEnumConstructor<Def extends EnumGenericDef, Token> extends Codec<ScaleEnum<Def, Token>> {
+//         variant: (...args: EnumDefToFactoryArgs<Def>) => ScaleEnum<Def, Token>
+//     }
+
+//     // const u32_syn: Codec<number> = null
+
+//     const Arr_u32_10_syn: ScaleArrayConstructor<number, 'test'> = null
+
+//     const Opt_Arr_syn: ScaleEnumConstructor<'None' | ['Some', Arr_u32_10], 'Opt'> = null
+
+//     const val1 = Arr_u32_10_syn.fromBuffer(new Uint8Array())
+//     Arr_u32_10_syn.toBuffer(val1)
+//     Arr_u32_10_syn.toBuffer([]) // should be err
+
+//     const opt1 = Opt_Arr_syn.fromBuffer(new Uint8Array())
+//     Opt_Arr_syn.variant('Some', []) // err
+//     Opt_Arr_syn.variant('Some', [false]) // err
+//     Opt_Arr_syn.variant('Some', val1) // err
+
+//     class Arr_u32_10 extends ScaleArray<number, 'arr_u32_10_not_Syn'> {
+//         public static fromBuffer(buff: ArrayBufferView): Arr_u32_10 {}
+
+//         public static toBuffer(value: Arr_u32_10): Uint8Array {}
+
+//         // public constructor() {
+//         //     super()
+//         //     // new Array()
+//         // }
+
+//         // private readonly []
+
+//         // public co
+//     }
+
+//     const val = Arr_u32_10.fromBuffer(new Uint8Array())
+
+//     Arr_u32_10.toBuffer([])
+// }
+
+// // eslint-disable-next-line no-lone-blocks
+// {
+//     /*
+//         1. Each generated type should be opaque and could be created only explicitly - to provide the best
+//             TypeScript security.
+//         2. Each type could have it's own static helpers for construction, e.g. `.variant()` for enums
+//         3. It is not important to have runtime types difference, i.e. via prototypes & instanceof
+//         4. Each type should be declared as a single composed class, i.e. it should be possible
+//            to reference it as a type like a class, and in the meanwhile it should be an actual runtime value, i.e. class,
+//            that have static codec fields and it's instance is a final value
+//      */
+//     // interface
+// }

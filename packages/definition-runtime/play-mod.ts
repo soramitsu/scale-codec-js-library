@@ -1,30 +1,55 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Opaque } from 'type-fest'
-import { Codec, Enum, EnumDefToFactoryArgs, Option } from './src/lib'
-
-interface DefineOpaque<Actual, Result> {
-    define: (actual: Actual) => Result
-}
-
-type DefineOpaqueFn<Actual, Result> = (actual: Actual) => Result
-
-type EnumFactory<E, Res> = E extends Enum<infer Def> ? (...args: EnumDefToFactoryArgs<Def>) => Res : never
+import { Codec, Enum, EnumDefToFactoryArgs, Option, U8, Str, dynCodec } from './src/lib'
+import {
+    ArrayCodecAndFactory,
+    createArrayCodec,
+    createEnumCodec,
+    createMapCodec,
+    createOptionCodec,
+    createSetCodec,
+    createStructCodec,
+    createTupleCodec,
+    EnumCodecAndFactory,
+    MapCodecAndFactory,
+    SetCodecAndFactory,
+    StructCodecAndFactory,
+} from './src/create'
 
 // Array
 
 type CustomArr__actual = Array<number>
 
-declare const CustomArr: Codec<CustomArr> & DefineOpaqueFn<CustomArr__actual, CustomArr>
-
 interface CustomArr extends Opaque<CustomArr__actual, CustomArr> {}
+
+const CustomArr: ArrayCodecAndFactory<CustomArr__actual, CustomArr> = createArrayCodec<CustomArr__actual, CustomArr>(
+    'CustomArr',
+    U8,
+    32,
+)
 
 // Option enum
 
 type CustomOpt__actual = Option<CustomArr>
 
-declare const CustomOpt: Codec<CustomOpt> & EnumFactory<CustomOpt__actual, CustomOpt>
-
 interface CustomOpt extends Opaque<CustomOpt__actual, CustomOpt> {}
+
+const CustomOpt: EnumCodecAndFactory<CustomOpt> = createOptionCodec<CustomOpt__actual, CustomOpt>(
+    'CustomOpt',
+    CustomArr,
+)
+
+// Some enum
+
+type Message__actual = Enum<'Cogito' | 'Ergo' | 'Sum'>
+
+interface Message extends Opaque<Message__actual, Message> {}
+
+const Message: EnumCodecAndFactory<Message> = createEnumCodec<Message__actual, Message>('Message', [
+    [0, 'Cogito'],
+    [1, 'Ergo'],
+    [2, 'Sum'],
+])
 
 // Struct
 
@@ -33,9 +58,15 @@ type CustomStruct__actual = {
     opt: CustomOpt
 }
 
-declare const CustomStruct: Codec<CustomStruct> & DefineOpaqueFn<CustomStruct__actual, CustomStruct>
-
 interface CustomStruct extends Opaque<CustomStruct__actual, CustomStruct> {}
+
+const CustomStruct: StructCodecAndFactory<CustomStruct__actual, CustomStruct> = createStructCodec<
+    CustomStruct__actual,
+    CustomStruct
+>('CustomStruct', [
+    ['arr', CustomArr],
+    ['opt', CustomOpt],
+])
 
 // Tuple
 
@@ -43,23 +74,33 @@ type CustomTuple__actual = [number, CustomArr, CustomStruct]
 
 interface CustomTuple extends Opaque<CustomTuple__actual, CustomTuple> {}
 
-declare const CustomTuple: Codec<CustomTuple> & DefineOpaqueFn<CustomTuple__actual, CustomTuple>
+const CustomTuple = createTupleCodec<CustomTuple__actual, CustomTuple>('CustomTuple', [U8, CustomArr, CustomStruct])
 
 // Alias
 
 interface ArrAlias extends CustomArr {}
 
-declare const ArrAlias: Codec<ArrAlias> & ((value: ArrAlias) => ArrAlias)
+const ArrAlias: Codec<ArrAlias> = dynCodec(() => ArrAlias)
 
 // Cyclic
 
-interface CycleEnum extends Opaque<Option<CycleStruct>, CycleEnum> {}
+type CycleEnum__actual = Option<CycleStruct>
 
-declare const CycleEnum: Codec<CycleEnum> & EnumFactory<Option<CycleStruct>, CycleEnum>
+interface CycleEnum extends Opaque<CycleEnum__actual, CycleEnum> {}
 
-interface CycleStruct extends Opaque<{ enum: CycleEnum }, CycleStruct> {}
+const CycleEnum: EnumCodecAndFactory<CycleEnum> = createOptionCodec<CycleEnum__actual, CycleEnum>(
+    'CycleEnum',
+    dynCodec(() => CycleStruct),
+)
 
-declare const CycleStruct: Codec<CycleStruct> & DefineOpaqueFn<{ enum: CycleEnum }, CycleStruct>
+type CycleStruct__actual = { enum: CycleEnum }
+
+interface CycleStruct extends Opaque<CycleStruct__actual, CycleStruct> {}
+
+const CycleStruct: StructCodecAndFactory<CycleStruct__actual, CycleStruct> = createStructCodec<
+    CycleStruct__actual,
+    CycleStruct
+>('CycleStruct', [['enum', CycleEnum]])
 
 // Map
 
@@ -67,8 +108,23 @@ type CustomMap__actual = Map<CycleEnum, string>
 
 interface CustomMap extends Opaque<CustomMap__actual, CustomMap> {}
 
-declare const CustomMap: Codec<CustomMap> & DefineOpaqueFn<CustomMap__actual, CustomMap>
+const CustomMap: MapCodecAndFactory<CustomMap__actual, CustomMap> = createMapCodec<CustomMap__actual, CustomMap>(
+    'CustomMap',
+    CycleEnum,
+    Str,
+)
+
+// Set
+
+type CustomSet__actual = Set<ArrAlias>
+
+interface CustomSet extends Opaque<CustomSet__actual, CustomSet> {}
+
+const CustomSet: SetCodecAndFactory<CustomSet__actual, CustomSet> = createSetCodec<CustomSet__actual, CustomSet>(
+    'CustomSet',
+    ArrAlias,
+)
 
 // export
 
-export { CustomArr, CustomOpt, CustomStruct, CustomTuple, ArrAlias, CycleEnum, CycleStruct, CustomMap }
+export { Message, CustomArr, CustomOpt, CustomStruct, CustomTuple, ArrAlias, CycleEnum, CycleStruct, CustomMap }

@@ -11,7 +11,9 @@ import {
 import { Enum } from './src/lib'
 
 const arr1 = CustomArr([1, 2, 3])
-CustomArr.toBuffer(arr1)
+function test1() {
+    CustomArr.toBuffer(arr1)
+}
 
 // @ts-expect-error
 CustomArr.toBuffer([])
