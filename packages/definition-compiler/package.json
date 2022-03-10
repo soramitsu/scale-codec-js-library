@@ -43,5 +43,9 @@
     },
     "devDependencies": {
         "@scale-codec/definition-runtime": "workspace:^1.0.0"
-    }
+    },
+    "engines": {
+        "node": ">16.8"
+    },
+    "engineStrict": true
 }

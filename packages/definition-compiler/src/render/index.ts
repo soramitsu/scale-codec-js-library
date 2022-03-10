@@ -1,16 +1,30 @@
 import { NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef, DefEnumVariant, DefStructField } from '../types'
-import { Set as SetImmutable } from 'immutable'
-import { renderImports, createStateScope } from './util'
-import { byValue, byString } from 'sort-es'
+import { Set as ImSet, Seq } from 'immutable'
+import { Enum } from '@scale-codec/enum'
+import { renderImports, createDIScope } from './util'
 import { DefaultAvailableBuilders } from '../const'
+import { createNs, Expression, LibName, ModelPart, RefScope } from './namespace'
 
-function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; def: TypeDef }[] {
-    const items = Object.entries(val)
-    items.sort(byValue((x) => x[0], byString()))
-    return items.map(([tyName, def]) => ({ tyName, def }))
-}
+const ns = createNs<RuntimeLibExports, RuntimeLibTypeExports>()
 
-type CodecTypes = `${'Map' | 'Set' | 'Vec' | 'Struct' | 'Enum' | 'Option' | 'Result' | 'Tuple'}Codec`
+// function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; def: TypeDef }[] {
+//     const items = Object.entries(val)
+//     items.sort(byValue((x) => x[0], byString()))
+//     return items.map(([tyName, def]) => ({ tyName, def }))
+// }
+
+type RuntimeLibExports = 'dynCodec' | KnownCreators | 'Enum'
+
+type RuntimeLibTypeExports =
+    | 'Codec'
+    | 'Result'
+    | 'Option'
+    | 'Opaque'
+    | 'ArrayCodecAndFactory'
+    | 'StructCodecAndFactory'
+    | 'EnumCodecAndFactory'
+    | 'SetCodecAndFactory'
+    | 'MapCodecAndFactory'
 
 type KnownCreators = `create${
     | 'Map'
@@ -27,304 +41,393 @@ type KnownCreators = `create${
 // =========
 
 interface RenderParams {
-    runtimeLib: string
-    runtimeTypes: Set<String>
     rollupSingleTuples: boolean
+    typeForVoidAlias: string
 }
 
-const { within: withinRenderParams, use: useRenderParams } = createStateScope<RenderParams>()
+const { provide: provideRenderParams, inject: injectRenderParams } = createDIScope<RenderParams>()
 
 // =========
 
-interface ImportsCollector {
-    collectRef: (ref: string) => void
-    collectImport: (name: string) => void
-    getRuntimeLibImports: () => Set<string>
-}
+// interface Collector {
+//     tryCollectRuntimeRef: (ref: string) => void
+//     collectImport: (name: RuntimeLibExports) => void
+//     collectTypeImport: (name: RuntimeLibTypeExports) => void
+//     collectLocalHelper: (name: LocalHelpers) => void
+//     getRuntimeLibImports: () => Set<string>
+//     getRuntimeLibTypeImports: () => Set<string>
+//     getHelpers: () => Set<LocalHelpers>
+// }
 
-function createImportsCollector(): ImportsCollector {
-    const { runtimeTypes } = useRenderParams()
+// function createCollector(): Collector {
+//     const { runtimeTypes } = useRenderParams()
 
-    let imports = SetImmutable<string>()
+//     let imports = SetImmutable<string>()
+//     let typeImports = SetImmutable<string>()
+//     let helpers = SetImmutable<LocalHelpers>()
 
-    return {
-        getRuntimeLibImports: () => new Set(imports),
-        collectRef: (ref) => {
-            if (runtimeTypes.has(ref)) {
-                imports = imports.add(ref)
-            }
-        },
-        collectImport: (name) => {
-            imports = imports.add(name)
-        },
-    }
-}
+//     return {
+//         getRuntimeLibImports: () => new Set(imports),
+//         getRuntimeLibTypeImports: () => new Set(typeImports),
+//         getHelpers: () => new Set(helpers),
+//         tryCollectRuntimeRef: (ref) => {
+//             if (runtimeTypes.has(ref)) {
+//                 imports = imports.add(refCodec(ref))
+//                 typeImports = typeImports.add(ref)
+//             }
+//         },
+//         collectImport: (name) => {
+//             imports = imports.add(name)
+//         },
+//         collectTypeImport: (name) => {
+//             typeImports = typeImports.add(name)
+//         },
+//         collectLocalHelper: (name) => {
+//             helpers = helpers.add(name)
+//         },
+//     }
+// }
 
-const { within: withinCollector, use: useCollector } = createStateScope<ImportsCollector>()
-
-// =========
-
-const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<string>()
-
-// =========
-
-function touchRef(ref: string): string {
-    useCollector().collectRef(ref)
-    return ref
-}
-
-function touchImport(name: string): string {
-    useCollector().collectImport(name)
-    return name
-}
-
-function touchCodecTy(ty: CodecTypes): string {
-    useCollector().collectImport(ty)
-    return ty
-}
-
-function touchRefAsDyn(ref: string): string {
-    return `${touchImport('dynCodec')}(() => ${touchRef(ref)})`
-}
-
-function touchRefAsType(ref: string): string {
-    return `typeof ${touchRef(ref)}`
-}
-
-function linesJoin(lines: string[], joiner = '\n\n'): string {
-    return lines.join(joiner)
-}
-
-function renderCreator(props: {
-    ty: { codec: CodecTypes; args: string } | null
-    createFn: KnownCreators
-    createFnTy?: string
-    createArgs: string
-}): string {
-    const ty = useCurrentTyName()
-
-    return (
-        `export const ${ty}` +
-        (props.ty ? `: ${touchCodecTy(props.ty.codec)}<${props.ty.args}>` : '') +
-        ` = ${touchImport(props.createFn)}` +
-        (props.createFnTy ? `<${props.createFnTy}>` : '') +
-        `('${ty}', ${props.createArgs})`
-    )
-}
+// const { within: withinCollector, use: useCollector } = createStateScope<Collector>()
 
 // =========
 
-function renderAlias(to: string): string {
-    // special builder
-    return (
-        `export const ${useCurrentTyName()}: ${touchImport('DynCodec')}<${touchRefAsType(to)}>` +
-        ` = ${touchRefAsDyn(to)}`
-    )
+// const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<string>()
+
+// =========
+
+// function touchRef(ref: string): string {
+//     useCollector().tryCollectRuntimeRef(ref)
+//     return ref
+// }
+
+// function touchImport(name: RuntimeLibExports): string {
+//     useCollector().collectImport(name)
+//     return name
+// }
+
+// function touchTypeImport(name: RuntimeLibTypeExports): string {
+//     useCollector().collectTypeImport(name)
+//     return name
+// }
+
+// function touchCodecTy(ty: CodecTypes): string {
+//     useCollector().collectImport(ty)
+//     return ty
+// }
+
+// function touchRefAsDyn(ref: string): string {
+//     return `${touchImport('dynCodec')}(() => ${refCodec(touchRef(ref))})`
+// }
+
+// function touchHelper(name: LocalHelpers): LocalHelpers {
+//     useCollector().collectLocalHelper(name)
+//     return name
+// }
+
+// function refCodec(ref: string): string {
+//     return `${ref}Codec`
+// }
+
+// function touchRefAsType(ref: string): string {
+//     // return
+
+//     const params = useRenderParams()
+//     if (params.runtimeTypes.has(ref)) return `typeof ${touchRef(ref)}`
+//     return refType(ref)
+// }
+
+// function linesJoin(lines: string[], joiner = '\n\n'): string {
+//     return lines.join(joiner)
+// }
+
+// =========
+
+const SELF_ACTUAL = ns.part`${ns.self}__actual`
+
+const INTERFACE_SELF_ACTUAL_OPAQUE = ns.part`interface ${ns.self} extends ${ns.libTypeHelper(
+    'Opaque',
+)}<${SELF_ACTUAL}, ${ns.self}> {}`
+
+const GENERICS_SELF_ACTUAL_AND_SELF = ns.part`<${SELF_ACTUAL}, ${ns.self}>`
+
+const INDENTATION = ' '.repeat(4)
+
+function modelAlias(to: string): ModelPart {
+    const typePart = ns.part`interface ${ns.self} extends ${ns.refType(to)} {}`
+    const varPart = ns.part`const ${ns.self}: ${ns.libTypeHelper('Codec')}<${ns.self}> = ${ns.libRuntimeHelper(
+        'dynCodec',
+    )}(() => ${ns.refVar(to, true)})`
+
+    return ns.join([typePart, varPart], '\n\n')
 }
 
-function renderVoidAlias(): string {
-    const { runtimeLib } = useRenderParams()
-
-    return renderImport({ nameInModule: 'Void', module: runtimeLib })
+function modelVoidAlias(): ModelPart {
+    return renderImport({ nameInModule: injectRenderParams().typeForVoidAlias, module: ns.lib })
 }
 
-function renderVec(item: string): string {
-    return renderCreator({
-        ty: {
-            codec: 'VecCodec',
-            args: touchRefAsType(item),
-        },
-        createFn: 'createVecCodec',
-        createArgs: touchRefAsDyn(item),
-    })
+function modelVec(item: string): ModelPart {
+    const actualDef = ns.part`type ${SELF_ACTUAL} = ${ns.refType(item)}[]`
+    const typePart = ns.part`interface ${ns.self} extends ${ns.libTypeHelper('Opaque')}<${SELF_ACTUAL}, ${ns.self}> {}`
+    const codec = ns.part`const ${ns.self}: ${ns.libTypeHelper(
+        'ArrayCodecAndFactory',
+    )}${GENERICS_SELF_ACTUAL_AND_SELF} = ${ns.libRuntimeHelper('createVecCodec')}${GENERICS_SELF_ACTUAL_AND_SELF}('${
+        ns.self
+    }', ${ns.refVar(item)})`
+
+    return ns.part`${actualDef}\n\n${typePart}\n\n${codec}`
 }
 
-function renderStruct(fields: DefStructField[]): string {
+function modelStruct(fields: DefStructField[]): ModelPart {
     if (!fields.length) {
-        return renderVoidAlias()
+        return modelVoidAlias()
     }
 
-    const valueTypeFields: string[] = fields.map((x) => `${x.name}: ${touchRefAsType(x.ref)}`)
+    const seq = Seq(fields)
 
-    const schemaItems = fields.map((x) => `['${x.name}', ${touchRefAsDyn(x.ref)}]`)
-    const schema = `[${schemaItems.join(', ')}]`
+    const typeActualFields = seq.map((x) => ns.part`${x.name}: ${ns.refType(x.ref)}`)
+    const codecSchema = seq.map((x) => ns.part`['${x.name}', ${ns.refVar(x.ref)}]`)
 
-    return renderCreator({
-        ty: {
-            codec: 'StructCodec',
-            args: `{\n    ${valueTypeFields.join(',\n    ')}\n}`,
-        },
-        createFn: 'createStructCodec',
-        createArgs: `${schema}`,
-    })
-}
-
-function renderTuple(refs: string[]): string {
-    if (!refs.length) {
-        return renderVoidAlias()
-    }
-
-    const { rollupSingleTuples } = useRenderParams()
-    if (rollupSingleTuples && refs.length === 1) return renderAlias(refs[0])
-
-    return renderCreator({
-        ty: {
-            codec: 'TupleCodec',
-            args: `[${refs.map(touchRefAsType).join(', ')}]`,
-        },
-        createFn: 'createTupleCodec',
-        createArgs: `[${refs.map(touchRefAsDyn).join(', ')}]`,
-    })
-}
-
-function renderEnum(variants: DefEnumVariant[]): string {
-    const schemaItems: string[] = variants.map((x) => {
-        const items = [x.discriminant, `'${x.name}'`]
-        x.ref && items.push(touchRefAsDyn(x.ref))
-        return `[${items.join(', ')}]`
-    })
-
-    const enumDefinition =
-        `\n    ` +
-        variants
-            .map((x) => {
-                return x.ref ? `| ['${x.name}', ${touchRefAsType(x.ref)}]` : `| '${x.name}'`
-            })
-            .join('\n    ') +
-        `\n`
-
-    return renderCreator({
-        ty: {
-            codec: 'EnumCodec',
-            args: enumDefinition,
-        },
-        createFn: 'createEnumCodec',
-        createFnTy: 'any',
-        createArgs: `[${schemaItems.join(', ')}]`,
-    })
-}
-
-function renderSet(item: string): string {
-    return renderCreator({
-        ty: {
-            codec: 'SetCodec',
-            args: touchRefAsType(item),
-        },
-        createFn: 'createSetCodec',
-        createArgs: touchRefAsDyn(item),
-    })
-}
-
-function renderMap(key: string, value: string): string {
-    return renderCreator({
-        ty: {
-            codec: 'MapCodec',
-            args: [key, value].map(touchRefAsType).join(', '),
-        },
-        createFn: 'createMapCodec',
-        createArgs: [key, value].map(touchRefAsDyn).join(', '),
-    })
-}
-
-function renderArray(item: string, len: number): string {
-    return renderCreator({
-        ty: {
-            codec: 'VecCodec',
-            args: touchRefAsType(item),
-        },
-        createFn: `createArrayCodec`,
-        createArgs: `${touchRefAsDyn(item)}, ${len}`,
-    })
-}
-
-function renderBytesArray(len: number): string {
-    return renderCreator({
-        ty: null,
-        createFn: 'createArrayU8Codec',
-        createArgs: `${len}`,
-    })
-}
-
-function renderOption(some: string): string {
-    return renderCreator({
-        ty: {
-            codec: 'OptionCodec',
-            args: touchRefAsType(some),
-        },
-        createFn: 'createOptionCodec',
-        createArgs: touchRefAsDyn(some),
-    })
-}
-
-function renderResult(ok: string, err: string): string {
-    return renderCreator({
-        ty: {
-            codec: 'ResultCodec',
-            args: [ok, err].map(touchRefAsType).join(', '),
-        },
-        createFn: 'createResultCodec',
-        createArgs: [ok, err].map(touchRefAsDyn).join(', '),
-    })
-}
-
-function renderImport({ nameInModule, module: moduleName }: { nameInModule?: string | null; module: string }): string {
-    const ty = useCurrentTyName()
-
-    return linesJoin(
-        [renderImports([nameInModule ? { source: nameInModule, as: ty } : ty], moduleName), `export { ${ty} }`],
-        '\n',
+    return ns.join(
+        [
+            ns.part`interface ${SELF_ACTUAL} {\n${INDENTATION}${ns.join(typeActualFields, `\n${INDENTATION}`)}\n}`,
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('StructCodecAndFactory')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part` = ${ns.libRuntimeHelper('createStructCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', [\n${INDENTATION}`,
+                ns.join([...codecSchema], `,\n${INDENTATION}`),
+                '\n])',
+            ),
+        ],
+        '\n\n',
     )
 }
 
-function renderParticularDef(tyName: string, def: TypeDef): string {
-    const particularRendered: string = withinCurrentTyName(tyName, () => {
-        switch (def.t) {
-            case 'alias':
-                return renderAlias(def.ref)
-            case 'vec':
-                return renderVec(def.item)
-            case 'struct':
-                return renderStruct(def.fields)
-            case 'tuple':
-                return renderTuple(def.items)
-            case 'enum':
-                return renderEnum(def.variants)
-            case 'set':
-                return renderSet(def.entry)
-            case 'map':
-                return renderMap(def.key, def.value)
-            case 'array':
-                return renderArray(def.item, def.len)
-            case 'bytes-array':
-                return renderBytesArray(def.len)
-            case 'option':
-                return renderOption(def.some)
-            case 'result':
-                return renderResult(def.ok, def.err)
-            case 'import':
-                return renderImport(def)
-            default: {
-                const uncovered: never = def
-                throw new Error(`Undefined type definition: ${uncovered}`)
+function renderTuple(refs: string[]): ModelPart {
+    if (!refs.length) {
+        return modelVoidAlias()
+    }
+
+    const { rollupSingleTuples } = injectRenderParams()
+    if (rollupSingleTuples && refs.length === 1) return modelAlias(refs[0])
+
+    return ns.join(
+        [
+            ns.part`type ${SELF_ACTUAL} = [${ns.join(
+                refs.map((x) => ns.refType(x)),
+                ', ',
+            )}]`,
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('ArrayCodecAndFactory')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part` = ${ns.libRuntimeHelper('createTupleCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', [`,
+                ns.join(
+                    refs.map((x) => ns.refVar(x)),
+                    ', ',
+                ),
+                '])',
+            ),
+        ],
+        '\n\n',
+    )
+}
+
+function modelEnum(variants: DefEnumVariant[]): ModelPart {
+    const parsed = Seq(variants).map<{ type: ModelPart; schema: ModelPart }>((variant) => {
+        if (variant.ref) {
+            return {
+                type: ns.part`['${variant.name}', ${ns.refType(variant.ref)}]`,
+                schema: ns.part`[${String(variant.discriminant)}, '${variant.name}', ${ns.refVar(variant.ref)}]`,
             }
+        }
+        return {
+            type: ns.part`'${variant.name}'`,
+            schema: ns.part`[${String(variant.discriminant)}, '${variant.name}']`,
         }
     })
 
-    return particularRendered
+    return ns.join(
+        [
+            ns.concat(
+                ns.part`type ${SELF_ACTUAL} = ${ns.libRuntimeHelper('Enum')}<\n`,
+                INDENTATION,
+                ...parsed.map<Expression>((x) => ns.part`| ${x.type}`).interpose('\n' + INDENTATION),
+                '\n>',
+            ),
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('EnumCodecAndFactory')}`,
+                ns.part`<${ns.self}>`,
+                ns.part` = ${ns.libRuntimeHelper('createEnumCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', [\n${INDENTATION}`,
+                ns.join(
+                    parsed.map((x) => x.schema),
+                    ',\n' + INDENTATION,
+                ),
+                `\n])`,
+            ),
+        ],
+        '\n\n',
+    )
 }
 
-function renderPreamble(): string {
-    const { runtimeLib } = useRenderParams()
-    const { getRuntimeLibImports: getCoreImports } = useCollector()
+function modelSet(item: string): ModelPart {
+    return ns.join(
+        [
+            ns.part`type ${SELF_ACTUAL} = Set<${ns.refType(item)}>`,
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('SetCodecAndFactory')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part` = ${ns.libRuntimeHelper('createSetCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', ${ns.refVar(item)})`,
+            ),
+        ],
+        '\n\n',
+    )
+}
 
-    const lines = []
+function modelMap(key: string, value: string): ModelPart {
+    return ns.join(
+        [
+            ns.part`type ${SELF_ACTUAL} = Map<${ns.refType(key)}, ${ns.refType(value)}>`,
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('MapCodecAndFactory')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part` = ${ns.libRuntimeHelper('createMapCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', ${ns.refVar(key)}, ${ns.refVar(value)})`,
+            ),
+        ],
+        '\n\n',
+    )
+}
 
-    const imports = getCoreImports()
-    if (imports.size) {
-        lines.push(renderImports(imports, runtimeLib))
+function modelArray(item: string, len: number): ModelPart {
+    return ns.join(
+        [
+            ns.part`interface ${SELF_ACTUAL} extends Array<${ns.refType(item)}> {}`,
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('ArrayCodecAndFactory')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part` = ${ns.libRuntimeHelper('createArrayCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', ${ns.refVar(item)}, ${String(len)})`,
+            ),
+        ],
+        '\n\n',
+    )
+}
+
+function modelBytesArray(len: number): ModelPart {
+    return ns.join(
+        [
+            ns.part`type ${ns.self} = Uint8Array`,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('Codec')}<${ns.self}>`,
+                ns.part` = ${ns.libRuntimeHelper('createArrayU8Codec')}('${ns.self}', ${String(len)})`,
+            ),
+        ],
+        '\n\n',
+    )
+}
+
+function modelOption(some: string): ModelPart {
+    return ns.join(
+        [
+            ns.part`interface ${SELF_ACTUAL} extends ${ns.libTypeHelper('Option')}<${ns.refType(some)}> {}`,
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('EnumCodecAndFactory')}`,
+                ns.part`<${ns.self}>`,
+                ns.part` = ${ns.libRuntimeHelper('createOptionCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', ${ns.refVar(some)})`,
+            ),
+        ],
+        '\n\n',
+    )
+}
+
+function modelResult(ok: string, err: string): ModelPart {
+    return ns.join(
+        [
+            ns.concat(
+                ns.part`interface ${SELF_ACTUAL} extends ${ns.libTypeHelper('Result')}`,
+                ns.part`<${ns.refType(ok)}, ${ns.refType(err)}> {}`,
+            ),
+            INTERFACE_SELF_ACTUAL_OPAQUE,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('EnumCodecAndFactory')}`,
+                ns.part`<${ns.self}>`,
+                ns.part` = ${ns.libRuntimeHelper('createResultCodec')}`,
+                GENERICS_SELF_ACTUAL_AND_SELF,
+                ns.part`('${ns.self}', ${ns.refVar(ok)}, ${ns.refVar(err)})`,
+            ),
+        ],
+        '\n\n',
+    )
+}
+
+function renderImport({
+    nameInModule,
+    module: moduleName,
+}: {
+    nameInModule?: string | null
+    module: string | typeof LibName
+}): ModelPart {
+    return ns.part`${ns.import({
+        importWhat: nameInModule || ns.self,
+        importAs: nameInModule ? ns.self : undefined,
+        moduleName: moduleName,
+    })}`
+}
+
+function modelizeTypeDef(def: TypeDef): ModelPart {
+    switch (def.t) {
+        case 'alias':
+            return modelAlias(def.ref)
+        case 'vec':
+            return modelVec(def.item)
+        case 'struct':
+            return modelStruct(def.fields)
+        case 'tuple':
+            return renderTuple(def.items)
+        case 'enum':
+            return modelEnum(def.variants)
+        case 'set':
+            return modelSet(def.entry)
+        case 'map':
+            return modelMap(def.key, def.value)
+        case 'array':
+            return modelArray(def.item, def.len)
+        case 'bytes-array':
+            return modelBytesArray(def.len)
+        case 'option':
+            return modelOption(def.some)
+        case 'result':
+            return modelResult(def.ok, def.err)
+        case 'import':
+            return renderImport(def)
+        default: {
+            const uncovered: never = def
+            throw new Error(`Undefined type definition: ${uncovered}`)
+        }
     }
+}
 
-    return linesJoin(lines)
+function renderParticularDef(tyName: string, def: TypeDef): RefScope {
+    return ns.refScope(tyName)`${modelizeTypeDef(def)}`
 }
 
 /**
@@ -334,21 +437,21 @@ export function renderNamespaceDefinition(
     definition: NamespaceDefinition,
     params?: RenderNamespaceDefinitionParams,
 ): string {
-    return withinRenderParams(
+    return provideRenderParams(
         {
-            runtimeLib: params?.runtimeLib ?? '@scale-codec/definition-runtime',
-            runtimeTypes: params?.runtimeTypes ?? DefaultAvailableBuilders,
             rollupSingleTuples: params?.rollupSingleTuplesIntoAliases ?? false,
+            typeForVoidAlias: params?.typeForVoidAliasing ?? 'Void',
         },
-        () =>
-            withinCollector(createImportsCollector(), () => {
-                const renderedTypes = namespaceDefinitionToList(definition)
-                    .map(({ tyName, def }) => renderParticularDef(tyName, def))
-                    .join('\n\n')
-
-                const preamble = renderPreamble()
-
-                return [preamble, renderedTypes].join('\n\n').trim() + '\n'
-            }),
+        () => {
+            return ns({
+                refs: Seq(Object.entries(definition))
+                    .sortBy(([name]) => name)
+                    .map(([name, def]) => renderParticularDef(name, def))
+                    .toArray(),
+            }).render({
+                libModule: params?.runtimeLib ?? '@scale-codec/definition-runtime',
+                libTypes: params?.runtimeTypes ?? DefaultAvailableBuilders,
+            })
+        },
     )
 }
