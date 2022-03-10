@@ -1,17 +1,10 @@
 import { NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef, DefEnumVariant, DefStructField } from '../types'
-import { Set as ImSet, Seq } from 'immutable'
-import { Enum } from '@scale-codec/enum'
-import { renderImports, createDIScope } from './util'
+import { Seq } from 'immutable'
+import { createDIScope } from './util'
 import { DefaultAvailableBuilders } from '../const'
 import { createNs, Expression, LibName, ModelPart, RefScope } from './namespace'
 
 const ns = createNs<RuntimeLibExports, RuntimeLibTypeExports>()
-
-// function namespaceDefinitionToList(val: NamespaceDefinition): { tyName: string; def: TypeDef }[] {
-//     const items = Object.entries(val)
-//     items.sort(byValue((x) => x[0], byString()))
-//     return items.map(([tyName, def]) => ({ tyName, def }))
-// }
 
 type RuntimeLibExports = 'dynCodec' | KnownCreators | 'Enum'
 
@@ -46,100 +39,6 @@ interface RenderParams {
 }
 
 const { provide: provideRenderParams, inject: injectRenderParams } = createDIScope<RenderParams>()
-
-// =========
-
-// interface Collector {
-//     tryCollectRuntimeRef: (ref: string) => void
-//     collectImport: (name: RuntimeLibExports) => void
-//     collectTypeImport: (name: RuntimeLibTypeExports) => void
-//     collectLocalHelper: (name: LocalHelpers) => void
-//     getRuntimeLibImports: () => Set<string>
-//     getRuntimeLibTypeImports: () => Set<string>
-//     getHelpers: () => Set<LocalHelpers>
-// }
-
-// function createCollector(): Collector {
-//     const { runtimeTypes } = useRenderParams()
-
-//     let imports = SetImmutable<string>()
-//     let typeImports = SetImmutable<string>()
-//     let helpers = SetImmutable<LocalHelpers>()
-
-//     return {
-//         getRuntimeLibImports: () => new Set(imports),
-//         getRuntimeLibTypeImports: () => new Set(typeImports),
-//         getHelpers: () => new Set(helpers),
-//         tryCollectRuntimeRef: (ref) => {
-//             if (runtimeTypes.has(ref)) {
-//                 imports = imports.add(refCodec(ref))
-//                 typeImports = typeImports.add(ref)
-//             }
-//         },
-//         collectImport: (name) => {
-//             imports = imports.add(name)
-//         },
-//         collectTypeImport: (name) => {
-//             typeImports = typeImports.add(name)
-//         },
-//         collectLocalHelper: (name) => {
-//             helpers = helpers.add(name)
-//         },
-//     }
-// }
-
-// const { within: withinCollector, use: useCollector } = createStateScope<Collector>()
-
-// =========
-
-// const { within: withinCurrentTyName, use: useCurrentTyName } = createStateScope<string>()
-
-// =========
-
-// function touchRef(ref: string): string {
-//     useCollector().tryCollectRuntimeRef(ref)
-//     return ref
-// }
-
-// function touchImport(name: RuntimeLibExports): string {
-//     useCollector().collectImport(name)
-//     return name
-// }
-
-// function touchTypeImport(name: RuntimeLibTypeExports): string {
-//     useCollector().collectTypeImport(name)
-//     return name
-// }
-
-// function touchCodecTy(ty: CodecTypes): string {
-//     useCollector().collectImport(ty)
-//     return ty
-// }
-
-// function touchRefAsDyn(ref: string): string {
-//     return `${touchImport('dynCodec')}(() => ${refCodec(touchRef(ref))})`
-// }
-
-// function touchHelper(name: LocalHelpers): LocalHelpers {
-//     useCollector().collectLocalHelper(name)
-//     return name
-// }
-
-// function refCodec(ref: string): string {
-//     return `${ref}Codec`
-// }
-
-// function touchRefAsType(ref: string): string {
-//     // return
-
-//     const params = useRenderParams()
-//     if (params.runtimeTypes.has(ref)) return `typeof ${touchRef(ref)}`
-//     return refType(ref)
-// }
-
-// function linesJoin(lines: string[], joiner = '\n\n'): string {
-//     return lines.join(joiner)
-// }
 
 // =========
 
