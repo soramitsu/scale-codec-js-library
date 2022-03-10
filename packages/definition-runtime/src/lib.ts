@@ -10,6 +10,8 @@
 export * from '@scale-codec/core'
 
 export * from './core'
-export * from './creators'
+export * from './create'
 export * from './codecs'
 export * from './tracking'
+
+export type { Opaque } from 'type-fest'

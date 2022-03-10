@@ -16,8 +16,6 @@ import {
     createMapEncoder,
     createStructEncoder,
     createVecEncoder,
-    createArrayEncoder,
-    createTupleEncoder,
     Codec,
 } from '@scale-codec/definition-runtime'
 import { Character, MapStrU8, Msg, OptionMsg, SetU8, StrAlias, VecBool } from '../samples/complexNamespace'
@@ -44,36 +42,40 @@ const encodeMsgEnum: Encode<RawMsgEnum> = createEnumEncoder<RawMsgEnum>({ Quit: 
 const encodeOption: Encode<Option<RawMsgEnum>> = createOptionEncoder(encodeMsgEnum)
 
 test.each([
-    defineCase({
+    defineCase<MapStrU8>({
         codec: MapStrU8,
-        value: new Map([['Hey', 56]]),
+        value: MapStrU8(new Map([['Hey', 56]])),
         expectedBytes: WalkerImpl.encode(new Map([['Hey', 56]]), createMapEncoder(encodeStr, encodeU8)),
     }),
     defineCase({
         codec: Character,
-        value: { name: 'Alice' },
+        value: Character({ name: 'Alice' }),
         expectedBytes: WalkerImpl.encode({ name: 'Alice' }, createStructEncoder([['name', encodeStr]])),
     }),
-    defineCase({ codec: SetU8, value: new Set(), expectedBytes: WalkerImpl.encode(new Set(), encodeSetU8) }),
-    defineCase({
+    defineCase<SetU8>({
         codec: SetU8,
-        value: new Set([51, 5]),
+        value: SetU8(new Set()),
+        expectedBytes: WalkerImpl.encode(new Set(), encodeSetU8),
+    }),
+    defineCase<SetU8>({
+        codec: SetU8,
+        value: SetU8(new Set([51, 5])),
         expectedBytes: WalkerImpl.encode(new Set([51, 5]), encodeSetU8),
     }),
     defineCase({
         codec: Msg,
-        value: Enum.variant('Quit'),
+        value: Msg('Quit'),
         expectedBytes: WalkerImpl.encode(Enum.variant('Quit'), encodeMsgEnum),
     }),
-    defineCase({
+    defineCase<VecBool>({
         codec: VecBool,
-        value: [false],
+        value: VecBool([false]),
         expectedBytes: WalkerImpl.encode([false], createVecEncoder(encodeBool)),
     }),
     defineCase({ codec: StrAlias, value: 'wow', expectedBytes: WalkerImpl.encode('wow', encodeStr) }),
     defineCase({
         codec: OptionMsg,
-        value: Enum.variant('None'),
+        value: OptionMsg('None'),
         expectedBytes: WalkerImpl.encode(Enum.variant('None'), encodeOption),
     }),
 ])('Encode & decode %p', (value, codec, expectedBytes) => {

@@ -53,12 +53,16 @@ const GENERICS_SELF_ACTUAL_AND_SELF = ns.part`<${SELF_ACTUAL}, ${ns.self}>`
 const INDENTATION = ' '.repeat(4)
 
 function modelAlias(to: string): ModelPart {
-    const typePart = ns.part`interface ${ns.self} extends ${ns.refType(to)} {}`
-    const varPart = ns.part`const ${ns.self}: ${ns.libTypeHelper('Codec')}<${ns.self}> = ${ns.libRuntimeHelper(
-        'dynCodec',
-    )}(() => ${ns.refVar(to, true)})`
-
-    return ns.join([typePart, varPart], '\n\n')
+    return ns.join(
+        [
+            ns.part`type ${ns.self} = ${ns.refType(to)}`,
+            ns.concat(
+                ns.part`const ${ns.self}: ${ns.libTypeHelper('Codec')}<${ns.self}>`,
+                ns.part` = ${ns.refVar(to)}`,
+            ),
+        ],
+        '\n\n',
+    )
 }
 
 function modelVoidAlias(): ModelPart {

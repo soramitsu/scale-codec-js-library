@@ -334,15 +334,15 @@ it('Renders an alias for some inner type', () => {
             },
         }),
     ).toMatchInlineSnapshot(`
-        "import { Str, dynCodec } from '@scale-codec/definition-runtime'
+        "import { Str } from '@scale-codec/definition-runtime'
 
         import type { Codec } from '@scale-codec/definition-runtime'
 
         // Type: StringAlias
 
-        interface StringAlias extends Str {}
+        type StringAlias = Str
 
-        const StringAlias: Codec<StringAlias> = dynCodec(() => Str)
+        const StringAlias: Codec<StringAlias> = Str
 
         // Exports
 
@@ -363,7 +363,7 @@ it('Renders single tuple as alias in case when the related option is enabled', a
             },
         ),
     ).toMatchInlineSnapshot(`
-        "import { Bool, U128, U8, createTupleCodec, dynCodec } from '@scale-codec/definition-runtime'
+        "import { Bool, U128, U8, createTupleCodec } from '@scale-codec/definition-runtime'
 
         import type { ArrayCodecAndFactory, Codec, Opaque } from '@scale-codec/definition-runtime'
 
@@ -377,9 +377,9 @@ it('Renders single tuple as alias in case when the related option is enabled', a
 
         // Type: SingleTuple
 
-        interface SingleTuple extends U128 {}
+        type SingleTuple = U128
 
-        const SingleTuple: Codec<SingleTuple> = dynCodec(() => U128)
+        const SingleTuple: Codec<SingleTuple> = U128
 
         // Exports
 
@@ -467,15 +467,15 @@ it('Respects custom `runtimeLib` param', () => {
             { runtimeLib: 'custom-runtime-lib' },
         ),
     ).toMatchInlineSnapshot(`
-        "import { Str, dynCodec } from 'custom-runtime-lib'
+        "import { Str } from 'custom-runtime-lib'
 
         import type { Codec } from 'custom-runtime-lib'
 
         // Type: S
 
-        interface S extends Str {}
+        type S = Str
 
-        const S: Codec<S> = dynCodec(() => Str)
+        const S: Codec<S> = Str
 
         // Exports
 
@@ -506,17 +506,21 @@ it('Respects custom set of knowns types set', () => {
 
         import type { Codec } from '@scale-codec/definition-runtime'
 
+        // Dynamic codecs
+
+        const __dyn_Str = dynCodec(() => Str)
+
         // Type: FooAlias
 
-        interface FooAlias extends Foo {}
+        type FooAlias = Foo
 
-        const FooAlias: Codec<FooAlias> = dynCodec(() => Foo)
+        const FooAlias: Codec<FooAlias> = Foo
 
         // Type: StrAlias
 
-        interface StrAlias extends Str {}
+        type StrAlias = Str
 
-        const StrAlias: Codec<StrAlias> = dynCodec(() => Str)
+        const StrAlias: Codec<StrAlias> = __dyn_Str
 
         // Exports
 

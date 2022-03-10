@@ -51,6 +51,8 @@ const Message: EnumCodecAndFactory<Message> = createEnumCodec<Message__actual, M
     [2, 'Sum'],
 ])
 
+type A = 'srtr'
+
 // Struct
 
 type CustomStruct__actual = {

@@ -24,6 +24,9 @@ export interface ModelRenderParams {
 export class NamespaceModel {
     public refs: RefScope[]
 
+    /**
+     * Render dynCodecs only when it is necessary (i.e. to resolve cyclic deps)
+     */
     public render(params: ModelRenderParams): string {
         let dynRefs = ImSet<string>()
         let libRefs = ImSet<string>()
