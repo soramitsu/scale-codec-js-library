@@ -1,31 +1,40 @@
-import { Array_Vec_HashMap_str_Id_8 } from './namespace'
-import { CodecValueDecoded, Enum, Result } from '@scale-codec/definition-runtime'
+import {
+    Array_Vec_HashMap_str_Id_8,
+    CustomEnum,
+    HashMap_str_Id,
+    Id,
+    Option_str,
+    Tuple_u64_bool_str_i32,
+} from './namespace'
+import { Enum, Result } from '@scale-codec/definition-runtime'
 import deepEqual from 'fast-deep-equal'
 
 export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
     try {
-        const data: CodecValueDecoded<typeof Array_Vec_HashMap_str_Id_8> = [
+        const data = [
             [
-                new Map([
-                    [
-                        'some-key',
-                        {
-                            name: 'Alice',
-                            second_name: Enum.variant('None'),
-                            domain: 'wonderland',
-                            enum: Enum.variant('Two', [4412n, false, ['nope', 2]]),
-                        },
-                    ],
-                    [
-                        'another',
-                        {
-                            name: 'Charlie',
-                            second_name: Enum.variant('Some', 'Watson'),
-                            domain: 'netherland',
-                            enum: Enum.variant('One'),
-                        },
-                    ],
-                ]),
+                HashMap_str_Id(
+                    new Map([
+                        [
+                            'some-key',
+                            Id({
+                                name: 'Alice',
+                                second_name: Option_str('None'),
+                                domain: 'wonderland',
+                                enum: CustomEnum('Two', [4412n, false, ['nope', 2]] as Tuple_u64_bool_str_i32),
+                            }),
+                        ],
+                        [
+                            'another',
+                            Id({
+                                name: 'Charlie',
+                                second_name: Option_str('Some', 'Watson'),
+                                domain: 'netherland',
+                                enum: CustomEnum('One'),
+                            }),
+                        ],
+                    ]),
+                ),
             ],
             [],
             [],
@@ -34,7 +43,7 @@ export function encodeAndDecodeReallyComplexData(): Result<null, Error> {
             [],
             [],
             [],
-        ]
+        ] as Array_Vec_HashMap_str_Id_8
 
         const encoded = Array_Vec_HashMap_str_Id_8.toBuffer(data)
         const decoded = Array_Vec_HashMap_str_Id_8.fromBuffer(encoded)

@@ -7,14 +7,23 @@
 import { Decode } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Enum } from '@scale-codec/core';
-import { EnumGenericDef } from '@scale-codec/core';
+import { EnumDefToFactoryArgs } from '@scale-codec/core';
 import { Fmt } from 'fmt-subs';
+import { Opaque } from 'type-fest';
 import { Option as Option_2 } from '@scale-codec/core';
 import { Result } from '@scale-codec/core';
 import { Walker } from '@scale-codec/core';
 
+// Warning: (ae-forgotten-export) The symbol "OpaqueRecursive" needs to be exported by the entry point lib.d.ts
+//
 // @public (undocumented)
-export const Bool: CodecImpl<boolean, boolean>;
+export type ArrayCodecAndFactory<T extends Array<any>, U extends OpaqueRecursive<T>> = Codec<U> & DefineOpaque<T, U>;
+
+// @public (undocumented)
+export type Bool = boolean;
+
+// @public (undocumented)
+export const Bool: Codec<boolean, boolean>;
 
 // @public (undocumented)
 export function buildDecodeTraceStepsFmt(trace: DecodeTrace, walker: Walker): Fmt;
@@ -26,30 +35,13 @@ export interface Codec<Encoded, Decoded = Encoded> {
     // (undocumented)
     encodeRaw: Encode<Encoded>;
     // (undocumented)
-    fromBuffer: (this: this, src: ArrayBufferView) => Decoded;
+    fromBuffer: (src: ArrayBufferView) => Decoded;
     // (undocumented)
-    name: (this: this) => string;
-    // (undocumented)
-    toBuffer: (this: this, value: Encoded) => Uint8Array;
+    toBuffer: (value: Encoded) => Uint8Array;
 }
 
 // @public (undocumented)
 export type CodecAny = Codec<any, any>;
-
-// @public
-export class CodecImpl<E, D = E> implements Codec<E, D> {
-    constructor(name: string, encode: Encode<E>, decode: Decode<D>);
-    // (undocumented)
-    decodeRaw: Decode<D>;
-    // (undocumented)
-    encodeRaw: Encode<E>;
-    // (undocumented)
-    fromBuffer(this: this, src: ArrayBufferView): D;
-    // (undocumented)
-    name(this: this): string;
-    // (undocumented)
-    toBuffer(this: this, value: E): Uint8Array;
-}
 
 // @public
 export interface CodecTracker {
@@ -64,43 +56,40 @@ export type CodecValueDecoded<T extends Codec<any>> = T extends Codec<any, infer
 export type CodecValueEncodable<T extends Codec<any>> = T extends Codec<infer E, any> ? E : never;
 
 // @public (undocumented)
-export const Compact: CodecImpl<number | bigint, bigint>;
+export type Compact = bigint;
 
 // @public (undocumented)
-export function createArrayCodec<T extends CodecAny>(name: string, itemCodec: T, len: number): VecCodec<T>;
+export const Compact: Codec<bigint, bigint>;
+
+// @public (undocumented)
+export function createArrayCodec<T extends Array<any>, U extends OpaqueRecursive<T>>(name: string, itemCodec: Codec<T extends Array<infer I> ? I : never>, len: number): ArrayCodecAndFactory<T, U>;
 
 // @public (undocumented)
 export function createArrayU8Codec(name: string, len: number): Codec<Uint8Array>;
 
-// Warning: (ae-forgotten-export) The symbol "EnumCodecGenericDefAsSchema" needs to be exported by the entry point lib.d.ts
-//
 // @public (undocumented)
-export function createEnumCodec<Def extends EnumCodecGenericDef>(name: string, codecs: EnumCodecGenericDefAsSchema<Def>): EnumCodec<Def>;
+export function createEnumCodec<T extends Enum<any>, U extends Opaque<T, T>>(name: string, schema: EnumDefAsSchema<T>): EnumCodecAndFactory<U>;
 
 // @public (undocumented)
-export function createMapCodec<K extends CodecAny, V extends CodecAny>(name: string, keyCodec: K, valueCodec: V): MapCodec<K, V>;
+export function createMapCodec<T extends Map<any, any>, U extends Opaque<T, T>>(name: string, keyCodec: Codec<T extends Map<infer K, any> ? K : never>, valueCodec: Codec<T extends Map<any, infer V> ? V : never>): MapCodecAndFactory<T, U>;
 
 // @public (undocumented)
-export function createOptionCodec<Some extends CodecAny>(name: string, someCodec: Some): OptionCodec<Some>;
+export function createOptionCodec<T extends Option_2<any>, U extends Opaque<T, T>>(name: string, someCodec: Codec<T extends Option_2<infer V> ? V : never>): EnumCodecAndFactory<U>;
 
 // @public (undocumented)
-export function createResultCodec<Ok extends CodecAny, Err extends CodecAny>(name: string, okCodec: Ok, errCodec: Err): ResultCodec<Ok, Err>;
+export function createResultCodec<T extends Result<any, any>, U extends OpaqueRecursive<T>>(name: string, okCodec: Codec<T extends Result<infer Ok, any> ? Ok : never>, errCodec: Codec<T extends Result<any, infer Err> ? Err : never>): EnumCodecAndFactory<U>;
 
 // @public (undocumented)
-export function createSetCodec<T extends CodecAny>(name: string, itemCodec: T): SetCodec<T>;
-
-// Warning: (ae-forgotten-export) The symbol "StructCodecAsSchema" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export function createStructCodec<T extends {
-    [K in string]: CodecAny;
-}>(name: string, orderedCodecs: StructCodecAsSchema<T>): StructCodec<T>;
+export function createSetCodec<T extends Set<any>, U extends Opaque<T, T>>(name: string, itemCodec: Codec<T extends Set<infer V> ? V : never>): SetCodecAndFactory<T, U>;
 
 // @public (undocumented)
-export function createTupleCodec<T extends CodecAny[]>(name: string, codecs: T): TupleCodec<T>;
+export function createStructCodec<T, U extends Opaque<T, T>>(name: string, orderedCodecs: StructCodecsSchema<T>): StructCodecAndFactory<T, U>;
 
 // @public (undocumented)
-export function createVecCodec<T extends CodecAny>(name: string, itemCodec: T): VecCodec<T>;
+export function createTupleCodec<T extends Array<any>, U extends Opaque<T, T>>(name: string, codecs: TupleCodecs<T>): Codec<U> & DefineOpaque<T, U>;
+
+// @public (undocumented)
+export function createVecCodec<T extends any[], U extends OpaqueRecursive<T>>(name: string, itemCodec: Codec<T extends (infer V)[] ? V : never>): ArrayCodecAndFactory<T, U>;
 
 // @public (undocumented)
 export class DecodeTrace {
@@ -145,34 +134,20 @@ export class DecodeTraceCollector {
     refineLoc(loc: string): void;
 }
 
-// @public
-export class DynCodec<C extends CodecAny> implements Codec<CodecValueEncodable<C>, CodecValueDecoded<C>> {
-    constructor(getter: () => C);
-    // (undocumented)
-    readonly codecGetter: () => C;
-    // (undocumented)
-    decodeRaw: Decode<CodecValueDecoded<C>>;
-    // (undocumented)
-    encodeRaw: Encode<CodecValueEncodable<C>>;
-    // (undocumented)
-    fromBuffer(this: this, src: ArrayBufferView): CodecValueDecoded<C>;
-    // (undocumented)
-    name(this: this): string;
-    // (undocumented)
-    toBuffer(this: this, value: CodecValueEncodable<C>): Uint8Array;
-}
-
-// @public
-export function dynCodec<C extends CodecAny>(getter: () => C): DynCodec<C>;
+// @public (undocumented)
+export type DefineOpaque<T, U extends Opaque<T, T>> = (actual: T) => U;
 
 // @public (undocumented)
-export type EnumCodec<Def extends EnumCodecGenericDef> = Codec<Enum<Def extends [infer Tag, Codec<infer E, any>] ? [Tag, E] : Def>, Enum<Def extends [infer Tag, Codec<any, infer D>] ? [Tag, D] : Def>>;
+export function dynCodec<C extends CodecAny>(getter: () => C): Codec<CodecValueEncodable<C>, CodecValueDecoded<C>>;
 
 // @public (undocumented)
-export type EnumCodecGenericDef = string | [string, CodecAny];
+export type EnumCodecAndFactory<T> = Codec<T> & EnumFactory<T>;
 
 // @public (undocumented)
-export type EnumCodecs<Def extends EnumGenericDef> = (Def extends string ? [discriminant: number, tag: Def] : Def extends [infer T, infer V] ? [discriminant: number, tag: T, codec: Codec<V>] : never)[];
+export type EnumDefAsSchema<T> = T extends Enum<infer Def> ? (Def extends string ? [discriminant: number, tag: Def] : Def extends [infer Tag, infer Value] ? [discriminant: number, tag: Tag, codec: Codec<Value>] : never)[] : never;
+
+// @public (undocumented)
+export type EnumFactory<T> = T extends Enum<infer Def> ? (...args: EnumDefToFactoryArgs<Def>) => T : never;
 
 // @public (undocumented)
 export function formatWalkerStep(params: FormatWalkerStepParams): string;
@@ -189,19 +164,34 @@ export interface FormatWalkerStepParams {
 export function getCurrentTracker(): null | CodecTracker;
 
 // @public (undocumented)
-export const I128: CodecImpl<bigint, bigint>;
+export type I128 = bigint;
 
 // @public (undocumented)
-export const I16: CodecImpl<number, number>;
+export const I128: Codec<bigint, bigint>;
 
 // @public (undocumented)
-export const I32: CodecImpl<number, number>;
+export type I16 = number;
 
 // @public (undocumented)
-export const I64: CodecImpl<bigint, bigint>;
+export const I16: Codec<number, number>;
 
 // @public (undocumented)
-export const I8: CodecImpl<number, number>;
+export type I32 = number;
+
+// @public (undocumented)
+export const I32: Codec<number, number>;
+
+// @public (undocumented)
+export type I64 = bigint;
+
+// @public (undocumented)
+export const I64: Codec<bigint, bigint>;
+
+// @public (undocumented)
+export type I8 = number;
+
+// @public (undocumented)
+export const I8: Codec<number, number>;
 
 // @public (undocumented)
 export function isTrackValueInspectable(value: unknown): value is TrackValueInspectable;
@@ -226,32 +216,35 @@ export interface LoggerConfig {
 }
 
 // @public (undocumented)
-export type MapCodec<K extends CodecAny, V extends CodecAny> = Codec<Map<CodecValueEncodable<K>, CodecValueEncodable<V>>, Map<CodecValueDecoded<K>, CodecValueDecoded<V>>>;
+export type MapCodecAndFactory<T extends Map<any, any>, U extends Opaque<T, T>> = Codec<U> & DefineOpaque<T, U>;
 
-// @public (undocumented)
-export type OptionCodec<Some extends CodecAny> = Codec<Option_2<CodecValueEncodable<Some>>, Option_2<CodecValueDecoded<Some>>>;
+export { Opaque }
 
 // @public (undocumented)
 export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => T) => T;
 
 // @public (undocumented)
-export type ResultCodec<Ok extends CodecAny, Err extends CodecAny> = Codec<Result<CodecValueEncodable<Ok>, CodecValueEncodable<Err>>, Result<CodecValueDecoded<Ok>, CodecValueDecoded<Err>>>;
-
-// @public (undocumented)
-export type SetCodec<T extends CodecAny> = Codec<Set<CodecValueEncodable<T>>, Set<CodecValueDecoded<T>>>;
+export type SetCodecAndFactory<T extends Set<any>, U extends Opaque<T, T>> = Codec<U> & DefineOpaque<T, U>;
 
 // @public
 export function setCurrentTracker(tracker: null | CodecTracker): void;
 
 // @public (undocumented)
-export const Str: CodecImpl<string, string>;
+export type Str = string;
 
 // @public (undocumented)
-export type StructCodec<T> = Codec<{
-    [K in keyof T]: T[K] extends Codec<infer E, any> ? E : never;
-}, {
-    [K in keyof T]: T[K] extends Codec<any, infer D> ? D : never;
-}>;
+export const Str: Codec<string, string>;
+
+// @public (undocumented)
+export type StructCodecAndFactory<T, U extends Opaque<T, T>> = Codec<U> & DefineOpaque<T, U>;
+
+// @public (undocumented)
+export type StructCodecsSchema<T> = {
+    [K in keyof T]: [K, Codec<T[K]>];
+}[keyof T][];
+
+// @public (undocumented)
+export function trackableCodec<E, D = E>(name: string, encode: Encode<E>, decode: Decode<D>): Codec<E, D>;
 
 // @public
 export const trackDecode: TrackDecodeFn;
@@ -274,35 +267,50 @@ export interface TrackValueInspectable {
 // @public (undocumented)
 export function tryInspectValue(value: any): any;
 
-// Warning: (ae-forgotten-export) The symbol "TupleEncodable" needs to be exported by the entry point lib.d.ts
-// Warning: (ae-forgotten-export) The symbol "TupleDecoded" needs to be exported by the entry point lib.d.ts
-//
 // @public (undocumented)
-export type TupleCodec<T extends CodecAny[]> = Codec<TupleEncodable<T>, TupleDecoded<T>>;
+export type TupleCodecs<T extends any[]> = T extends [infer Head, ...infer Tail] ? [Codec<Head>, ...TupleCodecs<Tail>] : [];
 
 // @public (undocumented)
-export const U128: CodecImpl<bigint, bigint>;
+export type U128 = bigint;
 
 // @public (undocumented)
-export const U16: CodecImpl<number, number>;
+export const U128: Codec<bigint, bigint>;
 
 // @public (undocumented)
-export const U32: CodecImpl<number, number>;
+export type U16 = number;
 
 // @public (undocumented)
-export const U64: CodecImpl<bigint, bigint>;
+export const U16: Codec<number, number>;
 
 // @public (undocumented)
-export const U8: CodecImpl<number, number>;
+export type U32 = number;
 
 // @public (undocumented)
-export type VecCodec<T extends CodecAny> = Codec<CodecValueEncodable<T>[], CodecValueDecoded<T>[]>;
+export const U32: Codec<number, number>;
 
 // @public (undocumented)
-export const VecU8: CodecImpl<Uint8Array, Uint8Array>;
+export type U64 = bigint;
 
 // @public (undocumented)
-export const Void: CodecImpl<null, null>;
+export const U64: Codec<bigint, bigint>;
+
+// @public (undocumented)
+export type U8 = number;
+
+// @public (undocumented)
+export const U8: Codec<number, number>;
+
+// @public (undocumented)
+export type VecU8 = Uint8Array;
+
+// @public (undocumented)
+export const VecU8: Codec<Uint8Array, Uint8Array>;
+
+// @public (undocumented)
+export type Void = null;
+
+// @public (undocumented)
+export const Void: Codec<null, null>;
 
 
 export * from "@scale-codec/core";

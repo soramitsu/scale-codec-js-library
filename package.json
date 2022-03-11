@@ -32,14 +32,14 @@
         "benchmark": "pnpm --filter benchmark start"
     },
     "devDependencies": {
-        "@changesets/cli": "^2.20.0",
+        "@changesets/cli": "^2.21.1",
         "@jest/types": "^27.5.1",
         "@microsoft/api-documenter": "^7.15.3",
         "@microsoft/api-extractor": "^7.19.4",
         "@types/gulp": "^4.0.9",
-        "@types/jest": "^27.4.0",
-        "@typescript-eslint/eslint-plugin": "^4.33.0",
-        "@typescript-eslint/parser": "^4.33.0",
+        "@types/jest": "^27.4.1",
+        "@typescript-eslint/eslint-plugin": "^5.14.0",
+        "@typescript-eslint/parser": "^5.14.0",
         "chalk": "^4.1.2",
         "consola": "^2.15.3",
         "del": "^6.0.0",
@@ -48,16 +48,20 @@
         "esbuild-register": "^3.3.2",
         "esbuild-runner": "^2.2.1",
         "eslint": "^7.32.0",
-        "eslint-config-alloy": "^4.4.0",
+        "eslint-config-alloy": "^4.5.1",
         "eslint-plugin-cypress": "^2.12.1",
-        "eslint-plugin-vue": "^8.4.1",
+        "eslint-plugin-vue": "^8.5.0",
         "gulp": "^4.0.2",
         "jest": "^27.5.1",
         "make-dir": "^3.1.0",
         "npm-run-all": "^4.1.5",
         "prettier": "^2.5.1",
         "prettier-eslint": "^13.0.0",
-        "typescript": "^4.5.5",
+        "typescript": "^4.6.2",
         "zx": "4.3.0"
-    }
+    },
+    "engines": {
+        "node": ">16.8"
+    },
+    "engineStrict": true
 }

@@ -1,9 +1,13 @@
-import { Bool, createMapCodec, MapCodec, Str } from '@scale-codec/definition-runtime'
+import { Bool, createMapCodec, MapCodecAndFactory, Opaque, Str } from '@scale-codec/definition-runtime'
 import { defineCodec } from '../types'
 
-const Codec: MapCodec<typeof Str, typeof Bool> = createMapCodec('Map', Str, Bool)
+type Actual = Map<Str, Bool>
 
-export default defineCodec<Map<string, boolean>>({
-    encode: (v) => Codec.toBuffer(v),
+interface MyMap extends Opaque<Actual, MyMap> {}
+
+const Codec: MapCodecAndFactory<Actual, MyMap> = createMapCodec('Map', Str, Bool)
+
+export default defineCodec<Actual>({
+    encode: (v) => Codec.toBuffer(v as MyMap),
     decode: (v) => Codec.fromBuffer(v),
 })
