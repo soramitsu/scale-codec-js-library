@@ -170,9 +170,9 @@ importers:
       '@scale-codec/core': link:../core
       '@scale-codec/util': link:../util
       fmt-subs: 1.0.2
+      type-fest: 2.11.2
     devDependencies:
       '@scale-codec/definition-compiler': link:../definition-compiler
-      type-fest: 2.11.2
 
   packages/docs:
     specifiers:
@@ -8003,7 +8003,6 @@ packages:
   /type-fest/2.11.2:
     resolution: {integrity: sha512-reW2Y2Mpn0QNA/5fvtm5doROLwDPu2zOm5RtY7xQQS05Q7xgC8MOZ3yPNaP9m/s/sNjjFQtHo7VCNqYW2iI+Ig==}
     engines: {node: '>=12.20'}
-    dev: true
 
   /type/1.2.0:
     resolution: {integrity: sha512-+5nt5AAniqsCnu2cEQQdpzCAh33kVx8n0VoFidKpB1dVVLAN/F+bgVOqOJqOnEnrhp222clB5p3vUlD+1QAnfg==}

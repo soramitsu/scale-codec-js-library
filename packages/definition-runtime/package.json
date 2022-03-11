@@ -40,10 +40,10 @@
     "dependencies": {
         "@scale-codec/core": "workspace:^1.0.0",
         "@scale-codec/util": "workspace:^1.0.0",
-        "fmt-subs": "^1.0.2"
+        "fmt-subs": "^1.0.2",
+        "type-fest": "^2.11.2"
     },
     "devDependencies": {
-        "@scale-codec/definition-compiler": "workspace:^1.0.0",
-        "type-fest": "^2.11.2"
+        "@scale-codec/definition-compiler": "workspace:^1.0.0"
     }
 }
