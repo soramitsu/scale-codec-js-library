@@ -8,7 +8,7 @@
 
     Now compiled type consists from 1 entry that is a type and a variable simultaneously. Variable actually is a codec and **a factory** to create values.
     
-    You can see the new approach by looking at this example of compiled `VecU32` type`.
+    You can see the new approach by looking at this example of compiled `VecU32` type.
 
     **Before**:
 
