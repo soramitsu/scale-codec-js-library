@@ -92,7 +92,7 @@ export class NamespaceModel {
         let moduleExports = List<string>()
 
         for (const scope of this.refs) {
-            const scopeCycles: undefined | Set<string> = optimizeData?.cycles?.get(scope.name)
+            const circuits: undefined | Set<string> = optimizeData?.circuitsResolutions?.get(scope.name)
 
             moduleExports = moduleExports.push(scope.name)
 
@@ -122,7 +122,7 @@ export class NamespaceModel {
                                     // here we should determine whether we allocate "dyn" for it or not
 
                                     // eslint-disable-next-line max-depth
-                                    if (optimizeData && (!scopeCycles || !scopeCycles.has(ref))) {
+                                    if (optimizeData && (!circuits || !circuits.has(ref))) {
                                         parts.push(ref)
                                     } else {
                                         parts.push(dynPrefix(ref))

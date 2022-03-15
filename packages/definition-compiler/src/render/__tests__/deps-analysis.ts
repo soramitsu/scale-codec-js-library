@@ -1,5 +1,10 @@
-import { optimizeDepsHierarchy } from '../deps-analysis'
-import { Map, Set, List } from 'immutable'
+import {
+    optimizeDepsHierarchy,
+    findStronglyConnectedComponents,
+    findCircuitsResolutions,
+    AdjacencyMap,
+} from '../deps-analysis'
+import { Map, Set, List, Seq } from 'immutable'
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const immutableMatchers = require('jest-immutable-matchers')
@@ -8,74 +13,130 @@ beforeEach(() => {
     expect.extend(immutableMatchers)
 })
 
-test('Case 0', () => {
-    const { sorted, cycles } = optimizeDepsHierarchy(
-        Map([
-            ['Z', Set()],
-            ['A', Set(['B', 'C'])],
-            ['C', Set()],
-            ['B', Set()],
-            ['L', Set(['M'])],
-            ['M', Set(['N'])],
-            ['N', Set(['L'])],
-        ]),
-    )
+function createAdjacencyMap(str: string): AdjacencyMap {
+    return Seq(str.split('\n'))
+        .map((x) => x.trim().match(/^(\S+)\s*->\s*(.+)?\s*$/))
+        .filter((x): x is RegExpMatchArray => !!x)
+        .map<[string, string | undefined]>((match) => [match[1], match[2]])
+        .map<[string, Set<string>]>(([v, deps]) => [v, Set((deps ?? '').split(/\s+/)).filter((x) => !!x)])
+        .reduce((map, [v, deps]) => map.set(v, deps), Map())
+}
 
-    expect(sorted).toEqualImmutable(List('B C A N M L Z'.split(' ')))
-    expect(cycles).toEqualImmutable(Map<string, Set<string>>([['N', Set(['L'])]]))
+describe('findCircuitsResolutions()', () => {
+    test.each([
+        [
+            List(['a', 'b', 'c']),
+            createAdjacencyMap(`
+                a -> 
+                b ->
+                c -> a
+            `),
+            Map(),
+        ],
+        [
+            List(['a', 'b', 'c']),
+            createAdjacencyMap(`
+                a -> c b
+                b ->
+                c ->
+            `),
+            createAdjacencyMap(`
+                a -> c b
+            `),
+        ],
+        [
+            List(['a', 'b', 'c']),
+            createAdjacencyMap(`
+                a ->
+                b -> a c
+                c -> b a
+            `),
+            createAdjacencyMap(`
+                b -> c
+            `),
+        ],
+    ] as [List<string>, AdjacencyMap, AdjacencyMap][])('Case %#', (sortedComponent, graph, output) => {
+        expect(findCircuitsResolutions(sortedComponent, graph)).toEqualImmutable(output)
+    })
 })
 
-test('Case 1 (two-way cycle)', () => {
-    const { sorted, cycles } = optimizeDepsHierarchy(
-        Map([
-            ['A', Set(['B'])],
-            ['B', Set(['A'])],
-        ]),
-    )
-
-    expect(sorted).toEqualImmutable(List('B A'.split(' ')))
-    expect(cycles).toEqualImmutable(Map<string, Set<string>>([['B', Set(['A'])]]))
+describe('Finding Strongly Connected Components in a graph', () => {
+    test.each([
+        {
+            input: createAdjacencyMap(`
+                a -> c e f
+                b -> h
+                c -> d
+                d -> a
+                e -> a
+                f -> e
+                g ->
+                h ->
+            `),
+            output: Set([Set('acdef'), Set('b'), Set('h'), Set('g')]),
+        },
+    ])('Case 0', ({ input, output }) => {
+        expect(findStronglyConnectedComponents(input)).toEqualImmutable(output)
+    })
 })
 
-test('Case 2 (multiple cycles)', () => {
-    const { sorted, cycles } = optimizeDepsHierarchy(
-        Map([
-            ['A', Set(['B1', 'C1'])],
+describe('optimizeDepsHierarchy()', () => {
+    test.each([
+        [
+            createAdjacencyMap(`
+                Z ->
+                A -> B C
+                C ->
+                B ->
+                L -> M
+                M -> N
+                N -> L
+            `),
+            List(`BCANMLZ`),
+            createAdjacencyMap(`
+                N -> L
+            `),
+        ],
+        [
+            createAdjacencyMap(`
+                a -> b
+                b -> a
+            `),
+            List('ba'),
+            createAdjacencyMap(`b -> a`),
+        ],
+        [
+            createAdjacencyMap(`
+                a -> b d
+                b -> c
+                c -> a
+                d -> a
+            `),
+            List('cbad'),
+            createAdjacencyMap(`
+                c -> a
+                a -> d
+            `),
+        ],
+        [
+            createAdjacencyMap(`
+                a -> b d e
+                b -> c
+                c -> a
+                d -> a
+                e -> d
+            `),
+            List('cbead'),
+            createAdjacencyMap(`
+                c -> a
+                e -> d
+                a -> d
+            `),
+        ],
+    ])('Case %#', (graph, sorted, circuits) => {
+        const result = optimizeDepsHierarchy(graph)
 
-            // loop to A
-            ['B1', Set(['B2'])],
-            ['B2', Set(['A'])],
-
-            // loop to A too
-            ['C1', Set(['A'])],
-        ]),
-    )
-
-    expect(sorted).toEqualImmutable(List('B2 B1 C1 A'.split(' ')))
-    expect(cycles).toEqualImmutable(
-        Map<string, Set<string>>([
-            ['B2', Set(['A'])],
-            ['C1', Set(['A'])],
-        ]),
-    )
-})
-
-test('Case 3 (composed cycles)', () => {
-    const { sorted, cycles } = optimizeDepsHierarchy(
-        Map([
-            ['A', Set(['B1', 'C'])],
-            ['B1', Set(['B2'])],
-            ['B2', Set(['A'])],
-            ['C', Set(['A'])],
-            ['D', Set(['C'])],
-        ]),
-    )
-
-    expect(sorted).toEqualImmutable(List('B2 B1 C A D'.split(' ')))
-    expect(cycles).toEqualImmutable(
-        Map<string, Set<string>>([
-            ['B2', Set(['A'])],
-            ['C', Set(['B1'])],
-        ]),
-    )
+        expect(result.sorted).toEqualImmutable(sorted)
+        expect(result.circuitsResolutions).toEqualImmutable(circuits)
+    })
 })

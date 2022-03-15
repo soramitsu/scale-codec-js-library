@@ -153,11 +153,13 @@ importers:
       '@scale-codec/util': workspace:^1.0.0
       immutable: ^4.0.0
       sort-es: ^1.4.6
+      tarjan-graph: ^3.0.0
     dependencies:
       '@scale-codec/enum': link:../enum
       '@scale-codec/util': link:../util
       immutable: 4.0.0
       sort-es: 1.4.6
+      tarjan-graph: 3.0.0
     devDependencies:
       '@scale-codec/definition-runtime': link:../definition-runtime
 
@@ -7795,6 +7797,10 @@ packages:
       string-width: 4.2.3
       strip-ansi: 6.0.1
     dev: true
+
+  /tarjan-graph/3.0.0:
+    resolution: {integrity: sha512-sM1+1ZKnnCtTP9W0DHTMHTlej9buusVHaKiBVecc6tZpBffBeEpE4XdFz7WNs9H1zaYkcgm6MzfyXFxSV2S1rA==}
+    dev: false
 
   /term-size/2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}
