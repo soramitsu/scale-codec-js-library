@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/definition-compiler",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "description": "SCALE-codec types namespace definition compiler",
     "keywords": [
         "SCALE",
@@ -36,13 +36,13 @@
         "CHANGELOG.md"
     ],
     "dependencies": {
-        "@scale-codec/enum": "workspace:^1.0.1",
+        "@scale-codec/enum": "workspace:^1.0.2",
         "@scale-codec/util": "workspace:^1.0.0",
         "immutable": "^4.0.0",
         "sort-es": "^1.4.6"
     },
     "devDependencies": {
-        "@scale-codec/definition-runtime": "workspace:^1.0.0"
+        "@scale-codec/definition-runtime": "workspace:^2.0.0"
     },
     "engines": {
         "node": ">16.8"
