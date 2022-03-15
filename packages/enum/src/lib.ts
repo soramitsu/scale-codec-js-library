@@ -14,7 +14,7 @@ export type Tags<Def extends EnumGenericDef> = TagsEmpty<Def> | TagsValuable<Def
 
 export type TagValue<Def extends EnumGenericDef, T extends TagsValuable<Def>> = Def extends [T, infer V] ? V : never
 
-export type EnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never
+export type EnumDef<E> = E extends Enum<infer Def> ? Def : never
 
 export type EnumMatchMap<Def extends EnumGenericDef, R = any> = {
     [T in TagsEmpty<Def>]: () => R
@@ -39,25 +39,20 @@ export const ENUM_EMPTY_VALUE = Symbol('empty')
  * `Def` generic type is a **definition of enum variants**. It should be defined like this:
  *
  * ```ts
- * type MyDef = {
- *     EmptyVariant: null // or undefined or anything else but not { value: T }
- *     VarWithBool: Valuable<boolean>
- * }
- *
+ * type MyDef = 'EmptyVariant' | ['VarWithBool', boolean]
  * type MyEnum = Enum<MyDef>
  * ```
  *
  * Then you could create enums with that definition type-safely:
  *
  * ```ts
- * const val1: MyEnum = Enum.empty('EmptyVariant')
- * const val2: MyEnum = Enum.valuable('VarWithBool', true)
+ * const val1: MyEnum = Enum.variant('EmptyVariant')
+ * const val2: MyEnum = Enum.variant('VarWithBool', true)
  * ```
- *
- * Also look for {@link Valuable} helper
  */
 export class Enum<Def extends EnumGenericDef> {
     public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
+    public static variant<Def extends EnumGenericDef>(...args: EnumDefToFactoryArgs<Def>): Enum<Def>
     public static variant(tag: string, value = ENUM_EMPTY_VALUE) {
         return new Enum(tag, value)
     }
@@ -69,7 +64,7 @@ export class Enum<Def extends EnumGenericDef> {
      */
     public readonly value: typeof ENUM_EMPTY_VALUE | unknown
 
-    private constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
+    public constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
         this.tag = tag
         this.value = value
     }

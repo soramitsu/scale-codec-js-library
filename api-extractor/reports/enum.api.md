@@ -4,10 +4,9 @@
 
 ```ts
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@scale-codec/enum" does not have an export "Valuable"
-//
 // @public
 export class Enum<Def extends EnumGenericDef> {
+    constructor(tag: string, value?: typeof ENUM_EMPTY_VALUE | unknown);
     as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T>;
     is(tag: Tags<Def>): boolean;
     // (undocumented)
@@ -26,13 +25,15 @@ export class Enum<Def extends EnumGenericDef> {
     readonly value: typeof ENUM_EMPTY_VALUE | unknown;
     // (undocumented)
     static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E;
+    // (undocumented)
+    static variant<Def extends EnumGenericDef>(...args: EnumDefToFactoryArgs<Def>): Enum<Def>;
 }
 
 // @public
 export const ENUM_EMPTY_VALUE: unique symbol;
 
 // @public (undocumented)
-export type EnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never;
+export type EnumDef<E> = E extends Enum<infer Def> ? Def : never;
 
 // @public (undocumented)
 export type EnumDefToFactoryArgs<Def extends EnumGenericDef> = [TagsEmpty<Def>] | (Def extends [string, any] ? Def : never);

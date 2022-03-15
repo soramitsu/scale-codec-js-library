@@ -6,29 +6,31 @@ Monorepo with [SCALE codec](https://substrate.dev/docs/en/knowledgebase/advanced
 
 Install `pnpm` if you do not have it installed:
 
-```shell
+```bash
 npm i -g pnpm
 ```
 
 Then install packages
 
-```shell
+```bash
 pnpm i
 ```
 
-### Read The Docs
+## Read The Docs
 
-Published at GitHub Pages [here](https://soramitsu.github.io/scale-codec-js-library/).
+> **Documentation is outdated and WIP.**
+
+[Read online](https://soramitsu.github.io/scale-codec-js-library/)
 
 Locally:
 
-```shell
+```bash
 pnpm docs:dev
 ```
 
 ## For DevOps
 
-```shell
+```bash
 # all tests, build, lint, type-ckecking
 pnpm check-code-integrity
 

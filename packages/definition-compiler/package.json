@@ -36,11 +36,16 @@
         "CHANGELOG.md"
     ],
     "dependencies": {
+        "@scale-codec/enum": "workspace:^1.0.1",
         "@scale-codec/util": "workspace:^1.0.0",
         "immutable": "^4.0.0",
         "sort-es": "^1.4.6"
     },
     "devDependencies": {
         "@scale-codec/definition-runtime": "workspace:^1.0.0"
-    }
+    },
+    "engines": {
+        "node": ">16.8"
+    },
+    "engineStrict": true
 }

@@ -96,9 +96,7 @@ export function createVecDecoder<T>(decodeItem: Decode<T>): Decode<T[]>;
 // @public (undocumented)
 export function createVecEncoder<T>(encodeItem: Encode<T>): Encode<T[]>;
 
-// Warning: (ae-unresolved-link) The @link reference could not be resolved: The package "@scale-codec/core" does not have an export "DecodeResult"
-//
-// @public
+// @public (undocumented)
 export type Decode<T> = (walker: Walker) => T;
 
 // @public (undocumented)
@@ -182,7 +180,7 @@ export function decodeVec<T>(walker: Walker, decodeItem: Decode<T>): T[];
 // @public
 export const decodeVoid: Decode<null>;
 
-// @public
+// @public (undocumented)
 export type Encode<T> = {
     (value: T, walker: Walker): void;
     sizeHint: (value: T) => number;

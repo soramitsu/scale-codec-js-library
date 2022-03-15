@@ -1,21 +1,29 @@
-import { Decode, Walker, WalkerImpl } from '@scale-codec/core'
-import { Enum } from '../../lib'
+import { Decode, Walker } from '@scale-codec/core'
 import { setCurrentTracker, DecodeTraceCollector, buildDecodeTraceStepsFmt, CodecTracker, DecodeTrace } from '../index'
-// useful for tests here too
-import { AllInOne } from '@scale-codec/definition-compiler/tests/samples/complexNamespace'
-import { CodecValueEncodable } from '../../core'
 
-function valueFactory(): CodecValueEncodable<typeof AllInOne> {
-    return {
-        tuple_with_opts: [Enum.variant('Greeting', 'Gey!'), Enum.variant('Quit')],
-        map: new Map([['!234', 11]]),
+// useful for tests here too
+import {
+    AllInOne,
+    ArraySetU8l2,
+    Character,
+    MapStrU8,
+    Msg,
+    SetU8,
+    TupleMsgMsg,
+    VecBool,
+} from '@scale-codec/definition-compiler/tests/samples/complexNamespace'
+
+function valueFactory(): AllInOne {
+    return AllInOne({
+        tuple_with_opts: TupleMsgMsg([Msg('Greeting', 'Gey!'), Msg('Quit')]),
+        map: MapStrU8(new Map([['!234', 11]])),
         alias: 'Yo ho ho',
-        another_struct: {
+        another_struct: Character({
             name: 'Alice',
-        },
-        arr: [new Set(), new Set([1, 6, 2, 3, 4, 1, 2, 3, 4])],
-        vec: [false, true, false],
-    }
+        }),
+        arr: ArraySetU8l2([SetU8(new Set()), new Set([1, 6, 2, 3, 4, 1, 2, 3, 4]) as SetU8]),
+        vec: [false, true, false] as VecBool,
+    })
 }
 
 describe('Collecting big decode trace and formatting it', () => {
