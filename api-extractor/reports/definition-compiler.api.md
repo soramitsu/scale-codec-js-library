@@ -89,6 +89,7 @@ export function renderNamespaceDefinition(definition: NamespaceDefinition, param
 
 // @public (undocumented)
 export interface RenderNamespaceDefinitionParams {
+    optimizeDyns?: boolean;
     rollupSingleTuplesIntoAliases?: boolean;
     runtimeLib?: string;
     runtimeTypes?: Set<string>;
