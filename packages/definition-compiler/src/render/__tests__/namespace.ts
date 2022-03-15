@@ -1,10 +1,11 @@
 import { createNs, ModelRenderParams } from '../namespace'
+import { Set } from 'immutable'
 
 const ns = createNs<'createArrayCodec', 'Codec'>()
 
 const SAMPLE_RENDER_PARAMS: ModelRenderParams = {
     libModule: 'test',
-    libTypes: new Set(),
+    libTypes: Set(),
 }
 
 test('When model is empty, result is empty too', () => {
@@ -46,9 +47,9 @@ test('When some type helper is used, import is rendered', () => {
 
 test('When (non-lib) ref is used as a variable, dynCodec for it should be rendered', () => {
     expect(
-        ns({ refs: [ns.refScope('something')`const ${ns.self} = ${ns.refVar('another')}`] }).render(
-            SAMPLE_RENDER_PARAMS,
-        ),
+        ns({
+            refs: [ns.refScope('something')`const ${ns.self} = ${ns.refVar('another')}`, ns.refScope('another')`p`],
+        }).render(SAMPLE_RENDER_PARAMS),
     ).toMatchInlineSnapshot(`
         "import { dynCodec } from 'test'
 
@@ -56,13 +57,17 @@ test('When (non-lib) ref is used as a variable, dynCodec for it should be render
 
         const __dyn_another = dynCodec(() => another)
 
+        // Type: another
+
+        p
+
         // Type: something
 
         const something = __dyn_another
 
         // Exports
 
-        export { something }"
+        export { another, something }"
     `)
 })
 
@@ -76,7 +81,7 @@ test('When ref from lib is used, then it is imported', () => {
             ],
         }).render({
             ...SAMPLE_RENDER_PARAMS,
-            libTypes: new Set(['Str']),
+            libTypes: Set(['Str']),
         }),
     ).toMatchInlineSnapshot(`
         "import { Str } from 'test'
@@ -93,12 +98,6 @@ test('When ref from lib is used, then it is imported', () => {
     `)
 })
 
-// test('When ref scope is used, then self ref is rendered', () => {
-//     expect(
-//         ns`const b = ${ns.refScope('TEST')`<using ${ns.selfRef()}>`}`.render(SAMPLE_RENDER_PARAMS),
-//     ).toMatchInlineSnapshot()
-// })
-
 test('When ns is constructed from multiple refs with custom parts, it is rendered OK', () => {
     const self = ns.part`${ns.self}`
 
@@ -112,7 +111,7 @@ test('When ns is constructed from multiple refs with custom parts, it is rendere
 
     const result = ns({ refs: [foo, bar] }).render({
         libModule: 'foobar',
-        libTypes: new Set(['Str']),
+        libTypes: Set(['Str']),
     })
 
     expect(result).toMatchInlineSnapshot(`
@@ -124,13 +123,13 @@ test('When ns is constructed from multiple refs with custom parts, it is rendere
 
         const __dyn_Bar = dynCodec(() => Bar)
 
-        // Type: Foo
-
-        const Foo: Codec = createArrayCodec(__dyn_Bar)
-
         // Type: Bar
 
         const Bar: Codec = createArrayCodec(Str)
+
+        // Type: Foo
+
+        const Foo: Codec = createArrayCodec(__dyn_Bar)
 
         // Exports
 
@@ -163,13 +162,13 @@ test('When import is used, it is rendered', () => {
             ],
         }).render(SAMPLE_RENDER_PARAMS),
     ).toMatchInlineSnapshot(`
-        "// Type: Foo
-
-        import { Foo } from 'SOME MODULE'
-
-        // Type: Bar
+        "// Type: Bar
 
         import { Something as Bar } from 'test'
+
+        // Type: Foo
+
+        import { Foo } from 'SOME MODULE'
 
         // Exports
 
@@ -193,6 +192,35 @@ test('When lib name is used, it is rendered', () => {
     `)
 })
 
+describe('Validation', () => {
+    test('When there is an unresolved reference (var) within namespace, it throws', () => {
+        expect(() =>
+            ns({ refs: [ns.refScope('A')`unresolved: ${ns.refVar('B')}`] }).render({
+                libModule: 'test',
+                libTypes: Set([]),
+            }),
+        ).toThrowError('unresolved reference: A -> B')
+    })
+
+    test('When there is an unresolved reference (type) within namespace, it throws', () => {
+        expect(() =>
+            ns({ refs: [ns.refScope('T')`unresolved: ${ns.refType('U')}`] }).render({
+                libModule: 'test',
+                libTypes: Set([]),
+            }),
+        ).toThrowError('unresolved reference: T -> U')
+    })
+
+    test('When first ref has errors, but next not, it throws', () => {
+        expect(() =>
+            ns({ refs: [ns.refScope('T')`unresolved: ${ns.refType('U')}`, ns.refScope('NoDeps')``] }).render({
+                libModule: 'test',
+                libTypes: Set([]),
+            }),
+        ).toThrowError()
+    })
+})
+
 describe('Concatenation', () => {
     test.each([
         [
@@ -203,5 +231,65 @@ describe('Concatenation', () => {
         [ns.concat(), ns.part``],
     ])('Concat case %#', (actual, expected) => {
         expect(actual).toEqual(expected)
+    })
+})
+
+describe('Dyns optimization', () => {
+    test('When related option is used, it is applied fine (complex test)', () => {
+        expect(
+            ns({
+                refs: [
+                    ns.refScope('C1')`cyclic: ${ns.refVar('C2')}`,
+                    ns.refScope('C2')`cyclic: ${ns.refVar('C1')}`,
+                    ns.refScope('CT1')`cyclic, but only type: ${ns.refType('CT2')}`,
+                    ns.refScope('CT2')`cyclic, but only type: ${ns.refType('CT1')}`,
+                    ns.refScope('Z')`no links here, just testing alphabetic sorting`,
+                    ns.refScope('A')`link to B: ${ns.refVar('B')}`,
+                    ns.refScope('B')`nothing here`,
+                ],
+            }).render({
+                libModule: 'lib',
+                libTypes: Set(['LibA', 'LibB']),
+                optimizeDyns: true,
+            }),
+        ).toMatchInlineSnapshot(`
+            "import { dynCodec } from 'lib'
+
+            // Dynamic codecs
+
+            const __dyn_C1 = dynCodec(() => C1)
+
+            // Type: B
+
+            nothing here
+
+            // Type: A
+
+            link to B: B
+
+            // Type: C2
+
+            cyclic: __dyn_C1
+
+            // Type: C1
+
+            cyclic: C2
+
+            // Type: CT2
+
+            cyclic, but only type: CT1
+
+            // Type: CT1
+
+            cyclic, but only type: CT2
+
+            // Type: Z
+
+            no links here, just testing alphabetic sorting
+
+            // Exports
+
+            export { A, B, C1, C2, CT1, CT2, Z }"
+        `)
     })
 })

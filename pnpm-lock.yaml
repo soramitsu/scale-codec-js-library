@@ -25,6 +25,7 @@ importers:
       eslint-plugin-vue: ^8.5.0
       gulp: ^4.0.2
       jest: ^27.5.1
+      jest-immutable-matchers: ^3.0.0
       make-dir: ^3.1.0
       npm-run-all: ^4.1.5
       prettier: ^2.5.1
@@ -53,6 +54,7 @@ importers:
       eslint-plugin-vue: 8.5.0_eslint@7.32.0
       gulp: 4.0.2
       jest: 27.5.1
+      jest-immutable-matchers: 3.0.0_jest@27.5.1
       make-dir: 3.1.0
       npm-run-all: 4.1.5
       prettier: 2.5.1
@@ -5472,6 +5474,15 @@ packages:
       walker: 1.0.8
     optionalDependencies:
       fsevents: 2.3.2
+
+  /jest-immutable-matchers/3.0.0_jest@27.5.1:
+    resolution: {integrity: sha512-FL4l0FecGx0ojOCE8xIoXxYXqBOGWBRiodjPRhMkiH9yYNvz78g26S/lCqsWAmFB+cN9mAU1+cNwe8X8mCe9Pw==}
+    peerDependencies:
+      immutable: '>=3.0.0'
+      jest: '>=21.0.0'
+    dependencies:
+      jest: 27.5.1
+    dev: true
 
   /jest-jasmine2/27.5.1:
     resolution: {integrity: sha512-jtq7VVyG8SqAorDpApwiJJImd0V2wv1xzdheGHRGyuT7gZm6gG47QEskOlzsN1PG/6WNaCo5pmwMHDf3AkG2pQ==}
