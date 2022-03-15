@@ -1,6 +1,6 @@
 {
     "name": "@scale-codec/e2e-spa",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "private": true,
     "scripts": {
         "dev": "vite --port 4444 --clearScreen false",
@@ -15,8 +15,8 @@
     },
     "dependencies": {
         "@jest/types": "^27.5.1",
-        "@scale-codec/definition-compiler": "workspace:^1.0.0",
-        "@scale-codec/definition-runtime": "workspace:^1.0.0",
+        "@scale-codec/definition-compiler": "workspace:^2.0.0",
+        "@scale-codec/definition-runtime": "workspace:^2.0.0",
         "@types/jest": "^27.4.0",
         "@vitejs/plugin-vue": "^2.2.0",
         "@vue/compiler-sfc": "^3.2.30",
