@@ -1,5 +1,11 @@
 # @scale-codec/enum
 
+## 1.0.2
+
+### Patch Changes
+
+-   1f92e19: **types**: extend `Enum.variant()` typing
+
 ## 1.0.1
 
 ### Patch Changes

@@ -65,8 +65,8 @@ importers:
   e2e-spa:
     specifiers:
       '@jest/types': ^27.5.1
-      '@scale-codec/definition-compiler': workspace:^1.0.0
-      '@scale-codec/definition-runtime': workspace:^1.0.0
+      '@scale-codec/definition-compiler': workspace:^2.0.0
+      '@scale-codec/definition-runtime': workspace:^2.0.0
       '@types/jest': ^27.4.0
       '@vitejs/plugin-vue': ^2.2.0
       '@vue/compiler-sfc': ^3.2.30
@@ -112,8 +112,8 @@ importers:
     specifiers:
       '@polkadot/types': ^7.7.1
       '@polkadot/types-codec': ^7.7.1
-      '@scale-codec/core': workspace:^1.0.0
-      '@scale-codec/definition-runtime': workspace:^1.0.0
+      '@scale-codec/core': workspace:^1.0.1
+      '@scale-codec/definition-runtime': workspace:^2.0.0
       benny: ^3.7.1
       consola: ^2.15.3
       esbuild: ^0.14.21
@@ -135,7 +135,7 @@ importers:
 
   packages/core:
     specifiers:
-      '@scale-codec/enum': workspace:^1.0.0
+      '@scale-codec/enum': workspace:^1.0.2
       '@scale-codec/util': workspace:^1.0.0
       hada: ^0.0.8
       type-fest: ^2.11.2
@@ -148,8 +148,8 @@ importers:
 
   packages/definition-compiler:
     specifiers:
-      '@scale-codec/definition-runtime': workspace:^1.0.0
-      '@scale-codec/enum': workspace:^1.0.1
+      '@scale-codec/definition-runtime': workspace:^2.0.0
+      '@scale-codec/enum': workspace:^1.0.2
       '@scale-codec/util': workspace:^1.0.0
       immutable: ^4.0.0
       sort-es: ^1.4.6
@@ -165,8 +165,8 @@ importers:
 
   packages/definition-runtime:
     specifiers:
-      '@scale-codec/core': workspace:^1.0.0
-      '@scale-codec/definition-compiler': workspace:^1.0.0
+      '@scale-codec/core': workspace:^1.0.1
+      '@scale-codec/definition-compiler': workspace:^2.0.0
       '@scale-codec/util': workspace:^1.0.0
       fmt-subs: ^1.0.2
       type-fest: ^2.11.2
@@ -180,9 +180,9 @@ importers:
 
   packages/docs:
     specifiers:
-      '@scale-codec/core': workspace:^1.0.0
-      '@scale-codec/definition-compiler': workspace:^1.0.0
-      '@scale-codec/definition-runtime': workspace:^1.0.0
+      '@scale-codec/core': workspace:^1.0.1
+      '@scale-codec/definition-compiler': workspace:^2.0.0
+      '@scale-codec/definition-runtime': workspace:^2.0.0
       '@scale-codec/util': workspace:^1.0.0
       '@types/object-inspect': ^1.8.1
       '@vueuse/core': ^7.6.1
