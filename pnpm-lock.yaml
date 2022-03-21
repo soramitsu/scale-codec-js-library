@@ -25,6 +25,7 @@ importers:
       eslint-plugin-vue: ^8.5.0
       gulp: ^4.0.2
       jest: ^27.5.1
+      jest-immutable-matchers: ^3.0.0
       make-dir: ^3.1.0
       npm-run-all: ^4.1.5
       prettier: ^2.5.1
@@ -53,6 +54,7 @@ importers:
       eslint-plugin-vue: 8.5.0_eslint@7.32.0
       gulp: 4.0.2
       jest: 27.5.1
+      jest-immutable-matchers: 3.0.0_jest@27.5.1
       make-dir: 3.1.0
       npm-run-all: 4.1.5
       prettier: 2.5.1
@@ -151,11 +153,13 @@ importers:
       '@scale-codec/util': workspace:^1.0.0
       immutable: ^4.0.0
       sort-es: ^1.4.6
+      tarjan-graph: ^3.0.0
     dependencies:
       '@scale-codec/enum': link:../enum
       '@scale-codec/util': link:../util
       immutable: 4.0.0
       sort-es: 1.4.6
+      tarjan-graph: 3.0.0
     devDependencies:
       '@scale-codec/definition-runtime': link:../definition-runtime
 
@@ -5473,6 +5477,15 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
+  /jest-immutable-matchers/3.0.0_jest@27.5.1:
+    resolution: {integrity: sha512-FL4l0FecGx0ojOCE8xIoXxYXqBOGWBRiodjPRhMkiH9yYNvz78g26S/lCqsWAmFB+cN9mAU1+cNwe8X8mCe9Pw==}
+    peerDependencies:
+      immutable: '>=3.0.0'
+      jest: '>=21.0.0'
+    dependencies:
+      jest: 27.5.1
+    dev: true
+
   /jest-jasmine2/27.5.1:
     resolution: {integrity: sha512-jtq7VVyG8SqAorDpApwiJJImd0V2wv1xzdheGHRGyuT7gZm6gG47QEskOlzsN1PG/6WNaCo5pmwMHDf3AkG2pQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -7784,6 +7797,10 @@ packages:
       string-width: 4.2.3
       strip-ansi: 6.0.1
     dev: true
+
+  /tarjan-graph/3.0.0:
+    resolution: {integrity: sha512-sM1+1ZKnnCtTP9W0DHTMHTlej9buusVHaKiBVecc6tZpBffBeEpE4XdFz7WNs9H1zaYkcgm6MzfyXFxSV2S1rA==}
+    dev: false
 
   /term-size/2.2.1:
     resolution: {integrity: sha512-wK0Ri4fOGjv/XPy8SBHZChl8CM7uMc5VML7SqiQ0zG7+J5Vr+RMQDoHa2CNT6KHUnTGIXH34UDMkPzAUyapBZg==}

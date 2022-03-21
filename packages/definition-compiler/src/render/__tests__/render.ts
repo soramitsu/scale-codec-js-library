@@ -143,15 +143,26 @@ it('Renders set', () => {
                 t: 'set',
                 entry: 'Message',
             },
+
+            Message: {
+                t: 'alias',
+                ref: 'Void',
+            },
         }),
     ).toMatchInlineSnapshot(`
-        "import { createSetCodec, dynCodec } from '@scale-codec/definition-runtime'
+        "import { Void, createSetCodec, dynCodec } from '@scale-codec/definition-runtime'
 
-        import type { Opaque, SetCodecAndFactory } from '@scale-codec/definition-runtime'
+        import type { Codec, Opaque, SetCodecAndFactory } from '@scale-codec/definition-runtime'
 
         // Dynamic codecs
 
         const __dyn_Message = dynCodec(() => Message)
+
+        // Type: Message
+
+        type Message = Void
+
+        const Message: Codec<Message> = Void
 
         // Type: Set_Message
 
@@ -163,71 +174,63 @@ it('Renders set', () => {
 
         // Exports
 
-        export { Set_Message }"
+        export { Message, Set_Message }"
     `)
 })
 
 it('Renders map', () => {
     expect(
         renderFactory({
-            Map_str_Message: {
+            Map_str_i64: {
                 t: 'map',
                 key: 'Str',
-                value: 'Message',
+                value: 'I64',
             },
         }),
     ).toMatchInlineSnapshot(`
-        "import { Str, createMapCodec, dynCodec } from '@scale-codec/definition-runtime'
+        "import { I64, Str, createMapCodec } from '@scale-codec/definition-runtime'
 
         import type { MapCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
 
-        // Dynamic codecs
+        // Type: Map_str_i64
 
-        const __dyn_Message = dynCodec(() => Message)
+        type Map_str_i64__actual = Map<Str, I64>
 
-        // Type: Map_str_Message
+        interface Map_str_i64 extends Opaque<Map_str_i64__actual, Map_str_i64> {}
 
-        type Map_str_Message__actual = Map<Str, Message>
-
-        interface Map_str_Message extends Opaque<Map_str_Message__actual, Map_str_Message> {}
-
-        const Map_str_Message: MapCodecAndFactory<Map_str_Message__actual, Map_str_Message> = createMapCodec<Map_str_Message__actual, Map_str_Message>('Map_str_Message', Str, __dyn_Message)
+        const Map_str_i64: MapCodecAndFactory<Map_str_i64__actual, Map_str_i64> = createMapCodec<Map_str_i64__actual, Map_str_i64>('Map_str_i64', Str, I64)
 
         // Exports
 
-        export { Map_str_Message }"
+        export { Map_str_i64 }"
     `)
 })
 
 it('Renders array', () => {
     expect(
         renderFactory({
-            Array_Item_15: {
+            Array_Str_15: {
                 t: 'array',
-                item: 'Item',
+                item: 'Str',
                 len: 15,
             },
         }),
     ).toMatchInlineSnapshot(`
-        "import { createArrayCodec, dynCodec } from '@scale-codec/definition-runtime'
+        "import { Str, createArrayCodec } from '@scale-codec/definition-runtime'
 
         import type { ArrayCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
 
-        // Dynamic codecs
+        // Type: Array_Str_15
 
-        const __dyn_Item = dynCodec(() => Item)
+        interface Array_Str_15__actual extends Array<Str> {}
 
-        // Type: Array_Item_15
+        interface Array_Str_15 extends Opaque<Array_Str_15__actual, Array_Str_15> {}
 
-        interface Array_Item_15__actual extends Array<Item> {}
-
-        interface Array_Item_15 extends Opaque<Array_Item_15__actual, Array_Item_15> {}
-
-        const Array_Item_15: ArrayCodecAndFactory<Array_Item_15__actual, Array_Item_15> = createArrayCodec<Array_Item_15__actual, Array_Item_15>('Array_Item_15', __dyn_Item, 15)
+        const Array_Str_15: ArrayCodecAndFactory<Array_Str_15__actual, Array_Str_15> = createArrayCodec<Array_Str_15__actual, Array_Str_15>('Array_Str_15', Str, 15)
 
         // Exports
 
-        export { Array_Item_15 }"
+        export { Array_Str_15 }"
     `)
 })
 
@@ -261,25 +264,21 @@ it('Renders option', () => {
         renderFactory({
             OptionHash: {
                 t: 'option',
-                some: 'Hash',
+                some: 'U128',
             },
         }),
     ).toMatchInlineSnapshot(`
-        "import { createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
+        "import { U128, createOptionCodec } from '@scale-codec/definition-runtime'
 
         import type { EnumCodecAndFactory, Opaque, Option } from '@scale-codec/definition-runtime'
 
-        // Dynamic codecs
-
-        const __dyn_Hash = dynCodec(() => Hash)
-
         // Type: OptionHash
 
-        interface OptionHash__actual extends Option<Hash> {}
+        interface OptionHash__actual extends Option<U128> {}
 
         interface OptionHash extends Opaque<OptionHash__actual, OptionHash> {}
 
-        const OptionHash: EnumCodecAndFactory<OptionHash> = createOptionCodec<OptionHash__actual, OptionHash>('OptionHash', __dyn_Hash)
+        const OptionHash: EnumCodecAndFactory<OptionHash> = createOptionCodec<OptionHash__actual, OptionHash>('OptionHash', U128)
 
         // Exports
 
@@ -483,7 +482,7 @@ it('Respects custom `runtimeLib` param', () => {
     `)
 })
 
-it('Respects custom set of knowns types set', () => {
+it('When custom runtimeTypes set is used, it is respected', () => {
     expect(
         renderFactory(
             {
@@ -491,24 +490,14 @@ it('Respects custom set of knowns types set', () => {
                     t: 'alias',
                     ref: 'Foo',
                 },
-
-                // Should not be imported from runtime lib
-                StrAlias: {
-                    t: 'alias',
-                    ref: 'Str',
-                },
             },
 
             { runtimeTypes: new Set(['Foo']) },
         ),
     ).toMatchInlineSnapshot(`
-        "import { Foo, dynCodec } from '@scale-codec/definition-runtime'
+        "import { Foo } from '@scale-codec/definition-runtime'
 
         import type { Codec } from '@scale-codec/definition-runtime'
-
-        // Dynamic codecs
-
-        const __dyn_Str = dynCodec(() => Str)
 
         // Type: FooAlias
 
@@ -516,16 +505,24 @@ it('Respects custom set of knowns types set', () => {
 
         const FooAlias: Codec<FooAlias> = Foo
 
-        // Type: StrAlias
-
-        type StrAlias = Str
-
-        const StrAlias: Codec<StrAlias> = __dyn_Str
-
         // Exports
 
-        export { FooAlias, StrAlias }"
+        export { FooAlias }"
     `)
+})
+
+it('When custom runtimeTypes set is used, default types are not available', () => {
+    expect(() =>
+        renderFactory(
+            {
+                StrAlias: {
+                    t: 'alias',
+                    ref: 'Str',
+                },
+            },
+            { runtimeTypes: new Set(['Foo']) },
+        ),
+    ).toThrowError()
 })
 
 it('When type for void aliases is defined, it is used', () => {
@@ -548,5 +545,55 @@ it('When type for void aliases is defined, it is used', () => {
         // Exports
 
         export { EmptyTuple }"
+    `)
+})
+
+it('When optimizeDyns param is set to true, it is applied', () => {
+    expect(
+        renderFactory(
+            {
+                Foo: {
+                    t: 'option',
+                    some: 'Bar',
+                },
+
+                Bar: {
+                    t: 'option',
+                    some: 'Foo',
+                },
+            },
+
+            {
+                optimizeDyns: true,
+            },
+        ),
+    ).toMatchInlineSnapshot(`
+        "import { createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
+
+        import type { EnumCodecAndFactory, Opaque, Option } from '@scale-codec/definition-runtime'
+
+        // Dynamic codecs
+
+        const __dyn_Bar = dynCodec(() => Bar)
+
+        // Type: Foo
+
+        interface Foo__actual extends Option<Bar> {}
+
+        interface Foo extends Opaque<Foo__actual, Foo> {}
+
+        const Foo: EnumCodecAndFactory<Foo> = createOptionCodec<Foo__actual, Foo>('Foo', __dyn_Bar)
+
+        // Type: Bar
+
+        interface Bar__actual extends Option<Foo> {}
+
+        interface Bar extends Opaque<Bar__actual, Bar> {}
+
+        const Bar: EnumCodecAndFactory<Bar> = createOptionCodec<Bar__actual, Bar>('Bar', Foo)
+
+        // Exports
+
+        export { Bar, Foo }"
     `)
 })

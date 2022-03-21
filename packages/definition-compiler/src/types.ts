@@ -21,6 +21,14 @@ export interface RenderNamespaceDefinitionParams {
      * @default 'Void'
      */
     typeForVoidAliasing?: string
+
+    /**
+     * Enable sorting of types to minimize amount of allocated dynamic references between them
+     *
+     * @default false
+     * @experimental
+     */
+    optimizeDyns?: boolean
 }
 
 /**

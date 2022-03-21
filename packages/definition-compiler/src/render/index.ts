@@ -1,5 +1,5 @@
 import { NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef, DefEnumVariant, DefStructField } from '../types'
-import { Seq } from 'immutable'
+import { Seq, Set as ImmutableSet } from 'immutable'
 import { createDIScope } from './util'
 import { DefaultAvailableBuilders } from '../const'
 import { createNs, Expression, LibName, ModelPart, RefScope } from './namespace'
@@ -353,7 +353,8 @@ export function renderNamespaceDefinition(
                     .toArray(),
             }).render({
                 libModule: params?.runtimeLib ?? '@scale-codec/definition-runtime',
-                libTypes: params?.runtimeTypes ?? DefaultAvailableBuilders,
+                libTypes: ImmutableSet(params?.runtimeTypes ?? DefaultAvailableBuilders),
+                optimizeDyns: params?.optimizeDyns,
             })
         },
     )

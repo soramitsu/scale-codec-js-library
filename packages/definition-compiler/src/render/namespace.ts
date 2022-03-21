@@ -1,4 +1,5 @@
-import { Set as ImSet, List, Seq, Record, RecordOf } from 'immutable'
+import { Set, List, Seq, Record, RecordOf, Map } from 'immutable'
+import { optimizeDepsHierarchy } from './deps-analysis'
 import { renderImports } from './util'
 
 type TemplateFn<E extends any[], T> = (template: TemplateStringsArray, ...expressions: E) => T
@@ -16,9 +17,47 @@ function dynPrefix(ref: string) {
     return `__dyn_${ref}`
 }
 
+function findAllActualRefs(expressions: Expression[]): Set<string> {
+    return expressions.reduce<Set<string>>(
+        (reduction, expr) =>
+            expr instanceof TypeReference && !expr.isPure
+                ? reduction.add(expr.ref)
+                : expr instanceof ModelPart
+                ? reduction.merge(findAllActualRefs(expr.expressions))
+                : reduction,
+        Set(),
+    )
+}
+
+function extractAndValidateDepsGraph(scopes: RefScope[], libRefs: Set<string>): Map<string, Set<string>> {
+    const rawGraph = scopes.reduce<Map<string, Set<string>>>(
+        (reduction, scope) => reduction.set(scope.name, findAllActualRefs(scope.expressions).subtract(libRefs)),
+        Map(),
+    )
+
+    const errors: Set<string> = rawGraph.reduce(
+        (reduction, deps, ref) =>
+            deps.reduce(
+                (reduction, depRef) =>
+                    rawGraph.has(depRef) ? reduction : reduction.add(`unresolved reference: ${ref} -> ${depRef}`),
+                reduction,
+            ),
+
+        Set(),
+    )
+
+    if (errors.size) {
+        const composed = errors.join('; ')
+        throw new Error(`Refs validation failed: ${composed}`)
+    }
+
+    return rawGraph
+}
+
 export interface ModelRenderParams {
     libModule: string
     libTypes: Set<string>
+    optimizeDyns?: boolean
 }
 
 export class NamespaceModel {
@@ -28,15 +67,33 @@ export class NamespaceModel {
      * Render dynCodecs only when it is necessary (i.e. to resolve cyclic deps)
      */
     public render(params: ModelRenderParams): string {
-        let dynRefs = ImSet<string>()
-        let libRefs = ImSet<string>()
-        let libRuntimeHelpers = ImSet<string>()
-        let libTypeHelpers = ImSet<string>()
+        // Traversing refs first to determine their deps graph
+        const depsGraph = extractAndValidateDepsGraph(this.refs, params.libTypes)
 
-        let refsRendered = List<string>()
+        const optimizeData: ReturnType<typeof optimizeDepsHierarchy> | null = params.optimizeDyns
+            ? optimizeDepsHierarchy(depsGraph)
+            : null
+
+        /**
+         * Actual dynamic refs that should be placed before compiled types
+         */
+        let dynRefs = Set<string>()
+
+        // what to import from the lib
+        let libRefs = Set<string>()
+        let libRuntimeHelpers = Set<string>()
+        let libTypeHelpers = Set<string>()
+
+        let renderedRefsCode = Map<string, string>()
+
+        /**
+         * Exports for the compiled module. This will be put in the very end of compile code.
+         */
         let moduleExports = List<string>()
 
         for (const scope of this.refs) {
+            const circuits: undefined | Set<string> = optimizeData?.circuitsResolutions?.get(scope.name)
+
             moduleExports = moduleExports.push(scope.name)
 
             const expandExpressions = (data: TemplateFnData<Expression[]>): string => {
@@ -62,8 +119,15 @@ export class NamespaceModel {
                                 if (isType || isPure) {
                                     parts.push(ref)
                                 } else {
-                                    parts.push(dynPrefix(ref))
-                                    dynRefs = dynRefs.add(ref)
+                                    // here we should determine whether we allocate "dyn" for it or not
+
+                                    // eslint-disable-next-line max-depth
+                                    if (optimizeData && (!circuits || !circuits.has(ref))) {
+                                        parts.push(ref)
+                                    } else {
+                                        parts.push(dynPrefix(ref))
+                                        dynRefs = dynRefs.add(ref)
+                                    }
                                 }
                             }
                         } else if (expr instanceof ImportPart) {
@@ -101,7 +165,7 @@ export class NamespaceModel {
 
             const content = expandExpressions(scope)
 
-            refsRendered = refsRendered.push(`// Type: ${scope.name}\n\n${content}`)
+            renderedRefsCode = renderedRefsCode.set(scope.name, `// Type: ${scope.name}\n\n${content}`)
         }
 
         let renderedDyns: string | undefined
@@ -127,7 +191,16 @@ export class NamespaceModel {
             finalParts = finalParts.push('// Dynamic codecs').push(renderedDyns)
         }
 
-        finalParts = finalParts.push(...refsRendered)
+        // put rendered refs
+        if (optimizeData) {
+            finalParts = finalParts.concat(optimizeData.sorted.map((ref) => renderedRefsCode.get(ref)!))
+        } else {
+            finalParts = finalParts.concat(
+                List(this.refs)
+                    .sortBy((x) => x.name)
+                    .map((x) => renderedRefsCode.get(x.name)!),
+            )
+        }
 
         if (moduleExports.size) {
             const items = Seq(moduleExports).sort().join(', ')
@@ -146,6 +219,9 @@ export class ModelPart {
 export class TypeReference {
     public ref: string
     public isType = false
+    /**
+     * Pure means to not apply "dyn" to this reference
+     */
     public isPure = false
 }
 

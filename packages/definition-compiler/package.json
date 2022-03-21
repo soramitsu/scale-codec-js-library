@@ -39,7 +39,8 @@
         "@scale-codec/enum": "workspace:^1.0.2",
         "@scale-codec/util": "workspace:^1.0.0",
         "immutable": "^4.0.0",
-        "sort-es": "^1.4.6"
+        "sort-es": "^1.4.6",
+        "tarjan-graph": "^3.0.0"
     },
     "devDependencies": {
         "@scale-codec/definition-runtime": "workspace:^2.0.0"
