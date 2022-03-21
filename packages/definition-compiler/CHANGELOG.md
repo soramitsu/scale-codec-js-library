@@ -1,5 +1,15 @@
 # @scale-codec/definition-compiler
 
+## 2.1.0
+
+### Minor Changes
+
+-   22042cf: **feat**: **BREAKING** add refs graph validation, and if it has unresolved references, compiler will throw
+
+### Patch Changes
+
+-   42d05b4: **feat**: add `optimizeDyns` option to enable experimental optimization
+
 ## 2.0.0
 
 ### Major Changes
