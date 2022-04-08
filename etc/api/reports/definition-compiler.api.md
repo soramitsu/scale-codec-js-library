@@ -89,9 +89,11 @@ export function renderNamespaceDefinition(definition: NamespaceDefinition, param
 
 // @public (undocumented)
 export interface RenderNamespaceDefinitionParams {
+    optimizeDyns?: boolean;
     rollupSingleTuplesIntoAliases?: boolean;
     runtimeLib?: string;
     runtimeTypes?: Set<string>;
+    typeForVoidAliasing?: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "WithTMark" needs to be exported by the entry point lib.d.ts

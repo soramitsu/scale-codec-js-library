@@ -1,5 +1,13 @@
 # @scale-codec/core
 
+## 1.0.1
+
+### Patch Changes
+
+-   1f92e19: **types**: remove `DecudeResult` from doc comments
+-   Updated dependencies [1f92e19]
+    -   @scale-codec/enum@1.0.2
+
 ## 1.0.0
 
 ### Major Changes

@@ -5,7 +5,7 @@ def pipeline = new org.js.LibPipeline(
     packageManager: 'pnpm',
     testCmds: ['pnpm check-code-integrity'],
     pushCmds: ['pnpm publish:all'],
-    buildDockerImage: 'build-tools/node:14-ubuntu-cypress',
+    buildDockerImage: 'build-tools/node:16-ubuntu-cypress',
     npmRegistries: [:],
     npmLoginEmail:'admin@soramitsu.co.jp')
 pipeline.runPipeline()

@@ -14,7 +14,7 @@ export type Tags<Def extends EnumGenericDef> = TagsEmpty<Def> | TagsValuable<Def
 
 export type TagValue<Def extends EnumGenericDef, T extends TagsValuable<Def>> = Def extends [T, infer V] ? V : never
 
-export type EnumDef<E extends Enum<any>> = E extends Enum<infer Def> ? Def : never
+export type EnumDef<E> = E extends Enum<infer Def> ? Def : never
 
 export type EnumMatchMap<Def extends EnumGenericDef, R = any> = {
     [T in TagsEmpty<Def>]: () => R
@@ -53,6 +53,7 @@ export const ENUM_EMPTY_VALUE = Symbol('empty')
  */
 export class Enum<Def extends EnumGenericDef> {
     public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
+    public static variant<Def extends EnumGenericDef>(...args: EnumDefToFactoryArgs<Def>): Enum<Def>
     public static variant(tag: string, value = ENUM_EMPTY_VALUE) {
         return new Enum(tag, value)
     }
@@ -64,7 +65,7 @@ export class Enum<Def extends EnumGenericDef> {
      */
     public readonly value: typeof ENUM_EMPTY_VALUE | unknown
 
-    private constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
+    public constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
         this.tag = tag
         this.value = value
     }
@@ -87,7 +88,7 @@ export class Enum<Def extends EnumGenericDef> {
      * @remarks
      * Use it in pair {@link Enum.is} to avoid runtime errors.
      */
-    public as<T extends TagsValuable<Def>>(tag: T): TagValue<EnumGenericDef, T> {
+    public as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T> {
         if (this.is(tag)) {
             if (this.isEmpty) {
                 throw new Error(`Enum cast failed - enum "${tag}" is empty`)

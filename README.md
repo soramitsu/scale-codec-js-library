@@ -15,7 +15,7 @@
 
 ## For DevOps
 
-```shell
+```bash
 # all tests, build, lint, type-ckecking
 pnpm check-code-integrity
 

@@ -1,5 +1,5 @@
 import { A, B, C } from '../samples/aliases'
-import { CodecValueEncodable, encodeStr, U8, WalkerImpl } from '@scale-codec/definition-runtime'
+import { encodeStr, WalkerImpl } from '@scale-codec/definition-runtime'
 
 test('A->B alias encodes as B', () => {
     const str = 'Koora'
@@ -12,7 +12,7 @@ test('B->Str alias encodes as standalone string', () => {
 })
 
 test('C (tuple with inner alias) encodes & decodes OK', () => {
-    const tuple: CodecValueEncodable<typeof C> = ['Hey', 123]
+    const tuple = C(['Hey', 123])
 
     expect(C.fromBuffer(C.toBuffer(tuple))).toEqual(tuple)
 })

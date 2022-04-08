@@ -1,7 +1,7 @@
-import { createStateScope } from '../util'
+import { createDIScope } from '../util'
 
 test('use() returns scope value', () => {
-    const { use, within } = createStateScope<string>()
+    const { inject: use, provide: within } = createDIScope<string>()
 
     within('test', () => {
         expect(use()).toEqual('test')
@@ -9,7 +9,7 @@ test('use() returns scope value', () => {
 })
 
 test('nested use() works', () => {
-    const { use, within } = createStateScope<number>()
+    const { inject: use, provide: within } = createDIScope<number>()
 
     within(3, () => {
         within(5, () => {
@@ -19,7 +19,7 @@ test('nested use() works', () => {
 })
 
 test('1-level use works after nested scope usage', () => {
-    const { use, within } = createStateScope<number>()
+    const { inject: use, provide: within } = createDIScope<number>()
 
     within(3, () => {
         within(5, () => {
@@ -30,7 +30,7 @@ test('1-level use works after nested scope usage', () => {
 })
 
 test('use() throws at 0-level scope', () => {
-    const { use } = createStateScope<number>()
+    const { inject: use } = createDIScope<number>()
 
     expect(() => use()).toThrow()
 })

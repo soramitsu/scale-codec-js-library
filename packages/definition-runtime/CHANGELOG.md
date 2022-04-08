@@ -1,5 +1,16 @@
 # @scale-codec/definition-runtime
 
+## 2.0.0
+
+### Major Changes
+
+-   1f92e19: **BREAKING**: updated runtime for updated compiler. See related compiler's changelog
+
+### Patch Changes
+
+-   Updated dependencies [1f92e19]
+    -   @scale-codec/core@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

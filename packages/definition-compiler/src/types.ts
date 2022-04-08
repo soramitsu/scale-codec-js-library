@@ -16,6 +16,19 @@ export interface RenderNamespaceDefinitionParams {
      * (and a bit performant) if render such tuples just as aliases for the inner element. It is optional feature.
      */
     rollupSingleTuplesIntoAliases?: boolean
+
+    /**
+     * @default 'Void'
+     */
+    typeForVoidAliasing?: string
+
+    /**
+     * Enable sorting of types to minimize amount of allocated dynamic references between them
+     *
+     * @default false
+     * @experimental
+     */
+    optimizeDyns?: boolean
 }
 
 /**

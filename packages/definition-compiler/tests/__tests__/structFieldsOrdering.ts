@@ -1,11 +1,7 @@
 import {
-    encodeStruct,
     encodeUint8Vec,
     encodeCompact,
     encodeStr,
-    Str,
-    VecU8,
-    Compact,
     createStructEncoder,
     WalkerImpl,
 } from '@scale-codec/definition-runtime'
@@ -17,29 +13,9 @@ interface Raw {
     A: Uint8Array
 }
 
-// type Scale = FragmentFromBuilder<typeof Mystery>
-
 function makeRaw(value: Raw): Raw {
     return value
 }
-
-// function makeScale(value: Raw): Scale {
-//     return Mystery.fromValue({
-//         A: BytesVec.fromValue(value.A),
-//         a: Compact.fromValue(value.a),
-//         b: Str.fromValue(value.b),
-//     })
-// }
-
-// function unwrapScale({
-//     value: {
-//         A: { value: A },
-//         a: { value: a },
-//         b: { value: b },
-//     },
-// }: Scale): Raw {
-//     return { A, a, b }
-// }
 
 const rawEncoder = createStructEncoder<Raw>([
     ['b', encodeStr],
@@ -58,7 +34,7 @@ test('Encodes as expected', () => {
         b: 'Nyanpasu',
     })
 
-    expect(Mystery.toBuffer(raw)).toEqual(encodeRaw(raw))
+    expect(Mystery.toBuffer(Mystery(raw))).toEqual(encodeRaw(raw))
 })
 
 test('Decodes as expected', () => {
