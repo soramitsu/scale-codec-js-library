@@ -7,5 +7,5 @@ dist-tsc
 report
 .pnpm-debug.log
 tsdoc-metadata.json
-api-extractor/temp
+/etc/api/tmp
 /coverage
