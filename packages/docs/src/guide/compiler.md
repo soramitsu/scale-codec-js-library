@@ -1,4 +1,4 @@
-# Definition
+# Compiler
 
 ::: info
 Design of this part of the library is still debatable. If you have any suggestions, [you are welcome](https://github.com/soramitsu/scale-codec-js-library/issues)!

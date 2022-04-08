@@ -160,7 +160,7 @@ Enums handling is based on `@scale-codec/enum` package. More info at [Enums guid
 :::
 
 ::: tip
-Core package re-exports everything from `@scale-codec/enum`, so:
+Core package re-exports everything from `@scale-codec/enum`:
 
 ```ts
 import { Enum, Option /* ... */ } from '@scale-codec/core'

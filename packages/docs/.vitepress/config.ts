@@ -21,16 +21,16 @@ function guideSidebar(): SidebarLink[] {
                     link: '/guide/introduction',
                 },
                 {
-                    text: 'Enums',
+                    text: 'Handling Rust enums',
                     link: '/guide/enum',
                 },
                 {
-                    text: 'Core',
+                    text: 'Core library',
                     link: '/guide/core',
                 },
                 {
-                    text: 'Definition',
-                    link: '/guide/definition',
+                    text: 'Compiler',
+                    link: '/guide/compiler',
                 },
             ],
         },
@@ -66,7 +66,7 @@ function miscSidebar(): SidebarLink[] {
                 },
                 {
                     text: 'Maintanence',
-                    link: '/misc/contribution',
+                    link: '/misc/maintanence',
                 },
             ],
         },
@@ -92,8 +92,8 @@ function nav() {
                     link: '/misc/benchmarks',
                 },
                 {
-                    text: 'Contribution',
-                    link: '/misc/contribution',
+                    text: 'Maintanence',
+                    link: '/misc/maintanence',
                 },
             ],
         },
