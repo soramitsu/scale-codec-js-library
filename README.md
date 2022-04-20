@@ -5,13 +5,12 @@
     <p>
         JavaScript implementation of the <a href="https://substrate.dev/docs/en/knowledgebase/advanced/codec">SCALE</a> (Simple Concatenated Aggregate Little-Endian) Codec
     </p>
+    <p>
+        <a href="https://soramitsu.github.io/scale-codec-js-library/">Documentation</a>
+    </p>
 </div>
 
 > Note: it is the root of the monorepo. Actual packages are located at `./packages/`.
-
-## Online Documentation
-
-[Link](https://soramitsu.github.io/scale-codec-js-library/)
 
 ## For DevOps
 
