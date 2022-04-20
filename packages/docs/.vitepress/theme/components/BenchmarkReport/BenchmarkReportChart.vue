@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onUnmounted, PropType, ref, watch } from 'vue'
+import { onUnmounted, PropType, ref, watch, computed } from 'vue'
 import Chart from 'chart.js/auto'
-import { ReportData } from './types'
+import type { ReportData } from './types'
+import { organizeReportData, ReportDataParsed, expandDatasetEntries } from './util'
 
 const props = defineProps({
     data: {
@@ -11,25 +12,20 @@ const props = defineProps({
     label: String,
 })
 
+const dataOrganized = computed<ReportDataParsed | null>(() => props.data && organizeReportData(props.data))
+
 const canvas = ref<null | HTMLCanvasElement>(null)
 
 let chart: Chart | null = null
-
 onUnmounted(() => chart?.destroy())
-
-watch([canvas, () => props.data], ([el, data]) => {
+watch([canvas, dataOrganized], ([el, data]) => {
+    console.log(data)
     if (el && data) {
         chart = new Chart(el, {
             type: 'bar',
-
             data: {
-                labels: data.results.map((x) => x.name),
-                datasets: [
-                    {
-                        label: props.label,
-                        data: data.results.map((x) => x.ops),
-                    },
-                ],
+                labels: data.labels,
+                datasets: expandDatasetEntries(data.datasets),
             },
         })
     }

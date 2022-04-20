@@ -1,12 +1,16 @@
 # Benchmarks
 
-<script setup>
+WIP.
+
+<!-- <script setup>
 import { resultLazy } from './benchmarks.js'
 </script>
 
 ## Array of Integers
 
-### Encoding
+<BenchmarkReport :lazy-data="resultLazy('arr-u64-32')" label="[u64; 32]" /> -->
+
+<!-- ### Encoding
 
 <BenchmarkReport :lazy-data="resultLazy('arr-u64-32-encode')" label="Encoding [u64; 32]" />
 
@@ -22,4 +26,4 @@ import { resultLazy } from './benchmarks.js'
 
 ### Decoding
 
-<BenchmarkReport :lazy-data="resultLazy('struct-decode')" label="Decoding Struct" />
+<BenchmarkReport :lazy-data="resultLazy('struct-decode')" label="Decoding Struct" /> -->

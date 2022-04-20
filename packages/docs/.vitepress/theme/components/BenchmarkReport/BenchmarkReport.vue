@@ -7,7 +7,7 @@ import { useIntersectionObserver, templateRef } from '@vueuse/core'
 
 defineProps({
     lazyData: {
-        type: Function as PropType<() => Promise<ReportData>>,
+        type: Function as PropType<() => Promise<ReportData[]>>,
         required: true,
     },
     label: String,

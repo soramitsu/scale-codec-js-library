@@ -10,13 +10,15 @@
         "logger-demo:node": "esno logger-demo/main"
     },
     "dependencies": {
+        "@scale-codec/benchmark": "workspace:*",
         "@vueuse/core": "^7.6.1",
         "chart.js": "^3.7.1",
+        "immutable": "^4.0.0",
         "vue": "^3.2.30"
     },
     "devDependencies": {
-        "@scale-codec/definition-compiler": "workspace:^2.0.0",
-        "@scale-codec/definition-runtime": "workspace:^2.0.0",
+        "@scale-codec/definition-compiler": "workspace:*",
+        "@scale-codec/definition-runtime": "workspace:*",
         "@types/object-inspect": "^1.8.1",
         "esno": "^0.14.1",
         "sass": "^1.49.8",

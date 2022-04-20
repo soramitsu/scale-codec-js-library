@@ -111,9 +111,8 @@ importers:
   packages/benchmark:
     specifiers:
       '@polkadot/types': ^7.7.1
-      '@polkadot/types-codec': ^7.7.1
-      '@scale-codec/core': workspace:^1.0.1
-      '@scale-codec/definition-runtime': workspace:^2.0.0
+      '@scale-codec/core': workspace:*
+      '@scale-codec/definition-runtime': workspace:*
       benny: ^3.7.1
       consola: ^2.15.3
       esbuild: ^0.14.21
@@ -122,7 +121,6 @@ importers:
       scale-codec-definition-runtime-v-8: npm:@scale-codec/definition-runtime@0.8.1
     dependencies:
       '@polkadot/types': 7.7.1
-      '@polkadot/types-codec': 7.7.1
       '@scale-codec/core': link:../core
       '@scale-codec/definition-runtime': link:../definition-runtime
       benny: 3.7.1
@@ -180,12 +178,14 @@ importers:
 
   packages/docs:
     specifiers:
-      '@scale-codec/definition-compiler': workspace:^2.0.0
-      '@scale-codec/definition-runtime': workspace:^2.0.0
+      '@scale-codec/benchmark': workspace:*
+      '@scale-codec/definition-compiler': workspace:*
+      '@scale-codec/definition-runtime': workspace:*
       '@types/object-inspect': ^1.8.1
       '@vueuse/core': ^7.6.1
       chart.js: ^3.7.1
       esno: ^0.14.1
+      immutable: ^4.0.0
       sass: ^1.49.8
       shiki: ^0.10.1
       vite: ^2.8.4
@@ -194,8 +194,10 @@ importers:
       vue: ^3.2.30
       windicss: ^3.4.3
     dependencies:
+      '@scale-codec/benchmark': link:../benchmark
       '@vueuse/core': 7.6.1_vue@3.2.30
       chart.js: 3.7.1
+      immutable: 4.0.0
       vue: 3.2.30
     devDependencies:
       '@scale-codec/definition-compiler': link:../definition-compiler
@@ -1971,7 +1973,7 @@ packages:
       vite: ^2.5.10
       vue: ^3.2.25
     dependencies:
-      vite: 2.8.4
+      vite: 2.8.4_sass@1.49.8
       vue: 3.2.30
 
   /@vue/compiler-core/3.2.30:

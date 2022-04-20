@@ -14,7 +14,7 @@ interface SidebarLink {
 function guideSidebar(): SidebarLink[] {
     return [
         {
-            text: 'Getting Started',
+            text: 'Guide',
             children: [
                 {
                     text: 'Introduction',
