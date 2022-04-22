@@ -2,5 +2,4 @@
 
 Tool to easily build large SCALE namespaces.
 
-<!-- TODO -->
-<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/namespaces)! -->
+[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/compiler)

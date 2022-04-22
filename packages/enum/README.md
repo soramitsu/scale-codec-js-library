@@ -2,8 +2,7 @@
 
 Lightweight tool for working with Rust enums in JavaScript (with TypeScript support).
 
-<!-- TODO -->
-<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/enum)! -->
+[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/enum)
 
 ## Example
 
