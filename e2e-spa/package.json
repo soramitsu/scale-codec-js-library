@@ -32,7 +32,7 @@
         "rimraf": "^3.0.2",
         "start-server-and-test": "^1.14.0",
         "typescript": "^4.5.5",
-        "vite": "^2.8.1",
+        "vite": "^2.8.4",
         "vue": "^3.2.30",
         "zx": "4.3.0"
     }

@@ -2,5 +2,4 @@
 
 Runtime for `@scale-codec/definition-compiler`.
 
-<!-- TODO -->
-<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/namespaces)! -->
+[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/compiler)

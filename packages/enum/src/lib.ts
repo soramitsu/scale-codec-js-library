@@ -40,6 +40,7 @@ export const ENUM_EMPTY_VALUE = Symbol('empty')
  *
  * ```ts
  * type MyDef = 'EmptyVariant' | ['VarWithBool', boolean]
+ *
  * type MyEnum = Enum<MyDef>
  * ```
  *
@@ -105,7 +106,7 @@ export class Enum<Def extends EnumGenericDef> {
      * @example
      *
      * ```ts
-     * const file: Result<string, Error> = Enum.valuable('Err', new Error('Oops!'))
+     * const file: Result<string, Error> = Enum.variant('Err', new Error('Oops!'))
      *
      * const fileContents = file.match({
      *     Ok: (txt) => txt,
@@ -133,7 +134,7 @@ export class Enum<Def extends EnumGenericDef> {
  * @example
  *
  * ```ts
- * const maybeString: Option<string> = Enum.empty('None')
+ * const maybeString: Option<string> = Enum.variant('None')
  * ```
  */
 export type Option<T> = Enum<'None' | ['Some', T]>
@@ -144,7 +145,7 @@ export type Option<T> = Enum<'None' | ['Some', T]>
  * @example
  *
  * ```ts
- * const file: Result<string, Error> = Enum.valuable('Ok', 'file contents')
+ * const file: Result<string, Error> = Enum.variant('Ok', 'file contents')
  * ```
  */
 export type Result<Ok, Err> = Enum<['Ok', Ok] | ['Err', Err]>

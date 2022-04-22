@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
+:root {
+    --font-family-base: Inter, sans-serif;
+    --code-font-family: 'JetBrains Mono', 'Fira Code', var(--font-family-mono);
+    --code-font-size: 13px;
+    --code-line-height: 1.2em;
+}
+
+.custom-block {
+    // font-size: 14px;
+    line-height: 1.6;
+
+    div[class*='language-'] pre {
+        border-radius: inherit;
+        border: 1px solid darken(#f6f8fa, 10);
+    }
+}
+
+div[class*='language-'] {
+    background: transparent;
+    pre {
+        background: #f6f8fa !important;
+    }
+}
+
+a {
+    font-weight: 500;
+}

@@ -2,8 +2,7 @@
 
 Low-level tools to perform serialization and deserialization via SCALE spec.
 
-<!-- TODO -->
-<!-- Read the [docs](https://soramitsu.github.io/scale-codec-js-library/guide/core)! -->
+[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/core)
 
 ## Example
 

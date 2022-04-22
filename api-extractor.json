@@ -4,13 +4,13 @@
 
     "apiReport": {
         "enabled": true,
-        "reportFolder": "<projectFolder>/api-extractor/reports/",
-        "reportTempFolder": "<projectFolder>/api-extractor/temp/"
+        "reportFolder": "<projectFolder>/etc/api/reports/",
+        "reportTempFolder": "<projectFolder>/etc/api/tmp/"
     },
 
     "docModel": {
         "enabled": true,
-        "apiJsonFilePath": "<projectFolder>/api-extractor/temp/<unscopedPackageName>.api.json"
+        "apiJsonFilePath": "<projectFolder>/etc/api/tmp/<unscopedPackageName>.api.json"
     },
 
     "dtsRollup": {

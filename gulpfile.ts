@@ -1,34 +1,32 @@
-import { $, chalk, path, cd } from 'zx'
+import { $, chalk, cd } from 'zx'
 import del from 'del'
 import { series, parallel } from 'gulp'
 import consola from 'consola'
 import { ExtractorConfig, Extractor } from '@microsoft/api-extractor'
-import compileDocsNamespace from './scripts/compile-docs-namespace'
-import compileCompilerSamples from './scripts/compile-compiler-samples'
-import bundle from './scripts/bundle'
-import bundleForE2e from './scripts/bundle-for-e2e'
-
-const ROOT = __dirname
-
-const BUILD_PACKAGES = ['enum', 'util', 'core', 'definition-compiler', 'definition-runtime']
-// const DECLARATION_PACKAGES = [...BUILD_PACKAGES];
+import compileDocsNamespace from './etc/scripts/compile-docs-namespace'
+import compileCompilerSamples from './etc/scripts/compile-compiler-samples'
+import bundle from './etc/scripts/bundle'
+import bundleForE2e from './etc/scripts/bundle-for-e2e'
+import {
+    BUILD_ARTIFACTS_GLOBS,
+    COMPILER_SAMPLES_OUTPUT_DIR,
+    API_DOCUMENTER_OUTPUT,
+    PUBLIC_PACKAGES_UNSCOPED,
+    SCOPE,
+    ScaleCodecPackageUnscopedName,
+    resolveApiExtractorConfig,
+    resolveTSCPackageOutput,
+    resolveTSCPackageOutputMove,
+    API_EXTRACTOR_TMP_DIR,
+    E2E_ROOT,
+} from './etc/meta'
 
 async function clean() {
-    await del(
-        [
-            'dist',
-            'dist-tsc',
-            'packages/*/dist',
-            'packages/*/dist-tsc',
-            'packages/docs/root/api',
-            'api-extractor/temp',
-            'e2e-spa/runtime-rollup',
-        ].map((x) => path.resolve(ROOT, x)),
-    )
+    await del(BUILD_ARTIFACTS_GLOBS)
 }
 
 async function cleanCompilerSamples() {
-    await del(path.resolve(ROOT, 'packages/definition-compiler/tests/samples'))
+    await del(COMPILER_SAMPLES_OUTPUT_DIR)
 }
 
 async function buildTS() {
@@ -37,16 +35,19 @@ async function buildTS() {
 
     // Copying compiled internals into each package's own `dist` dir
     await Promise.all(
-        BUILD_PACKAGES.map(async (unscopedName) => {
-            const dirFrom = path.resolve(ROOT, 'dist-tsc', unscopedName, 'src')
-            const dirTo = path.resolve(ROOT, 'packages', unscopedName, 'dist-tsc')
+        PUBLIC_PACKAGES_UNSCOPED.map(async (pkg) => {
+            const dirFrom = resolveTSCPackageOutput(pkg)
+            const dirTo = resolveTSCPackageOutputMove(pkg)
             await $`cp -r ${dirFrom} ${dirTo}`
         }),
     )
 }
 
-async function extractPackageApis(unscopedPackageName: string, localBuild = false): Promise<void> {
-    const extractorConfigFile = path.resolve(ROOT, 'packages', unscopedPackageName, 'api-extractor.json')
+async function extractPackageApis(
+    unscopedPackageName: ScaleCodecPackageUnscopedName,
+    localBuild = false,
+): Promise<void> {
+    const extractorConfigFile = resolveApiExtractorConfig(unscopedPackageName)
     const config = ExtractorConfig.loadFileAndPrepare(extractorConfigFile)
     const extractorResult = Extractor.invoke(config, {
         localBuild,
@@ -64,7 +65,7 @@ async function extractPackageApis(unscopedPackageName: string, localBuild = fals
 }
 
 async function extractApisParametrized(localBuild = false) {
-    await Promise.all(BUILD_PACKAGES.map((x) => extractPackageApis(x, localBuild)))
+    await Promise.all(PUBLIC_PACKAGES_UNSCOPED.map((x) => extractPackageApis(x, localBuild)))
 }
 
 function extractApisLocalBuild() {
@@ -79,7 +80,7 @@ function extractApis() {
  * Should be fired after {@link extractApis}
  */
 async function documentApis() {
-    await $`pnpx api-documenter markdown -i api-extractor/temp -o packages/docs/root/api`
+    await $`pnpx api-documenter markdown -i ${API_EXTRACTOR_TMP_DIR} -o ${API_DOCUMENTER_OUTPUT}`
 }
 
 function testUnit() {
@@ -96,8 +97,8 @@ function typeCheck() {
 }
 
 async function publishAll() {
-    for (const pkg of BUILD_PACKAGES) {
-        const pkgFullName = `@scale-codec/${pkg}`
+    for (const pkg of PUBLIC_PACKAGES_UNSCOPED) {
+        const pkgFullName = `${SCOPE}/${pkg}`
 
         consola.info(chalk`Publishing {blue.bold ${pkgFullName}}`)
         await $`pnpm publish --filter ${pkgFullName} --no-git-checks --access public`
@@ -110,7 +111,7 @@ async function publishAll() {
 }
 
 async function runTestInE2eSpa() {
-    cd(path.resolve(ROOT, './e2e-spa'))
+    cd(E2E_ROOT)
     await $`pnpm test`
     cd(__dirname)
 }

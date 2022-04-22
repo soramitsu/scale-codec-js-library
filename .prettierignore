@@ -7,6 +7,6 @@ dist-tsc
 packages/rust-samples
 e2e-spa/runtime-rollup
 e2e-spa/src/namespace.ts
-packages/docs/root/api
+packages/docs/src/api
 namespace-schema-compiled.ts
 

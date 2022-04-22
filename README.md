@@ -1,32 +1,16 @@
-# scale-codec-js-library ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![license](https://img.shields.io/github/license/soramitsu/scale-codec-js-library)
+<div align="center">
+    <h1>SCALE Codec JavaScript</h1>
+    <img src="https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master" alt="built status">
+    <img src="https://img.shields.io/github/license/soramitsu/scale-codec-js-library" alt="license">
+    <p>
+        JavaScript implementation of the <a href="https://substrate.dev/docs/en/knowledgebase/advanced/codec">SCALE</a> (Simple Concatenated Aggregate Little-Endian) Codec
+    </p>
+    <p>
+        <a href="https://soramitsu.github.io/scale-codec-js-library/">Documentation</a>
+    </p>
+</div>
 
-Monorepo with [SCALE codec](https://substrate.dev/docs/en/knowledgebase/advanced/codec) implementation in JavaScript.
-
-## Install
-
-Install `pnpm` if you do not have it installed:
-
-```bash
-npm i -g pnpm
-```
-
-Then install packages
-
-```bash
-pnpm i
-```
-
-## Read The Docs
-
-> **Documentation is outdated and WIP.**
-
-[Read online](https://soramitsu.github.io/scale-codec-js-library/)
-
-Locally:
-
-```bash
-pnpm docs:dev
-```
+> Note: it is the root of the monorepo. Actual packages are located at `./packages/`.
 
 ## For DevOps
 
@@ -41,6 +25,6 @@ pnpm build
 pnpm publish-all
 
 # docs build
-# result at packages/docs/root/.vitepress/dist
+# result at packages/docs/.vitepress/dist
 pnpm docs:build
 ```

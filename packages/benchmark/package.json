@@ -9,9 +9,8 @@
     },
     "dependencies": {
         "@polkadot/types": "^7.7.1",
-        "@polkadot/types-codec": "^7.7.1",
-        "@scale-codec/core": "workspace:^1.0.1",
-        "@scale-codec/definition-runtime": "workspace:^2.0.0",
+        "@scale-codec/core": "workspace:*",
+        "@scale-codec/definition-runtime": "workspace:*",
         "benny": "^3.7.1",
         "consola": "^2.15.3",
         "scale-codec-core-v-4": "npm:@scale-codec/core@0.4.1",
