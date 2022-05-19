@@ -239,6 +239,97 @@ export const circular = defineSample({
     },
 })
 
+const EXPERIMENTAL = {
+    // optional, has defaults
+    stds: [],
+    externals: ['Simple', 'Generic<T, U, K, V>', { name: 'InModule<T>', importAs: 'LocalName' }],
+    namespace: {
+        'Event<T>': {
+            t: 'enum',
+            variants: [
+                {
+                    discriminant: 0,
+                    name: 'None',
+                },
+                // associated value
+                {
+                    discriminant: 0,
+                    name: 'AssocVal',
+                    value: 'U64',
+                },
+                // associated value with static generic
+                {
+                    discriminant: 0,
+                    name: 'AssocValStat',
+                    value: 'Option<Str>',
+                },
+                // associated generic value
+                {
+                    discriminant: 0,
+                    name: 'AssocValGen',
+                    value: 'Option<T>',
+                },
+                // assoc tuple
+                {
+                    // ..
+                    value: {
+                        t: 'tuple',
+                        values: ['Str', 'U8'],
+                    },
+                },
+                // assoc tuple with gen
+                {
+                    // ..
+                    value: {
+                        t: 'tuple',
+                        values: ['T', 'T'],
+                    },
+                },
+                {
+                    // ..
+                    value: {
+                        t: 'struct',
+                        fields: [{ name: 'first', value: 'Str' }],
+                    },
+                },
+                // inner struct with generic
+                {
+                    discriminant: 0,
+                    name: 'Message',
+                    value: {
+                        t: 'struct',
+                        fields: [
+                            {
+                                name: 'msg',
+                                value: 'T',
+                            },
+                            {
+                                name: 'sender',
+                                value: 'Str',
+                            },
+                        ],
+                    },
+                },
+                // or...
+                {
+                    // ...
+                    value: {
+                        t: 'struct-tuple',
+                        values: [],
+                    },
+                },
+                {
+                    // ...
+                    value: {
+                        t: 'struct-named',
+                        fields: [],
+                    },
+                },
+            ],
+        },
+    },
+}
+
 export const reallyDeepTypesTree = defineSample({
     BTreeMapStringEvaluatesToValue: { t: 'map', key: 'Str', value: 'EvaluatesToValue' },
     BTreeMapPublicKeySignatureOfCommittedBlock: { t: 'map', key: 'PublicKey', value: 'SignatureOfCommittedBlock' },
