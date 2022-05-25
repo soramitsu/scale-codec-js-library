@@ -18,8 +18,8 @@ pnpm i
 
 ## IDE setup
 
--   VSCode + Prettier-ESLint extension (single one) with auto-formatting
--   Open in repo root
+- VSCode + Prettier-ESLint extension (single one) with auto-formatting
+- Open in repo root
 
 ## Scripts
 
@@ -96,7 +96,7 @@ Repo is set up to use [changesets](https://github.com/atlassian/changesets) for 
 
 #### Also
 
--   [Backstage project - writing changesets](https://backstage.io/docs/getting-started/contributors#writing-changesets)
+- [Backstage project - writing changesets](https://backstage.io/docs/getting-started/contributors#writing-changesets)
 
 ## Testing
 

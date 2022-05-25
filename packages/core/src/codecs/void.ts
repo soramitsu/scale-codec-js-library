@@ -5,8 +5,8 @@ import { encodeFactory } from '../util'
  * Encoder to handle void types like `()` from Rust
  */
 export const encodeVoid: Encode<null> = encodeFactory(
-    () => {},
-    () => 0,
+  () => {},
+  () => 0,
 )
 
 /**

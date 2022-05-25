@@ -8,6 +8,6 @@ export const reg = new TypeRegistry()
 export const PolkaType = reg.createClass('BTreeSet<Compact<BlockNumber>>')
 
 export default defineCodec<Set<any>>({
-    encode: (x) => new PolkaType(reg, x).toU8a(),
-    decode: (x) => new PolkaType(reg, x) as any,
+  encode: (x) => new PolkaType(reg, x).toU8a(),
+  decode: (x) => new PolkaType(reg, x) as any,
 })

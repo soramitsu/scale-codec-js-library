@@ -2,18 +2,18 @@ import { renderNamespaceDefinition } from '..'
 import { NamespaceDefinition, RenderNamespaceDefinitionParams } from '../../types'
 
 function renderFactory(def: NamespaceDefinition, params?: RenderNamespaceDefinitionParams): string {
-    return renderNamespaceDefinition(def, params)
+  return renderNamespaceDefinition(def, params)
 }
 
 it('Renders vec', () => {
-    expect(
-        renderFactory({
-            Vec_str: {
-                t: 'vec',
-                item: 'Str',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      Vec_str: {
+        t: 'vec',
+        item: 'Str',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { Str, createVecCodec } from '@scale-codec/definition-runtime'
 
         import type { ArrayCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
@@ -33,29 +33,29 @@ it('Renders vec', () => {
 })
 
 it('Renders struct + tuple', () => {
-    expect(
-        renderFactory({
-            Structural: {
-                t: 'struct',
-                fields: [
-                    {
-                        name: 'nums',
-                        ref: 'Tuple_u8_i128',
-                    },
+  expect(
+    renderFactory({
+      Structural: {
+        t: 'struct',
+        fields: [
+          {
+            name: 'nums',
+            ref: 'Tuple_u8_i128',
+          },
 
-                    {
-                        name: 'mur',
-                        ref: 'Bool',
-                    },
-                ],
-            },
+          {
+            name: 'mur',
+            ref: 'Bool',
+          },
+        ],
+      },
 
-            Tuple_u8_i128: {
-                t: 'tuple',
-                items: ['U8', 'I128'],
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+      Tuple_u8_i128: {
+        t: 'tuple',
+        items: ['U8', 'I128'],
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { Bool, I128, U8, createStructCodec, createTupleCodec, dynCodec } from '@scale-codec/definition-runtime'
 
         import type { ArrayCodecAndFactory, Opaque, StructCodecAndFactory } from '@scale-codec/definition-runtime'
@@ -93,25 +93,25 @@ it('Renders struct + tuple', () => {
 })
 
 it('Renders enum', () => {
-    expect(
-        renderFactory({
-            Message: {
-                t: 'enum',
-                variants: [
-                    {
-                        name: 'Quit',
-                        discriminant: 0,
-                    },
+  expect(
+    renderFactory({
+      Message: {
+        t: 'enum',
+        variants: [
+          {
+            name: 'Quit',
+            discriminant: 0,
+          },
 
-                    {
-                        name: 'Greeting',
-                        discriminant: 1,
-                        ref: 'Str',
-                    },
-                ],
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+          {
+            name: 'Greeting',
+            discriminant: 1,
+            ref: 'Str',
+          },
+        ],
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { Enum, Str, createEnumCodec } from '@scale-codec/definition-runtime'
 
         import type { EnumCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
@@ -137,19 +137,19 @@ it('Renders enum', () => {
 })
 
 it('Renders set', () => {
-    expect(
-        renderFactory({
-            Set_Message: {
-                t: 'set',
-                entry: 'Message',
-            },
+  expect(
+    renderFactory({
+      Set_Message: {
+        t: 'set',
+        entry: 'Message',
+      },
 
-            Message: {
-                t: 'alias',
-                ref: 'Void',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+      Message: {
+        t: 'alias',
+        ref: 'Void',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { Void, createSetCodec, dynCodec } from '@scale-codec/definition-runtime'
 
         import type { Codec, Opaque, SetCodecAndFactory } from '@scale-codec/definition-runtime'
@@ -179,15 +179,15 @@ it('Renders set', () => {
 })
 
 it('Renders map', () => {
-    expect(
-        renderFactory({
-            Map_str_i64: {
-                t: 'map',
-                key: 'Str',
-                value: 'I64',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      Map_str_i64: {
+        t: 'map',
+        key: 'Str',
+        value: 'I64',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { I64, Str, createMapCodec } from '@scale-codec/definition-runtime'
 
         import type { MapCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
@@ -207,15 +207,15 @@ it('Renders map', () => {
 })
 
 it('Renders array', () => {
-    expect(
-        renderFactory({
-            Array_Str_15: {
-                t: 'array',
-                item: 'Str',
-                len: 15,
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      Array_Str_15: {
+        t: 'array',
+        item: 'Str',
+        len: 15,
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { Str, createArrayCodec } from '@scale-codec/definition-runtime'
 
         import type { ArrayCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
@@ -235,14 +235,14 @@ it('Renders array', () => {
 })
 
 it('Renders bytes array', () => {
-    expect(
-        renderFactory({
-            Hash: {
-                t: 'bytes-array',
-                len: 64,
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      Hash: {
+        t: 'bytes-array',
+        len: 64,
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { createArrayU8Codec } from '@scale-codec/definition-runtime'
 
         import type { Codec } from '@scale-codec/definition-runtime'
@@ -260,14 +260,14 @@ it('Renders bytes array', () => {
 })
 
 it('Renders option', () => {
-    expect(
-        renderFactory({
-            OptionHash: {
-                t: 'option',
-                some: 'U128',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      OptionHash: {
+        t: 'option',
+        some: 'U128',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { U128, createOptionCodec } from '@scale-codec/definition-runtime'
 
         import type { EnumCodecAndFactory, Opaque, Option } from '@scale-codec/definition-runtime'
@@ -287,14 +287,14 @@ it('Renders option', () => {
 })
 
 it('Renders empty struct as void alias', () => {
-    expect(
-        renderFactory({
-            EmptyStruct: {
-                t: 'struct',
-                fields: [],
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      EmptyStruct: {
+        t: 'struct',
+        fields: [],
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "// Type: EmptyStruct
 
         import { Void as EmptyStruct } from '@scale-codec/definition-runtime'
@@ -306,14 +306,14 @@ it('Renders empty struct as void alias', () => {
 })
 
 it('Renders empty tuple as void alias', () => {
-    expect(
-        renderFactory({
-            EmptyTuple: {
-                t: 'tuple',
-                items: [],
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      EmptyTuple: {
+        t: 'tuple',
+        items: [],
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "// Type: EmptyTuple
 
         import { Void as EmptyTuple } from '@scale-codec/definition-runtime'
@@ -325,14 +325,14 @@ it('Renders empty tuple as void alias', () => {
 })
 
 it('Renders an alias for some inner type', () => {
-    expect(
-        renderFactory({
-            StringAlias: {
-                t: 'alias',
-                ref: 'Str',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      StringAlias: {
+        t: 'alias',
+        ref: 'Str',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { Str } from '@scale-codec/definition-runtime'
 
         import type { Codec } from '@scale-codec/definition-runtime'
@@ -350,18 +350,18 @@ it('Renders an alias for some inner type', () => {
 })
 
 it('Renders single tuple as alias in case when the related option is enabled', async () => {
-    expect(
-        renderFactory(
-            {
-                SingleTuple: { t: 'tuple', items: ['U128'] },
-                MultiTuple: { t: 'tuple', items: ['U8', 'Bool'] },
-            },
+  expect(
+    renderFactory(
+      {
+        SingleTuple: { t: 'tuple', items: ['U128'] },
+        MultiTuple: { t: 'tuple', items: ['U8', 'Bool'] },
+      },
 
-            {
-                rollupSingleTuplesIntoAliases: true,
-            },
-        ),
-    ).toMatchInlineSnapshot(`
+      {
+        rollupSingleTuplesIntoAliases: true,
+      },
+    ),
+  ).toMatchInlineSnapshot(`
         "import { Bool, U128, U8, createTupleCodec } from '@scale-codec/definition-runtime'
 
         import type { ArrayCodecAndFactory, Codec, Opaque } from '@scale-codec/definition-runtime'
@@ -387,14 +387,14 @@ it('Renders single tuple as alias in case when the related option is enabled', a
 })
 
 it('Render import for the external type as expected', () => {
-    expect(
-        renderFactory({
-            MyCustomExternal: {
-                t: 'import',
-                module: './module-with-externals',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      MyCustomExternal: {
+        t: 'import',
+        module: './module-with-externals',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "// Type: MyCustomExternal
 
         import { MyCustomExternal } from './module-with-externals'
@@ -406,15 +406,15 @@ it('Render import for the external type as expected', () => {
 })
 
 it('Renders imports for the external type using the custom name if provided', () => {
-    expect(
-        renderFactory({
-            ReExportMe: {
-                t: 'import',
-                module: 'some-package',
-                nameInModule: 're_export_me',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      ReExportMe: {
+        t: 'import',
+        module: 'some-package',
+        nameInModule: 're_export_me',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "// Type: ReExportMe
 
         import { re_export_me as ReExportMe } from 'some-package'
@@ -426,15 +426,15 @@ it('Renders imports for the external type using the custom name if provided', ()
 })
 
 it('Renders result', () => {
-    expect(
-        renderFactory({
-            ResultI128Str: {
-                t: 'result',
-                ok: 'I128',
-                err: 'Str',
-            },
-        }),
-    ).toMatchInlineSnapshot(`
+  expect(
+    renderFactory({
+      ResultI128Str: {
+        t: 'result',
+        ok: 'I128',
+        err: 'Str',
+      },
+    }),
+  ).toMatchInlineSnapshot(`
         "import { I128, Str, createResultCodec } from '@scale-codec/definition-runtime'
 
         import type { EnumCodecAndFactory, Opaque, Result } from '@scale-codec/definition-runtime'
@@ -454,18 +454,18 @@ it('Renders result', () => {
 })
 
 it('Respects custom `runtimeLib` param', () => {
-    expect(
-        renderFactory(
-            {
-                S: {
-                    t: 'alias',
-                    ref: 'Str',
-                },
-            },
+  expect(
+    renderFactory(
+      {
+        S: {
+          t: 'alias',
+          ref: 'Str',
+        },
+      },
 
-            { runtimeLib: 'custom-runtime-lib' },
-        ),
-    ).toMatchInlineSnapshot(`
+      { runtimeLib: 'custom-runtime-lib' },
+    ),
+  ).toMatchInlineSnapshot(`
         "import { Str } from 'custom-runtime-lib'
 
         import type { Codec } from 'custom-runtime-lib'
@@ -483,18 +483,18 @@ it('Respects custom `runtimeLib` param', () => {
 })
 
 it('When custom runtimeTypes set is used, it is respected', () => {
-    expect(
-        renderFactory(
-            {
-                FooAlias: {
-                    t: 'alias',
-                    ref: 'Foo',
-                },
-            },
+  expect(
+    renderFactory(
+      {
+        FooAlias: {
+          t: 'alias',
+          ref: 'Foo',
+        },
+      },
 
-            { runtimeTypes: new Set(['Foo']) },
-        ),
-    ).toMatchInlineSnapshot(`
+      { runtimeTypes: new Set(['Foo']) },
+    ),
+  ).toMatchInlineSnapshot(`
         "import { Foo } from '@scale-codec/definition-runtime'
 
         import type { Codec } from '@scale-codec/definition-runtime'
@@ -512,32 +512,32 @@ it('When custom runtimeTypes set is used, it is respected', () => {
 })
 
 it('When custom runtimeTypes set is used, default types are not available', () => {
-    expect(() =>
-        renderFactory(
-            {
-                StrAlias: {
-                    t: 'alias',
-                    ref: 'Str',
-                },
-            },
-            { runtimeTypes: new Set(['Foo']) },
-        ),
-    ).toThrowError()
+  expect(() =>
+    renderFactory(
+      {
+        StrAlias: {
+          t: 'alias',
+          ref: 'Str',
+        },
+      },
+      { runtimeTypes: new Set(['Foo']) },
+    ),
+  ).toThrowError()
 })
 
 it('When type for void aliases is defined, it is used', () => {
-    expect(
-        renderFactory(
-            {
-                EmptyTuple: {
-                    t: 'tuple',
-                    items: [],
-                },
-            },
+  expect(
+    renderFactory(
+      {
+        EmptyTuple: {
+          t: 'tuple',
+          items: [],
+        },
+      },
 
-            { typeForVoidAliasing: 'SomeCustomVoid' },
-        ),
-    ).toMatchInlineSnapshot(`
+      { typeForVoidAliasing: 'SomeCustomVoid' },
+    ),
+  ).toMatchInlineSnapshot(`
         "// Type: EmptyTuple
 
         import { SomeCustomVoid as EmptyTuple } from '@scale-codec/definition-runtime'
@@ -549,25 +549,25 @@ it('When type for void aliases is defined, it is used', () => {
 })
 
 it('When optimizeDyns param is set to true, it is applied', () => {
-    expect(
-        renderFactory(
-            {
-                Foo: {
-                    t: 'option',
-                    some: 'Bar',
-                },
+  expect(
+    renderFactory(
+      {
+        Foo: {
+          t: 'option',
+          some: 'Bar',
+        },
 
-                Bar: {
-                    t: 'option',
-                    some: 'Foo',
-                },
-            },
+        Bar: {
+          t: 'option',
+          some: 'Foo',
+        },
+      },
 
-            {
-                optimizeDyns: true,
-            },
-        ),
-    ).toMatchInlineSnapshot(`
+      {
+        optimizeDyns: true,
+      },
+    ),
+  ).toMatchInlineSnapshot(`
         "import { createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
 
         import type { EnumCodecAndFactory, Opaque, Option } from '@scale-codec/definition-runtime'

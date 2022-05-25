@@ -2,6 +2,6 @@ import { encodeCompact, encodeSet, decodeCompact, decodeSet } from 'scale-codec-
 import { defineCodec } from '../types'
 
 export default defineCodec<Set<bigint | number>>({
-    encode: (val) => encodeSet(val, encodeCompact),
-    decode: (input) => decodeSet(input, decodeCompact)[0],
+  encode: (val) => encodeSet(val, encodeCompact),
+  decode: (input) => decodeSet(input, decodeCompact)[0],
 })

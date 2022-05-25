@@ -1,53 +1,53 @@
 {
-    "name": "@scale-codec/core",
-    "version": "1.0.1",
-    "description": "Low-level tools to perform serialization and deserialization via SCALE spec",
-    "license": "Apache-2.0",
-    "keywords": [
-        "SCALE",
-        "codec",
-        "binary",
-        "parity-scale-codec",
-        "serialization",
-        "typescript",
-        "rust",
-        "encoding"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
-    },
-    "bugs": {
-        "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
-    },
-    "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
-    "main": "src/lib.ts",
-    "engines": {
-        "node": ">=14.5.0"
-    },
-    "engineStrict": true,
-    "publishConfig": {
-        "main": "./dist/lib.cjs.js",
-        "module": "./dist/lib.esm.js",
-        "types": "./dist/lib.d.ts",
-        "exports": {
-            ".": {
-                "import": "./dist/lib.esm.js",
-                "require": "./dist/lib.cjs.js"
-            },
-            "./*": "./*"
-        }
-    },
-    "files": [
-        "dist",
-        "CHANGELOG.md"
-    ],
-    "dependencies": {
-        "@scale-codec/enum": "workspace:^1.0.2",
-        "@scale-codec/util": "workspace:^1.0.0"
-    },
-    "devDependencies": {
-        "hada": "^0.0.8",
-        "type-fest": "^2.11.2"
+  "name": "@scale-codec/core",
+  "version": "1.0.1",
+  "description": "Low-level tools to perform serialization and deserialization via SCALE spec",
+  "license": "Apache-2.0",
+  "keywords": [
+    "SCALE",
+    "codec",
+    "binary",
+    "parity-scale-codec",
+    "serialization",
+    "typescript",
+    "rust",
+    "encoding"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
+  },
+  "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
+  "main": "src/lib.ts",
+  "engines": {
+    "node": ">=14.5.0"
+  },
+  "engineStrict": true,
+  "publishConfig": {
+    "main": "./dist/lib.cjs.js",
+    "module": "./dist/lib.esm.js",
+    "types": "./dist/lib.d.ts",
+    "exports": {
+      ".": {
+        "import": "./dist/lib.esm.js",
+        "require": "./dist/lib.cjs.js"
+      },
+      "./*": "./*"
     }
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "dependencies": {
+    "@scale-codec/enum": "workspace:^1.0.2",
+    "@scale-codec/util": "workspace:^1.0.0"
+  },
+  "devDependencies": {
+    "hada": "^0.0.8",
+    "type-fest": "^2.11.2"
+  }
 }

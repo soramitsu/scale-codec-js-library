@@ -12,7 +12,7 @@ import { createStructEncoder, encodeU8, encodeBool, createTupleEncoder, WalkerIm
 type SampleTuple = [number, boolean]
 
 type SampleStruct = {
-    tuple: SampleTuple
+  tuple: SampleTuple
 }
 
 const tupleEncoder = createTupleEncoder<SampleTuple>([encodeU8, encodeBool])

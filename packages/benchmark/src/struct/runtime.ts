@@ -3,11 +3,11 @@ import { defineCodec } from '../types'
 import { factory } from './util'
 
 const SampleCodec = createStructCodec(
-    'Sample',
-    Object.keys(factory()).map((key) => [key, Bool]),
+  'Sample',
+  Object.keys(factory()).map((key) => [key, Bool]),
 )
 
 export default defineCodec<any>({
-    encode: (x) => SampleCodec.toBuffer(x),
-    decode: (x) => SampleCodec.fromBuffer(x),
+  encode: (x) => SampleCodec.toBuffer(x),
+  decode: (x) => SampleCodec.fromBuffer(x),
 })

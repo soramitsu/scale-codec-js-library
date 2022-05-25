@@ -1,36 +1,36 @@
 import { createDIScope } from '../util'
 
 test('use() returns scope value', () => {
-    const { inject: use, provide: within } = createDIScope<string>()
+  const { inject: use, provide: within } = createDIScope<string>()
 
-    within('test', () => {
-        expect(use()).toEqual('test')
-    })
+  within('test', () => {
+    expect(use()).toEqual('test')
+  })
 })
 
 test('nested use() works', () => {
-    const { inject: use, provide: within } = createDIScope<number>()
+  const { inject: use, provide: within } = createDIScope<number>()
 
-    within(3, () => {
-        within(5, () => {
-            expect(use()).toEqual(5)
-        })
+  within(3, () => {
+    within(5, () => {
+      expect(use()).toEqual(5)
     })
+  })
 })
 
 test('1-level use works after nested scope usage', () => {
-    const { inject: use, provide: within } = createDIScope<number>()
+  const { inject: use, provide: within } = createDIScope<number>()
 
-    within(3, () => {
-        within(5, () => {
-            use()
-        })
-        expect(use()).toEqual(3)
+  within(3, () => {
+    within(5, () => {
+      use()
     })
+    expect(use()).toEqual(3)
+  })
 })
 
 test('use() throws at 0-level scope', () => {
-    const { inject: use } = createDIScope<number>()
+  const { inject: use } = createDIScope<number>()
 
-    expect(() => use()).toThrow()
+  expect(() => use()).toThrow()
 })
