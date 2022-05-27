@@ -52,38 +52,38 @@ msg = Enum.variant('Log', 'hello')
 
 ## Working with created enums
 
--   `.is(tag)` - to check for enum's actual tag, and `.as(tag)` - to extract enum value if its tag is appropriate, throw otherwise
+- `.is(tag)` - to check for enum's actual tag, and `.as(tag)` - to extract enum value if its tag is appropriate, throw otherwise
 
-    ```ts
-    const result: Result<number, string> = /* --snip-- */ ___
+  ```ts
+  const result: Result<number, string> = /* --snip-- */ ___
 
-    if (result.is('Ok')) {
-        const num = result.as('Ok')
-        console.log('Task result num:', num)
-    } else {
-        const errorMessage = result.as('Err')
-        console.error('Task resulted with an error:', errorMessage)
-    }
-    ```
+  if (result.is('Ok')) {
+    const num = result.as('Ok')
+    console.log('Task result num:', num)
+  } else {
+    const errorMessage = result.as('Err')
+    console.error('Task resulted with an error:', errorMessage)
+  }
+  ```
 
--   `.match(matchMap)` - to use a poor analogy of pattern matching
+- `.match(matchMap)` - to use a poor analogy of pattern matching
 
-    ```ts
-    const result: Result<number, string> = /* --snip-- */ ___
+  ```ts
+  const result: Result<number, string> = /* --snip-- */ ___
 
-    const mapped: Option<number> = result.match({
-        Ok(num) {
-            return Enum.variant('Some', num)
-        },
-        Err() {
-            return Enum.variant('None')
-        },
-    })
-    ```
+  const mapped: Option<number> = result.match({
+    Ok(num) {
+      return Enum.variant('Some', num)
+    },
+    Err() {
+      return Enum.variant('None')
+    },
+  })
+  ```
 
-    ::: tip
-    You can use `match` method just for side-effects without returning anything from it.
-    :::
+  ::: tip
+  You can use `match` method just for side-effects without returning anything from it.
+  :::
 
 ## Conclusion
 

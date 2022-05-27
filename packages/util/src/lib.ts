@@ -7,49 +7,49 @@
  * Good-old assert
  */
 export function assert(condition: unknown, message: string | (() => string)): asserts condition {
-    if (!condition) {
-        throw new Error(typeof message === 'function' ? message() : message)
-    }
+  if (!condition) {
+    throw new Error(typeof message === 'function' ? message() : message)
+  }
 }
 
 /**
  * Creates a concatenated `Uint8Array` from the inputs.
  */
 export function concatBytes(iterable: Iterable<Uint8Array> | Array<Uint8Array>): Uint8Array {
-    // constructing array + computing length
-    let array: Array<Uint8Array>
-    let bytesLength = 0
+  // constructing array + computing length
+  let array: Array<Uint8Array>
+  let bytesLength = 0
 
-    if (Array.isArray(iterable)) {
-        array = iterable
-        for (let i = 0, arrLen = array.length; i < arrLen; i++) {
-            bytesLength += array[i].byteLength
-        }
-    } else {
-        array = []
-        for (const part of iterable) {
-            array.push(part)
-            bytesLength += part.byteLength
-        }
+  if (Array.isArray(iterable)) {
+    array = iterable
+    for (let i = 0, arrLen = array.length; i < arrLen; i++) {
+      bytesLength += array[i].byteLength
     }
-
-    // filling target
-    const target = new Uint8Array(bytesLength)
-
-    for (let i = 0, offset = 0, arrLen = array.length; i < arrLen; i++) {
-        target.set(array[i], offset)
-        offset += array[i].length
+  } else {
+    array = []
+    for (const part of iterable) {
+      array.push(part)
+      bytesLength += part.byteLength
     }
+  }
 
-    return target
+  // filling target
+  const target = new Uint8Array(bytesLength)
+
+  for (let i = 0, offset = 0, arrLen = array.length; i < arrLen; i++) {
+    target.set(array[i], offset)
+    offset += array[i].length
+  }
+
+  return target
 }
 
 /**
  * Returns value from `map` by `key` and throws if there is no such key
  */
 export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
-    if (!map.has(key)) throw new Error(`failed to unwrap - key "${key}" not found`)
-    return map.get(key)!
+  if (!map.has(key)) throw new Error(`failed to unwrap - key "${key}" not found`)
+  return map.get(key)!
 }
 
 /**
@@ -61,7 +61,7 @@ export function mapGetUnwrap<K, V>(map: Map<K, V>, key: K): V {
  * ```
  */
 export function toHex(v: Uint8Array): string {
-    return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ')
+  return [...v].map((x) => x.toString(16).padStart(2, '0')).join(' ')
 }
 
 /**
@@ -73,5 +73,5 @@ export function toHex(v: Uint8Array): string {
  * ```
  */
 export function fromHex(hex: string): Uint8Array {
-    return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)))
+  return Uint8Array.from(hex.split(' ').map((x) => parseInt(x, 16)))
 }

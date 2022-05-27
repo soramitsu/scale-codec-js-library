@@ -39,4 +39,4 @@ Options:
 
 ### TODO
 
--   Maybe use another CLI helper that works fine with required arguments.
+- Maybe use another CLI helper that works fine with required arguments.

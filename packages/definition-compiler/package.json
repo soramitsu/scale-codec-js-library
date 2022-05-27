@@ -1,52 +1,52 @@
 {
-    "name": "@scale-codec/definition-compiler",
-    "version": "2.1.0",
-    "description": "SCALE-codec types namespace definition compiler",
-    "keywords": [
-        "SCALE",
-        "scale-codec",
-        "typescript",
-        "compiler",
-        "namespace"
-    ],
-    "license": "Apache-2.0",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
-    },
-    "bugs": {
-        "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
-    },
-    "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
-    "main": "src/lib.ts",
-    "publishConfig": {
-        "main": "./dist/lib.cjs.js",
-        "module": "./dist/lib.esm.js",
-        "types": "./dist/lib.d.ts",
-        "exports": {
-            ".": {
-                "import": "./dist/lib.esm.js",
-                "require": "./dist/lib.cjs.js"
-            },
-            "./*": "./*"
-        }
-    },
-    "files": [
-        "dist",
-        "CHANGELOG.md"
-    ],
-    "dependencies": {
-        "@scale-codec/enum": "workspace:^1.0.2",
-        "@scale-codec/util": "workspace:^1.0.0",
-        "immutable": "^4.0.0",
-        "sort-es": "^1.4.6",
-        "tarjan-graph": "^3.0.0"
-    },
-    "devDependencies": {
-        "@scale-codec/definition-runtime": "workspace:^2.0.0"
-    },
-    "engines": {
-        "node": ">16.8"
-    },
-    "engineStrict": true
+  "name": "@scale-codec/definition-compiler",
+  "version": "2.1.0",
+  "description": "SCALE-codec types namespace definition compiler",
+  "keywords": [
+    "SCALE",
+    "scale-codec",
+    "typescript",
+    "compiler",
+    "namespace"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
+  },
+  "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
+  "main": "src/lib.ts",
+  "publishConfig": {
+    "main": "./dist/lib.cjs.js",
+    "module": "./dist/lib.esm.js",
+    "types": "./dist/lib.d.ts",
+    "exports": {
+      ".": {
+        "import": "./dist/lib.esm.js",
+        "require": "./dist/lib.cjs.js"
+      },
+      "./*": "./*"
+    }
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "dependencies": {
+    "@scale-codec/enum": "workspace:^1.0.2",
+    "@scale-codec/util": "workspace:^1.0.0",
+    "immutable": "^4.0.0",
+    "sort-es": "^1.4.6",
+    "tarjan-graph": "^3.0.0"
+  },
+  "devDependencies": {
+    "@scale-codec/definition-runtime": "workspace:^2.0.0"
+  },
+  "engines": {
+    "node": ">16.8"
+  },
+  "engineStrict": true
 }

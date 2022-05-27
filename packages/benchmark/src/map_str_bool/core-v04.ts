@@ -2,6 +2,6 @@ import { decodeBool, decodeMap, decodeStr, encodeBool, encodeMap, encodeStr } fr
 import { defineCodec } from '../types'
 
 export default defineCodec<Map<string, boolean>>({
-    encode: (v) => encodeMap(v, encodeStr, encodeBool),
-    decode: (b) => decodeMap(b, decodeStr, decodeBool)[0],
+  encode: (v) => encodeMap(v, encodeStr, encodeBool),
+  decode: (b) => decodeMap(b, decodeStr, decodeBool)[0],
 })

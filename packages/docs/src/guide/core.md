@@ -4,33 +4,33 @@ This library is a pure low-level performant implementation of SCALE.
 
 ## Supported types
 
--   **Primitive:**
+- **Primitive:**
 
-    | Spec    | JS Type             | Details                                                                                                                                                             |
-    | ------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-    | Int     | `number`, `bigint`  | signed & unsigned, 8/16/32/64/128/etc bits. For ints with bits less than or equal 32 both `number` & `bigint` could be used, for 64+ bits integers - only `bigint`. |
-    | Compact | `number`, `bigint`  | -                                                                                                                                                                   |
-    | String  | `string`            | -                                                                                                                                                                   |
-    | Bool    | `boolean`           | -                                                                                                                                                                   |
-    | Void    | `null`, `undefined` | `()` in Rust. Unfortunately, JavaScript doesn't have zero-cost abstractions, so this codec could be used to handle it.                                              |
+  | Spec    | JS Type             | Details                                                                                                                                                             |
+  | ------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | Int     | `number`, `bigint`  | signed & unsigned, 8/16/32/64/128/etc bits. For ints with bits less than or equal 32 both `number` & `bigint` could be used, for 64+ bits integers - only `bigint`. |
+  | Compact | `number`, `bigint`  | -                                                                                                                                                                   |
+  | String  | `string`            | -                                                                                                                                                                   |
+  | Bool    | `boolean`           | -                                                                                                                                                                   |
+  | Void    | `null`, `undefined` | `()` in Rust. Unfortunately, JavaScript doesn't have zero-cost abstractions, so this codec could be used to handle it.                                              |
 
--   **Higher-order:**
+- **Higher-order:**
 
-    | Spec   | JS Type                                        |
-    | ------ | ---------------------------------------------- |
-    | Array  | `Array`                                        |
-    | Vector | `Array`                                        |
-    | Tuple  | `Array`, but tuple in TypeScript               |
-    | Set    | `Set`                                          |
-    | Map    | `Map`                                          |
-    | Struct | Plain Object                                   |
-    | Enum   | `Enum` from [`@scale-codec/enum`](/guide/enum) |
+  | Spec   | JS Type                                        |
+  | ------ | ---------------------------------------------- |
+  | Array  | `Array`                                        |
+  | Vector | `Array`                                        |
+  | Tuple  | `Array`, but tuple in TypeScript               |
+  | Set    | `Set`                                          |
+  | Map    | `Map`                                          |
+  | Struct | Plain Object                                   |
+  | Enum   | `Enum` from [`@scale-codec/enum`](/guide/enum) |
 
--   **Special:**
+- **Special:**
 
-    -   Efficient codec for arrays of bytes, or `[u8; x]` in Rust and `Uint8Array` in JS
-    -   Efficient codec for vectors of bytes, or `Vec<u8>` in Rust and `Uint8Array` in JS
-    -   `OptionBool`
+  - Efficient codec for arrays of bytes, or `[u8; x]` in Rust and `Uint8Array` in JS
+  - Efficient codec for vectors of bytes, or `Vec<u8>` in Rust and `Uint8Array` in JS
+  - `OptionBool`
 
 ## Package
 
@@ -46,14 +46,14 @@ All codec functions in the library are built on top of these core types:
 
 ```ts
 interface Walker {
-    u8: Uint8Array
-    idx: number
-    view: DataView
+  u8: Uint8Array
+  idx: number
+  view: DataView
 }
 
 interface Encode<T> {
-    (value: T, walker: Walker): void
-    sizeHint: (value: T) => number
+  (value: T, walker: Walker): void
+  sizeHint: (value: T) => number
 }
 
 type Decode<T> = (walker: Walker) => T
@@ -63,7 +63,7 @@ While **encoding**, firstly you should compute the value size prediction with a 
 
 ```ts
 const encodeBool: Encode<boolean> = (value, walker) => {
-    walker.u8[walker.idx++] = value ? 1 : 0
+  walker.u8[walker.idx++] = value ? 1 : 0
 }
 
 encodeBool.sizeHint = () => 1
@@ -73,7 +73,7 @@ While **decoding**, each decode function reading from Walker's buffer and increm
 
 ```ts
 const decodeBool: Decode<boolean> = (walker) => {
-    return walker.u8[walker.idx++] === 1
+  return walker.u8[walker.idx++] === 1
 }
 ```
 
@@ -93,9 +93,9 @@ You can use TypeScript tuples to define tuple codecs safely:
 
 ```ts
 import {
-    createTupleEncoder,
-    encodeU8,
-    encodeStr,
+  createTupleEncoder,
+  encodeU8,
+  encodeStr,
 } from '@scale-codec/core'
 
 // (u8, str)
@@ -124,34 +124,34 @@ Codecs with core library:
 
 ```ts
 import {
-    createStructEncoder,
-    createStructDecoder,
-    encodeU128,
-    decodeU128,
-    encodeStr,
-    decodeStr,
+  createStructEncoder,
+  createStructDecoder,
+  encodeU128,
+  decodeU128,
+  encodeStr,
+  decodeStr,
 } from '@scale-codec/core'
 
 interface Message {
-    author: string
-    timestamp: bigint
+  author: string
+  timestamp: bigint
 }
 
 const encoder = createStructEncoder<Message>([
-    ['author', encodeStr],
-    ['timestamp', encodeU128],
+  ['author', encodeStr],
+  ['timestamp', encodeU128],
 ])
 
 const decoder = createStructDecoder<Message>([
-    ['author', decodeStr],
-    ['timestamp', decodeU128],
+  ['author', decodeStr],
+  ['timestamp', decodeU128],
 ])
 ```
 
 Tuples passed to factories are typed only partially, i.e. TypeScript does not provide a guarantee that passed encoders/decoders schema will result into correct codecs. You should ensure by yourself that:
 
--   The order of fields is correct
--   All fields are defined
+- The order of fields is correct
+- All fields are defined
 
 ### Enums
 
@@ -193,10 +193,10 @@ Encoder:
 import { createEnumEncoder, encodeStr } from '@scale-codec/core'
 
 const encoder = createEnumEncoder<Event>({
-    // map from <tag name> to <discriminant> for empty variants
-    Focus: 0,
-    // or [<discriminant>, <encode>] for valuable variants
-    KeyPress: [1, encodeStr],
+  // map from <tag name> to <discriminant> for empty variants
+  Focus: 0,
+  // or [<discriminant>, <encode>] for valuable variants
+  KeyPress: [1, encodeStr],
 })
 ```
 
@@ -206,10 +206,10 @@ Decoder:
 import { createEnumDecoder, decodeStr } from '@scale-codec/core'
 
 const decoder = createEnumDecoder<Event>({
-    // Map from <discriminant> to <tag name> for empty variants
-    0: 'Focus',
-    // or [<tag name>, <decode>] for valuable variants
-    1: ['KeyPress', decodeStr],
+  // Map from <discriminant> to <tag name> for empty variants
+  0: 'Focus',
+  // or [<tag name>, <decode>] for valuable variants
+  1: ['KeyPress', decodeStr],
 })
 ```
 

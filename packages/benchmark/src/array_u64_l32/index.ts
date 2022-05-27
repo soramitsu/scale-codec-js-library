@@ -10,44 +10,44 @@ import { saveCustom } from '../shared'
 import { caseCoreCurrent, caseCorePre, casePolka, caseRuntimeCurrent, caseRuntimePre } from '../util'
 
 export default async function () {
-    const INPUT_BIGINTS = Array.from({ length: 32 }, (v, i) => BigInt(i * 1e9))
-    const INPUT_POLKA = nativeToPolka(INPUT_BIGINTS)
-    const NUMBERS_ENCODED = scaleCodecCore.encode(INPUT_BIGINTS)
+  const INPUT_BIGINTS = Array.from({ length: 32 }, (v, i) => BigInt(i * 1e9))
+  const INPUT_POLKA = nativeToPolka(INPUT_BIGINTS)
+  const NUMBERS_ENCODED = scaleCodecCore.encode(INPUT_BIGINTS)
 
-    await suite(
-        'Array [u64; 32]',
-        add(caseCoreCurrent('encode'), () => {
-            scaleCodecCore.encode(INPUT_BIGINTS)
-        }),
-        add(caseRuntimeCurrent('encode'), () => {
-            scaleCodecRuntime.encode(INPUT_BIGINTS)
-        }),
-        add(caseCorePre('encode'), () => {
-            scaleCodecCoreV4.encode(INPUT_BIGINTS)
-        }),
-        add(caseRuntimePre('encode'), () => {
-            scaleCodecRuntimeV8.encode(INPUT_BIGINTS)
-        }),
-        add(casePolka('encode'), () => {
-            polka.encode(INPUT_POLKA)
-        }),
-        add(caseCoreCurrent('decode'), () => {
-            scaleCodecCore.decode(NUMBERS_ENCODED)
-        }),
-        add(caseRuntimeCurrent('decode'), () => {
-            scaleCodecRuntime.decode(NUMBERS_ENCODED)
-        }),
-        add(caseCorePre('decode'), () => {
-            scaleCodecCoreV4.decode(NUMBERS_ENCODED)
-        }),
-        add(caseRuntimePre('decode'), () => {
-            scaleCodecRuntimeV8.decode(NUMBERS_ENCODED)
-        }),
-        add(casePolka('decode'), () => {
-            polka.decode(NUMBERS_ENCODED)
-        }),
-        cycle(),
-        complete(),
-        saveCustom('arr-u64-32'),
-    )
+  await suite(
+    'Array [u64; 32]',
+    add(caseCoreCurrent('encode'), () => {
+      scaleCodecCore.encode(INPUT_BIGINTS)
+    }),
+    add(caseRuntimeCurrent('encode'), () => {
+      scaleCodecRuntime.encode(INPUT_BIGINTS)
+    }),
+    add(caseCorePre('encode'), () => {
+      scaleCodecCoreV4.encode(INPUT_BIGINTS)
+    }),
+    add(caseRuntimePre('encode'), () => {
+      scaleCodecRuntimeV8.encode(INPUT_BIGINTS)
+    }),
+    add(casePolka('encode'), () => {
+      polka.encode(INPUT_POLKA)
+    }),
+    add(caseCoreCurrent('decode'), () => {
+      scaleCodecCore.decode(NUMBERS_ENCODED)
+    }),
+    add(caseRuntimeCurrent('decode'), () => {
+      scaleCodecRuntime.decode(NUMBERS_ENCODED)
+    }),
+    add(caseCorePre('decode'), () => {
+      scaleCodecCoreV4.decode(NUMBERS_ENCODED)
+    }),
+    add(caseRuntimePre('decode'), () => {
+      scaleCodecRuntimeV8.decode(NUMBERS_ENCODED)
+    }),
+    add(casePolka('decode'), () => {
+      polka.decode(NUMBERS_ENCODED)
+    }),
+    cycle(),
+    complete(),
+    saveCustom('arr-u64-32'),
+  )
 }

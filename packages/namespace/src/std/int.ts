@@ -2,22 +2,22 @@ import { Codec, bigIntCodec, AllowedBits, encodeBigInt, decodeBigInt, BigIntCode
 import JSBI from 'jsbi'
 
 function codecBigInt(bits: AllowedBits, signed: boolean): Codec<JSBI> {
-    return bigIntCodec({ bits, signed, endianness: 'le' })
+  return bigIntCodec({ bits, signed, endianness: 'le' })
 }
 
 /**
  * Optimal codec for integers that compatible with native JS numbers (which are f64)
  */
 function codecJsNum(bits: Exclude<AllowedBits, 64 | 128>, signed: boolean): Codec<number> {
-    const opts: BigIntCodecOptions = { bits, signed, endianness: 'le' }
+  const opts: BigIntCodecOptions = { bits, signed, endianness: 'le' }
 
-    return {
-        encode: (v) => encodeBigInt(JSBI.BigInt(v), opts),
-        decode: (b) => {
-            const [bn, count] = decodeBigInt(b, opts)
-            return [JSBI.toNumber(bn), count]
-        },
-    }
+  return {
+    encode: (v) => encodeBigInt(JSBI.BigInt(v), opts),
+    decode: (b) => {
+      const [bn, count] = decodeBigInt(b, opts)
+      return [JSBI.toNumber(bn), count]
+    },
+  }
 }
 
 export const i8 = codecJsNum(8, true)

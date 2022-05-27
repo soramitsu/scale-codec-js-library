@@ -123,21 +123,21 @@ Struct extends Map
 
 #### Что должно быть реализовано в базовой библиотеке
 
--   [x] Number (u8-256, i8-256, float?)
--   [x] String
--   [ ] Boolean
--   [ ] Enum base + Option & Result
--   [x] Struct base
--   [x] Map -> HashMap, BTreeMap
--   [ ] Vec<любой кодек>
--   [ ] Tuple
-    -   [ ] и пустой тоже
+- [x] Number (u8-256, i8-256, float?)
+- [x] String
+- [ ] Boolean
+- [ ] Enum base + Option & Result
+- [x] Struct base
+- [x] Map -> HashMap, BTreeMap
+- [ ] Vec<любой кодек>
+- [ ] Tuple
+  - [ ] и пустой тоже
 
 #### Что остаётся на типогенерацию и подгон из типов раста на базу
 
--   [ ] Все числа к ScaleNumber
--   [ ] Строки к ScaleString
--   [ ] HashMap, BTreeMap к ScaleMap
--   [ ] bool -> ScaleBoolean
--   [ ] Вектора, срезы, массивы - всё к Vec
--   [ ] Работа с кастомными дженериками?
+- [ ] Все числа к ScaleNumber
+- [ ] Строки к ScaleString
+- [ ] HashMap, BTreeMap к ScaleMap
+- [ ] bool -> ScaleBoolean
+- [ ] Вектора, срезы, массивы - всё к Vec
+- [ ] Работа с кастомными дженериками?

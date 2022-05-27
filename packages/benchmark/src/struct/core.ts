@@ -6,6 +6,6 @@ const encoder = createStructEncoder(Object.keys(factory()).map((key) => [key, en
 const decoder = createStructDecoder(Object.keys(factory()).map((key) => [key, decodeBool]))
 
 export default defineCodec({
-    encode: (val) => WalkerImpl.encode(val, encoder),
-    decode: (input) => WalkerImpl.decode(input, decoder),
+  encode: (val) => WalkerImpl.encode(val, encoder),
+  decode: (input) => WalkerImpl.decode(input, decoder),
 })

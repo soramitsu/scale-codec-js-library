@@ -5,8 +5,8 @@ import 'virtual:windi.css'
 import './style/index.scss'
 
 export default {
-    ...ThemeDefault,
-    enhanceApp({ app }) {
-        // app.component('BenchmarkReport', BenchmarkReport)
-    },
+  ...ThemeDefault,
+  enhanceApp({ app }) {
+    // app.component('BenchmarkReport', BenchmarkReport)
+  },
 }
