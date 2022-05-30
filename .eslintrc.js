@@ -32,8 +32,8 @@ module.exports = {
         '**/e2e-spa/src/**/*.spec.ts',
         '**packages/*/test/**/*.ts',
       ],
-      env: {
-        jest: true,
+      rules: {
+        'max-nested-callbacks': ['error', 5],
       },
     },
     {

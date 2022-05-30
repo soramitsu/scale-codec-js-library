@@ -1,4 +1,4 @@
-import { SpyInstance, afterAll, afterEach, beforeEach, expect, test, vi } from 'vitest'
+import { SpyInstance, afterAll, afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { WalkerImpl } from '@scale-codec/core'
 import { Logger, setCurrentTracker, trackDecode } from '../index'
 
@@ -25,35 +25,37 @@ function runFailureTrack() {
     ),
   ).toThrowError('Expected inner error')
 }
-const noop = () => {}
-let consoleErrorMock: SpyInstance
-let consoleDebugMock: SpyInstance
 
-beforeEach(() => {
-  consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(noop)
-  consoleDebugMock = vi.spyOn(console, 'debug').mockImplementation(noop)
-  setCurrentTracker(null)
-})
+describe.concurrent('Logger', () => {
+  const noop = () => {}
+  let consoleErrorMock: SpyInstance
+  let consoleDebugMock: SpyInstance
 
-afterEach(() => {
-  vi.resetAllMocks()
-  setCurrentTracker(null)
-})
+  beforeEach(() => {
+    consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(noop)
+    consoleDebugMock = vi.spyOn(console, 'debug').mockImplementation(noop)
+    setCurrentTracker(null)
+  })
 
-afterAll(() => {
-  vi.restoreAllMocks()
-})
+  afterEach(() => {
+    vi.resetAllMocks()
+    setCurrentTracker(null)
+  })
 
-test('Prints debug log if related prop is set', () => {
-  new Logger({
-    logDecodeSuccesses: true,
-  }).mount()
+  afterAll(() => {
+    vi.restoreAllMocks()
+  })
 
-  runSuccessTrack()
+  test('Prints debug log if related prop is set', ({ expect }) => {
+    new Logger({
+      logDecodeSuccesses: true,
+    }).mount()
 
-  expect(consoleErrorMock).not.toBeCalled()
-  expect(consoleDebugMock).toBeCalledTimes(1)
-  expect(consoleDebugMock.mock.calls[0]).toMatchInlineSnapshot(`
+    runSuccessTrack()
+
+    expect(consoleErrorMock).not.toBeCalled()
+    expect(consoleDebugMock).toBeCalledTimes(1)
+    expect(consoleDebugMock.mock.calls[0]).toMatchInlineSnapshot(`
     [
       "[SCALE] Decode of \\"First\\" succeed
 
@@ -72,25 +74,25 @@ test('Prints debug log if related prop is set', () => {
       "Result",
     ]
   `)
-})
+  })
 
-test("Doesn't print debug logs by default", () => {
-  new Logger().mount()
+  test("Doesn't print debug logs by default", () => {
+    new Logger().mount()
 
-  runSuccessTrack()
+    runSuccessTrack()
 
-  expect(consoleErrorMock).not.toBeCalled()
-  expect(consoleDebugMock).not.toBeCalled()
-})
+    expect(consoleErrorMock).not.toBeCalled()
+    expect(consoleDebugMock).not.toBeCalled()
+  })
 
-test('Prints error log by default', () => {
-  new Logger().mount()
+  test('Prints error log by default', ({ expect }) => {
+    new Logger().mount()
 
-  runFailureTrack()
+    runFailureTrack()
 
-  expect(consoleDebugMock).not.toBeCalled()
-  expect(consoleErrorMock).toBeCalledTimes(1)
-  expect(consoleErrorMock.mock.calls[0]).toMatchInlineSnapshot(`
+    expect(consoleDebugMock).not.toBeCalled()
+    expect(consoleErrorMock).toBeCalledTimes(1)
+    expect(consoleErrorMock.mock.calls[0]).toMatchInlineSnapshot(`
     [
       "[SCALE] Decode of \\"Whoosh\\" failed with error: Error: Expected inner error
 
@@ -108,25 +110,26 @@ test('Prints error log by default', () => {
       [Error: Expected inner error],
     ]
   `)
+  })
+
+  test("Doesn't print error if prop is set", () => {
+    new Logger({ logDecodeErrors: false }).mount()
+
+    try {
+      runFailureTrack()
+    } catch {}
+
+    expect(consoleDebugMock).not.toBeCalled()
+    expect(consoleErrorMock).not.toBeCalled()
+  })
+
+  // test('Changes bytesLimit if provided some', () => {
+  //     new Logger({ bytesPrintLimit: 2, logDecodeSuccesses: true }).mount()
+
+  //     runSuccessTrack()
+  //     runFailureTrack()
+
+  //     expect(consoleDebugMock.mock.calls[0]).toMatchSnapshot()
+  //     expect(consoleErrorMock.mock.calls[0]).toMatchSnapshot()
+  // })
 })
-
-test("Doesn't print error if prop is set", () => {
-  new Logger({ logDecodeErrors: false }).mount()
-
-  try {
-    runFailureTrack()
-  } catch {}
-
-  expect(consoleDebugMock).not.toBeCalled()
-  expect(consoleErrorMock).not.toBeCalled()
-})
-
-// test('Changes bytesLimit if provided some', () => {
-//     new Logger({ bytesPrintLimit: 2, logDecodeSuccesses: true }).mount()
-
-//     runSuccessTrack()
-//     runFailureTrack()
-
-//     expect(consoleDebugMock.mock.calls[0]).toMatchSnapshot()
-//     expect(consoleErrorMock.mock.calls[0]).toMatchSnapshot()
-// })

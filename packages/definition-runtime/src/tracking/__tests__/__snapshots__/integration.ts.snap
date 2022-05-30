@@ -1,6 +1,6 @@
 // Vitest Snapshot v1
 
-exports[`Collecting big decode trace and formatting it > Error case 1`] = `
+exports[`Integration > Collecting big decode trace and formatting it > Error case 1`] = `
 [
   "AllInOne
     Walk: <offset: 0; 01 10 47 65 79 21 00 04 10 21 32 33 34 0b 20 59 6f 20 68 6f ff ff ff ff ff ff ff ff ff ff 14 01 06 02 03 04 0c 00 01 00>
@@ -65,7 +65,7 @@ AllInOne / <struct>.alias / str
 ]
 `;
 
-exports[`Collecting big decode trace and formatting it > Success case 1`] = `
+exports[`Integration > Collecting big decode trace and formatting it > Success case 1`] = `
 [
   "AllInOne
     Walk: <offset: 0..40 (+40); 01 10 47 65 79 21 00 04 10 21 32 33 34 0b 20 59 6f 20 68 6f 20 68 6f 14 41 6c 69 63 65 00 14 01 06 02 03 04 0c 00 01 00>
