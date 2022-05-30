@@ -13,6 +13,16 @@ module.exports = {
         markers: ['/'],
       },
     ],
+    'sort-imports': [
+      'warn',
+      {
+        ignoreCase: false,
+        ignoreDeclarationSort: true,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        allowSeparatedGroups: false,
+      },
+    ],
   },
   overrides: [
     {
@@ -49,6 +59,14 @@ module.exports = {
       },
       rules: {
         'vue/html-indent': ['warn', 4],
+      },
+    },
+    {
+      files: ['./etc/jakefile.ts', './e2e-spa/etc/jakefile.ts'],
+      globals: {
+        task: true,
+        desc: true,
+        namespace: true,
       },
     },
   ],

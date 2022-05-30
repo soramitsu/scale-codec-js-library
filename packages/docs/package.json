@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/docs",
-  "version": "0.1.3",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "dev": "vitepress dev",
@@ -9,23 +9,21 @@
     "logger-demo:vite": "vite dev logger-demo",
     "logger-demo:node": "esno logger-demo/main"
   },
-  "dependencies": {
-    "@scale-codec/benchmark": "workspace:*",
-    "@vueuse/core": "^7.6.1",
-    "chart.js": "^3.7.1",
-    "immutable": "^4.0.0",
-    "vue": "^3.2.30"
-  },
   "devDependencies": {
+    "@scale-codec/benchmark": "workspace:*",
     "@scale-codec/definition-compiler": "workspace:*",
     "@scale-codec/definition-runtime": "workspace:*",
     "@types/object-inspect": "^1.8.1",
+    "@vueuse/core": "^7.6.1",
+    "chart.js": "^3.7.1",
     "esno": "^0.14.1",
+    "immutable": "^4.1.0",
     "sass": "^1.49.8",
     "shiki": "^0.10.1",
-    "vite": "^2.8.4",
+    "vite": "^2.9.9",
     "vite-plugin-windicss": "^1.7.0",
     "vitepress": "^0.22.0",
+    "vue": "^3.2.36",
     "windicss": "^3.4.3"
   }
 }
