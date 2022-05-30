@@ -1,5 +1,5 @@
 import { Decode, Walker } from '@scale-codec/core'
-import { CodecTracker, TrackDecodeFn, RefineDecodeLocFn } from './types'
+import { CodecTracker, RefineDecodeLocFn, TrackDecodeFn } from './types'
 
 let __currentTracker: null | CodecTracker = null
 

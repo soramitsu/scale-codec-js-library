@@ -1,5 +1,5 @@
-import { encodeTuple, decodeTuple, Encode, Decode, Codec } from '@scale-codec/core'
-import { NamespaceCodec, CompatibleNamespaceKeys } from '../types'
+import { Codec, Decode, Encode, decodeTuple, encodeTuple } from '@scale-codec/core'
+import { CompatibleNamespaceKeys, NamespaceCodec } from '../types'
 
 // mapping tuple to refs
 export type TupleNamespaceRefs<Tuple extends any[], N> = Tuple extends [infer Head, ...infer Tail]

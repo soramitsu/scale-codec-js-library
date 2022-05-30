@@ -1,4 +1,4 @@
-import { createOptionCodec, Codec, dynCodec } from '@scale-codec/definition-runtime'
+import { Codec, createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
 import { defineCodec } from '../types'
 import { Chain } from './core'
 

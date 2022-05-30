@@ -1,4 +1,4 @@
-import { createArrayBuilder, Fragment, ScaleArrayBuilder, U64 } from 'scale-codec-definition-runtime-v-8'
+import { Fragment, ScaleArrayBuilder, U64, createArrayBuilder } from 'scale-codec-definition-runtime-v-8'
 import { defineCodec } from '../types'
 
 const ArrU64L32: ScaleArrayBuilder<Fragment<bigint>[]> = createArrayBuilder('Arr', U64, 32)

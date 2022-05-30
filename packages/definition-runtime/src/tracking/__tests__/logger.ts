@@ -1,5 +1,5 @@
 import { WalkerImpl } from '@scale-codec/core'
-import { setCurrentTracker, Logger, trackDecode } from '../index'
+import { Logger, setCurrentTracker, trackDecode } from '../index'
 
 function runSuccessTrack() {
   WalkerImpl.decode<string>(new Uint8Array([0, 1, 2, 3]), (walker) => {

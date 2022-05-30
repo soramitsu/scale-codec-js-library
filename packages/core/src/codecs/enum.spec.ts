@@ -1,12 +1,12 @@
 import {
-  createOptionEncoder,
-  createOptionDecoder,
-  createEnumEncoder,
   createEnumDecoder,
-  encodeOptionBool,
+  createEnumEncoder,
+  createOptionDecoder,
+  createOptionEncoder,
   decodeOptionBool,
+  encodeOptionBool,
 } from './enum'
-import { encodeBool, decodeBool } from './bool'
+import { decodeBool, encodeBool } from './bool'
 import { WalkerImpl } from '../util'
 import { Enum, Option } from '@scale-codec/enum'
 import { Decode, Encode } from '../types'

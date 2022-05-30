@@ -1,12 +1,12 @@
 import {
+  ArrAlias,
   CustomArr,
+  CustomMap,
   CustomOpt,
   CustomStruct,
   CustomTuple,
   CycleEnum,
   CycleStruct,
-  ArrAlias,
-  CustomMap,
 } from './play-mod'
 import { Enum } from './src/lib'
 

@@ -1,4 +1,4 @@
-import { Decode, decodeBool, encodeBool, Walker } from '@scale-codec/core'
+import { Decode, Walker, decodeBool, encodeBool } from '@scale-codec/core'
 import { trackableCodec } from '../core'
 import { CodecTracker, setCurrentTracker } from '../tracking'
 

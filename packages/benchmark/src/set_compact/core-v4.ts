@@ -1,4 +1,4 @@
-import { encodeCompact, encodeSet, decodeCompact, decodeSet } from 'scale-codec-core-v-4'
+import { decodeCompact, decodeSet, encodeCompact, encodeSet } from 'scale-codec-core-v-4'
 import { defineCodec } from '../types'
 
 export default defineCodec<Set<bigint | number>>({

@@ -1,5 +1,5 @@
 import { Enum, EnumSchema, Option, Valuable } from '@scale-codec/core'
-import { defBytesArray, defEnum, defOption, defStruct, defTuple, StdCodecs, StdTypes } from '../std'
+import { StdCodecs, StdTypes, defBytesArray, defEnum, defOption, defStruct, defTuple } from '../std'
 import JSBI from 'jsbi'
 import { defNamespace } from '../namespace'
 import { defAlias } from '../alias'

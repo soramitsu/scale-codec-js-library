@@ -1,5 +1,5 @@
 import { A, B, C } from '../samples/aliases'
-import { encodeStr, WalkerImpl } from '@scale-codec/definition-runtime'
+import { WalkerImpl, encodeStr } from '@scale-codec/definition-runtime'
 
 test('A->B alias encodes as B', () => {
   const str = 'Koora'

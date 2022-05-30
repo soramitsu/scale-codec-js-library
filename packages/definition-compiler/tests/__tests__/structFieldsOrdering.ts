@@ -1,9 +1,9 @@
 import {
-  encodeUint8Vec,
+  WalkerImpl,
+  createStructEncoder,
   encodeCompact,
   encodeStr,
-  createStructEncoder,
-  WalkerImpl,
+  encodeUint8Vec,
 } from '@scale-codec/definition-runtime'
 import { Mystery } from '../samples/structFieldsOrdering'
 

@@ -1,4 +1,4 @@
-import { Result, Enum } from '@scale-codec/definition-runtime'
+import { Enum, Result } from '@scale-codec/definition-runtime'
 import { encodeAndDecodeReallyComplexData } from './encode-decode'
 
 test('it is ok', () => {

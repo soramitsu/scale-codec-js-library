@@ -1,5 +1,5 @@
 import { decodeCompact, encodeCompact } from './compact'
-import { Encode, Decode, Walker } from '../types'
+import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
 // eslint-disable-next-line max-params

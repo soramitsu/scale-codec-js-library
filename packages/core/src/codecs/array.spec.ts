@@ -1,6 +1,6 @@
-import { encodeU8, decodeU8 } from './int'
+import { decodeU8, encodeU8 } from './int'
 import { WalkerImpl } from '../util'
-import { createUint8ArrayEncoder, createUint8ArrayDecoder, createArrayDecoder, createArrayEncoder } from './array'
+import { createArrayDecoder, createArrayEncoder, createUint8ArrayDecoder, createUint8ArrayEncoder } from './array'
 import { ensureDecodeImmutability } from './__tests__/util'
 
 describe('[T; x]', () => {

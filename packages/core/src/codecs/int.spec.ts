@@ -2,14 +2,14 @@ import { fromHex } from '@scale-codec/util'
 import ENCODE_TEST_DATA from '../../../rust-samples/output-ints.json'
 import { WalkerImpl as Walker } from '../util'
 import {
-  encodeInt,
-  IntTypes,
-  encodeBigInt,
   BigIntTypes,
-  createIntEncoder,
-  createIntDecoder,
+  IntTypes,
   createBigIntDecoder,
   createBigIntEncoder,
+  createIntDecoder,
+  createIntEncoder,
+  encodeBigInt,
+  encodeInt,
 } from './int'
 import { ensureDecodeImmutability } from './__tests__/util'
 

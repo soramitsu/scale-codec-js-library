@@ -1,5 +1,5 @@
-import { Decode, Walker, Encode } from '../types'
-import { encodeCompact, decodeCompact } from '../codecs/compact'
+import { Decode, Encode, Walker } from '../types'
+import { decodeCompact, encodeCompact } from '../codecs/compact'
 import { decodeArray } from './array'
 import { encodeFactory } from '../util'
 

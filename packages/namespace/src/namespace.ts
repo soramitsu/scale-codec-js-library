@@ -1,6 +1,6 @@
-import { DecodeResult, Codec } from '@scale-codec/core'
+import { Codec, DecodeResult } from '@scale-codec/core'
 import { mapGetUnwrap } from '@scale-codec/util'
-import { NamespaceCodec, Namespace, NamespaceDefinitions, ContextSensitiveCodec, CodecSetupContext } from './types'
+import { CodecSetupContext, ContextSensitiveCodec, Namespace, NamespaceCodec, NamespaceDefinitions } from './types'
 import { typedToEntries } from './util'
 
 function isContextSensitiveCodec<T, N>(item: NamespaceCodec<T, N>): item is ContextSensitiveCodec<T, N> {

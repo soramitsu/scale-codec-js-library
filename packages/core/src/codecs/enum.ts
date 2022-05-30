@@ -1,5 +1,5 @@
-import { Enum, Option, EnumGenericDef, TagsEmpty, TagsValuable, TagValue, EnumDef, Result } from '@scale-codec/enum'
-import { Decode, Walker, Encode } from '../types'
+import { Enum, EnumDef, EnumGenericDef, Option, Result, TagValue, TagsEmpty, TagsValuable } from '@scale-codec/enum'
+import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
 type EncodeTuple<V> = [discriminant: number, encode: Encode<V>]
@@ -107,7 +107,7 @@ export function decodeEnum<E extends Enum<any>>(walker: Walker, decoders: EnumDe
   const decoder = decoders[discriminant]
   if (!decoder)
     throw new Error(
-      `Decode data for discriminant ${discriminant} is undefined; ` + `decoders schema: ${formatDecoders(decoders)}`,
+      `Decode data for discriminant ${discriminant} is undefined; decoders schema: ${formatDecoders(decoders)}`,
     )
 
   const [tag, decode] = normalizeDecodeTuple(decoder)

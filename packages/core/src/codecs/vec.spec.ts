@@ -1,10 +1,10 @@
-import { toHex, fromHex } from '@scale-codec/util'
+import { fromHex, toHex } from '@scale-codec/util'
 import { Enum, Option } from '@scale-codec/enum'
 import { WalkerImpl } from '../util'
-import { encodeUint8Vec, decodeUint8Vec, createVecDecoder, createVecEncoder } from './vec'
-import { encodeI8, decodeI8, encodeU8, decodeU8, encodeI16, decodeI16 } from './int'
-import { encodeStr, decodeStr } from './str'
-import { createOptionEncoder, createOptionDecoder, decodeOptionBool, encodeOptionBool } from './enum'
+import { createVecDecoder, createVecEncoder, decodeUint8Vec, encodeUint8Vec } from './vec'
+import { decodeI16, decodeI8, decodeU8, encodeI16, encodeI8, encodeU8 } from './int'
+import { decodeStr, encodeStr } from './str'
+import { createOptionDecoder, createOptionEncoder, decodeOptionBool, encodeOptionBool } from './enum'
 
 describe('Vec<T>', () => {
   // https://github.com/paritytech/parity-scale-codec/blob/166d748abc1e48d74c528e2456fefe6f3c48f256/src/codec.rs#L1320

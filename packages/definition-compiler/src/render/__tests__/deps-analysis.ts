@@ -1,10 +1,10 @@
 import {
-  optimizeDepsHierarchy,
-  findStronglyConnectedComponents,
-  findCircuitsResolutions,
   AdjacencyMap,
+  findCircuitsResolutions,
+  findStronglyConnectedComponents,
+  optimizeDepsHierarchy,
 } from '../deps-analysis'
-import { Map, Set, List, Seq } from 'immutable'
+import { List, Map, Seq, Set } from 'immutable'
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const immutableMatchers = require('jest-immutable-matchers')

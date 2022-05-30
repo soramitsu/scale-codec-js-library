@@ -1,11 +1,11 @@
 import {
-  createOptionDecoder,
-  createOptionEncoder,
   Decode,
   Encode,
-  encodeFactory,
   Enum,
   WalkerImpl,
+  createOptionDecoder,
+  createOptionEncoder,
+  encodeFactory,
 } from '@scale-codec/core'
 import { defineCodec } from '../types'
 

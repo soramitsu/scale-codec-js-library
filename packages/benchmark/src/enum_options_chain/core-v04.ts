@@ -1,4 +1,4 @@
-import { Enum, encodeEnum, decodeEnum, Encode, Decode, DecodeResult } from 'scale-codec-core-v-4'
+import { Decode, DecodeResult, Encode, Enum, decodeEnum, encodeEnum } from 'scale-codec-core-v-4'
 import { defineCodec } from '../types'
 
 export type Chain = Enum<{

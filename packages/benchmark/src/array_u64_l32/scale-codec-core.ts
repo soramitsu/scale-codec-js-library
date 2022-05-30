@@ -1,4 +1,4 @@
-import { WalkerImpl, createArrayEncoder, createArrayDecoder, encodeU64, decodeU64 } from '@scale-codec/core'
+import { WalkerImpl, createArrayDecoder, createArrayEncoder, decodeU64, encodeU64 } from '@scale-codec/core'
 import { defineCodec } from '../types'
 
 const encoder = createArrayEncoder(encodeU64, 32)

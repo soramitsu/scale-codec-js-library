@@ -1,5 +1,5 @@
-import { decodeStr, encodeStr, WalkerImpl } from '@scale-codec/core'
-import { trackableCodec, dynCodec, Codec } from '../core'
+import { WalkerImpl, decodeStr, encodeStr } from '@scale-codec/core'
+import { Codec, dynCodec, trackableCodec } from '../core'
 
 const SAMPLE_STRING = 'Я узнал, что у меня / Есть огромная семья'
 const SAMPLE_STRING_U8 = WalkerImpl.encode(SAMPLE_STRING, encodeStr)

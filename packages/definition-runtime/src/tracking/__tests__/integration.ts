@@ -1,5 +1,5 @@
 import { Decode, Walker } from '@scale-codec/core'
-import { setCurrentTracker, DecodeTraceCollector, buildDecodeTraceStepsFmt, CodecTracker, DecodeTrace } from '../index'
+import { CodecTracker, DecodeTrace, DecodeTraceCollector, buildDecodeTraceStepsFmt, setCurrentTracker } from '../index'
 
 // useful for tests here too
 import {

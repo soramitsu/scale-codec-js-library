@@ -1,6 +1,6 @@
-import { createStructEncoder, createStructDecoder } from './struct'
-import { encodeStr, decodeStr } from './str'
-import { createIntEncoder, createIntDecoder } from './int'
+import { createStructDecoder, createStructEncoder } from './struct'
+import { decodeStr, encodeStr } from './str'
+import { createIntDecoder, createIntEncoder } from './int'
 import { WalkerImpl } from '../util'
 import { ensureDecodeImmutability } from './__tests__/util'
 

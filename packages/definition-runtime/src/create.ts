@@ -1,4 +1,14 @@
 import {
+  Decode,
+  Encode,
+  Enum,
+  EnumDecoders,
+  EnumDefToFactoryArgs,
+  EnumEncoders,
+  Option,
+  Result,
+  StructDecoders,
+  StructEncoders,
   createArrayDecoder,
   createArrayEncoder,
   createEnumDecoder,
@@ -15,16 +25,6 @@ import {
   createUint8ArrayEncoder,
   createVecDecoder,
   createVecEncoder,
-  Decode,
-  Encode,
-  Enum,
-  EnumDecoders,
-  EnumDefToFactoryArgs,
-  EnumEncoders,
-  Option,
-  Result,
-  StructDecoders,
-  StructEncoders,
 } from '@scale-codec/core'
 import { Opaque } from 'type-fest'
 import { Codec, trackableCodec } from './core'

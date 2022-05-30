@@ -1,6 +1,6 @@
 import { WalkerImpl } from '@scale-codec/core'
 import { fromHex } from '@scale-codec/util'
-import { formatWalkerStep, FormatWalkerStepParams } from '../util'
+import { FormatWalkerStepParams, formatWalkerStep } from '../util'
 
 function format(hex: string, params: Omit<FormatWalkerStepParams, 'walker'>): string {
   return formatWalkerStep({

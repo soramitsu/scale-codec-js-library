@@ -1,4 +1,4 @@
-import { Bool, createMapCodec, MapCodecAndFactory, Opaque, Str } from '@scale-codec/definition-runtime'
+import { Bool, MapCodecAndFactory, Opaque, Str, createMapCodec } from '@scale-codec/definition-runtime'
 import { defineCodec } from '../types'
 
 type Actual = Map<Str, Bool>

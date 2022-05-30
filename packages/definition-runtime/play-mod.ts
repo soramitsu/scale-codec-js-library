@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/no-empty-interface */
 import { Opaque } from 'type-fest'
-import { Codec, Enum, EnumDefToFactoryArgs, Option, U8, Str, dynCodec } from './src/lib'
+import { Codec, Enum, EnumDefToFactoryArgs, Option, Str, U8, dynCodec } from './src/lib'
 import {
   ArrayCodecAndFactory,
+  EnumCodecAndFactory,
+  MapCodecAndFactory,
+  SetCodecAndFactory,
+  StructCodecAndFactory,
   createArrayCodec,
   createEnumCodec,
   createMapCodec,
@@ -10,10 +14,6 @@ import {
   createSetCodec,
   createStructCodec,
   createTupleCodec,
-  EnumCodecAndFactory,
-  MapCodecAndFactory,
-  SetCodecAndFactory,
-  StructCodecAndFactory,
 } from './src/create'
 
 // Array

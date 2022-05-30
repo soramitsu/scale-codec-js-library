@@ -1,9 +1,9 @@
-import { createTupleEncoder, createTupleDecoder } from './tuple'
-import { encodeStr, decodeStr } from './str'
-import { encodeBool, decodeBool } from './bool'
-import { createVecEncoder, createVecDecoder } from './vec'
+import { createTupleDecoder, createTupleEncoder } from './tuple'
+import { decodeStr, encodeStr } from './str'
+import { decodeBool, encodeBool } from './bool'
+import { createVecDecoder, createVecEncoder } from './vec'
 import { Decode, Encode } from '../types'
-import { encodeU64, decodeU64, encodeI8, decodeI8, encodeI32, decodeI32 } from './int'
+import { decodeI32, decodeI8, decodeU64, encodeI32, encodeI8, encodeU64 } from './int'
 import { WalkerImpl } from '../util'
 
 it('tuple (u64, String, Vec<i8>, (i32, i32), bool) encoded as expected', () => {

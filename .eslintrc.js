@@ -44,7 +44,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/packages/docs/**/*.vue'],
+      files: ['**/*.vue'],
       extends: ['plugin:vue/vue3-recommended'],
       parser: 'vue-eslint-parser',
       parserOptions: {
@@ -58,7 +58,7 @@ module.exports = {
         withDefaults: 'readonly',
       },
       rules: {
-        'vue/html-indent': ['warn', 4],
+        'vue/html-indent': ['warn', 2],
       },
     },
     {

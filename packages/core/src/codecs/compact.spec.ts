@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import { encodeCompact, decodeCompact } from './compact'
+import { decodeCompact, encodeCompact } from './compact'
 import COMPACTS from '../../../rust-samples/output-compacts.json'
 import { fromHex } from '@scale-codec/util'
 import { WalkerImpl as Walker, WalkerImpl } from '../util'

@@ -2,7 +2,7 @@ import { NamespaceCodegenDefinition } from './types'
 import { DefEnum, typeDefToEnum } from './def-enum'
 import { assert } from '@scale-codec/util'
 import { StdCodecs } from '@scale-codec/namespace'
-import { createImportsCounter, getImportsCounterState, ImportsCounter } from './imports-counter'
+import { ImportsCounter, createImportsCounter, getImportsCounterState } from './imports-counter'
 import { camel } from 'case'
 
 export interface GenerateOptions {

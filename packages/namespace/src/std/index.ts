@@ -12,7 +12,7 @@ export * from './set'
 import JSBI from 'jsbi'
 import { Codec, decodeCompact, encodeCompact } from '@scale-codec/core'
 import { bool } from './bool'
-import { i16, i32, i64, i8, u16, u32, u64, u8, i128, u128 } from './int'
+import { i128, i16, i32, i64, i8, u128, u16, u32, u64, u8 } from './int'
 import { str } from './string'
 import { BYTES_VECTOR_CODEC } from './vec'
 

@@ -1,7 +1,7 @@
-import { Encode, Decode } from '../types'
-import { encodeStr, decodeStr } from './str'
-import { createSetEncoder, createSetDecoder } from './set'
-import { createIntEncoder, createIntDecoder } from './int'
+import { Decode, Encode } from '../types'
+import { decodeStr, encodeStr } from './str'
+import { createSetDecoder, createSetEncoder } from './set'
+import { createIntDecoder, createIntEncoder } from './int'
 import { WalkerImpl } from '../util'
 import { ensureDecodeImmutability } from './__tests__/util'
 

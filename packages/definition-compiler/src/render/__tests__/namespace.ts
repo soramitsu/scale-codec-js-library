@@ -1,4 +1,4 @@
-import { createNs, ModelRenderParams } from '../namespace'
+import { ModelRenderParams, createNs } from '../namespace'
 import { Set } from 'immutable'
 
 const ns = createNs<'createArrayCodec', 'Codec'>()
