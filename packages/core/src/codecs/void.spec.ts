@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { WalkerImpl } from '../util'
 import { decodeVoid, encodeVoid } from './void'
 

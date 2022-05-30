@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { assertAllCodecsDecodeTheSame, assertAllKeysHaveTheSameValue } from '../../test/util'
 import polka from './polka'
 import scaleCodecCore from './scale-codec-core'

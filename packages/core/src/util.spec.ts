@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { WalkerImpl as Walker } from './util'
 import { toHex } from '@scale-codec/util'
 import { Decode, Encode } from './types'

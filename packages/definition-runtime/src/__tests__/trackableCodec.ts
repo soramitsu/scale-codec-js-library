@@ -1,3 +1,4 @@
+import { SpyInstanceFn, afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { Decode, Walker, decodeBool, encodeBool } from '@scale-codec/core'
 import { trackableCodec } from '../core'
 import { CodecTracker, setCurrentTracker } from '../tracking'
@@ -27,7 +28,7 @@ describe('When it is being tracked', () => {
 
   beforeEach(() => {
     tracker = {
-      decode: jest.fn().mockImplementation(<T>(loc: string, walker: Walker, decode: Decode<T>): T => decode(walker)),
+      decode: vi.fn().mockImplementation(<T>(loc: string, walker: Walker, decode: Decode<T>): T => decode(walker)),
     }
 
     setCurrentTracker(tracker)
@@ -43,6 +44,6 @@ describe('When it is being tracked', () => {
     codec.fromBuffer(new Uint8Array([5]))
 
     expect(tracker.decode).toBeCalledTimes(1)
-    expect((tracker.decode as jest.Mock).mock.calls[0][0]).toEqual('TEST')
+    expect((tracker.decode as SpyInstanceFn).mock.calls[0][0]).toEqual('TEST')
   })
 })

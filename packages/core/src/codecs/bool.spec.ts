@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { WalkerImpl } from '../util'
 import { decodeBool, encodeBool } from './bool'
 

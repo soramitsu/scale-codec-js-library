@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { A, B, C } from '../samples/aliases'
 import { WalkerImpl, encodeStr } from '@scale-codec/definition-runtime'
 

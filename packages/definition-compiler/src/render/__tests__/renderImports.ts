@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { renderImports } from '../util'
 
 test('Sorts imports', () => {

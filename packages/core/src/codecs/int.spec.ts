@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest'
 import { fromHex } from '@scale-codec/util'
 import ENCODE_TEST_DATA from '../../../rust-samples/output-ints.json'
 import { WalkerImpl as Walker } from '../util'

@@ -1,3 +1,4 @@
+import { describe, expect, test, vi } from 'vitest'
 import { Enum } from './lib'
 
 describe('Enum', () => {
@@ -36,8 +37,8 @@ describe('Enum', () => {
 
   test.each([['Single'], ['Double']])('.match() calls the desired callback (%p)', (variant: 'Single' | 'Double') => {
     const matchMap = {
-      Single: jest.fn(),
-      Double: jest.fn(),
+      Single: vi.fn(),
+      Double: vi.fn(),
     }
     const other = variant === 'Double' ? 'Single' : 'Double'
 
@@ -49,7 +50,7 @@ describe('Enum', () => {
 
   test('.match() calls it with inner value', () => {
     const val: Enum<DefWithStr> = Enum.variant('b', 'something')
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     val.match({ a: () => {}, b: spy })
 
@@ -58,7 +59,7 @@ describe('Enum', () => {
 
   test('.match() calls it with nothing', () => {
     const val: Enum<DefWithStr> = Enum.variant('a')
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     val.match({ a: spy, b: () => {} })
 

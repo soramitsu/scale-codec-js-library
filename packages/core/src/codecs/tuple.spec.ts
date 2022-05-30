@@ -1,3 +1,4 @@
+import { expect, it } from 'vitest'
 import { createTupleDecoder, createTupleEncoder } from './tuple'
 import { decodeStr, encodeStr } from './str'
 import { decodeBool, encodeBool } from './bool'

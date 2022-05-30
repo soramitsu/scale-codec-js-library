@@ -1,3 +1,4 @@
+import { test } from 'vitest'
 import { assertAllKeysHaveTheSameValue } from '../../test/util'
 import polka from './polka'
 import core from './core'

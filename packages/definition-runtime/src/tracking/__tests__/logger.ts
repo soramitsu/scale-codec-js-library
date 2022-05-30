@@ -1,3 +1,4 @@
+import { SpyInstance, afterAll, afterEach, beforeEach, expect, test, vi } from 'vitest'
 import { WalkerImpl } from '@scale-codec/core'
 import { Logger, setCurrentTracker, trackDecode } from '../index'
 
@@ -25,22 +26,22 @@ function runFailureTrack() {
   ).toThrowError('Expected inner error')
 }
 const noop = () => {}
-let consoleErrorMock: jest.SpyInstance
-let consoleDebugMock: jest.SpyInstance
+let consoleErrorMock: SpyInstance
+let consoleDebugMock: SpyInstance
 
 beforeEach(() => {
-  consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(noop)
-  consoleDebugMock = jest.spyOn(console, 'debug').mockImplementation(noop)
+  consoleErrorMock = vi.spyOn(console, 'error').mockImplementation(noop)
+  consoleDebugMock = vi.spyOn(console, 'debug').mockImplementation(noop)
   setCurrentTracker(null)
 })
 
 afterEach(() => {
-  jest.resetAllMocks()
+  vi.resetAllMocks()
   setCurrentTracker(null)
 })
 
 afterAll(() => {
-  jest.restoreAllMocks()
+  vi.restoreAllMocks()
 })
 
 test('Prints debug log if related prop is set', () => {
@@ -52,7 +53,25 @@ test('Prints debug log if related prop is set', () => {
 
   expect(consoleErrorMock).not.toBeCalled()
   expect(consoleDebugMock).toBeCalledTimes(1)
-  expect(consoleDebugMock.mock.calls[0]).toMatchSnapshot()
+  expect(consoleDebugMock.mock.calls[0]).toMatchInlineSnapshot(`
+    [
+      "[SCALE] Decode of \\"First\\" succeed
+
+    Decode steps:
+
+    First
+        Walk: <offset: 0..4 (+4); 00 01 02 03>
+        Result: %O
+        Child steps: 1
+    First / Second
+        Walk: <offset: 0..4 (+4); 00 01 02 03>
+        Result: %O
+        Child steps: 0
+    ",
+      "Result",
+      "Result",
+    ]
+  `)
 })
 
 test("Doesn't print debug logs by default", () => {
@@ -71,7 +90,24 @@ test('Prints error log by default', () => {
 
   expect(consoleDebugMock).not.toBeCalled()
   expect(consoleErrorMock).toBeCalledTimes(1)
-  expect(consoleErrorMock.mock.calls[0]).toMatchSnapshot()
+  expect(consoleErrorMock.mock.calls[0]).toMatchInlineSnapshot(`
+    [
+      "[SCALE] Decode of \\"Whoosh\\" failed with error: Error: Expected inner error
+
+    Decode steps:
+
+    Whoosh
+        Walk: <offset: 0; 04 02 03 01>
+        Result: <not computed>
+        Child steps: 1
+    Whoosh / Shoowh
+        Walk: <offset: 0; 04 02 03 01>
+        Result: ERROR - %s
+        Child steps: 0
+    ",
+      [Error: Expected inner error],
+    ]
+  `)
 })
 
 test("Doesn't print error if prop is set", () => {

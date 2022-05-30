@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest'
 import { decodeU8, encodeU8 } from './int'
 import { WalkerImpl } from '../util'
 import { createArrayDecoder, createArrayEncoder, createUint8ArrayDecoder, createUint8ArrayEncoder } from './array'

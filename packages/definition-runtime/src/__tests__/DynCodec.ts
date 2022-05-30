@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { WalkerImpl, decodeStr, encodeStr } from '@scale-codec/core'
 import { Codec, dynCodec, trackableCodec } from '../core'
 

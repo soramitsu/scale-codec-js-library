@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, test } from 'vitest'
 import {
   AdjacencyMap,
   findCircuitsResolutions,
@@ -6,6 +7,7 @@ import {
 } from '../deps-analysis'
 import { List, Map, Seq, Set } from 'immutable'
 
+// Works well with Vitest
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const immutableMatchers = require('jest-immutable-matchers')
 

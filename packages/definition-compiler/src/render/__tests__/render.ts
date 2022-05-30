@@ -1,3 +1,4 @@
+import { expect, it } from 'vitest'
 import { renderNamespaceDefinition } from '..'
 import { NamespaceDefinition, RenderNamespaceDefinitionParams } from '../../types'
 

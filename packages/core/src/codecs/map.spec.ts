@@ -1,8 +1,8 @@
+import { expect, it } from 'vitest'
 import { createIntDecoder, createIntEncoder } from './int'
 import { createMapDecoder, createMapEncoder } from './map'
 import { decodeStr, encodeStr } from './str'
 import { WalkerImpl } from '../util'
-import {} from '.'
 
 it('Map<string, u32> is encoded as expected', () => {
   const MAP = new Map<string, number>([['bazzing', 69]])

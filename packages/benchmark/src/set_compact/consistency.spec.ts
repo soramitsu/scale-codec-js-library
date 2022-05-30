@@ -1,3 +1,4 @@
+import { test } from 'vitest'
 import { assertAllCodecsDecodeTheSame, assertAllCodecsEncodeTheSame } from '../../test/util'
 import core from './core'
 import coreV4 from './core-v4'

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { createStructDecoder, createStructEncoder } from './struct'
 import { decodeStr, encodeStr } from './str'
 import { createIntDecoder, createIntEncoder } from './int'

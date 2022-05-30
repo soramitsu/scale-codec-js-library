@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { WalkerImpl } from '@scale-codec/core'
 import { fromHex } from '@scale-codec/util'
 import { FormatWalkerStepParams, formatWalkerStep } from '../util'

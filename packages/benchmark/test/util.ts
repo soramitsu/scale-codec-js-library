@@ -1,3 +1,4 @@
+import { expect } from 'vitest'
 import { CodecSimplified } from '../src/types'
 
 export function assertAllKeysHaveTheSameValue<T>(rec: Record<string, T>, value?: T) {

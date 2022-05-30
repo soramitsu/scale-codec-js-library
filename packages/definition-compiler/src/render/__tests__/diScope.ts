@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { createDIScope } from '../util'
 
 test('use() returns scope value', () => {

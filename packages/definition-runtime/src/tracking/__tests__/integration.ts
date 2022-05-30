@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, test } from 'vitest'
 import { Decode, Walker } from '@scale-codec/core'
 import { CodecTracker, DecodeTrace, DecodeTraceCollector, buildDecodeTraceStepsFmt, setCurrentTracker } from '../index'
 

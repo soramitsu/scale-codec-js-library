@@ -1,4 +1,5 @@
 /* eslint-disable max-nested-callbacks */
+import { describe, expect, it, test } from 'vitest'
 import { decodeCompact, encodeCompact } from './compact'
 import COMPACTS from '../../../rust-samples/output-compacts.json'
 import { fromHex } from '@scale-codec/util'

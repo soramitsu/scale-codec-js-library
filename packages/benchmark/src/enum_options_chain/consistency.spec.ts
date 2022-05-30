@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { assertAllKeysHaveTheSameValue } from '../../test/util'
 import core from './core'
 import coreV04 from './core-v04'

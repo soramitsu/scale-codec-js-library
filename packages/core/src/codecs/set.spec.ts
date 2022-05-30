@@ -1,3 +1,4 @@
+import { expect, test } from 'vitest'
 import { Decode, Encode } from '../types'
 import { decodeStr, encodeStr } from './str'
 import { createSetDecoder, createSetEncoder } from './set'

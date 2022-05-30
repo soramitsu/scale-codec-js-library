@@ -1,3 +1,4 @@
+import { describe, expect, it, test } from 'vitest'
 import { fromHex, toHex } from '@scale-codec/util'
 import { Enum, Option } from '@scale-codec/enum'
 import { WalkerImpl } from '../util'
