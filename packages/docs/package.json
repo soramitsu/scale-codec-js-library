@@ -7,7 +7,7 @@
     "build": "vitepress build",
     "serve": "vitepress serve",
     "logger-demo:vite": "vite dev logger-demo",
-    "logger-demo:node": "esno logger-demo/main"
+    "logger-demo:node": "tsx logger-demo/main"
   },
   "devDependencies": {
     "@scale-codec/benchmark": "workspace:*",
@@ -16,10 +16,10 @@
     "@types/object-inspect": "^1.8.1",
     "@vueuse/core": "^7.6.1",
     "chart.js": "^3.7.1",
-    "esno": "^0.14.1",
     "immutable": "^4.1.0",
     "sass": "^1.49.8",
     "shiki": "^0.10.1",
+    "tsx": "^3.4.2",
     "vite": "^2.9.9",
     "vite-plugin-windicss": "^1.7.0",
     "vitepress": "^0.22.0",

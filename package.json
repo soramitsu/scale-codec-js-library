@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@changesets/cli": "^2.22.0",
+    "@esbuild-kit/cjs-loader": "^2.0.1",
     "@microsoft/api-documenter": "^7.17.16",
     "@microsoft/api-extractor": "^7.24.2",
     "@types/jake": "^0.0.33",
@@ -39,7 +40,6 @@
     "consola": "^2.15.3",
     "del": "^6.1.1",
     "esbuild": "^0.14.42",
-    "esbuild-register": "^3.3.2",
     "eslint": "^8.16.0",
     "eslint-config-alloy": "^4.5.1",
     "eslint-plugin-cypress": "^2.12.1",
@@ -47,7 +47,6 @@
     "jake": "^10.8.5",
     "jest-immutable-matchers": "^3.0.0",
     "make-dir": "^3.1.0",
-    "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
     "prettier-eslint": "^15.0.1",
     "prettier-eslint-cli": "^6.0.1",
