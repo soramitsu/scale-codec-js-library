@@ -12,15 +12,15 @@ import def from './def'
 import fs from 'fs/promises'
 import path from 'path'
 ;(async function () {
-    const code = generate(def, {
-        namespaceTypeName: 'Namespace',
-        namespaceValueName: 'types',
-        importLib: '@scale-codec/namespace',
-    })
+  const code = generate(def, {
+    namespaceTypeName: 'Namespace',
+    namespaceValueName: 'types',
+    importLib: '@scale-codec/namespace',
+  })
 
-    await fs.writeFile(path.join(__dirname, 'ns.ts'), code)
+  await fs.writeFile(path.join(__dirname, 'ns.ts'), code)
 })().catch((err) => {
-    console.error('Generation failed', err)
-    process.exit(1)
+  console.error('Generation failed', err)
+  process.exit(1)
 })
 ```

@@ -7,6 +7,6 @@ interface ArrU64L32 extends Opaque<bigint[], ArrU64L32> {}
 const ArrU64L32 = createArrayCodec<bigint[], ArrU64L32>('Arr', U64, 32)
 
 export default defineCodec({
-    encode: (arr: bigint[]) => ArrU64L32.toBuffer(arr as ArrU64L32),
-    decode: (input: Uint8Array) => ArrU64L32.fromBuffer(input),
+  encode: (arr: bigint[]) => ArrU64L32.toBuffer(arr as ArrU64L32),
+  decode: (input: Uint8Array) => ArrU64L32.fromBuffer(input),
 })

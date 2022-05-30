@@ -4,6 +4,6 @@ import { renderNamespaceDefinition } from '../../packages/docs/node_modules/@sca
 import { DOCS_NAMESPACE_SCHEMA_COMPILED_SNIPPET_PATH as OUTPUT_FILE } from '../meta'
 
 export default async function () {
-    const content = renderNamespaceDefinition(definition)
-    await fs.writeFile(OUTPUT_FILE, content)
+  const content = renderNamespaceDefinition(definition)
+  await fs.writeFile(OUTPUT_FILE, content)
 }

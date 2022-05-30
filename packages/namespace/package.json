@@ -1,38 +1,38 @@
 {
-    "name": "@scale-codec/namespace",
-    "version": "0.1.0",
-    "description": "Organize complex namespace of custom SCALE-types into single static codec engine",
-    "license": "Apache-2.0",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+  "name": "@scale-codec/namespace",
+  "version": "0.1.0",
+  "description": "Organize complex namespace of custom SCALE-types into single static codec engine",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
+  },
+  "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/namespace#readme",
+  "main": "./dist/lib.cjs.js",
+  "module": "./dist/lib.esm.js",
+  "types": "./dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/lib.esm.js",
+      "require": "./dist/lib.cjs.js"
     },
-    "bugs": {
-        "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
-    },
-    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/namespace#readme",
-    "main": "./dist/lib.cjs.js",
-    "module": "./dist/lib.esm.js",
-    "types": "./dist/lib.d.ts",
-    "exports": {
-        ".": {
-            "import": "./dist/lib.esm.js",
-            "require": "./dist/lib.cjs.js"
-        },
-        "./*": "./*"
-    },
-    "files": [
-        "dist"
-    ],
-    "dependencies": {
-        "@scale-codec/core": "0.1.0",
-        "@scale-codec/util": "0.1.0"
-    },
-    "devDependencies": {
-        "jsbi": "^3.1.5",
-        "type-fest": "^1.2.0"
-    },
-    "peerDependencies": {
-        "jsbi": "^3.1.5"
-    }
+    "./*": "./*"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@scale-codec/core": "0.1.0",
+    "@scale-codec/util": "0.1.0"
+  },
+  "devDependencies": {
+    "jsbi": "^3.1.5",
+    "type-fest": "^1.2.0"
+  },
+  "peerDependencies": {
+    "jsbi": "^3.1.5"
+  }
 }

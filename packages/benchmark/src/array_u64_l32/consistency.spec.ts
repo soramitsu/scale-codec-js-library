@@ -13,31 +13,31 @@ import { factory, nativeToPolka } from './util'
 // const CODECS = { scaleCodecCore, scaleCodecCoreV4, scaleCodecRuntime, scaleCodecRuntimeV8 }
 
 test('Different encoders are identical', () => {
-    const INPUT = factory()
-    const INPUT_POLKA = nativeToPolka(INPUT)
+  const INPUT = factory()
+  const INPUT_POLKA = nativeToPolka(INPUT)
 
-    assertAllKeysHaveTheSameValue({
-        core: scaleCodecCore.encode(INPUT),
-        runtime: scaleCodecRuntime.encode(INPUT),
-        coreV04: scaleCodecCoreV4.encode(INPUT),
-        runtimeV04: scaleCodecRuntimeV8.encode(INPUT),
-        polka: polka.encode(INPUT_POLKA),
-    })
+  assertAllKeysHaveTheSameValue({
+    core: scaleCodecCore.encode(INPUT),
+    runtime: scaleCodecRuntime.encode(INPUT),
+    coreV04: scaleCodecCoreV4.encode(INPUT),
+    runtimeV04: scaleCodecRuntimeV8.encode(INPUT),
+    polka: polka.encode(INPUT_POLKA),
+  })
 })
 
 test('Different decoders are identical', () => {
-    const NUMBERS = factory()
-    const ENCODED = scaleCodecCore.encode(NUMBERS)
+  const NUMBERS = factory()
+  const ENCODED = scaleCodecCore.encode(NUMBERS)
 
-    assertAllCodecsDecodeTheSame(ENCODED, { scaleCodecCore, scaleCodecCoreV4, scaleCodecRuntime, scaleCodecRuntimeV8 })
+  assertAllCodecsDecodeTheSame(ENCODED, { scaleCodecCore, scaleCodecCoreV4, scaleCodecRuntime, scaleCodecRuntimeV8 })
 })
 
 test('Polka decodes OK', () => {
-    const NUMBERS = factory()
-    const ENCODED = scaleCodecCore.encode(NUMBERS)
+  const NUMBERS = factory()
+  const ENCODED = scaleCodecCore.encode(NUMBERS)
 
-    const decoded = polka.decode(ENCODED)
+  const decoded = polka.decode(ENCODED)
 
-    const expected = nativeToPolka(NUMBERS)
-    expect(decoded.toHuman()).toEqual(expected.toHuman())
+  const expected = nativeToPolka(NUMBERS)
+  expect(decoded.toHuman()).toEqual(expected.toHuman())
 })

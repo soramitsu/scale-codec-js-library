@@ -1,3 +1,4 @@
+/etc/api
 packages/definition-compiler/tests/samples
 pnpm-lock.yaml
 api-extractor/

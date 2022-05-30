@@ -1,37 +1,37 @@
 {
-    "name": "@scale-codec/namespace-codegen-cli",
-    "version": "0.1.0",
-    "description": "CLI for @scale-codec/namespace-codegen",
-    "license": "Apache-2.0",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
-    },
-    "bugs": {
-        "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
-    },
-    "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/namespace-codegen-cli#readme",
-    "files": [
-        "dist",
-        "bin"
-    ],
-    "scripts": {
-        "run-dev": "node -r esbuild-register src/main.ts"
-    },
-    "bin": {
-        "generate-scale-namespace": "bin/main.js"
-    },
-    "dependencies": {
-        "@scale-codec/enum": "workspace:^0.1.0",
-        "@scale-codec/namespace-codegen": "workspace:^0.1.0",
-        "cac": "^6.7.3",
-        "chalk": "^4.1.1",
-        "consola": "^2.15.3",
-        "esbuild-register": "^2.6.0",
-        "path-exists": "^4.0.0",
-        "prompts": "^2.4.1"
-    },
-    "devDependencies": {
-        "@types/prompts": "^2.0.14"
-    }
+  "name": "@scale-codec/namespace-codegen-cli",
+  "version": "0.1.0",
+  "description": "CLI for @scale-codec/namespace-codegen",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
+  },
+  "homepage": "https://github.com/soramitsu/scale-codec-js-library/tree/master/packages/namespace-codegen-cli#readme",
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "run-dev": "node -r esbuild-register src/main.ts"
+  },
+  "bin": {
+    "generate-scale-namespace": "bin/main.js"
+  },
+  "dependencies": {
+    "@scale-codec/enum": "workspace:^0.1.0",
+    "@scale-codec/namespace-codegen": "workspace:^0.1.0",
+    "cac": "^6.7.3",
+    "chalk": "^4.1.1",
+    "consola": "^2.15.3",
+    "esbuild-register": "^2.6.0",
+    "path-exists": "^4.0.0",
+    "prompts": "^2.4.1"
+  },
+  "devDependencies": {
+    "@types/prompts": "^2.0.14"
+  }
 }

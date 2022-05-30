@@ -11,15 +11,15 @@ import { Enum } from '@scale-codec/enum'
 
 // Define enum
 type Event = Enum<
-    | 'PageLoaded'
-    | ['KeyPress', string]
-    | [
-          'MouseClick',
-          {
-              x: number
-              y: number
-          },
-      ]
+  | 'PageLoaded'
+  | ['KeyPress', string]
+  | [
+      'MouseClick',
+      {
+        x: number
+        y: number
+      },
+    ]
 >
 
 // Construct actual value (100% typed)
@@ -31,19 +31,19 @@ const event3: Event = Enum.variant('PageLoaded')
 
 // with `is` & `as`
 if (event1.is('MouseClick')) {
-    const { x, y } = event1.as('MouseClick')
+  const { x, y } = event1.as('MouseClick')
 }
 
 // with match
 event1.match({
-    PageLoaded() {
-        console.log('Loaded')
-    },
-    MouseClick({ x, y }) {
-        console.log('Click at %o : %o', x, y)
-    },
-    KeyPress(key) {
-        console.log('Key pressed:', key)
-    },
+  PageLoaded() {
+    console.log('Loaded')
+  },
+  MouseClick({ x, y }) {
+    console.log('Click at %o : %o', x, y)
+  },
+  KeyPress(key) {
+    console.log('Key pressed:', key)
+  },
 })
 ```
