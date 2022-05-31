@@ -8,7 +8,6 @@
     "test:unit": "vitest run",
     "test:e2e": "pnpm jake test:e2e-spa",
     "build": "pnpm jake build",
-    "build:types": "pnpm jake build-types",
     "type-check": "tsc --noEmit",
     "clean": "pnpm jake clean",
     "publish:all": "pnpm jake publish-all",
@@ -16,15 +15,9 @@
     "lint:check": "pnpm lint:base --list-different",
     "lint:fix": "pnpm lint:base --write",
     "check-code-integrity": "pnpm jake check-code-integrity",
-    "api:extract": "pnpm jake api:extract",
-    "api:extract:local": "pnpm jake api:extract-local",
-    "api:docs": "pnpm jake api:document",
-    "api:all": "pnpm jake api:extract-and-document",
     "docs:dev": "pnpm --filter docs dev",
     "docs:build": "pnpm --filter docs build",
-    "docs:compile-ns": "pnpm jake compile-docs-namespace",
     "compiler:update-samples": "pnpm jake compiler-samples:compile",
-    "compiler:clean-samples": "pnpm jake compiler-samples:clean",
     "benchmark": "pnpm --filter benchmark start"
   },
   "devDependencies": {
