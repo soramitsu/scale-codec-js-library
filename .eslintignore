@@ -1,5 +1,5 @@
 dist
-dist-tsc
+/types
 packages/definition-compiler/tests/samples
 namespace-schema-compiled.ts
 e2e-spa/src/namespace.ts

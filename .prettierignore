@@ -1,13 +1,11 @@
 /etc/api
 packages/definition-compiler/tests/samples
 pnpm-lock.yaml
-api-extractor/
 CHANGELOG.md
 dist
-dist-tsc
+/types
 packages/rust-samples
 e2e-spa/runtime-rollup
 e2e-spa/src/namespace.ts
 packages/docs/src/api
 namespace-schema-compiled.ts
-

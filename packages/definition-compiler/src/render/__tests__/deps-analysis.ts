@@ -10,6 +10,7 @@ import { List, Map, Seq, Set } from 'immutable'
 // Works well with Vitest
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const immutableMatchers = require('jest-immutable-matchers')
+import 'jest-immutable-matchers'
 
 describe.concurrent('deps analysis', () => {
   beforeEach(() => {

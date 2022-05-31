@@ -1,5 +1,6 @@
 import 'jake'
-import { chalk, path } from 'zx'
+import { path } from 'zx'
+import chalk from 'chalk'
 import fs from 'fs/promises'
 import del from 'del'
 import consola from 'consola'

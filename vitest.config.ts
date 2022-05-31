@@ -6,7 +6,7 @@ export default defineConfig({
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
-      '**/dist-tsc/**',
+      './types',
       './packages/namespace*/**',
       '**/*.d.ts',
       './packages/core/src/codecs/__tests__/util.ts',

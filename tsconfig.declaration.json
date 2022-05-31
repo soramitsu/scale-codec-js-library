@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext", "DOM"],
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "./packages/core",
+    "./packages/enum",
+    "./packages/definition-compiler",
+    "./packages/definition-runtime",
+    "./packages/util"
+  ],
+  "exclude": ["**/*.spec.ts", "**/__tests__", "./packages/definition-compiler/tests"]
+}

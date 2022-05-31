@@ -1,17 +1,14 @@
 import 'jake'
-import { $, cd, chalk, path } from 'zx'
+import { $, cd, path } from 'zx'
+import chalk from 'chalk'
 import fs from 'fs/promises'
+import fsExtra from 'fs-extra'
 import del from 'del'
 import * as esbuild from 'esbuild'
 import consola from 'consola'
-import { Extractor, ExtractorConfig } from '@microsoft/api-extractor'
-// import compileDocsNamespace from './scripts/compile-docs-namespace'
-// import compileCompilerSamples from './scripts/compile-compiler-samples'
-// import bundle from './scripts/bundle'
-// import bundleForE2e from './scripts/bundle-for-e2e'
-import makeDir from 'make-dir'
-import * as samples from '../packages/definition-compiler/tests/__samples__'
-import { renderNamespaceDefinition } from '../packages/definition-compiler/src/lib'
+import * as ApiExtractor from '@microsoft/api-extractor'
+import * as DEFINITION_COMPILER_SAMPLES from '../packages/definition-compiler/tests/__samples__'
+import { renderNamespaceDefinition } from '../packages/definition-compiler'
 import DOCS_NAMESPACE_DEFINITION from '../packages/docs/src/snippets/namespace-schema'
 import {
   API_DOCUMENTER_OUTPUT,
@@ -21,22 +18,23 @@ import {
   DOCS_NAMESPACE_SCHEMA_COMPILED_SNIPPET_PATH,
   E2E_ROOT,
   E2E_RUNTIME_ROLLUP_OUTPUT_DIR,
+  MONOREPO_ROOT,
   PACKAGE_EXTERNALS,
   PUBLIC_PACKAGES_UNSCOPED,
-  SCOPE,
-  ScaleCodecPackageUnscopedName,
+  TSC_BUILD_OUTPUT_DIR,
   resolveApiExtractorConfig,
+  resolvePackageDeclarationEntry,
   resolvePackageDist,
   resolvePackageEntrypoint,
-  resolveTSCPackageOutput,
-  resolveTSCPackageOutputMove,
+  scoped,
 } from './meta'
+import { PackageJson } from 'type-fest'
 
 async function extractApi(localBuild = false): Promise<void> {
   for (const unscopedPackageName of PUBLIC_PACKAGES_UNSCOPED) {
     const extractorConfigFile = resolveApiExtractorConfig(unscopedPackageName)
-    const config = ExtractorConfig.loadFileAndPrepare(extractorConfigFile)
-    const extractorResult = Extractor.invoke(config, {
+    const config = ApiExtractor.ExtractorConfig.loadFileAndPrepare(extractorConfigFile)
+    const extractorResult = ApiExtractor.Extractor.invoke(config, {
       localBuild,
       showVerboseMessages: true,
     })
@@ -64,12 +62,12 @@ namespace('compiler-samples', () => {
   })
 
   task('prepare-dir', async () => {
-    await makeDir(COMPILER_SAMPLES_OUTPUT_DIR)
+    await fsExtra.ensureDir(COMPILER_SAMPLES_OUTPUT_DIR)
   })
 
   desc('Compile samples')
   task('compile', ['clean', 'prepare-dir'], async () => {
-    const entries = Object.entries(samples)
+    const entries = Object.entries(DEFINITION_COMPILER_SAMPLES)
 
     await Promise.all(
       entries
@@ -78,7 +76,7 @@ namespace('compiler-samples', () => {
           const code = renderNamespaceDefinition(def)
           const file = path.join(COMPILER_SAMPLES_OUTPUT_DIR, `${id}.ts`)
           await fs.writeFile(file, code)
-          consola.info(chalk`Written: {blue.bold ${file}}`)
+          consola.info(chalk`Written: {blue.bold ${path.relative(MONOREPO_ROOT, file)}}`)
         }),
     )
   })
@@ -90,35 +88,60 @@ task('compile-docs-namespace', async () => {
   await fs.writeFile(DOCS_NAMESPACE_SCHEMA_COMPILED_SNIPPET_PATH, content)
 })
 
-desc('Run tsc and split its output to packages')
-task('build-ts', ['clean'], async () => {
-  // Main TypeScript build into root `dist` dir
-  await $`pnpm tsc --emitDeclarationOnly`
-
-  // Copying compiled internals into each package's own `dist` dir
-  await Promise.all(
-    PUBLIC_PACKAGES_UNSCOPED.map(async (pkg) => {
-      const dirFrom = resolveTSCPackageOutput(pkg)
-      const dirTo = resolveTSCPackageOutputMove(pkg)
-      await $`cp -r ${dirFrom} ${dirTo}`
-    }),
-  )
+task('build-types-only', ['clean'], async () => {
+  await $`pnpm tsc -p tsconfig.declaration.json`
 })
+
+/**
+ * Workaround for API Extractor.
+ *
+ * - It fails to resolve e.g. `@scale-codec/enum` from core package
+ * - It fails if split each pkg declarations into package dir,
+ *   because it tries to resolve to `lid.ts` file via node-resolution, which is not
+ *   OK for it
+ * - `tsconfig`s `paths` is not a solution because AE includes other package
+ *    contents if it is resolved via paths for some reason
+ *
+ * Thus, this task creates a simple `node_modules` dir with `package.json`s mapped to
+ * correct lib.d.ts files
+ */
+task('build-types-node-modules', ['build-types-only'], async () => {
+  for (const pkg of PUBLIC_PACKAGES_UNSCOPED) {
+    const dirInNodeModules = path.resolve(TSC_BUILD_OUTPUT_DIR, 'node_modules', scoped(pkg))
+    const pkgLibFile = resolvePackageDeclarationEntry(pkg)
+    const libFileRelative = path.relative(dirInNodeModules, pkgLibFile)
+    const packageJson: PackageJson = { main: libFileRelative }
+    const packageJsonFile = path.resolve(dirInNodeModules, 'package.json')
+    await fsExtra.outputFile(packageJsonFile, JSON.stringify(packageJson))
+    consola.info(chalk`Written: {blue.bold ${path.relative(MONOREPO_ROOT, packageJsonFile)}}`)
+  }
+})
+
+desc('Build types')
+task('build-types', ['clean', 'build-types-only', 'build-types-node-modules'])
 
 namespace('api', () => {
   desc('Extract APIs and fail if they mismatch')
-  task('extract', ['build-ts'], async () => {
+  task('extract', ['build-types'], async () => {
     await extractApi()
   })
 
   desc('Extract APIs and update them')
-  task('extract-local', ['build-ts'], async () => {
+  task('extract-local', ['build-types', 'extract-local-only'])
+
+  desc('Extarct API in local mode without build')
+  task('extract-local-only', async () => {
     await extractApi(true)
+  })
+
+  desc('Extarct API without build')
+  task('extract-only', async () => {
+    await extractApi()
   })
 
   desc('Generate Markdown docs from extracted APIs')
   task('document', ['extract'], async () => {
-    await $`pnpx api-documenter markdown -i ${API_EXTRACTOR_TMP_DIR} -o ${API_DOCUMENTER_OUTPUT}`
+    await $`pnpm api-documenter markdown -i ${API_EXTRACTOR_TMP_DIR} -o ${API_DOCUMENTER_OUTPUT}`
   })
 
   desc('Shorthand for both extract and document apis')
@@ -142,10 +165,18 @@ namespace('test', () => {
   task('all', ['unit', 'e2e-spa'])
 })
 
+task('type-check', async () => {
+  await $`pnpm type-check`
+})
+
+task('lint-check', async () => {
+  await $`pnpm lint:check`
+})
+
 task('bundle', ['clean'], async () => {
   for (const unscopedPackageName of PUBLIC_PACKAGES_UNSCOPED) {
     for (const format of ['esm', 'cjs'] as const) {
-      esbuild.build({
+      await esbuild.build({
         entryPoints: [resolvePackageEntrypoint(unscopedPackageName)],
         outfile: path.join(resolvePackageDist(unscopedPackageName), `lib.${format}.js`),
         bundle: true,
@@ -174,7 +205,7 @@ task('bundle-e2e', ['clean'], async () => {
 })
 
 desc('Build packages, extract APIs and documentation')
-task('build', ['clean', 'build-ts', 'api:extract', 'bundle', 'api:document'])
+task('build', ['clean', 'build-types', 'api:extract', 'bundle', 'api:document'])
 
 desc('All-in-one code check')
 task('check-code-integrity', [
