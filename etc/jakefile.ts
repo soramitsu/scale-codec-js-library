@@ -1,9 +1,10 @@
 import 'jake'
-import { $, cd, path } from 'zx'
+import { $, cd } from 'zx'
 import chalk from 'chalk'
 import fs from 'fs/promises'
 import fsExtra from 'fs-extra'
 import del from 'del'
+import path from 'path'
 import * as esbuild from 'esbuild'
 import consola from 'consola'
 import * as ApiExtractor from '@microsoft/api-extractor'
@@ -39,13 +40,14 @@ async function extractApi(localBuild = false): Promise<void> {
       showVerboseMessages: true,
     })
     if (extractorResult.succeeded) {
-      consola.success(chalk`API Extractor completed successfully (for {blue.bold ${unscopedPackageName}})`)
+      consola.success(chalk`API Extractor succeeded for {magenta.bold ${unscopedPackageName}}`)
+      // consola.success(chalk`API Extractor completed successfully (for {blue.bold ${unscopedPackageName}})`)
     } else {
       consola.fatal(
         `API Extractor completed with ${extractorResult.errorCount} errors` +
           ` and ${extractorResult.warningCount} warnings`,
       )
-      throw new Error('Extractor failed')
+      process.exit(1)
     }
   }
 }
@@ -129,7 +131,7 @@ namespace('api', () => {
   desc('Extract APIs and update them')
   task('extract-local', ['build-types', 'extract-local-only'])
 
-  desc('Extarct API in local mode without build')
+  desc('Extract API in local mode without build')
   task('extract-local-only', async () => {
     await extractApi(true)
   })
