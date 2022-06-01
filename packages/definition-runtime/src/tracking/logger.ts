@@ -1,7 +1,7 @@
 import { Fmt, fmt } from 'fmt-subs'
-import { Walker, Decode } from '@scale-codec/core'
+import { Decode, Walker } from '@scale-codec/core'
 import { getCurrentTracker, setCurrentTracker } from './current'
-import { buildDecodeTraceStepsFmt, DecodeTraceCollector, DecodeTrace } from './decode-trace'
+import { DecodeTrace, DecodeTraceCollector, buildDecodeTraceStepsFmt } from './decode-trace'
 import { CodecTracker } from './types'
 
 export interface LoggerConfig {

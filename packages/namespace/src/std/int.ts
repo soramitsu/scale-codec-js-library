@@ -1,4 +1,4 @@
-import { Codec, bigIntCodec, AllowedBits, encodeBigInt, decodeBigInt, BigIntCodecOptions } from '@scale-codec/core'
+import { AllowedBits, BigIntCodecOptions, Codec, bigIntCodec, decodeBigInt, encodeBigInt } from '@scale-codec/core'
 import JSBI from 'jsbi'
 
 function codecBigInt(bits: AllowedBits, signed: boolean): Codec<JSBI> {

@@ -1,6 +1,6 @@
 export { version as VERSION_CORE_CURRENT } from '@scale-codec/core/package.json'
 export { version as VERSION_RUNTIME_CURRENT } from '@scale-codec/definition-runtime/package.json'
-import { dependencies as thispkgdeps } from '../package.json'
+import { devDependencies as thispkgdeps } from '../package.json'
 
 export const {
   'scale-codec-core-v-4': VERSION_CORE_PRE,

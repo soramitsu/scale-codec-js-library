@@ -1,4 +1,4 @@
-import { createSetCodec, Compact, Opaque } from '@scale-codec/definition-runtime'
+import { Compact, Opaque, createSetCodec } from '@scale-codec/definition-runtime'
 import { defineCodec } from '../types'
 
 interface MySet extends Opaque<Set<bigint | number>, MySet> {}

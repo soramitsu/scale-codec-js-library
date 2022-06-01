@@ -1,4 +1,4 @@
-import { Decode, Encode, encodeFactory, WalkerImpl, Walker } from '@scale-codec/core'
+import { Decode, Encode, Walker, WalkerImpl, encodeFactory } from '@scale-codec/core'
 import { trackDecode } from './tracking'
 
 /**

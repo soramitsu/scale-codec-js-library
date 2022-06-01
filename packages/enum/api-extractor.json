@@ -1,6 +1,6 @@
 {
   "extends": "../../api-extractor.json",
-  "mainEntryPointFilePath": "dist-tsc/lib.d.ts",
+  "mainEntryPointFilePath": "<projectFolder>/types/enum/src/lib.d.ts",
   "dtsRollup": {
     "publicTrimmedFilePath": "dist/lib.d.ts"
   }

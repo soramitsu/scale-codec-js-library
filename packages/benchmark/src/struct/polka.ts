@@ -1,4 +1,4 @@
-import { TypeRegistry, Struct } from '@polkadot/types'
+import { Struct, TypeRegistry } from '@polkadot/types'
 import { defineCodec } from '../types'
 import { factory } from './util'
 

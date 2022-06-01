@@ -1,7 +1,7 @@
 import prettier from 'prettier'
 import prettierConfig from '../../../.prettierrc.js'
 import { NamespaceCodegenDefinition } from './types'
-import { generate, GenerateOptions } from './gen'
+import { GenerateOptions, generate } from './gen'
 
 function format(tsCode: string): string {
   return prettier.format(tsCode, {

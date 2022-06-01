@@ -1,4 +1,4 @@
-import { Encode, Decode, Walker } from '../types'
+import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
 export type StructEncoders<T> = { [K in keyof T]: [K, Encode<T[K]>] }[keyof T][]

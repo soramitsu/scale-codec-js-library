@@ -1,4 +1,4 @@
-import { encodeArray, decodeArray, encodeBigInt, decodeBigInt } from 'scale-codec-core-v-4'
+import { decodeArray, decodeBigInt, encodeArray, encodeBigInt } from 'scale-codec-core-v-4'
 import { defineCodec } from '../types'
 
 const encodeU64 = (x: bigint) => encodeBigInt(x, 'u64')

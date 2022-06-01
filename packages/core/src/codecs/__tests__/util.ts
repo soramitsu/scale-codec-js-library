@@ -1,3 +1,4 @@
+import { expect } from 'vitest'
 import { Decode } from '../../types'
 import { WalkerImpl } from '../../util'
 

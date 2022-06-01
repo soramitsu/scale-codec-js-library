@@ -1,4 +1,4 @@
-import { createArrayCodec, Opaque, U64 } from '@scale-codec/definition-runtime'
+import { Opaque, U64, createArrayCodec } from '@scale-codec/definition-runtime'
 import { defineCodec } from '../types'
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

@@ -1,4 +1,4 @@
-import { suite, complete, cycle, add } from 'benny'
+import { add, complete, cycle, suite } from 'benny'
 
 import polka from './polka'
 import scaleCodecCore from './scale-codec-core'

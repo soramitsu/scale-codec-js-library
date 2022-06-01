@@ -1,4 +1,4 @@
-import { Set, Map, List } from 'immutable'
+import { List, Map, Set } from 'immutable'
 import Graph from 'tarjan-graph'
 
 export type AdjacencyMap = Map<string, Set<string>>

@@ -1,4 +1,4 @@
-import { Set, List, Seq, Record, RecordOf, Map } from 'immutable'
+import { List, Map, Record, RecordOf, Seq, Set } from 'immutable'
 import { optimizeDepsHierarchy } from './deps-analysis'
 import { renderImports } from './util'
 

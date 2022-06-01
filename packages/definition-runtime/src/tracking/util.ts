@@ -1,6 +1,6 @@
 import { Walker } from '@scale-codec/core'
 import { toHex } from '@scale-codec/util'
-import { TrackValueInspectable, TrackValueInspect } from './types'
+import { TrackValueInspect, TrackValueInspectable } from './types'
 
 export interface FormatWalkerStepParams {
   walker: Walker

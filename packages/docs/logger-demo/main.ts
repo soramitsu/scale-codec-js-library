@@ -1,12 +1,12 @@
 import {
-  createStructCodec,
-  createEnumCodec,
   Enum,
-  U8,
-  Str,
-  StructCodec,
   EnumCodec,
   Logger,
+  Str,
+  StructCodec,
+  U8,
+  createEnumCodec,
+  createStructCodec,
 } from '@scale-codec/definition-runtime'
 
 // Codecs

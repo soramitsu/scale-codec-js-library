@@ -1,12 +1,12 @@
 import {
   Enum,
-  ValuableVariants,
-  EnumSchema,
-  Option,
-  GetValuableVariantValue,
-  Result,
-  GetEnumDef,
   EnumCodec,
+  EnumSchema,
+  GetEnumDef,
+  GetValuableVariantValue,
+  Option,
+  Result,
+  ValuableVariants,
 } from '@scale-codec/core'
 import { CompatibleNamespaceKeys, NamespaceCodec } from '../types'
 

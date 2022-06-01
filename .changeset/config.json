@@ -2,9 +2,17 @@
   "$schema": "https://unpkg.com/@changesets/config@1.6.1/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "linked": [["@scale-codec/definition-*"]],
+  "linked": [
+    [
+      "@scale-codec/definition-*"
+    ]
+  ],
   "access": "restricted",
   "baseBranch": "master",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": [
+    "@scale-codec/e2e-spa",
+    "@scale-codec/benchmark",
+    "@scale-codec/docs"
+  ]
 }

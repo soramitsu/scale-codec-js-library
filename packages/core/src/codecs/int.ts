@@ -1,5 +1,5 @@
 import { assert } from '@scale-codec/util'
-import { Walker, Encode, Decode } from '../types'
+import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
 /**
