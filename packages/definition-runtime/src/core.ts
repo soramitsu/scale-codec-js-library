@@ -5,11 +5,11 @@ import { trackDecode } from './tracking'
  * General interface for any codec
  */
 export interface Codec<Encoded, Decoded = Encoded> {
-    encodeRaw: Encode<Encoded>
-    decodeRaw: Decode<Decoded>
-    fromBuffer: (src: ArrayBufferView) => Decoded
-    toBuffer: (value: Encoded) => Uint8Array
-    // name: () => string
+  encodeRaw: Encode<Encoded>
+  decodeRaw: Decode<Decoded>
+  fromBuffer: (src: ArrayBufferView) => Decoded
+  toBuffer: (value: Encoded) => Uint8Array
+  // name: () => string
 }
 
 export type CodecAny = Codec<any, any>
@@ -46,15 +46,15 @@ export type CodecAny = Codec<any, any>
 // }
 
 export function trackableCodec<E, D = E>(name: string, encode: Encode<E>, decode: Decode<D>): Codec<E, D> {
-    const decodeTracked: Decode<D> = (walker) => trackDecode(name, walker, decode)
+  const decodeTracked: Decode<D> = (walker) => trackDecode(name, walker, decode)
 
-    return {
-        // name: () => name,
-        encodeRaw: encode,
-        decodeRaw: decodeTracked,
-        toBuffer: (value) => WalkerImpl.encode(value, encode),
-        fromBuffer: (src) => WalkerImpl.decode(src, decodeTracked),
-    }
+  return {
+    // name: () => name,
+    encodeRaw: encode,
+    decodeRaw: decodeTracked,
+    toBuffer: (value) => WalkerImpl.encode(value, encode),
+    fromBuffer: (src) => WalkerImpl.decode(src, decodeTracked),
+  }
 }
 
 export type CodecValueEncodable<T extends Codec<any>> = T extends Codec<infer E, any> ? E : never
@@ -108,23 +108,23 @@ export type CodecValueDecoded<T extends Codec<any>> = T extends Codec<any, infer
 // }
 
 export function dynCodec<C extends CodecAny>(getter: () => C): Codec<CodecValueEncodable<C>, CodecValueDecoded<C>> {
-    let codec: C | undefined
+  let codec: C | undefined
 
-    const getCodec = (): C => {
-        if (!codec) {
-            codec = getter()
-        }
-        return codec
+  const getCodec = (): C => {
+    if (!codec) {
+      codec = getter()
     }
+    return codec
+  }
 
-    return {
-        // name: () => (codec ?? getCodec()).name(),
-        encodeRaw: encodeFactory(
-            (val, walker) => (codec ?? getCodec()).encodeRaw(val, walker),
-            (val) => (codec ?? getCodec()).encodeRaw.sizeHint(val),
-        ),
-        decodeRaw: (walker) => (codec ?? getCodec()).decodeRaw(walker),
-        toBuffer: (value) => (codec ?? getCodec()).toBuffer(value),
-        fromBuffer: (src) => (codec ?? getCodec()).fromBuffer(src),
-    }
+  return {
+    // name: () => (codec ?? getCodec()).name(),
+    encodeRaw: encodeFactory(
+      (val, walker) => (codec ?? getCodec()).encodeRaw(val, walker),
+      (val) => (codec ?? getCodec()).encodeRaw.sizeHint(val),
+    ),
+    decodeRaw: (walker) => (codec ?? getCodec()).decodeRaw(walker),
+    toBuffer: (value) => (codec ?? getCodec()).toBuffer(value),
+    fromBuffer: (src) => (codec ?? getCodec()).fromBuffer(src),
+  }
 }

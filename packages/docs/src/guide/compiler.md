@@ -8,9 +8,9 @@ Design of this part of the library is still debatable. If you have any suggestio
 
 It is a wrapper around [Core](./core) library that provides:
 
--   `Codec`s, that are a combination of encode & decode and some sugar
--   Optional tracking functionality for debugging purposes.
--   [Predefined](#predefined-builders) non-parametrized codecs, such as `Str`, `Bool` etc
+- `Codec`s, that are a combination of encode & decode and some sugar
+- Optional tracking functionality for debugging purposes.
+- [Predefined](#predefined-builders) non-parametrized codecs, such as `Str`, `Bool` etc
 
 Available on NPM:
 
@@ -113,41 +113,41 @@ You can use Tracking API to implement any logic you need. Example of usage:
 import { setCurrentTracker } from '@scale-codec/definition-runtime'
 
 setCurrentTracker({
-    decode(loc, walker, decode) {
-        try {
-            console.log(
-                'Decode location: %s. Walker idx: %s',
-                loc,
-                walker.idx,
-            )
-            return decode(walker)
-        } catch (err) {
-            debugger
-        } finally {
-            console.log('Walker idx then: %s', walker.idx)
-        }
-    },
+  decode(loc, walker, decode) {
+    try {
+      console.log(
+        'Decode location: %s. Walker idx: %s',
+        loc,
+        walker.idx,
+      )
+      return decode(walker)
+    } catch (err) {
+      debugger
+    } finally {
+      console.log('Walker idx then: %s', walker.idx)
+    }
+  },
 })
 ```
 
 ### Possible questions
 
--   Is there any runtime overhead if I don't use tracking?
+- Is there any runtime overhead if I don't use tracking?
 
-    Yes, there is some, but it is reduced as possible.
+  Yes, there is some, but it is reduced as possible.
 
--   Is `Logger` tree-shakable?
+- Is `Logger` tree-shakable?
 
-    Yes, it is.
+  Yes, it is.
 
--   Why encoding is not tracked?
+- Why encoding is not tracked?
 
-    There was no any reason to do so yet. It is possible to implement.
+  There was no any reason to do so yet. It is possible to implement.
 
 ## Also
 
--   [Runtime's API](../api/definition-runtime)
--   [Compiler's API](../api/definition-compiler)
--   [@polkadot/types](https://github.com/polkadot-js/api/tree/master/packages/types) - another implementation of SCALE codec with a different namespaces approach
--   [ts-scale-codec](https://www.npmjs.com/package/@josepot/ts-scale-codec)- another lightweight implementation of SCALE
--   [Protobuf.js](https://protobufjs.github.io/protobuf.js/index.html) - implementation not of SCALE, but of Protobuf spec. Their specs have a lot in common.
+- [Runtime's API](../api/definition-runtime)
+- [Compiler's API](../api/definition-compiler)
+- [@polkadot/types](https://github.com/polkadot-js/api/tree/master/packages/types) - another implementation of SCALE codec with a different namespaces approach
+- [ts-scale-codec](https://www.npmjs.com/package/@josepot/ts-scale-codec)- another lightweight implementation of SCALE
+- [Protobuf.js](https://protobufjs.github.io/protobuf.js/index.html) - implementation not of SCALE, but of Protobuf spec. Their specs have a lot in common.

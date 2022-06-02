@@ -1,25 +1,25 @@
 {
-    "compilerOptions": {
-        "target": "esnext",
-        "module": "esnext",
-        "lib": ["esnext", "DOM"],
-        "esModuleInterop": true,
-        "outDir": "dist-tsc",
-        "declaration": true,
-        "alwaysStrict": true,
-        "noImplicitAny": true,
-        "noImplicitThis": true,
-        "strictNullChecks": true,
-        "moduleResolution": "node",
-        "skipLibCheck": true,
-        "resolveJsonModule": true,
-        "types": ["jest-immutable-matchers"]
-    },
-    "include": ["packages"],
-    "exclude": [
-        "**/dist",
-        "packages/namespace*/**",
-        // temporary
-        "packages/docs/**"
-    ]
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["esnext", "DOM"],
+    "esModuleInterop": true,
+    "outDir": "dist-tsc",
+    "declaration": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": ["jest-immutable-matchers"]
+  },
+  "include": ["packages"],
+  "exclude": [
+    "**/dist",
+    "packages/namespace*/**",
+    // temporary
+    "packages/docs/**"
+  ]
 }

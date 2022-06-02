@@ -1,18 +1,18 @@
 import {
-    CustomArr,
-    CustomOpt,
-    CustomStruct,
-    CustomTuple,
-    CycleEnum,
-    CycleStruct,
-    ArrAlias,
-    CustomMap,
+  CustomArr,
+  CustomOpt,
+  CustomStruct,
+  CustomTuple,
+  CycleEnum,
+  CycleStruct,
+  ArrAlias,
+  CustomMap,
 } from './play-mod'
 import { Enum } from './src/lib'
 
 const arr1 = CustomArr([1, 2, 3])
 function test1() {
-    CustomArr.toBuffer(arr1)
+  CustomArr.toBuffer(arr1)
 }
 
 // @ts-expect-error
@@ -46,15 +46,15 @@ const cycleEnum2 = CycleEnum('Some', { enum: cycleEnum1 })
 const cycleEnum3 = CycleEnum('Some', CycleStruct({ enum: cycleEnum1 }))
 
 CycleEnum(
-    'Some',
-    CycleStruct({
-        enum: CycleEnum(
-            'Some',
-            CycleStruct({
-                enum: CycleEnum('None'),
-            }),
-        ),
-    }),
+  'Some',
+  CycleStruct({
+    enum: CycleEnum(
+      'Some',
+      CycleStruct({
+        enum: CycleEnum('None'),
+      }),
+    ),
+  }),
 )
 
 const map1 = CustomMap(new Map())

@@ -17,14 +17,14 @@ export type TagValue<Def extends EnumGenericDef, T extends TagsValuable<Def>> = 
 export type EnumDef<E> = E extends Enum<infer Def> ? Def : never
 
 export type EnumMatchMap<Def extends EnumGenericDef, R = any> = {
-    [T in TagsEmpty<Def>]: () => R
+  [T in TagsEmpty<Def>]: () => R
 } & {
-    [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => R
+  [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => R
 }
 
 export type EnumDefToFactoryArgs<Def extends EnumGenericDef> =
-    | [TagsEmpty<Def>]
-    | (Def extends [string, any] ? Def : never)
+  | [TagsEmpty<Def>]
+  | (Def extends [string, any] ? Def : never)
 
 /**
  * Special unique value to mark enum as empty
@@ -52,80 +52,80 @@ export const ENUM_EMPTY_VALUE = Symbol('empty')
  * ```
  */
 export class Enum<Def extends EnumGenericDef> {
-    public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
-    public static variant<Def extends EnumGenericDef>(...args: EnumDefToFactoryArgs<Def>): Enum<Def>
-    public static variant(tag: string, value = ENUM_EMPTY_VALUE) {
-        return new Enum(tag, value)
+  public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
+  public static variant<Def extends EnumGenericDef>(...args: EnumDefToFactoryArgs<Def>): Enum<Def>
+  public static variant(tag: string, value = ENUM_EMPTY_VALUE) {
+    return new Enum(tag, value)
+  }
+
+  public readonly tag: string
+
+  /**
+   * Inner value is untyped and should be used with caution
+   */
+  public readonly value: typeof ENUM_EMPTY_VALUE | unknown
+
+  public constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
+    this.tag = tag
+    this.value = value
+  }
+
+  public get isEmpty(): boolean {
+    return this.value === ENUM_EMPTY_VALUE
+  }
+
+  /**
+   * Check whether an enum instance has this variant name or not
+   */
+  public is(tag: Tags<Def>): boolean {
+    return this.tag === tag
+  }
+
+  /**
+   * Returns enum's content if **it exists** and **provided variant name matches with the enum's one**. If not, it
+   * throws.
+   *
+   * @remarks
+   * Use it in pair {@link Enum.is} to avoid runtime errors.
+   */
+  public as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T> {
+    if (this.is(tag)) {
+      if (this.isEmpty) {
+        throw new Error(`Enum cast failed - enum "${tag}" is empty`)
+      }
+
+      return this.value as any
     }
 
-    public readonly tag: string
+    throw new Error(`Enum cast failed - enum is "${this.tag}", not "${tag}"`)
+  }
 
-    /**
-     * Inner value is untyped and should be used with caution
-     */
-    public readonly value: typeof ENUM_EMPTY_VALUE | unknown
+  /**
+   * Pretty simple alternative for 'pattern matching'
+   *
+   * @example
+   *
+   * ```ts
+   * const file: Result<string, Error> = Enum.variant('Err', new Error('Oops!'))
+   *
+   * const fileContents = file.match({
+   *     Ok: (txt) => txt,
+   *     Err: (err) => {
+   *         console.error(err)
+   *         throw new Error('Bad file')
+   *     }
+   * })
+   * ```
+   */
+  public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
+    const fn = (matchMap as any)[this.tag] as (...args: any[]) => any
+    return this.isEmpty ? fn() : fn(this.value)
+  }
 
-    public constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
-        this.tag = tag
-        this.value = value
-    }
-
-    public get isEmpty(): boolean {
-        return this.value === ENUM_EMPTY_VALUE
-    }
-
-    /**
-     * Check whether an enum instance has this variant name or not
-     */
-    public is(tag: Tags<Def>): boolean {
-        return this.tag === tag
-    }
-
-    /**
-     * Returns enum's content if **it exists** and **provided variant name matches with the enum's one**. If not, it
-     * throws.
-     *
-     * @remarks
-     * Use it in pair {@link Enum.is} to avoid runtime errors.
-     */
-    public as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T> {
-        if (this.is(tag)) {
-            if (this.isEmpty) {
-                throw new Error(`Enum cast failed - enum "${tag}" is empty`)
-            }
-
-            return this.value as any
-        }
-
-        throw new Error(`Enum cast failed - enum is "${this.tag}", not "${tag}"`)
-    }
-
-    /**
-     * Pretty simple alternative for 'pattern matching'
-     *
-     * @example
-     *
-     * ```ts
-     * const file: Result<string, Error> = Enum.variant('Err', new Error('Oops!'))
-     *
-     * const fileContents = file.match({
-     *     Ok: (txt) => txt,
-     *     Err: (err) => {
-     *         console.error(err)
-     *         throw new Error('Bad file')
-     *     }
-     * })
-     * ```
-     */
-    public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
-        const fn = (matchMap as any)[this.tag] as (...args: any[]) => any
-        return this.isEmpty ? fn() : fn(this.value)
-    }
-
-    public toJSON() {
-        const { tag, value, isEmpty } = this
-        return isEmpty ? { tag } : { tag, value }
-    }
+  public toJSON() {
+    const { tag, value, isEmpty } = this
+    return isEmpty ? { tag } : { tag, value }
+  }
 }
 
 /**

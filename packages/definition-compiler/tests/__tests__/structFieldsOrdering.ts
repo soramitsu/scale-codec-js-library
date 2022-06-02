@@ -1,51 +1,51 @@
 import {
-    encodeUint8Vec,
-    encodeCompact,
-    encodeStr,
-    createStructEncoder,
-    WalkerImpl,
+  encodeUint8Vec,
+  encodeCompact,
+  encodeStr,
+  createStructEncoder,
+  WalkerImpl,
 } from '@scale-codec/definition-runtime'
 import { Mystery } from '../samples/structFieldsOrdering'
 
 interface Raw {
-    b: string
-    a: bigint
-    A: Uint8Array
+  b: string
+  a: bigint
+  A: Uint8Array
 }
 
 function makeRaw(value: Raw): Raw {
-    return value
+  return value
 }
 
 const rawEncoder = createStructEncoder<Raw>([
-    ['b', encodeStr],
-    ['a', encodeCompact],
-    ['A', encodeUint8Vec],
+  ['b', encodeStr],
+  ['a', encodeCompact],
+  ['A', encodeUint8Vec],
 ])
 
 function encodeRaw(value: Raw): Uint8Array {
-    return WalkerImpl.encode(value, rawEncoder)
+  return WalkerImpl.encode(value, rawEncoder)
 }
 
 test('Encodes as expected', () => {
-    const raw = makeRaw({
-        A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
-        a: BigInt('81818273'),
-        b: 'Nyanpasu',
-    })
+  const raw = makeRaw({
+    A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
+    a: BigInt('81818273'),
+    b: 'Nyanpasu',
+  })
 
-    expect(Mystery.toBuffer(Mystery(raw))).toEqual(encodeRaw(raw))
+  expect(Mystery.toBuffer(Mystery(raw))).toEqual(encodeRaw(raw))
 })
 
 test('Decodes as expected', () => {
-    const raw = makeRaw({
-        A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
-        a: BigInt('81818273'),
-        b: 'Nyanpasu',
-    })
-    const encoded = encodeRaw(raw)
+  const raw = makeRaw({
+    A: new Uint8Array([6, 1, 2, 3, 123, 4, 1, 4, 1, 4, 1, 2, 3, 4]),
+    a: BigInt('81818273'),
+    b: 'Nyanpasu',
+  })
+  const encoded = encodeRaw(raw)
 
-    const value = Mystery.fromBuffer(encoded)
+  const value = Mystery.fromBuffer(encoded)
 
-    expect(value).toEqual(raw)
+  expect(value).toEqual(raw)
 })
