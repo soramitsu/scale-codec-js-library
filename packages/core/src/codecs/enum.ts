@@ -1,4 +1,4 @@
-import { Enum, EnumDef, EnumGenericDef, Option, Result, TagValue, TagsEmpty, TagsValuable } from '@scale-codec/enum'
+import { AnyVariant, Option, Result, variant } from '@scale-codec/enum'
 import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
@@ -6,15 +6,9 @@ type EncodeTuple<V> = [discriminant: number, encode: Encode<V>]
 
 type DecodeTuple<T extends string, V> = [tag: T, decode: Decode<V>]
 
-export type EnumEncoders<Def extends EnumGenericDef> = {
-  [T in TagsEmpty<Def>]: number
-} & {
-  [T in TagsValuable<Def>]: EncodeTuple<TagValue<Def, T>>
-}
+export type EnumEncoders = Record<string, number | [number, Encode<any>]>
 
-export type EnumDecoders<Def extends EnumGenericDef> = {
-  [D in number]: TagsEmpty<Def> | (Def extends [infer T & string, infer V] ? DecodeTuple<T & string, V> : never)
-}
+export type EnumDecoders = Record<number, string | [string, Decode<any>]>
 
 const getEncodeData = (
   encoders: Record<string, number | EncodeTuple<any>>,
@@ -30,7 +24,7 @@ function normalizeDecodeTuple(tuple: string | DecodeTuple<string, any>): [tag: s
   return typeof tuple === 'string' ? [tuple] : tuple
 }
 
-const formatEncodersSchema = (encoders: EnumEncoders<any>): string => {
+const formatEncodersSchema = (encoders: EnumEncoders): string => {
   return Object.entries(encoders)
     .map(([tag, encodeData]) => {
       const [discriminant, isValuable] =
@@ -42,12 +36,12 @@ const formatEncodersSchema = (encoders: EnumEncoders<any>): string => {
 }
 
 export class EnumEncodeError extends Error {
-  public constructor(message: string, encoders: EnumEncoders<any>) {
+  public constructor(message: string, encoders: EnumEncoders) {
     super(message + `; encoders schema: ${formatEncodersSchema(encoders)}`)
   }
 }
 
-export function encodeEnum<E extends Enum<any>>(value: E, encoders: EnumEncoders<EnumDef<E>>, walker: Walker): void {
+export function encodeEnum<V extends AnyVariant>(value: V, encoders: EnumEncoders, walker: Walker): void {
   // here we can skip encoders and emptyness validation because it is already done
   // during the size hint computation step
 
@@ -58,10 +52,7 @@ export function encodeEnum<E extends Enum<any>>(value: E, encoders: EnumEncoders
   }
 }
 
-export function encodeEnumSizeHint<E extends Enum<any>>(
-  value: E,
-  encoders: EnumEncoders<E extends Enum<infer D> ? D : never>,
-): number {
+export function encodeEnumSizeHint<V extends AnyVariant>(value: V, encoders: EnumEncoders): number {
   const { tag, isEmpty } = value
 
   const encodeData = getEncodeData(encoders, tag)
@@ -81,14 +72,14 @@ export function encodeEnumSizeHint<E extends Enum<any>>(
   return 1
 }
 
-export function createEnumEncoder<E extends Enum<any>>(encoders: EnumEncoders<EnumDef<E>>): Encode<E> {
+export function createEnumEncoder<V extends AnyVariant>(encoders: EnumEncoders): Encode<V> {
   return encodeFactory(
     (val, walker) => encodeEnum(val, encoders, walker),
     (val) => encodeEnumSizeHint(val, encoders),
   )
 }
 
-function formatDecoders(decoders: EnumDecoders<any>): string {
+function formatDecoders(decoders: EnumDecoders): string {
   return Object.entries(decoders)
     .map(([discriminant, varAndDecoder]) => {
       const [tag, decode] = normalizeDecodeTuple(varAndDecoder)
@@ -101,7 +92,7 @@ function formatDecoders(decoders: EnumDecoders<any>): string {
     .join(', ')
 }
 
-export function decodeEnum<E extends Enum<any>>(walker: Walker, decoders: EnumDecoders<EnumDef<E>>): E {
+export function decodeEnum<V extends AnyVariant>(walker: Walker, decoders: EnumDecoders): V {
   const discriminant = walker.u8[walker.idx++]
 
   const decoder = decoders[discriminant]
@@ -111,25 +102,25 @@ export function decodeEnum<E extends Enum<any>>(walker: Walker, decoders: EnumDe
     )
 
   const [tag, decode] = normalizeDecodeTuple(decoder)
-  if (decode) return Enum.variant(tag, decode(walker)) as any
-  return Enum.variant(tag) as any
+  if (decode) return variant(tag, decode(walker)) as any
+  return variant(tag) as any
 }
 
-export function createEnumDecoder<E extends Enum<any>>(decoders: EnumDecoders<EnumDef<E>>): Decode<E> {
+export function createEnumDecoder<V extends AnyVariant>(decoders: EnumDecoders): Decode<V> {
   return (walker) => decodeEnum(walker, decoders)
 }
 
 type OptionSome<T extends Option<any>> = T extends Option<infer V> ? V : never
 
 export function createOptionEncoder<T extends Option<any>>(encodeSome: Encode<OptionSome<T>>): Encode<T> {
-  return createEnumEncoder<Enum<'None' | ['Some', OptionSome<T>]>>({
+  return createEnumEncoder({
     None: 0,
     Some: [1, encodeSome],
   })
 }
 
 export function createOptionDecoder<T extends Option<any>>(decodeSome: Decode<OptionSome<T>>): Decode<T> {
-  return createEnumDecoder<Enum<'None' | ['Some', OptionSome<T>]>>({
+  return createEnumDecoder({
     0: 'None',
     1: ['Some', decodeSome],
   }) as Decode<T>
@@ -142,7 +133,7 @@ export function createResultEncoder<T extends Result<any, any>>(
   encodeOk: Encode<ResultOk<T>>,
   encodeErr: Encode<ResultErr<T>>,
 ): Encode<T> {
-  return createEnumEncoder<Enum<['Ok', ResultOk<T>] | ['Err', ResultErr<T>]>>({
+  return createEnumEncoder({
     Ok: [0, encodeOk],
     Err: [1, encodeErr],
   })
@@ -152,7 +143,7 @@ export function createResultDecoder<T extends Result<any, any>>(
   decodeOk: Decode<ResultOk<T>>,
   decodeErr: Decode<ResultErr<T>>,
 ): Decode<T> {
-  return createEnumDecoder<Enum<['Ok', ResultOk<T>] | ['Err', ResultErr<T>]>>({
+  return createEnumDecoder({
     0: ['Ok', decodeOk],
     1: ['Err', decodeErr],
   }) as Decode<T>
@@ -161,13 +152,13 @@ export function createResultDecoder<T extends Result<any, any>>(
 function optBoolByteToEnum(byte: number): Option<boolean> {
   switch (byte) {
     case 0:
-      return Enum.variant('None')
+      return variant('None')
     case 1:
-      return Enum.variant('Some', true)
+      return variant('Some', true)
     case 2:
-      return Enum.variant('Some', false)
+      return variant('Some', false)
     default:
-      throw new Error(`Failed to decode OptionBool - byte is ${byte}`)
+      throw new Error(`Failed to decode OptionBool; expected byte: 0, 1, 2; actual: ${byte}`)
   }
 }
 
@@ -175,8 +166,8 @@ function optBoolByteToEnum(byte: number): Option<boolean> {
  * Special encoder for `OptionBool` type from Rust's parity_scale_codec
  */
 export const encodeOptionBool: Encode<Option<boolean>> = encodeFactory(
-  (value, walker) => {
-    walker.u8[walker.idx++] = value.is('None') ? 0 : value.as('Some') ? 1 : 2
+  (opt, walker) => {
+    walker.u8[walker.idx++] = opt.tag === 'None' ? 0 : opt.value ? 1 : 2
   },
   () => 1,
 )

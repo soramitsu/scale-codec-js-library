@@ -1,16 +1,16 @@
-import { EMPTY_VALUE, Variant } from '../src/lib'
+import { EmptyValue, Variant } from '../src/lib'
 
 interface Coords {
   x: number
   y: number
 }
 
-type Sample = Variant<'Foo'> | Variant<'Bar', number> | Variant<'Baz', Coords>
+type Sample = Variant<'Foo'> | Variant<['Bar', number]> | Variant<['Baz', Coords]>
 
 declare const sample: Sample
 
 declare function assertNum(value: number): void
-declare function assertEmpty(value: typeof EMPTY_VALUE): void
+declare function assertEmpty(value: EmptyValue): void
 declare function assertCoords(value: Coords): void
 
 if (sample.tag === 'Bar') {

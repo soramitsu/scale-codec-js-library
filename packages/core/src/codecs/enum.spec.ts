@@ -9,8 +9,11 @@ import {
 } from './enum'
 import { decodeBool, encodeBool } from './bool'
 import { WalkerImpl } from '../util'
-import { Enum, Option } from '@scale-codec/enum'
+import { Option, Variant, variant } from '@scale-codec/enum'
 import { Decode, Encode } from '../types'
+
+// prettier-ignore
+const optBool = variant<Option<boolean>>;
 
 describe.concurrent('Enum codec', () => {
   describe('Option<bool>', () => {
@@ -23,51 +26,48 @@ describe.concurrent('Enum codec', () => {
     }
 
     it('"None" encoded as expected', () => {
-      expect(WalkerImpl.encode(Enum.variant('None'), createEncoder())).toEqual(new Uint8Array([0]))
+      expect(WalkerImpl.encode(variant('None'), createEncoder())).toEqual(new Uint8Array([0]))
     })
 
     it('"None" decoded as expected', () => {
-      expect(WalkerImpl.decode(new Uint8Array([0]), createDecoder())).toEqual(Enum.variant('None'))
+      expect(WalkerImpl.decode(new Uint8Array([0]), createDecoder())).toEqual(variant('None'))
     })
 
     it('"Some(false)" encoded as expected', () => {
-      expect(WalkerImpl.encode(Enum.variant('Some', true), createEncoder())).toEqual(new Uint8Array([1, 1]))
+      expect(WalkerImpl.encode(optBool('Some', true), createEncoder())).toEqual(new Uint8Array([1, 1]))
     })
 
     it('"Some(false)" decoded as expected', () => {
-      expect(WalkerImpl.decode(new Uint8Array([1, 0]), createDecoder())).toEqual(Enum.variant('Some', false))
+      expect(WalkerImpl.decode(new Uint8Array([1, 0]), createDecoder())).toEqual(optBool('Some', false))
     })
   })
 
   describe('OptionBool', () => {
     function pretty(val: Option<boolean>): string {
-      return val.match({
-        None: () => 'None',
-        Some: (x) => `Some(${x})`,
-      })
+      if (val.tag === 'None') return 'None'
+      return `Some(${val.value})`
     }
 
     function testCase(val: Option<boolean>, encoded: number): [string, Option<boolean>, number] {
       return [pretty(val), val, encoded]
     }
 
-    test.each([
-      testCase(Enum.variant('None'), 0),
-      testCase(Enum.variant('Some', true), 1),
-      testCase(Enum.variant('Some', false), 2),
-    ])('encode/decode %s', (_label, item, byte) => {
-      const bytes = Uint8Array.from([byte])
+    test.each([testCase(variant('None'), 0), testCase(variant('Some', true), 1), testCase(variant('Some', false), 2)])(
+      'encode/decode %s',
+      (_label, item, byte) => {
+        const bytes = Uint8Array.from([byte])
 
-      expect(WalkerImpl.encode(item, encodeOptionBool)).toEqual(bytes)
-      expect(WalkerImpl.decode(bytes, decodeOptionBool)).toEqual(item)
-    })
+        expect(WalkerImpl.encode(item, encodeOptionBool)).toEqual(bytes)
+        expect(WalkerImpl.decode(bytes, decodeOptionBool)).toEqual(item)
+      },
+    )
   })
 
   it('meaningfull error if trying to decode data with invalid discriminant', () => {
     expect(() =>
       WalkerImpl.decode(
         new Uint8Array([51]),
-        createEnumDecoder<Enum<'Empty' | ['Non-empty', boolean]>>({
+        createEnumDecoder({
           0: 'Empty',
           3: ['Non-empty', decodeBool],
         }),
@@ -78,9 +78,7 @@ describe.concurrent('Enum codec', () => {
   })
 
   it('meaningfull error if trying to encode data with invalid variant name', () => {
-    type Test = Enum<'Empty' | ['NonEmpty', boolean]>
-
-    const value: Test = Enum.variant('NonEmpty', false)
+    const value = variant<Variant<'Empty'> | Variant<['NonEmpty', boolean]>>('NonEmpty', false)
 
     expect(() =>
       WalkerImpl.encode(
