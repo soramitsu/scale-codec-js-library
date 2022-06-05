@@ -1,0 +1,49 @@
+WHITESPACE = _{ WHITE_SPACE }
+
+main = {
+    SOI ~
+    (def_struct)* ~
+    EOI
+}
+
+def_struct = {
+    "struct" ~
+    identifier_with_generics ~
+    (def_struct_content_named | def_struct_content_tuple)
+}
+
+def_struct_content_named = {
+    "{" ~
+    named_field ~
+    ("," ~ named_field)* ~
+    "}"
+}
+
+def_struct_content_tuple = {
+    "(" ~
+    value_type ~
+    ("," ~ value_type)* ~
+    ")" ~ ";"
+}
+
+named_field = {
+    identifier ~
+    ":" ~
+    value_type
+}
+
+value_type = {
+    identifier_with_generics
+}
+
+identifier = @{ XID_START ~ (XID_CONTINUE)* }
+
+generics_list = {
+    "<" ~
+    (identifier ~ ",")+ ~
+    ">"
+}
+
+identifier_with_generics = {
+    identifier ~ generics_list?
+}
