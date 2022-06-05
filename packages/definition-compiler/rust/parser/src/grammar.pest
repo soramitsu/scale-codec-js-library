@@ -1,29 +1,55 @@
 WHITESPACE = _{ WHITE_SPACE }
 
+non_zero_integer = {
+    '1'..'9' ~
+    ASCII_DIGIT*
+}
+
 main = {
     SOI ~
-    (def_struct)* ~
+    (def_struct | def_alias | def_enum)* ~
     EOI
+}
+
+def_enum = {
+    "enum" ~
+    type_id ~ "{" ~
+    enum_variant ~ ("," ~ enum_variant)* ~
+    "}"
+}
+
+enum_variant = {
+    (enum_variant_tuple | enum_variant_struct | enum_variant_empty) ~
+    ("=" ~ enum_discriminant)?
+}
+
+enum_variant_empty = { identifier }
+
+enum_variant_tuple = { identifier ~ tuple_values }
+
+enum_variant_struct = { identifier ~ struct_values }
+
+enum_discriminant = { ASCII_DIGIT+ }
+
+def_alias = {
+    "type" ~
+    type_id ~ "=" ~
+    value_type ~ ";"
 }
 
 def_struct = {
     "struct" ~
-    identifier_with_generics ~
-    (def_struct_content_named | def_struct_content_tuple)
+    type_id ~
+    (struct_values | (tuple_values ~ ";"))
 }
 
-def_struct_content_named = {
-    "{" ~
-    named_field ~
-    ("," ~ named_field)* ~
-    "}"
-}
+struct_values = { "{" ~ named_field ~ ("," ~ named_field)*  ~ "}" }
 
-def_struct_content_tuple = {
+tuple_values = {
     "(" ~
     value_type ~
     ("," ~ value_type)* ~
-    ")" ~ ";"
+    ")"
 }
 
 named_field = {
@@ -33,17 +59,23 @@ named_field = {
 }
 
 value_type = {
-    identifier_with_generics
+    type_id | array
+}
+
+array = {
+    "[" ~
+    value_type ~ ";" ~
+    non_zero_integer ~
+    "]"
 }
 
 identifier = @{ XID_START ~ (XID_CONTINUE)* }
 
 generics_list = {
-    "<" ~
-    (identifier ~ ",")+ ~
-    ">"
+    type_id ~
+    ("," ~ type_id)*
 }
 
-identifier_with_generics = {
-    identifier ~ generics_list?
+type_id = {
+    identifier ~ ("<" ~ generics_list ~ ">")?
 }
