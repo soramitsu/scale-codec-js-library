@@ -7,5 +7,8 @@ def pipeline = new org.js.LibPipeline(
     pushCmds: ['pnpm publish:all'],
     buildDockerImage: 'build-tools/node:16-ubuntu-cypress',
     npmRegistries: [:],
-    npmLoginEmail:'admin@soramitsu.co.jp')
+    npmLoginEmail:'admin@soramitsu.co.jp',
+    sonarProjectName: 'scale-codec-js-library',
+    sonarProjectKey: 'jp.co.soramitsu:scale-codec-js-library',
+    )
 pipeline.runPipeline()
