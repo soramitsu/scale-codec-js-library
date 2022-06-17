@@ -1,12 +1,19 @@
 <template>
-  <button id="act" @click="act">Click to run encode/decode</button>
+  <button
+    id="act"
+    @click="act"
+  >
+    Click to run encode/decode
+  </button>
 
-  <div id="result">{{ resultFormatted }}</div>
+  <div id="result">
+    {{ resultFormatted }}
+  </div>
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue'
-import { Option, Enum, Result } from '@scale-codec/definition-runtime'
+import { Enum, Option, Result } from '@scale-codec/definition-runtime'
 import { encodeAndDecodeReallyComplexData } from './encode-decode'
 
 export default defineComponent({

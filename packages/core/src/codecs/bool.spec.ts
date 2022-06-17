@@ -1,7 +1,8 @@
+import { describe, expect, it } from 'vitest'
 import { WalkerImpl } from '../util'
 import { decodeBool, encodeBool } from './bool'
 
-describe.only('booleans', () => {
+describe.concurrent('Bool codec', () => {
   for (const flag of [false, true]) {
     const byte = flag ? 1 : 0
 

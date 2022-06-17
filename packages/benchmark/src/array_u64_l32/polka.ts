@@ -1,4 +1,4 @@
-import { U64, VecFixed, TypeRegistry } from '@polkadot/types'
+import { TypeRegistry, U64, VecFixed } from '@polkadot/types'
 import { defineCodec } from '../types'
 
 export const reg = new TypeRegistry()

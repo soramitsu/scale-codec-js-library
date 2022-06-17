@@ -1,4 +1,4 @@
-import { Decode, Walker, Encode } from '../types'
+import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
 // eslint-disable-next-line max-params

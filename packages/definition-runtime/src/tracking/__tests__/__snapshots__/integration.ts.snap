@@ -1,7 +1,7 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1
 
-exports[`Collecting big decode trace and formatting it Error case 1`] = `
-Array [
+exports[`Integration > Collecting big decode trace and formatting it > Error case 1`] = `
+[
   "AllInOne
     Walk: <offset: 0; 01 10 47 65 79 21 00 04 10 21 32 33 34 0b 20 59 6f 20 68 6f ff ff ff ff ff ff ff ff ff ff 14 01 06 02 03 04 0c 00 01 00>
     Result: <not computed>
@@ -39,21 +39,21 @@ AllInOne / <struct>.alias / str
     Result: ERROR - %s
     Child steps: 0
 ",
-  Array [
-    Object {
+  [
+    {
       "tag": "Greeting",
       "value": "Gey!",
     },
-    Object {
+    {
       "tag": "Quit",
     },
   ],
-  Object {
+  {
     "tag": "Greeting",
     "value": "Gey!",
   },
   "Gey!",
-  Object {
+  {
     "tag": "Quit",
   },
   Map {
@@ -65,8 +65,8 @@ AllInOne / <struct>.alias / str
 ]
 `;
 
-exports[`Collecting big decode trace and formatting it Success case 1`] = `
-Array [
+exports[`Integration > Collecting big decode trace and formatting it > Success case 1`] = `
+[
   "AllInOne
     Walk: <offset: 0..40 (+40); 01 10 47 65 79 21 00 04 10 21 32 33 34 0b 20 59 6f 20 68 6f 20 68 6f 14 41 6c 69 63 65 00 14 01 06 02 03 04 0c 00 01 00>
     Result: %O
@@ -160,12 +160,12 @@ AllInOne / <struct>.vec / VecBool / bool
     Result: %O
     Child steps: 0
 ",
-  Object {
+  {
     "alias": "Yo ho ho",
-    "another_struct": Object {
+    "another_struct": {
       "name": "Alice",
     },
-    "arr": Array [
+    "arr": [
       Set {},
       Set {
         1,
@@ -178,36 +178,36 @@ AllInOne / <struct>.vec / VecBool / bool
     "map": Map {
       "!234" => 11,
     },
-    "tuple_with_opts": Array [
-      Object {
+    "tuple_with_opts": [
+      {
         "tag": "Greeting",
         "value": "Gey!",
       },
-      Object {
+      {
         "tag": "Quit",
       },
     ],
-    "vec": Array [
+    "vec": [
       false,
       true,
       false,
     ],
   },
-  Array [
-    Object {
+  [
+    {
       "tag": "Greeting",
       "value": "Gey!",
     },
-    Object {
+    {
       "tag": "Quit",
     },
   ],
-  Object {
+  {
     "tag": "Greeting",
     "value": "Gey!",
   },
   "Gey!",
-  Object {
+  {
     "tag": "Quit",
   },
   Map {
@@ -216,11 +216,11 @@ AllInOne / <struct>.vec / VecBool / bool
   "!234",
   11,
   "Yo ho ho",
-  Object {
+  {
     "name": "Alice",
   },
   "Alice",
-  Array [
+  [
     Set {},
     Set {
       1,
@@ -243,7 +243,7 @@ AllInOne / <struct>.vec / VecBool / bool
   2,
   3,
   4,
-  Array [
+  [
     false,
     true,
     false,

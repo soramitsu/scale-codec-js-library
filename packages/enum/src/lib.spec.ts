@@ -1,6 +1,7 @@
+import { describe, expect, test, vi } from 'vitest'
 import { Enum } from './lib'
 
-describe('Enum', () => {
+describe.concurrent('Enum', () => {
   type DefWithNum = 'a' | ['b', number]
   type DefWithStr = 'a' | ['b', string]
 
@@ -22,13 +23,13 @@ describe('Enum', () => {
     expect(val.as('b')).toBe(111)
   })
 
-  test('.as() throws an error if trying to cast to wrong variant', () => {
+  test('.as() throws an error if trying to cast to wrong variant', ({ expect }) => {
     const val: Enum<DefWithNum> = Enum.variant('a')
 
     expect(() => val.as('b')).toThrowErrorMatchingInlineSnapshot(`"Enum cast failed - enum is \\"a\\", not \\"b\\""`)
   })
 
-  test('.as() throws an error if trying to call it with an empty enum', () => {
+  test('.as() throws an error if trying to call it with an empty enum', ({ expect }) => {
     const val: Enum<DefWithNum> = Enum.variant('a')
 
     expect(() => (val as any).as('a')).toThrowErrorMatchingInlineSnapshot(`"Enum cast failed - enum \\"a\\" is empty"`)
@@ -36,8 +37,8 @@ describe('Enum', () => {
 
   test.each([['Single'], ['Double']])('.match() calls the desired callback (%p)', (variant: 'Single' | 'Double') => {
     const matchMap = {
-      Single: jest.fn(),
-      Double: jest.fn(),
+      Single: vi.fn(),
+      Double: vi.fn(),
     }
     const other = variant === 'Double' ? 'Single' : 'Double'
 
@@ -49,7 +50,7 @@ describe('Enum', () => {
 
   test('.match() calls it with inner value', () => {
     const val: Enum<DefWithStr> = Enum.variant('b', 'something')
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     val.match({ a: () => {}, b: spy })
 
@@ -58,7 +59,7 @@ describe('Enum', () => {
 
   test('.match() calls it with nothing', () => {
     const val: Enum<DefWithStr> = Enum.variant('a')
-    const spy = jest.fn()
+    const spy = vi.fn()
 
     val.match({ a: spy, b: () => {} })
 

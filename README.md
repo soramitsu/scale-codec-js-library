@@ -12,19 +12,76 @@
 
 > Note: it is the root of the monorepo. Actual packages are located at `./packages/`.
 
-## For DevOps
+## Working with the monorepo
+
+1. Use [pnpm](https://pnpm.io/)
+2. Explore Jake scripts:
+
+   ```bash
+   pnpm jake -t
+   ```
+
+   ```bash
+   jake clean                      # Clean all build artifacts
+   jake compiler-samples:clean     # Clean compiler samples
+   jake compiler-samples:compile   # Compile samples
+   jake compile-docs-namespace     # Compile namespace from documentation to be used within snippet
+   jake build-types                # Build types
+   jake api:extract                # Extract APIs and fail if they mismatch
+   jake api:extract-local          # Extract APIs and update them
+   jake api:extract-local-only     # Extarct API in local mode without build
+   jake api:extract-only           # Extarct API without build
+   jake api:document               # Generate Markdown docs from extracted APIs
+   jake api:extract-and-document   # Shorthand for both extract and document apis
+   jake test:unit                  # Run unit-tests
+   jake test:e2e-spa               # Run end-to-end SPA test
+   jake test:all                   # Run all tests
+   jake build                      # Build packages, extract APIs and documentation
+   jake check-code-integrity       # All-in-one code check
+   jake publish-all                # Publish built packages. It does not build packages, only publish them.
+   ```
+
+### Lint/Format
+
+Project uses [Prettier ESLint](https://github.com/prettier/prettier-eslint/).
+
+#### Check
 
 ```bash
-# all tests, build, lint, type-ckecking
-pnpm check-code-integrity
-
-# just build
-pnpm build
-
-# packages publishing
-pnpm publish-all
-
-# docs build
-# result at packages/docs/.vitepress/dist
-pnpm docs:build
+pnpm lint:check
 ```
+
+#### Fix
+
+```bash
+pnpm lint:fix
+```
+
+### CI/CD Scripts
+
+#### All-in-one check
+
+```bash
+pnpm check-code-integrity
+```
+
+#### Build packages
+
+```bash
+pnpm build
+```
+
+#### Publish packages
+
+```bash
+pnpm publish-all
+```
+
+#### Build documentation
+
+```bash
+pnpm docs:build
+
+```
+
+Output will be at `packages/docs/.vitepress/dist`.

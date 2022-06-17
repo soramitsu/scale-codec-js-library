@@ -13,6 +13,16 @@ module.exports = {
         markers: ['/'],
       },
     ],
+    'sort-imports': [
+      'warn',
+      {
+        ignoreCase: false,
+        ignoreDeclarationSort: true,
+        ignoreMemberSort: false,
+        memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single'],
+        allowSeparatedGroups: false,
+      },
+    ],
   },
   overrides: [
     {
@@ -22,8 +32,8 @@ module.exports = {
         '**/e2e-spa/src/**/*.spec.ts',
         '**packages/*/test/**/*.ts',
       ],
-      env: {
-        jest: true,
+      rules: {
+        'max-nested-callbacks': ['error', 5],
       },
     },
     {
@@ -34,7 +44,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/packages/docs/**/*.vue'],
+      files: ['**/*.vue'],
       extends: ['plugin:vue/vue3-recommended'],
       parser: 'vue-eslint-parser',
       parserOptions: {
@@ -48,7 +58,15 @@ module.exports = {
         withDefaults: 'readonly',
       },
       rules: {
-        'vue/html-indent': ['warn', 4],
+        'vue/html-indent': ['warn', 2],
+      },
+    },
+    {
+      files: ['./etc/jakefile.ts', './e2e-spa/etc/jakefile.ts'],
+      globals: {
+        task: true,
+        desc: true,
+        namespace: true,
       },
     },
   ],

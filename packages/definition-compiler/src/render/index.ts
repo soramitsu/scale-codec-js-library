@@ -1,8 +1,8 @@
-import { NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef, DefEnumVariant, DefStructField } from '../types'
-import { Seq, Set as ImmutableSet } from 'immutable'
+import { DefEnumVariant, DefStructField, NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef } from '../types'
+import { Set as ImmutableSet, Seq } from 'immutable'
 import { createDIScope } from './util'
 import { DefaultAvailableBuilders } from '../const'
-import { createNs, Expression, LibName, ModelPart, RefScope } from './namespace'
+import { Expression, LibName, ModelPart, RefScope, createNs } from './namespace'
 
 const ns = createNs<RuntimeLibExports, RuntimeLibTypeExports>()
 

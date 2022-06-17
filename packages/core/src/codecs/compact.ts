@@ -1,9 +1,9 @@
 import { Encode, Walker } from '../types'
 import {
-  decodeBigInt,
-  encodeBigInt,
-  decodeBigIntVarious,
   countPositiveBigIntEffectiveBytes,
+  decodeBigInt,
+  decodeBigIntVarious,
+  encodeBigInt,
   encodePositiveBigIntInto,
 } from './int'
 

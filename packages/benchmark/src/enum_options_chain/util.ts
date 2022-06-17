@@ -2,7 +2,7 @@ import { Chain as ChainCore } from './core'
 import { Enum as EnumCore } from '@scale-codec/core'
 import { Chain as ChainCoreV04 } from './core-v04'
 import { Enum as EnumV04 } from 'scale-codec-core-v-4'
-import { registry, Type as TypePolka } from './polka'
+import { Type as TypePolka, registry } from './polka'
 import { Enum as EnumPolka } from '@polkadot/types-codec'
 
 export function factoryCore(depth: number): ChainCore {

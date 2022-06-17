@@ -1,4 +1,4 @@
-import { Encode, Decode } from '../types'
+import { Decode, Encode } from '../types'
 import { encodeFactory } from '../util'
 
 export const encodeBool: Encode<boolean> = encodeFactory(

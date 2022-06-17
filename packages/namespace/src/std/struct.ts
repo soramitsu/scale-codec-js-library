@@ -1,4 +1,4 @@
-import { Codec, Decode, decodeStruct, Encode, encodeStruct } from '@scale-codec/core'
+import { Codec, Decode, Encode, decodeStruct, encodeStruct } from '@scale-codec/core'
 import { CompatibleNamespaceKeys, NamespaceCodec, StrKeys } from '../types'
 
 // mapping to real namespace keys

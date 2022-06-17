@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["./types"],
+  // override exclude from the original config
+  "exclude": []
+}

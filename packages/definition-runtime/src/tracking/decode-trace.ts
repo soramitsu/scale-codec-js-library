@@ -1,7 +1,7 @@
 import { Walker } from '@scale-codec/core'
 import { assert } from '@scale-codec/util'
 import { Fmt, fmt, sub } from 'fmt-subs'
-import { tryInspectValue, formatWalkerStep } from './util'
+import { formatWalkerStep, tryInspectValue } from './util'
 
 export class DecodeTrace {
   public parent: DecodeTrace | null = null

@@ -1,11 +1,11 @@
 import {
+  WalkerImpl,
   createMapDecoder,
   createMapEncoder,
   decodeBool,
   decodeStr,
   encodeBool,
   encodeStr,
-  WalkerImpl,
 } from '@scale-codec/core'
 import { defineCodec } from '../types'
 

@@ -1,5 +1,5 @@
 import { decodeCompact, encodeCompact } from './compact'
-import { Decode, Walker, Encode } from '../types'
+import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
 export function encodeSet<T>(set: Set<T>, encodeItem: Encode<T>, walker: Walker): void {

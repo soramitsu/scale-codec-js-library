@@ -4,22 +4,21 @@
     "module": "esnext",
     "lib": ["esnext", "DOM"],
     "esModuleInterop": true,
-    "outDir": "dist-tsc",
-    "declaration": true,
     "alwaysStrict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "types": ["jest-immutable-matchers"]
+    "resolveJsonModule": true
   },
-  "include": ["packages"],
+  // Include every .ts file in the project, for development
   "exclude": [
     "**/dist",
-    "packages/namespace*/**",
+    "./types",
+    "./e2e-spa",
+    "./packages/namespace*/**",
     // temporary
-    "packages/docs/**"
+    "./packages/docs/**"
   ]
 }

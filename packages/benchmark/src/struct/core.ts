@@ -1,4 +1,4 @@
-import { createStructDecoder, createStructEncoder, decodeBool, encodeBool, WalkerImpl } from '@scale-codec/core'
+import { WalkerImpl, createStructDecoder, createStructEncoder, decodeBool, encodeBool } from '@scale-codec/core'
 import { defineCodec } from '../types'
 import { factory } from './util'
 
