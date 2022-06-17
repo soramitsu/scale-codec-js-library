@@ -1,0 +1,1 @@
+import{_ as a,c as e,o,a as s}from"./app.aaf606c4.js";const v='{"title":"Void variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"Void variable","slug":"void-variable"}],"relativePath":"api/definition-runtime.void.md"}',n={},t=s("",4),i=[t];function l(r,p,c,d,_,f){return o(),e("div",null,i)}var h=a(n,[["render",l]]);export{v as __pageData,h as default};

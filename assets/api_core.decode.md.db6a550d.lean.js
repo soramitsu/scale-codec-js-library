@@ -1,0 +1,1 @@
+import{_ as e,c as s,o as a,a as o}from"./app.aaf606c4.js";const h='{"title":"Decode type","description":"","frontmatter":{},"headers":[{"level":2,"title":"Decode type","slug":"decode-type"}],"relativePath":"api/core.decode.md"}',p={},t=o("",5),l=[t];function c(n,r,d,y,_,i){return a(),s("div",null,l)}var F=e(p,[["render",c]]);export{h as __pageData,F as default};

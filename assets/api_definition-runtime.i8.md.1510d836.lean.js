@@ -1,0 +1,1 @@
+import{_ as e,c as a,o as t,a as s}from"./app.aaf606c4.js";const h='{"title":"I8 variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"I8 variable","slug":"i8-variable"}],"relativePath":"api/definition-runtime.i8.md"}',n={},i=s("",4),o=[i];function r(l,c,p,d,_,f){return t(),a("div",null,o)}var m=e(n,[["render",r]]);export{h as __pageData,m as default};

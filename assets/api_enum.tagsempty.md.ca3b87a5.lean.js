@@ -1,0 +1,1 @@
+import{_ as s,c as e,o as a,a as n}from"./app.aaf606c4.js";const f='{"title":"TagsEmpty type","description":"","frontmatter":{},"headers":[{"level":2,"title":"TagsEmpty type","slug":"tagsempty-type"}],"relativePath":"api/enum.tagsempty.md"}',p={},t=n("",5),o=[t];function l(r,c,y,i,m,_){return a(),e("div",null,o)}var F=s(p,[["render",l]]);export{f as __pageData,F as default};

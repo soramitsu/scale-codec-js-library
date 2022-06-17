@@ -1,0 +1,1 @@
+import{_ as a,c as e,o as t,a as s}from"./app.aaf606c4.js";const u='{"title":"I64 variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"I64 variable","slug":"i64-variable"}],"relativePath":"api/definition-runtime.i64.md"}',n={},i=s("",4),o=[i];function r(l,c,p,d,_,f){return t(),e("div",null,o)}var m=a(n,[["render",r]]);export{u as __pageData,m as default};

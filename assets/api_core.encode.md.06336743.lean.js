@@ -1,0 +1,1 @@
+import{_ as s,c as a,o as e,a as n}from"./app.aaf606c4.js";const f='{"title":"Encode type","description":"","frontmatter":{},"headers":[{"level":2,"title":"Encode type","slug":"encode-type"}],"relativePath":"api/core.encode.md"}',o={},l=n("",5),p=[l];function t(c,r,y,d,i,F){return e(),a("div",null,p)}var h=s(o,[["render",t]]);export{f as __pageData,h as default};

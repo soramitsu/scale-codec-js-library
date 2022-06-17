@@ -1,0 +1,1 @@
+import{_ as e,c as a,o,a as c}from"./app.aaf606c4.js";const u='{"title":"encodeU8 variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"encodeU8 variable","slug":"encodeu8-variable"}],"relativePath":"api/core.encodeu8.md"}',s={},n=c("",4),r=[n];function t(l,d,p,i,_,f){return o(),a("div",null,r)}var v=e(s,[["render",t]]);export{u as __pageData,v as default};

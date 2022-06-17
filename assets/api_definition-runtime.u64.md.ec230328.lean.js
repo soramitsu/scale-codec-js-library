@@ -1,0 +1,1 @@
+import{_ as a,c as e,o as t,a as s}from"./app.aaf606c4.js";const h='{"title":"U64 variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"U64 variable","slug":"u64-variable"}],"relativePath":"api/definition-runtime.u64.md"}',n={},i=s("",4),o=[i];function r(l,c,p,d,_,u){return t(),e("div",null,o)}var m=a(n,[["render",r]]);export{h as __pageData,m as default};

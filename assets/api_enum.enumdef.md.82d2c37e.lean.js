@@ -1,0 +1,1 @@
+import{_ as s,c as e,o as a,a as n}from"./app.aaf606c4.js";const _='{"title":"EnumDef type","description":"","frontmatter":{},"headers":[{"level":2,"title":"EnumDef type","slug":"enumdef-type"}],"relativePath":"api/enum.enumdef.md"}',p={},o=n("",5),l=[o];function t(r,c,y,f,d,m){return a(),e("div",null,l)}var i=s(p,[["render",t]]);export{_ as __pageData,i as default};

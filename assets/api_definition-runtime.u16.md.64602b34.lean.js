@@ -1,0 +1,1 @@
+import{_ as e,c as a,o as t,a as s}from"./app.aaf606c4.js";const h='{"title":"U16 variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"U16 variable","slug":"u16-variable"}],"relativePath":"api/definition-runtime.u16.md"}',n={},o=s("",4),r=[o];function i(l,c,p,d,_,u){return t(),a("div",null,r)}var m=e(n,[["render",i]]);export{h as __pageData,m as default};

@@ -1,0 +1,1 @@
+import{_ as e,c as a,o as s,a as p}from"./app.aaf606c4.js";const m='{"title":"DefMap type","description":"","frontmatter":{},"headers":[{"level":2,"title":"DefMap type","slug":"defmap-type"}],"relativePath":"api/definition-compiler.defmap.md"}',n={},o=p("",6),l=[o];function t(c,r,i,f,d,y){return s(),a("div",null,l)}var h=e(n,[["render",t]]);export{m as __pageData,h as default};

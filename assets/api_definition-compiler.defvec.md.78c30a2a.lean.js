@@ -1,0 +1,1 @@
+import{_ as e,c as s,o as a,a as n}from"./app.aaf606c4.js";const h='{"title":"DefVec type","description":"","frontmatter":{},"headers":[{"level":2,"title":"DefVec type","slug":"defvec-type"}],"relativePath":"api/definition-compiler.defvec.md"}',p={},o=n("",6),t=[o];function c(l,r,i,f,d,y){return a(),s("div",null,t)}var m=e(p,[["render",c]]);export{h as __pageData,m as default};

@@ -1,0 +1,1 @@
+import{_ as e,c as s,o as a,a as t}from"./app.aaf606c4.js";const h='{"title":"DefSet type","description":"","frontmatter":{},"headers":[{"level":2,"title":"DefSet type","slug":"defset-type"}],"relativePath":"api/definition-compiler.defset.md"}',n={},p=t("",6),o=[p];function l(r,c,i,d,f,y){return a(),s("div",null,o)}var m=e(n,[["render",l]]);export{h as __pageData,m as default};

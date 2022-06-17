@@ -1,0 +1,1 @@
+import{_ as e,c as a,o as t,a as s}from"./app.aaf606c4.js";const h='{"title":"U32 variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"U32 variable","slug":"u32-variable"}],"relativePath":"api/definition-runtime.u32.md"}',n={},o=s("",4),r=[o];function i(l,c,p,d,_,u){return t(),a("div",null,r)}var m=e(n,[["render",i]]);export{h as __pageData,m as default};

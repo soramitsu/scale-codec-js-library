@@ -1,0 +1,1 @@
+import{_ as s,c as a,o as e,a as n}from"./app.aaf606c4.js";const d='{"title":"TagValue type","description":"","frontmatter":{},"headers":[{"level":2,"title":"TagValue type","slug":"tagvalue-type"}],"relativePath":"api/enum.tagvalue.md"}',l={},p=n("",5),o=[p];function t(r,c,y,u,F,i){return e(),a("div",null,o)}var f=s(l,[["render",t]]);export{d as __pageData,f as default};

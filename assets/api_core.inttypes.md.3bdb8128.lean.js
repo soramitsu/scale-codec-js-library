@@ -1,0 +1,1 @@
+import{_ as s,c as e,o as a,a as p}from"./app.aaf606c4.js";const h='{"title":"IntTypes type","description":"","frontmatter":{},"headers":[{"level":2,"title":"IntTypes type","slug":"inttypes-type"}],"relativePath":"api/core.inttypes.md"}',t={},n=p("",5),o=[n];function l(r,c,y,i,_,d){return a(),e("div",null,o)}var A=s(t,[["render",l]]);export{h as __pageData,A as default};

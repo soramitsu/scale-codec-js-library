@@ -1,0 +1,1 @@
+import{_ as a,c as e,o as t,a as s}from"./app.aaf606c4.js";const u='{"title":"Str variable","description":"","frontmatter":{},"headers":[{"level":2,"title":"Str variable","slug":"str-variable"}],"relativePath":"api/definition-runtime.str.md"}',r={},n=s("",4),o=[n];function i(l,c,p,d,_,f){return t(),e("div",null,o)}var m=a(r,[["render",i]]);export{u as __pageData,m as default};
