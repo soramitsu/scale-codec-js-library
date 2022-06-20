@@ -6,11 +6,11 @@ use pest_derive::Parser;
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
-struct ScaleNamespaceParser;
+struct SyntaxParser;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct NamespaceDefinition<'i> {
-    types: Vec<ScaleType<'i>>,
+    types: Vec<SyntaxType<'i>>,
 }
 
 impl<'i> TryFrom<Pairs<'i, Rule>> for NamespaceDefinition<'i> {
@@ -24,7 +24,7 @@ impl<'i> TryFrom<Pairs<'i, Rule>> for NamespaceDefinition<'i> {
             .map(|pair| match pair.as_rule() {
                 Rule::EOI => Ok(None),
                 _ => Ok(Some(
-                    ScaleType::try_from(pair).wrap_err("failed to parse ScaleType")?,
+                    SyntaxType::try_from(pair).wrap_err("failed to parse ScaleType")?,
                 )),
             })
             .filter_map(|item| match item {
@@ -40,26 +40,26 @@ impl<'i> TryFrom<Pairs<'i, Rule>> for NamespaceDefinition<'i> {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct Identifier<'i>(&'i str);
+struct SyntaxIdentifier<'i>(&'i str);
 
-impl<'i> TryFrom<Pair<'i, Rule>> for Identifier<'i> {
+impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxIdentifier<'i> {
     type Error = Report;
 
     fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
-            Rule::identifier => Ok(Identifier(pair.as_str())),
+            Rule::identifier => Ok(SyntaxIdentifier(pair.as_str())),
             x => Err(eyre!("expected identifier, got {x:?}")),
         }
     }
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct TypeId<'i> {
-    id: Identifier<'i>,
-    generics: Vec<TypeId<'i>>,
+struct SyntaxTypeId<'i> {
+    id: SyntaxIdentifier<'i>,
+    generics: Vec<SyntaxTypeId<'i>>,
 }
 
-impl<'i> TryFrom<Pair<'i, Rule>> for TypeId<'i> {
+impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxTypeId<'i> {
     type Error = Report;
 
     fn try_from(value: Pair<'i, Rule>) -> Result<Self, Self::Error> {
@@ -70,7 +70,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for TypeId<'i> {
                 let id = pairs
                     .next()
                     .ok_or(eyre!("expected to get identifier name"))
-                    .and_then(Identifier::try_from)?;
+                    .and_then(SyntaxIdentifier::try_from)?;
 
                 let generics = {
                     match pairs.next() {
@@ -78,7 +78,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for TypeId<'i> {
                         Some(item) => match item.as_rule() {
                             Rule::generics_list => item
                                 .into_inner()
-                                .map(TypeId::try_from)
+                                .map(SyntaxTypeId::try_from)
                                 .collect::<Result<Vec<_>>>()
                                 .wrap_err("failed to parse generics")?,
                             x => return Err(eyre!("expected generics_list, got {x:?}")),
@@ -94,25 +94,28 @@ impl<'i> TryFrom<Pair<'i, Rule>> for TypeId<'i> {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-enum ScaleType<'i> {
-    Enum(ScaleEnum<'i>),
-    Struct(ScaleStruct<'i>),
-    Alias { id: TypeId<'i>, to: ValueType<'i> },
+enum SyntaxType<'i> {
+    Enum(SyntaxEnum<'i>),
+    Struct(SyntaxStruct<'i>),
+    Alias {
+        id: SyntaxTypeId<'i>,
+        to: SyntaxValueType<'i>,
+    },
 }
 
-impl<'i> TryFrom<Pair<'i, Rule>> for ScaleType<'i> {
+impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxType<'i> {
     type Error = Report;
 
     fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::def_struct => {
                 let parsed_struct =
-                    ScaleStruct::try_from(pair.into_inner()).wrap_err("failed to parse struct")?;
+                    SyntaxStruct::try_from(pair.into_inner()).wrap_err("failed to parse struct")?;
                 Ok(Self::Struct(parsed_struct))
             }
             Rule::def_enum => {
                 let parsed_enum =
-                    ScaleEnum::try_from(pair.into_inner()).wrap_err("failed to parse enum")?;
+                    SyntaxEnum::try_from(pair.into_inner()).wrap_err("failed to parse enum")?;
                 Ok(Self::Enum(parsed_enum))
             }
             Rule::def_alias => {
@@ -121,13 +124,13 @@ impl<'i> TryFrom<Pair<'i, Rule>> for ScaleType<'i> {
                 let id = pairs
                     .next()
                     .ok_or(eyre!("item expected"))
-                    .and_then(TypeId::try_from)
+                    .and_then(SyntaxTypeId::try_from)
                     .wrap_err("failed to parse value type")?;
 
                 let value_type = pairs
                     .next()
                     .ok_or(eyre!("item expected"))
-                    .and_then(ValueType::try_from)
+                    .and_then(SyntaxValueType::try_from)
                     .wrap_err("failed to parse value type")?;
 
                 Ok(Self::Alias { id, to: value_type })
@@ -138,44 +141,44 @@ impl<'i> TryFrom<Pair<'i, Rule>> for ScaleType<'i> {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct ScaleEnum<'i> {
-    id: TypeId<'i>,
-    variants: Vec<EnumVariantWithValidDiscriminant<'i>>,
+struct SyntaxEnum<'i> {
+    id: SyntaxTypeId<'i>,
+    variants: Vec<EnumVariantWithResolvedDiscriminant<'i>>,
 }
 
-impl<'i> TryFrom<Pairs<'i, Rule>> for ScaleEnum<'i> {
+impl<'i> TryFrom<Pairs<'i, Rule>> for SyntaxEnum<'i> {
     type Error = Report;
 
     fn try_from(mut pairs: Pairs<'i, Rule>) -> Result<Self> {
         let id = pairs
             .next()
             .ok_or(eyre!("item expected"))
-            .and_then(TypeId::try_from)?;
+            .and_then(SyntaxTypeId::try_from)?;
 
         let variants = pairs
-            .map(EnumVariantParsed::try_from)
+            .map(SyntaxEnumVariant::try_from)
             .collect::<Result<Vec<_>>>()?;
 
-        let variants = EnumVariantWithValidDiscriminant::try_from_parsed_list(variants)?;
+        let variants = EnumVariantWithResolvedDiscriminant::try_from_parsed_list(variants)?;
 
         Ok(Self { id, variants })
     }
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct ScaleStruct<'i> {
-    id: TypeId<'i>,
+struct SyntaxStruct<'i> {
+    id: SyntaxTypeId<'i>,
     content: EitherStructOrTupleValues<'i>,
 }
 
-impl<'i> TryFrom<Pairs<'i, Rule>> for ScaleStruct<'i> {
+impl<'i> TryFrom<Pairs<'i, Rule>> for SyntaxStruct<'i> {
     type Error = Report;
 
     fn try_from(mut pairs: Pairs<'i, Rule>) -> Result<Self> {
         let id = pairs
             .next()
             .ok_or(eyre!("item expected"))
-            .and_then(TypeId::try_from)?;
+            .and_then(SyntaxTypeId::try_from)?;
 
         let content = pairs
             .next()
@@ -210,7 +213,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for EitherStructOrTupleValues<'i> {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct TupleValues<'i>(Vec<ValueType<'i>>);
+struct TupleValues<'i>(Vec<SyntaxValueType<'i>>);
 
 impl<'i> TryFrom<Pair<'i, Rule>> for TupleValues<'i> {
     type Error = Report;
@@ -220,7 +223,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for TupleValues<'i> {
             Rule::tuple_values => {
                 let items = pair
                     .into_inner()
-                    .map(ValueType::try_from)
+                    .map(SyntaxValueType::try_from)
                     .collect::<Result<Vec<_>>>()
                     .wrap_err("failed to extract struct tuple items")?;
 
@@ -249,12 +252,12 @@ impl<'i> TryFrom<Pair<'i, Rule>> for StructValues<'i> {
                             let name = pairs
                                 .next()
                                 .ok_or(eyre!("item expected"))
-                                .and_then(Identifier::try_from)?;
+                                .and_then(SyntaxIdentifier::try_from)?;
 
                             let value = pairs
                                 .next()
                                 .ok_or(eyre!("item expected"))
-                                .and_then(ValueType::try_from)?;
+                                .and_then(SyntaxValueType::try_from)?;
 
                             Ok(NamedField { name, value })
                         }
@@ -272,26 +275,26 @@ impl<'i> TryFrom<Pair<'i, Rule>> for StructValues<'i> {
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct NamedField<'i> {
-    name: Identifier<'i>,
-    value: ValueType<'i>,
+    name: SyntaxIdentifier<'i>,
+    value: SyntaxValueType<'i>,
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-enum ValueType<'i> {
-    Reference(TypeId<'i>),
+enum SyntaxValueType<'i> {
+    Reference(SyntaxTypeId<'i>),
     Array {
-        inner: Box<ValueType<'i>>,
+        inner: Box<SyntaxValueType<'i>>,
         len: NonZeroU32,
     },
 }
 
-impl<'i> From<TypeId<'i>> for ValueType<'i> {
-    fn from(id: TypeId<'i>) -> Self {
+impl<'i> From<SyntaxTypeId<'i>> for SyntaxValueType<'i> {
+    fn from(id: SyntaxTypeId<'i>) -> Self {
         Self::Reference(id)
     }
 }
 
-impl<'i> TryFrom<Pair<'i, Rule>> for ValueType<'i> {
+impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxValueType<'i> {
     type Error = Report;
 
     fn try_from(value: Pair<'i, Rule>) -> Result<Self, Self::Error> {
@@ -301,7 +304,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for ValueType<'i> {
 
                 match pair.as_rule() {
                     Rule::type_id => {
-                        let id = TypeId::try_from(pair).wrap_err("failed to parse id")?;
+                        let id = SyntaxTypeId::try_from(pair).wrap_err("failed to parse id")?;
                         Ok(Self::Reference(id))
                     }
                     Rule::array => {
@@ -310,7 +313,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for ValueType<'i> {
                         let inner = pairs
                             .next()
                             .ok_or(eyre!("item expected"))
-                            .and_then(ValueType::try_from)
+                            .and_then(SyntaxValueType::try_from)
                             .wrap_err("failed to parse inner array value")?;
 
                         let len = pairs
@@ -338,23 +341,16 @@ impl<'i> TryFrom<Pair<'i, Rule>> for ValueType<'i> {
     }
 }
 
-#[derive(Debug)]
-struct EnumVariantParsed<'i> {
-    name: Identifier<'i>,
-    discriminant: Option<u32>,
-    content: Option<EitherStructOrTupleValues<'i>>,
-}
-
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct EnumVariantWithValidDiscriminant<'i> {
-    name: Identifier<'i>,
+struct EnumVariantWithResolvedDiscriminant<'i> {
+    name: SyntaxIdentifier<'i>,
     discriminant: u32,
     content: Option<EitherStructOrTupleValues<'i>>,
 }
 
-impl<'i> EnumVariantWithValidDiscriminant<'i> {
+impl<'i> EnumVariantWithResolvedDiscriminant<'i> {
     fn try_from_parsed_list(
-        items: impl IntoIterator<Item = EnumVariantParsed<'i>>,
+        items: impl IntoIterator<Item = SyntaxEnumVariant<'i>>,
     ) -> Result<Vec<Self>> {
         let mut previous_discriminant = None;
 
@@ -397,7 +393,14 @@ impl<'i> EnumVariantWithValidDiscriminant<'i> {
     }
 }
 
-impl<'i> TryFrom<Pair<'i, Rule>> for EnumVariantParsed<'i> {
+#[derive(Debug)]
+struct SyntaxEnumVariant<'i> {
+    name: SyntaxIdentifier<'i>,
+    discriminant: Option<u32>,
+    content: Option<EitherStructOrTupleValues<'i>>,
+}
+
+impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxEnumVariant<'i> {
     type Error = Report;
 
     fn try_from(pair: Pair<'i, Rule>) -> Result<Self> {
@@ -412,7 +415,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for EnumVariantParsed<'i> {
                             .into_inner()
                             .next()
                             .ok_or(eyre!("item expected"))
-                            .and_then(Identifier::try_from)?;
+                            .and_then(SyntaxIdentifier::try_from)?;
                         (name, None)
                     }
                     Rule::enum_variant_tuple => {
@@ -420,7 +423,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for EnumVariantParsed<'i> {
                         let name = pairs
                             .next()
                             .ok_or(eyre!("item expected"))
-                            .and_then(Identifier::try_from)?;
+                            .and_then(SyntaxIdentifier::try_from)?;
 
                         let values =
                             TupleValues::try_from(pairs.next().ok_or(eyre!("item expected"))?)?;
@@ -432,7 +435,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for EnumVariantParsed<'i> {
                         let name = pairs
                             .next()
                             .ok_or(eyre!("item expected"))
-                            .and_then(Identifier::try_from)?;
+                            .and_then(SyntaxIdentifier::try_from)?;
 
                         let values =
                             StructValues::try_from(pairs.next().ok_or(eyre!("item expected"))?)?;
@@ -447,6 +450,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for EnumVariantParsed<'i> {
                     .map(|pair| match pair.as_rule() {
                         Rule::enum_discriminant => Ok(pair
                             .as_str()
+                            .trim()
                             .parse::<u32>()
                             .wrap_err("failed to parse enum discriminant")),
                         x => Err(eyre!("expected enum_discriminant, got {x:?}")),
@@ -470,29 +474,28 @@ mod tests {
     use super::*;
     use pest::Parser;
 
-    impl<'i> From<&'i str> for Identifier<'i> {
+    impl<'i> From<&'i str> for SyntaxIdentifier<'i> {
         fn from(value: &'i str) -> Self {
-            Identifier(value)
+            SyntaxIdentifier(value)
         }
     }
 
-    impl<'i> TypeId<'i> {
+    impl<'i> SyntaxTypeId<'i> {
         fn new(id: &'i str) -> Self {
             Self {
-                id: Identifier(id),
+                id: SyntaxIdentifier(id),
                 generics: Vec::new(),
             }
         }
 
-        fn and(mut self, generic: TypeId<'i>) -> Self {
+        fn and(mut self, generic: SyntaxTypeId<'i>) -> Self {
             self.generics.push(generic);
             self
         }
     }
 
     fn assert_parsing(input: &str, expected: NamespaceDefinition) -> Result<()> {
-        let parsed =
-            ScaleNamespaceParser::parse(Rule::main, input).wrap_err("failed to parse input")?;
+        let parsed = SyntaxParser::parse(Rule::main, input).wrap_err("failed to parse input")?;
         let actual = NamespaceDefinition::try_from(parsed).wrap_err("failed to map parsed data")?;
 
         assert_eq!(actual, expected);
@@ -501,8 +504,7 @@ mod tests {
     }
 
     fn assert_mapping_fails(input: &str) -> Result<()> {
-        let parsed =
-            ScaleNamespaceParser::parse(Rule::main, input).wrap_err("failed to parse input")?;
+        let parsed = SyntaxParser::parse(Rule::main, input).wrap_err("failed to parse input")?;
         let _err = NamespaceDefinition::try_from(parsed)
             .err()
             .ok_or(eyre!("expect mapping to fail"))?;
@@ -519,16 +521,16 @@ mod tests {
             }
             "#,
             NamespaceDefinition {
-                types: vec![ScaleType::Struct(ScaleStruct {
-                    id: TypeId::new("Person"),
+                types: vec![SyntaxType::Struct(SyntaxStruct {
+                    id: SyntaxTypeId::new("Person"),
                     content: EitherStructOrTupleValues::Struct(StructValues(vec![
                         NamedField {
                             name: "name".into(),
-                            value: ValueType::Reference(TypeId::new("String")),
+                            value: SyntaxValueType::Reference(SyntaxTypeId::new("String")),
                         },
                         NamedField {
                             name: "age".into(),
-                            value: ValueType::Reference(TypeId::new("u8")),
+                            value: SyntaxValueType::Reference(SyntaxTypeId::new("u8")),
                         },
                     ])),
                 })],
@@ -547,27 +549,27 @@ mod tests {
             }
             "#,
             NamespaceDefinition {
-                types: vec![ScaleType::Struct(ScaleStruct {
-                    id: TypeId::new("Message")
-                        .and(TypeId::new("T"))
-                        .and(TypeId::new("U")),
+                types: vec![SyntaxType::Struct(SyntaxStruct {
+                    id: SyntaxTypeId::new("Message")
+                        .and(SyntaxTypeId::new("T"))
+                        .and(SyntaxTypeId::new("U")),
                     content: EitherStructOrTupleValues::Struct(StructValues(vec![
                         NamedField {
                             name: "content".into(),
-                            value: ValueType::Reference(TypeId::new("T")),
+                            value: SyntaxValueType::Reference(SyntaxTypeId::new("T")),
                         },
                         NamedField {
                             name: "user".into(),
-                            value: ValueType::Reference(
-                                TypeId::new("Option").and(TypeId::new("U")),
+                            value: SyntaxValueType::Reference(
+                                SyntaxTypeId::new("Option").and(SyntaxTypeId::new("U")),
                             ),
                         },
                         NamedField {
                             name: "parents".into(),
-                            value: ValueType::Reference(
-                                TypeId::new("HashMap")
-                                    .and(TypeId::new("Str"))
-                                    .and(TypeId::new("Str")),
+                            value: SyntaxValueType::Reference(
+                                SyntaxTypeId::new("HashMap")
+                                    .and(SyntaxTypeId::new("Str"))
+                                    .and(SyntaxTypeId::new("Str")),
                             ),
                         },
                     ])),
@@ -583,15 +585,17 @@ mod tests {
             struct BizarreTuple(u8, Str, Option<T>, [Option<T>; 45]);
             "#,
             NamespaceDefinition {
-                types: vec![ScaleType::Struct(ScaleStruct {
-                    id: TypeId::new("BizarreTuple"),
+                types: vec![SyntaxType::Struct(SyntaxStruct {
+                    id: SyntaxTypeId::new("BizarreTuple"),
                     content: EitherStructOrTupleValues::Tuple(TupleValues(vec![
-                        ValueType::Reference(TypeId::new("u8")),
-                        ValueType::Reference(TypeId::new("Str")),
-                        ValueType::Reference(TypeId::new("Option").and(TypeId::new("T"))),
-                        ValueType::Array {
-                            inner: Box::new(ValueType::Reference(
-                                TypeId::new("Option").and(TypeId::new("T")),
+                        SyntaxValueType::Reference(SyntaxTypeId::new("u8")),
+                        SyntaxValueType::Reference(SyntaxTypeId::new("Str")),
+                        SyntaxValueType::Reference(
+                            SyntaxTypeId::new("Option").and(SyntaxTypeId::new("T")),
+                        ),
+                        SyntaxValueType::Array {
+                            inner: Box::new(SyntaxValueType::Reference(
+                                SyntaxTypeId::new("Option").and(SyntaxTypeId::new("T")),
                             )),
                             len: 45.try_into().unwrap(),
                         },
@@ -608,10 +612,10 @@ mod tests {
             struct NewType<T>(T);
             "#,
             NamespaceDefinition {
-                types: vec![ScaleType::Struct(ScaleStruct {
-                    id: TypeId::new("NewType").and(TypeId::new("T")),
+                types: vec![SyntaxType::Struct(SyntaxStruct {
+                    id: SyntaxTypeId::new("NewType").and(SyntaxTypeId::new("T")),
                     content: EitherStructOrTupleValues::Tuple(TupleValues(vec![
-                        ValueType::Reference(TypeId::new("T")),
+                        SyntaxValueType::Reference(SyntaxTypeId::new("T")),
                     ])),
                 })],
             },
@@ -625,9 +629,9 @@ mod tests {
             type A = B;
             "#,
             NamespaceDefinition {
-                types: vec![ScaleType::Alias {
-                    id: TypeId::new("A"),
-                    to: ValueType::Reference(TypeId::new("B")),
+                types: vec![SyntaxType::Alias {
+                    id: SyntaxTypeId::new("A"),
+                    to: SyntaxValueType::Reference(SyntaxTypeId::new("B")),
                 }],
             },
         )
@@ -640,13 +644,15 @@ mod tests {
             type A<T, U> = [Result<T, U>; 25];
             "#,
             NamespaceDefinition {
-                types: vec![ScaleType::Alias {
-                    id: TypeId::new("A").and(TypeId::new("T")).and(TypeId::new("U")),
-                    to: ValueType::Array {
-                        inner: Box::new(ValueType::Reference(
-                            TypeId::new("Result")
-                                .and(TypeId::new("T"))
-                                .and(TypeId::new("U")),
+                types: vec![SyntaxType::Alias {
+                    id: SyntaxTypeId::new("A")
+                        .and(SyntaxTypeId::new("T"))
+                        .and(SyntaxTypeId::new("U")),
+                    to: SyntaxValueType::Array {
+                        inner: Box::new(SyntaxValueType::Reference(
+                            SyntaxTypeId::new("Result")
+                                .and(SyntaxTypeId::new("T"))
+                                .and(SyntaxTypeId::new("U")),
                         )),
                         len: 25.try_into().unwrap(),
                     },
@@ -665,23 +671,25 @@ mod tests {
             "#,
             NamespaceDefinition {
                 types: vec![
-                    ScaleType::Alias {
-                        id: TypeId::new("A").and(TypeId::new("T")).and(TypeId::new("U")),
-                        to: ValueType::Reference(
-                            TypeId::new("Map")
-                                .and(TypeId::new("T"))
-                                .and(TypeId::new("U")),
+                    SyntaxType::Alias {
+                        id: SyntaxTypeId::new("A")
+                            .and(SyntaxTypeId::new("T"))
+                            .and(SyntaxTypeId::new("U")),
+                        to: SyntaxValueType::Reference(
+                            SyntaxTypeId::new("Map")
+                                .and(SyntaxTypeId::new("T"))
+                                .and(SyntaxTypeId::new("U")),
                         ),
                     },
-                    ScaleType::Alias {
-                        id: TypeId::new("B"),
-                        to: ValueType::Reference(TypeId::new("A")),
+                    SyntaxType::Alias {
+                        id: SyntaxTypeId::new("B"),
+                        to: SyntaxValueType::Reference(SyntaxTypeId::new("A")),
                     },
-                    ScaleType::Struct(ScaleStruct {
-                        id: TypeId::new("A"),
+                    SyntaxType::Struct(SyntaxStruct {
+                        id: SyntaxTypeId::new("A"),
                         content: EitherStructOrTupleValues::Tuple(TupleValues(vec![
-                            ValueType::Reference(TypeId::new("B")),
-                            ValueType::Reference(TypeId::new("C")),
+                            SyntaxValueType::Reference(SyntaxTypeId::new("B")),
+                            SyntaxValueType::Reference(SyntaxTypeId::new("C")),
                         ])),
                     }),
                 ],
@@ -694,16 +702,17 @@ mod tests {
         assert_parsing(
             "type A = Option<Map<Option<Option<u8>>, Str>>;",
             NamespaceDefinition {
-                types: vec![ScaleType::Alias {
-                    id: TypeId::new("A"),
-                    to: ValueType::Reference(
-                        TypeId::new("Option").and(
-                            TypeId::new("Map")
+                types: vec![SyntaxType::Alias {
+                    id: SyntaxTypeId::new("A"),
+                    to: SyntaxValueType::Reference(
+                        SyntaxTypeId::new("Option").and(
+                            SyntaxTypeId::new("Map")
                                 .and(
-                                    TypeId::new("Option")
-                                        .and(TypeId::new("Option").and(TypeId::new("u8"))),
+                                    SyntaxTypeId::new("Option").and(
+                                        SyntaxTypeId::new("Option").and(SyntaxTypeId::new("u8")),
+                                    ),
                                 )
-                                .and(TypeId::new("Str")),
+                                .and(SyntaxTypeId::new("Str")),
                         ),
                     ),
                 }],
@@ -716,29 +725,31 @@ mod tests {
         assert_parsing(
             "enum Test { First, Second(u8, u9), Third { whatever: FooBar<T> } }",
             NamespaceDefinition {
-                types: vec![ScaleType::Enum(ScaleEnum {
-                    id: TypeId::new("Test"),
+                types: vec![SyntaxType::Enum(SyntaxEnum {
+                    id: SyntaxTypeId::new("Test"),
                     variants: vec![
-                        EnumVariantWithValidDiscriminant {
-                            name: Identifier("First"),
+                        EnumVariantWithResolvedDiscriminant {
+                            name: SyntaxIdentifier("First"),
                             discriminant: 0,
                             content: None,
                         },
-                        EnumVariantWithValidDiscriminant {
-                            name: Identifier("Second"),
+                        EnumVariantWithResolvedDiscriminant {
+                            name: SyntaxIdentifier("Second"),
                             discriminant: 1,
                             content: Some(EitherStructOrTupleValues::Tuple(TupleValues(vec![
-                                TypeId::new("u8").into(),
-                                TypeId::new("u9").into(),
+                                SyntaxTypeId::new("u8").into(),
+                                SyntaxTypeId::new("u9").into(),
                             ]))),
                         },
-                        EnumVariantWithValidDiscriminant {
-                            name: Identifier("Third"),
+                        EnumVariantWithResolvedDiscriminant {
+                            name: SyntaxIdentifier("Third"),
                             discriminant: 2,
                             content: Some(EitherStructOrTupleValues::Struct(StructValues(vec![
                                 NamedField {
-                                    name: Identifier("whatever"),
-                                    value: TypeId::new("FooBar").and(TypeId::new("T")).into(),
+                                    name: SyntaxIdentifier("whatever"),
+                                    value: SyntaxTypeId::new("FooBar")
+                                        .and(SyntaxTypeId::new("T"))
+                                        .into(),
                                 },
                             ]))),
                         },
@@ -751,23 +762,23 @@ mod tests {
     #[test]
     fn enum_custom_discriminant() -> Result<()> {
         assert_parsing(
-            "enum Test { First, Second = 5, Third }",
+            "enum Test { First, Second /* #_DISC = 5 */, Third }",
             NamespaceDefinition {
-                types: vec![ScaleType::Enum(ScaleEnum {
-                    id: TypeId::new("Test"),
+                types: vec![SyntaxType::Enum(SyntaxEnum {
+                    id: SyntaxTypeId::new("Test"),
                     variants: vec![
-                        EnumVariantWithValidDiscriminant {
-                            name: Identifier("First"),
+                        EnumVariantWithResolvedDiscriminant {
+                            name: SyntaxIdentifier("First"),
                             discriminant: 0,
                             content: None,
                         },
-                        EnumVariantWithValidDiscriminant {
-                            name: Identifier("Second"),
+                        EnumVariantWithResolvedDiscriminant {
+                            name: SyntaxIdentifier("Second"),
                             discriminant: 5,
                             content: None,
                         },
-                        EnumVariantWithValidDiscriminant {
-                            name: Identifier("Third"),
+                        EnumVariantWithResolvedDiscriminant {
+                            name: SyntaxIdentifier("Third"),
                             discriminant: 6,
                             content: None,
                         },
@@ -782,8 +793,8 @@ mod tests {
         assert_mapping_fails(
             "
             enum SharedDiscriminantError {
-                SharedA = 1,
-                SharedB = 1
+                SharedA /* #_DISC = 1 */,
+                SharedB /* #_DISC = 1 */
             }
             ",
         )
@@ -796,7 +807,7 @@ mod tests {
             enum SharedDiscriminantError2 {
                 Zero,    
                 One,
-                OneToo = 1
+                OneToo /* #_DISC = 1 */
             }
             ",
         )
