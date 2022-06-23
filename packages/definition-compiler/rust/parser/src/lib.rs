@@ -1,22 +1,131 @@
-use std::num::NonZeroU32;
-
-use eyre::{eyre, Context, Report, Result};
-use pest::iterators::{Pair, Pairs};
+use error_stack::{Context, IntoReport, Report, Result as ReportResult, ResultExt};
+use parse_display::Display;
+use pest::{
+    iterators::{Pair, Pairs},
+    RuleType, Span,
+};
 use pest_derive::Parser;
+use std::num::NonZeroU32;
+use std::{fmt, num::ParseIntError};
 
 #[derive(Parser)]
 #[grammar = "grammar.pest"]
 struct SyntaxParser;
 
+#[derive(Debug)]
+struct ParseError {}
+
+struct SyntaxErrorLoc {
+    start: usize,
+    end: usize,
+}
+
+impl fmt::Display for ParseError {
+    fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt.write_str("todo")
+    }
+}
+
+impl Context for ParseError {}
+
+impl From<Span<'_>> for SyntaxErrorLoc {
+    fn from(span: Span<'_>) -> Self {
+        Self::from(&span)
+    }
+}
+
+impl From<&Span<'_>> for SyntaxErrorLoc {
+    fn from(span: &Span<'_>) -> Self {
+        Self {
+            start: span.start(),
+            end: span.end(),
+        }
+    }
+}
+
+impl<R> From<&Pair<'_, R>> for SyntaxErrorLoc
+where
+    R: RuleType,
+{
+    fn from(pair: &Pair<'_, R>) -> Self {
+        Self::from(pair.as_span())
+    }
+}
+
+impl<T> From<ParseError> for ReportResult<T, ParseError> {
+    fn from(err: ParseError) -> Self {
+        Err(err).report()
+    }
+}
+
+impl ParseError {
+    pub fn syntax_unexpected_rule(span: SyntaxErrorLoc, err: UnexpectedRuleError) -> Self {
+        unimplemented!()
+    }
+
+    pub fn syntax_item_expected(span: SyntaxErrorLoc) -> Self {
+        unimplemented!()
+    }
+
+    pub fn syntax_invalid_integer(span: SyntaxErrorLoc, err: ParseIntError) -> Self {
+        unimplemented!()
+    }
+
+    pub fn into_report<T>(self) -> ReportResult<T, Self> {
+        ParseError::into(self)
+    }
+}
+
+#[derive(parse_display::Display, Debug)]
+#[display("Unexpected rule: {unexpected:?}")]
+struct UnexpectedRuleError {
+    unexpected: Rule,
+}
+
+impl UnexpectedRuleError {
+    pub fn new(unexpected: Rule) -> Self {
+        Self { unexpected }
+    }
+}
+
+impl From<Rule> for UnexpectedRuleError {
+    fn from(value: Rule) -> Self {
+        Self::new(value)
+    }
+}
+
+trait PairsIteratorExt<'i, R> {
+    fn next_or_report<F: Fn() -> SyntaxErrorLoc>(
+        &mut self,
+        location: F,
+    ) -> Result<Pair<'i, R>, ParseErrorReport>;
+}
+
+impl<'i, R> PairsIteratorExt<'i, R> for Pairs<'i, R>
+where
+    R: RuleType,
+{
+    fn next_or_report<F: Fn() -> SyntaxErrorLoc>(
+        &mut self,
+        location: F,
+    ) -> Result<Pair<'i, R>, ParseErrorReport> {
+        self.next()
+            .ok_or_else(|| ParseError::syntax_item_expected(location()))
+            .report()
+    }
+}
+
+type ParseErrorReport = Report<ParseError>;
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct NamespaceDefinition<'i> {
+struct SyntaxNamespace<'i> {
     types: Vec<SyntaxType<'i>>,
 }
 
-impl<'i> TryFrom<Pairs<'i, Rule>> for NamespaceDefinition<'i> {
-    type Error = Report;
+impl<'i> TryFrom<Pairs<'i, Rule>> for SyntaxNamespace<'i> {
+    type Error = ParseErrorReport;
 
-    fn try_from(mut pairs: Pairs<'i, Rule>) -> Result<Self> {
+    fn try_from(mut pairs: Pairs<'i, Rule>) -> Result<Self, Self::Error> {
         let main = pairs.next().unwrap();
 
         let types = main
@@ -24,7 +133,7 @@ impl<'i> TryFrom<Pairs<'i, Rule>> for NamespaceDefinition<'i> {
             .map(|pair| match pair.as_rule() {
                 Rule::EOI => Ok(None),
                 _ => Ok(Some(
-                    SyntaxType::try_from(pair).wrap_err("failed to parse ScaleType")?,
+                    SyntaxType::try_from(pair).attach_printable("failed to parse ScaleType")?,
                 )),
             })
             .filter_map(|item| match item {
@@ -32,8 +141,8 @@ impl<'i> TryFrom<Pairs<'i, Rule>> for NamespaceDefinition<'i> {
                 Ok(Some(ty)) => Some(Ok(ty)),
                 Err(err) => Some(Err(err)),
             })
-            .collect::<Result<Vec<_>>>()
-            .wrap_err("failed to parse types")?;
+            .collect::<Result<Vec<_>, _>>()
+            .attach_printable("failed to parse types")?;
 
         Ok(Self { types })
     }
@@ -43,12 +152,16 @@ impl<'i> TryFrom<Pairs<'i, Rule>> for NamespaceDefinition<'i> {
 struct SyntaxIdentifier<'i>(&'i str);
 
 impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxIdentifier<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
     fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::identifier => Ok(SyntaxIdentifier(pair.as_str())),
-            x => Err(eyre!("expected identifier, got {x:?}")),
+            x => ParseError::syntax_unexpected_rule(
+                SyntaxErrorLoc::from(&pair),
+                UnexpectedRuleError::new(x),
+            )
+            .into(),
         }
     }
 }
@@ -60,16 +173,16 @@ struct SyntaxTypeId<'i> {
 }
 
 impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxTypeId<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
-    fn try_from(value: Pair<'i, Rule>) -> Result<Self, Self::Error> {
-        match value.as_rule() {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
+        match pair.as_rule() {
             Rule::type_id => {
-                let mut pairs = value.into_inner();
+                let span = &pair.as_span();
+                let mut pairs = pair.into_inner();
 
                 let id = pairs
-                    .next()
-                    .ok_or(eyre!("expected to get identifier name"))
+                    .next_or_report(|| span.into())
                     .and_then(SyntaxIdentifier::try_from)?;
 
                 let generics = {
@@ -79,16 +192,23 @@ impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxTypeId<'i> {
                             Rule::generics_list => item
                                 .into_inner()
                                 .map(SyntaxTypeId::try_from)
-                                .collect::<Result<Vec<_>>>()
-                                .wrap_err("failed to parse generics")?,
-                            x => return Err(eyre!("expected generics_list, got {x:?}")),
+                                .collect::<Result<Vec<_>, _>>()
+                                .attach_printable("failed to parse generics")?,
+                            x => {
+                                return ParseError::syntax_unexpected_rule(
+                                    span.into(),
+                                    UnexpectedRuleError::new(x),
+                                )
+                                .into()
+                            }
                         },
                     }
                 };
 
                 Ok(Self { id, generics })
             }
-            x => Err(eyre!("expected identifier_with_generics, got {x:?}")),
+            x => ParseError::syntax_unexpected_rule((&pair).into(), UnexpectedRuleError::new(x))
+                .into(),
         }
     }
 }
@@ -104,38 +224,38 @@ enum SyntaxType<'i> {
 }
 
 impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxType<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
     fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::def_struct => {
                 let parsed_struct =
-                    SyntaxStruct::try_from(pair.into_inner()).wrap_err("failed to parse struct")?;
+                    SyntaxStruct::try_from(pair).attach_printable("failed to parse struct")?;
                 Ok(Self::Struct(parsed_struct))
             }
             Rule::def_enum => {
                 let parsed_enum =
-                    SyntaxEnum::try_from(pair.into_inner()).wrap_err("failed to parse enum")?;
+                    SyntaxEnum::try_from(pair).attach_printable("failed to parse enum")?;
                 Ok(Self::Enum(parsed_enum))
             }
             Rule::def_alias => {
+                let span = &pair.as_span();
                 let mut pairs = pair.into_inner();
 
                 let id = pairs
-                    .next()
-                    .ok_or(eyre!("item expected"))
+                    .next_or_report(|| span.into())
                     .and_then(SyntaxTypeId::try_from)
-                    .wrap_err("failed to parse value type")?;
+                    .attach_printable("failed to parse type id")?;
 
                 let value_type = pairs
-                    .next()
-                    .ok_or(eyre!("item expected"))
+                    .next_or_report(|| span.into())
                     .and_then(SyntaxValueType::try_from)
-                    .wrap_err("failed to parse value type")?;
+                    .attach_printable("failed to parse value type")?;
 
                 Ok(Self::Alias { id, to: value_type })
             }
-            x => Err(eyre!("unexpected rule: {x:?}")),
+            x => ParseError::syntax_unexpected_rule((&pair).into(), UnexpectedRuleError::new(x))
+                .into(),
         }
     }
 }
@@ -146,20 +266,23 @@ struct SyntaxEnum<'i> {
     variants: Vec<EnumVariantWithResolvedDiscriminant<'i>>,
 }
 
-impl<'i> TryFrom<Pairs<'i, Rule>> for SyntaxEnum<'i> {
-    type Error = Report;
+impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxEnum<'i> {
+    type Error = ParseErrorReport;
 
-    fn try_from(mut pairs: Pairs<'i, Rule>) -> Result<Self> {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
+        let span = &pair.as_span();
+        let mut pairs = pair.into_inner();
+
         let id = pairs
-            .next()
-            .ok_or(eyre!("item expected"))
+            .next_or_report(|| span.into())
             .and_then(SyntaxTypeId::try_from)?;
 
         let variants = pairs
             .map(SyntaxEnumVariant::try_from)
-            .collect::<Result<Vec<_>>>()?;
+            .collect::<Result<Vec<_>, _>>()?;
 
-        let variants = EnumVariantWithResolvedDiscriminant::try_from_parsed_list(variants)?;
+        let variants = EnumVariantWithResolvedDiscriminant::try_from_parsed_list(variants)
+            .change_context(ParseError)?;
 
         Ok(Self { id, variants })
     }
@@ -171,20 +294,22 @@ struct SyntaxStruct<'i> {
     content: EitherStructOrTupleValues<'i>,
 }
 
-impl<'i> TryFrom<Pairs<'i, Rule>> for SyntaxStruct<'i> {
-    type Error = Report;
+impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxStruct<'i> {
+    type Error = ParseErrorReport;
 
-    fn try_from(mut pairs: Pairs<'i, Rule>) -> Result<Self> {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
+        let span = &pair.as_span();
+        let mut pairs = pair.into_inner();
+
         let id = pairs
-            .next()
-            .ok_or(eyre!("item expected"))
-            .and_then(SyntaxTypeId::try_from)?;
+            .next_or_report(|| span.into())
+            .and_then(SyntaxTypeId::try_from)
+            .attach_printable("failed to parse type id")?;
 
         let content = pairs
-            .next()
-            .ok_or(eyre!("item expected"))?
+            .next_or_report(|| span.into())?
             .try_into()
-            .wrap_err("failed to parse struct content")?;
+            .attach_printable("failed to parse struct content")?;
 
         Ok(Self { id, content })
     }
@@ -197,17 +322,20 @@ enum EitherStructOrTupleValues<'i> {
 }
 
 impl<'i> TryFrom<Pair<'i, Rule>> for EitherStructOrTupleValues<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
-    fn try_from(pair: Pair<'i, Rule>) -> Result<Self> {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::struct_values => Ok(EitherStructOrTupleValues::Struct(
-                pair.try_into().wrap_err("failed to parse struct values")?,
+                pair.try_into()
+                    .attach_printable("failed to parse struct values")?,
             )),
             Rule::tuple_values => Ok(EitherStructOrTupleValues::Tuple(
-                pair.try_into().wrap_err("failed to parse tuple values")?,
+                pair.try_into()
+                    .attach_printable("failed to parse tuple values")?,
             )),
-            x => Err(eyre!("expected struct content, got {x:?}")),
+            x => ParseError::syntax_unexpected_rule((&pair).into(), UnexpectedRuleError::new(x))
+                .into(),
         }
     }
 }
@@ -216,20 +344,21 @@ impl<'i> TryFrom<Pair<'i, Rule>> for EitherStructOrTupleValues<'i> {
 struct TupleValues<'i>(Vec<SyntaxValueType<'i>>);
 
 impl<'i> TryFrom<Pair<'i, Rule>> for TupleValues<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
-    fn try_from(pair: Pair<'i, Rule>) -> Result<Self> {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::tuple_values => {
                 let items = pair
                     .into_inner()
                     .map(SyntaxValueType::try_from)
-                    .collect::<Result<Vec<_>>>()
-                    .wrap_err("failed to extract struct tuple items")?;
+                    .collect::<Result<Vec<_>, _>>()
+                    .attach_printable("failed to extract struct tuple items")?;
 
                 Ok(Self(items))
             }
-            x => Err(eyre!("expected tuple_values, got {x:?}")),
+            x => ParseError::syntax_unexpected_rule((&pair).into(), UnexpectedRuleError::new(x))
+                .into(),
         }
     }
 }
@@ -238,37 +367,41 @@ impl<'i> TryFrom<Pair<'i, Rule>> for TupleValues<'i> {
 struct StructValues<'i>(Vec<NamedField<'i>>);
 
 impl<'i> TryFrom<Pair<'i, Rule>> for StructValues<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
-    fn try_from(pair: Pair<'i, Rule>) -> Result<Self> {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::struct_values => {
                 let fields = pair
                     .into_inner()
                     .map(|pair| match pair.as_rule() {
                         Rule::named_field => {
+                            let span = &pair.as_span();
                             let mut pairs = pair.into_inner();
 
                             let name = pairs
-                                .next()
-                                .ok_or(eyre!("item expected"))
+                                .next_or_report(|| span.into())
                                 .and_then(SyntaxIdentifier::try_from)?;
 
                             let value = pairs
-                                .next()
-                                .ok_or(eyre!("item expected"))
+                                .next_or_report(|| span.into())
                                 .and_then(SyntaxValueType::try_from)?;
 
                             Ok(NamedField { name, value })
                         }
-                        x => Err(eyre!("expected named_field, got {x:?}")),
+                        x => ParseError::syntax_unexpected_rule(
+                            (&pair).into(),
+                            UnexpectedRuleError::new(x),
+                        )
+                        .into(),
                     })
-                    .collect::<Result<Vec<_>>>()
-                    .wrap_err("failed to parse struct named fields")?;
+                    .collect::<Result<Vec<_>, _>>()
+                    .attach_printable("failed to parse struct named fields")?;
 
                 Ok(Self(fields))
             }
-            x => Err(eyre!("expected tuple_values, got {x:?}")),
+            x => ParseError::syntax_unexpected_rule((&pair).into(), UnexpectedRuleError::new(x))
+                .into(),
         }
     }
 }
@@ -295,48 +428,54 @@ impl<'i> From<SyntaxTypeId<'i>> for SyntaxValueType<'i> {
 }
 
 impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxValueType<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
-    fn try_from(value: Pair<'i, Rule>) -> Result<Self, Self::Error> {
-        match value.as_rule() {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
+        match pair.as_rule() {
             Rule::value_type => {
-                let pair = value.into_inner().next().ok_or(eyre!("item expected"))?;
+                let pair = pair.into_inner().next_or_report(|| (&pair).into())?;
 
                 match pair.as_rule() {
                     Rule::type_id => {
-                        let id = SyntaxTypeId::try_from(pair).wrap_err("failed to parse id")?;
+                        let id =
+                            SyntaxTypeId::try_from(pair).attach_printable("failed to parse id")?;
                         Ok(Self::Reference(id))
                     }
                     Rule::array => {
+                        let span = &pair.as_span();
                         let mut pairs = pair.into_inner();
 
                         let inner = pairs
-                            .next()
-                            .ok_or(eyre!("item expected"))
+                            .next_or_report(|| span.into())
                             .and_then(SyntaxValueType::try_from)
-                            .wrap_err("failed to parse inner array value")?;
+                            .attach_printable("failed to parse inner array value")?;
 
                         let len = pairs
-                            .next()
-                            .ok_or(eyre!("item expected"))
+                            .next_or_report(|| span.into())
                             .and_then(|pair| match pair.as_rule() {
                                 Rule::non_zero_integer => pair
                                     .as_str()
                                     .parse()
-                                    .wrap_err("failed to parse non-zero-u32"),
-                                x => Err(eyre!("expected non zero integer, got {x:?}")),
+                                    .map_err(|err| {
+                                        ParseError::syntax_invalid_integer(span.into(), err)
+                                    })
+                                    .report()
+                                    .attach_printable("failed to parse non-zero-u32"),
+                                x => {
+                                    ParseError::syntax_unexpected_rule(span.into(), x.into()).into()
+                                }
                             })
-                            .wrap_err("failed to parse array len")?;
+                            .attach_printable("failed to parse array len")?;
 
                         Ok(Self::Array {
                             inner: Box::new(inner),
                             len,
                         })
                     }
-                    x => Err(eyre!("expected id with generics, got {x:?}")),
+                    x => ParseError::syntax_unexpected_rule((&pair).into(), x.into()).into(),
                 }
             }
-            x => Err(eyre!("expected value type, got {x:?}")),
+            x => ParseError::syntax_unexpected_rule((&pair).into(), x.into()).into(),
         }
     }
 }
@@ -348,10 +487,24 @@ struct EnumVariantWithResolvedDiscriminant<'i> {
     content: Option<EitherStructOrTupleValues<'i>>,
 }
 
+#[derive(thiserror::Error, Debug)]
+enum DiscriminantResolutionError {
+    #[error("duplicate discriminant found: {0}")]
+    Duplicated(u32),
+}
+
+// impl Context for DiscriminantResolutionError {}
+
+// impl fmt::Display for DiscriminantResolutionError {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         unimplemented!()
+//     }
+// }
+
 impl<'i> EnumVariantWithResolvedDiscriminant<'i> {
     fn try_from_parsed_list(
         items: impl IntoIterator<Item = SyntaxEnumVariant<'i>>,
-    ) -> Result<Vec<Self>> {
+    ) -> Result<Vec<Self>, DiscriminantResolutionError> {
         let mut previous_discriminant = None;
 
         let mapped: Vec<_> = items
@@ -382,7 +535,7 @@ impl<'i> EnumVariantWithResolvedDiscriminant<'i> {
                 let mut previous = first;
                 for i in items {
                     if i == previous {
-                        return Err(eyre!("duplicate discriminant found: {i}"));
+                        return Err(DiscriminantResolutionError::Duplicated(*i));
                     }
                     previous = i;
                 }
@@ -401,48 +554,45 @@ struct SyntaxEnumVariant<'i> {
 }
 
 impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxEnumVariant<'i> {
-    type Error = Report;
+    type Error = ParseErrorReport;
 
-    fn try_from(pair: Pair<'i, Rule>) -> Result<Self> {
+    fn try_from(pair: Pair<'i, Rule>) -> Result<Self, Self::Error> {
         match pair.as_rule() {
             Rule::enum_variant => {
+                let span = &pair.as_span();
                 let mut pairs = pair.into_inner();
 
-                let first = pairs.next().ok_or(eyre!("item expected"))?;
+                let first = pairs.next_or_report(|| span.into())?;
                 let (name, content) = match first.as_rule() {
                     Rule::enum_variant_empty => {
                         let name = first
                             .into_inner()
-                            .next()
-                            .ok_or(eyre!("item expected"))
+                            .next_or_report(|| span.into())
                             .and_then(SyntaxIdentifier::try_from)?;
                         (name, None)
                     }
                     Rule::enum_variant_tuple => {
+                        let span = &first.as_span();
                         let mut pairs = first.into_inner();
                         let name = pairs
-                            .next()
-                            .ok_or(eyre!("item expected"))
+                            .next_or_report(|| span.into())
                             .and_then(SyntaxIdentifier::try_from)?;
 
-                        let values =
-                            TupleValues::try_from(pairs.next().ok_or(eyre!("item expected"))?)?;
+                        let values = TupleValues::try_from(pairs.next_or_report(|| span.into())?)?;
 
                         (name, Some(EitherStructOrTupleValues::Tuple(values)))
                     }
                     Rule::enum_variant_struct => {
                         let mut pairs = first.into_inner();
                         let name = pairs
-                            .next()
-                            .ok_or(eyre!("item expected"))
+                            .next_or_report(|| span.into())
                             .and_then(SyntaxIdentifier::try_from)?;
 
-                        let values =
-                            StructValues::try_from(pairs.next().ok_or(eyre!("item expected"))?)?;
+                        let values = StructValues::try_from(pairs.next_or_report(|| span.into())?)?;
 
                         (name, Some(EitherStructOrTupleValues::Struct(values)))
                     }
-                    x => return Err(eyre!("expected some of enum variants, got {x:?}")),
+                    x => return ParseError::syntax_unexpected_rule(span.into(), x.into()).into(),
                 };
 
                 let discriminant = pairs
@@ -452,8 +602,12 @@ impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxEnumVariant<'i> {
                             .as_str()
                             .trim()
                             .parse::<u32>()
-                            .wrap_err("failed to parse enum discriminant")),
-                        x => Err(eyre!("expected enum_discriminant, got {x:?}")),
+                            .map_err(|err| ParseError::syntax_invalid_integer((&pair).into(), err))
+                            .report()
+                            .attach_printable("failed to parse enum discriminant")),
+                        x => {
+                            ParseError::syntax_unexpected_rule(span.into(), x.into()).into_report()
+                        }
                     })
                     .transpose()?
                     .transpose()?;
@@ -464,7 +618,7 @@ impl<'i> TryFrom<Pair<'i, Rule>> for SyntaxEnumVariant<'i> {
                     content,
                 })
             }
-            x => Err(eyre!("expected enum variant, got {x:?}")),
+            x => ParseError::syntax_unexpected_rule((&pair).into(), x.into()).into(),
         }
     }
 }
@@ -494,25 +648,22 @@ mod tests {
         }
     }
 
-    fn assert_parsing(input: &str, expected: NamespaceDefinition) -> Result<()> {
+    fn assert_parsing(input: &str, expected: SyntaxNamespace) {
         let parsed = SyntaxParser::parse(Rule::main, input).wrap_err("failed to parse input")?;
-        let actual = NamespaceDefinition::try_from(parsed).wrap_err("failed to map parsed data")?;
+        let actual = SyntaxNamespace::try_from(parsed).wrap_err("failed to map parsed data")?;
 
         assert_eq!(actual, expected);
-
-        Ok(())
     }
 
-    fn assert_mapping_fails(input: &str) -> Result<()> {
+    fn assert_mapping_fails(input: &str) {
         let parsed = SyntaxParser::parse(Rule::main, input).wrap_err("failed to parse input")?;
-        let _err = NamespaceDefinition::try_from(parsed)
+        let _err = SyntaxNamespace::try_from(parsed)
             .err()
             .ok_or(eyre!("expect mapping to fail"))?;
-        Ok(())
     }
 
     #[test]
-    fn struct_with_simple_refs() -> Result<()> {
+    fn struct_with_simple_refs() {
         assert_parsing(
             r#"
             struct Person {
@@ -520,7 +671,7 @@ mod tests {
                 age: u8
             }
             "#,
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Struct(SyntaxStruct {
                     id: SyntaxTypeId::new("Person"),
                     content: EitherStructOrTupleValues::Struct(StructValues(vec![
@@ -539,7 +690,7 @@ mod tests {
     }
 
     #[test]
-    fn struct_with_generics() -> Result<()> {
+    fn struct_with_generics() {
         assert_parsing(
             r#"
             struct Message<T, U> {
@@ -548,7 +699,7 @@ mod tests {
                 parents: HashMap<Str, Str>
             }
             "#,
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Struct(SyntaxStruct {
                     id: SyntaxTypeId::new("Message")
                         .and(SyntaxTypeId::new("T"))
@@ -579,12 +730,12 @@ mod tests {
     }
 
     #[test]
-    fn tuple_struct() -> Result<()> {
+    fn tuple_struct() {
         assert_parsing(
             r#"
             struct BizarreTuple(u8, Str, Option<T>, [Option<T>; 45]);
             "#,
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Struct(SyntaxStruct {
                     id: SyntaxTypeId::new("BizarreTuple"),
                     content: EitherStructOrTupleValues::Tuple(TupleValues(vec![
@@ -606,12 +757,12 @@ mod tests {
     }
 
     #[test]
-    fn tuple_struct_with_generics() -> Result<()> {
+    fn tuple_struct_with_generics() {
         assert_parsing(
             r#"
             struct NewType<T>(T);
             "#,
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Struct(SyntaxStruct {
                     id: SyntaxTypeId::new("NewType").and(SyntaxTypeId::new("T")),
                     content: EitherStructOrTupleValues::Tuple(TupleValues(vec![
@@ -623,12 +774,12 @@ mod tests {
     }
 
     #[test]
-    fn alias_simple() -> Result<()> {
+    fn alias_simple() {
         assert_parsing(
             r#"
             type A = B;
             "#,
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Alias {
                     id: SyntaxTypeId::new("A"),
                     to: SyntaxValueType::Reference(SyntaxTypeId::new("B")),
@@ -638,12 +789,12 @@ mod tests {
     }
 
     #[test]
-    fn alias_complex() -> Result<()> {
+    fn alias_complex() {
         assert_parsing(
             r#"
             type A<T, U> = [Result<T, U>; 25];
             "#,
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Alias {
                     id: SyntaxTypeId::new("A")
                         .and(SyntaxTypeId::new("T"))
@@ -662,14 +813,14 @@ mod tests {
     }
 
     #[test]
-    fn multiple_types() -> Result<()> {
+    fn multiple_types() {
         assert_parsing(
             r#"
             type A<T, U> = Map<T, U>;
             type B = A;
             struct A(B, C);
             "#,
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![
                     SyntaxType::Alias {
                         id: SyntaxTypeId::new("A")
@@ -698,10 +849,10 @@ mod tests {
     }
 
     #[test]
-    fn generics_with_inner_generics() -> Result<()> {
+    fn generics_with_inner_generics() {
         assert_parsing(
             "type A = Option<Map<Option<Option<u8>>, Str>>;",
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Alias {
                     id: SyntaxTypeId::new("A"),
                     to: SyntaxValueType::Reference(
@@ -721,10 +872,10 @@ mod tests {
     }
 
     #[test]
-    fn enum_with_different_variants() -> Result<()> {
+    fn enum_with_different_variants() {
         assert_parsing(
             "enum Test { First, Second(u8, u9), Third { whatever: FooBar<T> } }",
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Enum(SyntaxEnum {
                     id: SyntaxTypeId::new("Test"),
                     variants: vec![
@@ -760,10 +911,10 @@ mod tests {
     }
 
     #[test]
-    fn enum_custom_discriminant() -> Result<()> {
+    fn enum_custom_discriminant() {
         assert_parsing(
             "enum Test { First, Second /* #_DISC = 5 */, Third }",
-            NamespaceDefinition {
+            SyntaxNamespace {
                 types: vec![SyntaxType::Enum(SyntaxEnum {
                     id: SyntaxTypeId::new("Test"),
                     variants: vec![
@@ -789,7 +940,7 @@ mod tests {
     }
 
     #[test]
-    fn enum_custom_discriminant_collision() -> Result<()> {
+    fn enum_custom_discriminant_collision() {
         assert_mapping_fails(
             "
             enum SharedDiscriminantError {
@@ -801,11 +952,11 @@ mod tests {
     }
 
     #[test]
-    fn enum_custom_discriminant_collision_2() -> Result<()> {
+    fn enum_custom_discriminant_collision_2() {
         assert_mapping_fails(
             "
             enum SharedDiscriminantError2 {
-                Zero,    
+                Zero,
                 One,
                 OneToo /* #_DISC = 1 */
             }
