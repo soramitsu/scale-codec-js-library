@@ -27,13 +27,13 @@
   },
   "engineStrict": true,
   "publishConfig": {
-    "main": "./dist/lib.cjs.js",
-    "module": "./dist/lib.esm.js",
+    "main": "./dist/lib.cjs",
+    "module": "./dist/lib.mjs",
     "types": "./dist/lib.d.ts",
     "exports": {
       ".": {
-        "import": "./dist/lib.esm.js",
-        "require": "./dist/lib.cjs.js"
+        "import": "./dist/lib.mjs",
+        "require": "./dist/lib.cjs"
       },
       "./*": "./*"
     }

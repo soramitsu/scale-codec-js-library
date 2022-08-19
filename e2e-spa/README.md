@@ -11,7 +11,7 @@ Includes:
 
 Hacks used to ensure that finally published libraries really work:
 
-- Direct usage of `dist/lib.cjs.js` of `@scale-codec/definition-compiler` within `gulpfile.ts`
+- Direct usage of `dist/lib.cjs` of `@scale-codec/definition-compiler` within `gulpfile.ts`
 - Aliasing to `./runtime-rollup/index.cjs.js` from `@scale-codec/definition-runtime` within `jest.config.js`
 - Aliasing to `./runtime-rollup/index.esm.js` from `@scale-codec/definition-runtime` within `vite.config.ts`
 
