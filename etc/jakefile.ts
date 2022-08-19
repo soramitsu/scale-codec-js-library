@@ -180,7 +180,7 @@ task('bundle', ['clean'], async () => {
     for (const format of ['esm', 'cjs'] as const) {
       await esbuild.build({
         entryPoints: [resolvePackageEntrypoint(unscopedPackageName)],
-        outfile: path.join(resolvePackageDist(unscopedPackageName), `lib.${format}.js`),
+        outfile: path.join(resolvePackageDist(unscopedPackageName), `lib.${format === 'esm' ? 'mjs' : 'cjs'}`),
         bundle: true,
         external: PACKAGE_EXTERNALS[unscopedPackageName],
         logLevel: 'info',

@@ -8,9 +8,9 @@ import definition from './__definition__'
 
 // doing a typing trick to use actual CommonJS build
 // dist/lib.cjs is untyped
-import * as compilerLib from '@scale-codec/definition-compiler'
+import type * as CompilerLibType from '@scale-codec/definition-compiler'
 import * as compilerLibCjs from '@scale-codec/definition-compiler/dist/lib.cjs'
-const { renderNamespaceDefinition } = compilerLibCjs as typeof compilerLib
+const { renderNamespaceDefinition } = compilerLibCjs as typeof CompilerLibType
 
 const resolve = (...paths: string[]) => path.resolve(__dirname, '../', ...paths)
 const NAMESPACE_OUT_FILE = resolve('src/namespace.ts')

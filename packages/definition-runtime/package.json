@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/definition-runtime",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "description": "Runtime for compiled result from @scale-codec/definition-compiler",
   "keywords": [
     "SCALE",
@@ -22,13 +22,13 @@
   "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
   "main": "src/lib.ts",
   "publishConfig": {
-    "main": "./dist/lib.cjs.js",
-    "module": "./dist/lib.esm.js",
+    "main": "./dist/lib.cjs",
+    "module": "./dist/lib.mjs",
     "types": "./dist/lib.d.ts",
     "exports": {
       ".": {
-        "import": "./dist/lib.esm.js",
-        "require": "./dist/lib.cjs.js"
+        "import": "./dist/lib.mjs",
+        "require": "./dist/lib.cjs"
       },
       "./*": "./*"
     }
@@ -38,12 +38,12 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@scale-codec/core": "workspace:^1.0.1",
-    "@scale-codec/util": "workspace:^1.0.0",
+    "@scale-codec/core": "workspace:^1.1.0",
+    "@scale-codec/util": "workspace:^1.1.0",
     "fmt-subs": "^1.0.2",
     "type-fest": "^2.13.0"
   },
   "devDependencies": {
-    "@scale-codec/definition-compiler": "workspace:^2.0.0"
+    "@scale-codec/definition-compiler": "workspace:^2.2.0"
   }
 }

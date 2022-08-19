@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/util",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Shared @scale-codec utilities",
   "license": "Apache-2.0",
   "repository": {
@@ -13,13 +13,13 @@
   "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
   "main": "src/lib.ts",
   "publishConfig": {
-    "main": "./dist/lib.cjs.js",
-    "module": "./dist/lib.esm.js",
+    "main": "./dist/lib.cjs",
+    "module": "./dist/lib.mjs",
     "types": "./dist/lib.d.ts",
     "exports": {
       ".": {
-        "import": "./dist/lib.esm.js",
-        "require": "./dist/lib.cjs.js"
+        "import": "./dist/lib.mjs",
+        "require": "./dist/lib.cjs"
       },
       "./*": "./*"
     }
