@@ -1,8 +1,8 @@
 import { describe, test } from 'vitest'
 import { renderNamespaceDefinition } from '..'
-import { NamespaceDefinition, RenderNamespaceDefinitionParams } from '../../types'
+import { RenderNamespaceDefinitionParams, TypesDefinition } from '../../types'
 
-function renderFactory(def: NamespaceDefinition, params?: RenderNamespaceDefinitionParams): string {
+function renderFactory(def: TypesDefinition, params?: RenderNamespaceDefinitionParams): string {
   return renderNamespaceDefinition(def, params)
 }
 

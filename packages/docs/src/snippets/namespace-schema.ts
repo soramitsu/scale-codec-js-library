@@ -1,6 +1,6 @@
-import { NamespaceDefinition } from '@scale-codec/definition-compiler'
+import { TypesDefinition } from '@scale-codec/definition-compiler'
 
-const schema: NamespaceDefinition = {
+const schema: TypesDefinition = {
   Person: {
     t: 'struct',
     fields: [

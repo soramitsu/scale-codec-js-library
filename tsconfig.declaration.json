@@ -7,13 +7,14 @@
     "esModuleInterop": true,
     "declaration": true,
     "declarationDir": "./types",
-    "emitDeclarationOnly": true
+    "outDir": "./types"
+    // "emitDeclarationOnly": true
   },
   "include": [
     "./packages/core/src",
     "./packages/enum/src",
-    "./packages/definition-compiler/src",
-    "./packages/definition-runtime/src",
+    // "./packages/definition-compiler/src",
+    "./packages/definition-runtime/src/sandbox-runtime.ts",
     "./packages/util/src"
   ],
   "exclude": ["**/*.spec.ts", "**/__tests__", "./packages/definition-compiler/tests"]

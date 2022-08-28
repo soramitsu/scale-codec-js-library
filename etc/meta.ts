@@ -52,7 +52,7 @@ export const TSC_BUILD_OUTPUT_DIR = resolve('types')
  * Resolves to package's `lib.d.ts`
  */
 export function resolvePackageDeclarationEntry(name: ScaleCodecPackageUnscopedName): string {
-  return path.join(TSC_BUILD_OUTPUT_DIR, name, 'src/lib.d.ts')
+  return path.join(TSC_BUILD_OUTPUT_DIR, name, 'src/lib.js')
 }
 
 export const API_EXTRACTOR_TMP_DIR = resolve('etc/api/tmp')

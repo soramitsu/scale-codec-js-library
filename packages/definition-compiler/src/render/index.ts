@@ -1,4 +1,4 @@
-import { DefEnumVariant, DefStructField, NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef } from '../types'
+import { DefEnumVariant, DefStructField, RenderNamespaceDefinitionParams, TypeDef, TypesDefinition } from '../types'
 import { Set as ImmutableSet, Seq } from 'immutable'
 import { createDIScope } from './util'
 import { DefaultAvailableBuilders } from '../const'
@@ -334,7 +334,7 @@ function renderParticularDef(tyName: string, def: TypeDef): RefScope {
  * Renders provided definition into a valid TypeScript code.
  */
 export function renderNamespaceDefinition(
-  definition: NamespaceDefinition,
+  definition: TypesDefinition,
   params?: RenderNamespaceDefinitionParams,
 ): string {
   return provideRenderParams(
