@@ -222,6 +222,6 @@ task('check-code-integrity', [
 desc('Publish built packages. It does not build packages, only publish them.')
 task('publish-all', async () => {
   const pnpmFilters = PUBLIC_PACKAGES_UNSCOPED.map((x) => [`--filter`, x]).flat()
-  await $`pnpm ${pnpmFilters} publish --no-git-checks --access public`
+  await $`pnpm ${pnpmFilters} publish --access public`
   consola.info('Published!')
 })
