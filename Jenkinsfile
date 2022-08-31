@@ -9,6 +9,8 @@ def pipeline = new org.js.LibPipeline(
     npmRegistries: [:],
     npmLoginEmail:'admin@soramitsu.co.jp',
     sonarProjectName: 'scale-codec-js-library',
-    sonarProjectKey: 'jp.co.soramitsu:scale-codec-js-library',
+    sonarProjectKey: 'jp.co.soramitsu:scale-codec-js-library',    
+    libPushBranches: ['master', 'feature/enable-publish-git-checks'],
+    dockerImageTags: ['master': 'latest', 'feature/enable-publish-git-checks': 'duty'],
     )
 pipeline.runPipeline()
