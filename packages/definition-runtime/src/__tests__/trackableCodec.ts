@@ -1,4 +1,4 @@
-import { SpyInstanceFn, afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+import { Mock, afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 import { Decode, Walker, decodeBool, encodeBool } from '@scale-codec/core'
 import { trackableCodec } from '../core'
 import { CodecTracker, setCurrentTracker } from '../tracking'
@@ -45,7 +45,7 @@ describe.concurrent('Trackable codec', () => {
       codec.fromBuffer(new Uint8Array([5]))
 
       expect(tracker.decode).toBeCalledTimes(1)
-      expect((tracker.decode as SpyInstanceFn).mock.calls[0][0]).toEqual('TEST')
+      expect((tracker.decode as Mock).mock.calls[0][0]).toEqual('TEST')
     })
   })
 })
