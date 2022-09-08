@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/definition-runtime",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Runtime for compiled result from @scale-codec/definition-compiler",
   "keywords": [
     "SCALE",

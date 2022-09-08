@@ -1,5 +1,11 @@
 # @scale-codec/definition-runtime
 
+## 2.2.1
+
+### Patch Changes
+
+- 3554f7d: Update `fmt-subs` version to ESM-compatible
+
 ## 2.2.0
 
 ### Minor Changes
