@@ -2,10 +2,8 @@ node_modules
 dist
 .vscode
 .DS_Store
-.pnpm-store
-report
 .pnpm-debug.log
 tsdoc-metadata.json
 /types
 /etc/api/tmp
-coverage
+/coverage

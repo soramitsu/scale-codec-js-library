@@ -9,8 +9,8 @@ interface TemplateFnData<E extends any[]> {
   expressions: E
 }
 
-function assignTyped<T>(something: T, part: Partial<T>): T {
-  return Object.assign(something, part)
+function assignTyped<T extends {}>(something: T, part: Partial<T>): T {
+  return Object.assign<T, Partial<T>>(something, part)
 }
 
 function dynPrefix(ref: string) {
