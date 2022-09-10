@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/definition-runtime",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Runtime for compiled result from @scale-codec/definition-compiler",
   "keywords": [
     "SCALE",
@@ -27,6 +27,7 @@
     "types": "./dist/lib.d.ts",
     "exports": {
       ".": {
+        "types": "./dist/lib.d.ts",
         "import": "./dist/lib.mjs",
         "require": "./dist/lib.cjs"
       },
@@ -38,12 +39,12 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@scale-codec/core": "workspace:^1.1.0",
-    "@scale-codec/util": "workspace:^1.1.0",
+    "@scale-codec/core": "workspace:^1.1.1",
+    "@scale-codec/util": "workspace:^1.1.1",
     "fmt-subs": "^1.1.1",
     "type-fest": "^2.13.0"
   },
   "devDependencies": {
-    "@scale-codec/definition-compiler": "workspace:^2.2.0"
+    "@scale-codec/definition-compiler": "workspace:^2.2.2"
   }
 }

@@ -1,5 +1,14 @@
 # @scale-codec/core
 
+## 1.1.1
+
+### Patch Changes
+
+- 822202d: **fix**: specify `exports.*.types` field in `package.json` so TypeScript works fine in `nodenext` module resolution mode
+- Updated dependencies [822202d]
+  - @scale-codec/enum@1.1.1
+  - @scale-codec/util@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/definition-compiler",
-  "version": "2.2.0",
+  "version": "2.2.2",
   "description": "SCALE-codec types namespace definition compiler",
   "keywords": [
     "SCALE",
@@ -25,6 +25,7 @@
     "types": "./dist/lib.d.ts",
     "exports": {
       ".": {
+        "types": "./dist/lib.d.ts",
         "import": "./dist/lib.mjs",
         "require": "./dist/lib.cjs"
       },
@@ -36,14 +37,14 @@
     "CHANGELOG.md"
   ],
   "dependencies": {
-    "@scale-codec/enum": "workspace:^1.1.0",
-    "@scale-codec/util": "workspace:^1.1.0",
+    "@scale-codec/enum": "workspace:^1.1.1",
+    "@scale-codec/util": "workspace:^1.1.1",
     "immutable": "^4.0.0",
     "sort-es": "^1.4.6",
     "tarjan-graph": "^3.0.0"
   },
   "devDependencies": {
-    "@scale-codec/definition-runtime": "workspace:^2.2.0",
+    "@scale-codec/definition-runtime": "workspace:^2.2.2",
     "jest-immutable-matchers": "^3.0.0"
   },
   "engines": {

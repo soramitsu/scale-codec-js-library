@@ -1,5 +1,14 @@
 # @scale-codec/definition-runtime
 
+## 2.2.2
+
+### Patch Changes
+
+- 822202d: **fix**: specify `exports.*.types` field in `package.json` so TypeScript works fine in `nodenext` module resolution mode
+- Updated dependencies [822202d]
+  - @scale-codec/core@1.1.1
+  - @scale-codec/util@1.1.1
+
 ## 2.2.1
 
 ### Patch Changes
