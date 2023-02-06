@@ -7,6 +7,7 @@
 import { Decode } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Fmt } from 'fmt-subs';
+import { Opaque } from 'type-fest';
 import { RustOption } from '@scale-codec/core';
 import { RustResult } from '@scale-codec/core';
 import { VariantAny } from '@scale-codec/core';
@@ -211,6 +212,8 @@ export interface LoggerConfig {
 
 // @public (undocumented)
 export type MapCodecAndFactory<T extends Map<any, any>, U extends T> = Codec<U> & DefineOpaque<T, U>;
+
+export { Opaque }
 
 // @public (undocumented)
 export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => T) => T;

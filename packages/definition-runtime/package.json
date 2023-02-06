@@ -41,7 +41,8 @@
   "dependencies": {
     "@scale-codec/core": "workspace:^1.1.1",
     "@scale-codec/util": "workspace:^1.1.1",
-    "fmt-subs": "^1.1.1"
+    "fmt-subs": "^1.1.1",
+    "type-fest": "^3.5.5"
   },
   "devDependencies": {
     "@scale-codec/definition-compiler": "workspace:^2.2.2"
