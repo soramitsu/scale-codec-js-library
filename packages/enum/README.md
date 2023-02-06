@@ -7,8 +7,8 @@ Small tagged-union library for TypeScript.
 
 ## Features
 
-- Follows TypeScript's [discriminated union pattern](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions), which leads to **type narrowing** and **exhaustiveness check** support.
-- Type-safe variants creation with type inference support
+- **Type narrowing** and **exhaustiveness check** (due to the library following TypeScript's [discriminated union pattern](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions))
+- Type-safe variants creation with type inference
 
 ## Example
 

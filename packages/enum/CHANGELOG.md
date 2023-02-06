@@ -4,7 +4,7 @@
 
 ### Major Changes
 
-- 7e81bbc: **refactor**: introduce a complete new design of tagged unions
+- 7e81bbc: **refactor**: introduce a new design of tagged unions
 
   #### What is the change
 
@@ -56,7 +56,7 @@
   msg = variant('User', { name: 'bar' })
   ```
 
-  **Variant instance** has `tag` and `content` fields to work with:
+  Each **variant instance** has `tag` and `content` fields to work with:
 
   ```ts
   declare const msg: MessageVariant
@@ -66,12 +66,12 @@
   }
   ```
   
-  There are other changes as well, but that's all for major ones.
+  There are other changes as well, but that's all for the major ones.
 
 
   #### Why the change was made
 
-  The goal is to be consistent with [TypeScript support of discriminated unions](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions). The consequence is that TypeScript now able to narrow types and to check for exhaustiveness in code that works with enums. In other words, **new enums are type-stronger**.
+  The goal is to be consistent with [TypeScript support of discriminated unions](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions). As a consequence, TypeScript can now narrow types and check for exhaustiveness in code that works with enums. In other words, **new enums are type-stronger**.
 
   #### How a consumer should update their code
 
