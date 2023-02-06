@@ -41,16 +41,16 @@ AllInOne / <struct>.alias / str
 ",
   [
     {
+      "content": "Gey!",
       "tag": "Greeting",
-      "value": "Gey!",
     },
     {
       "tag": "Quit",
     },
   ],
   {
+    "content": "Gey!",
     "tag": "Greeting",
-    "value": "Gey!",
   },
   "Gey!",
   {
@@ -180,8 +180,8 @@ AllInOne / <struct>.vec / VecBool / bool
     },
     "tuple_with_opts": [
       {
+        "content": "Gey!",
         "tag": "Greeting",
-        "value": "Gey!",
       },
       {
         "tag": "Quit",
@@ -195,16 +195,16 @@ AllInOne / <struct>.vec / VecBool / bool
   },
   [
     {
+      "content": "Gey!",
       "tag": "Greeting",
-      "value": "Gey!",
     },
     {
       "tag": "Quit",
     },
   ],
   {
+    "content": "Gey!",
     "tag": "Greeting",
-    "value": "Gey!",
   },
   "Gey!",
   {

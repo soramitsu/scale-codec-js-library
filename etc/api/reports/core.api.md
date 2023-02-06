@@ -4,14 +4,16 @@
 
 ```ts
 
-import { Enum } from '@scale-codec/enum';
-import { EnumDef } from '@scale-codec/enum';
-import { EnumGenericDef } from '@scale-codec/enum';
-import { Option as Option_2 } from '@scale-codec/enum';
-import { Result } from '@scale-codec/enum';
-import { TagsEmpty } from '@scale-codec/enum';
-import { TagsValuable } from '@scale-codec/enum';
-import { TagValue } from '@scale-codec/enum';
+import { Enumerate } from '@scale-codec/enum';
+import { EnumOf } from '@scale-codec/enum';
+import { EnumRecord } from '@scale-codec/enum';
+import { RustOption } from '@scale-codec/enum';
+import { RustResult } from '@scale-codec/enum';
+import { Variant } from '@scale-codec/enum';
+import { variant } from '@scale-codec/enum';
+import { VariantAny } from '@scale-codec/enum';
+import { VariantFactoryFn } from '@scale-codec/enum';
+import { VariantToFactoryArgs } from '@scale-codec/enum';
 
 // @public
 export type BigIntTypes = IntTypes | `${'i' | 'u'}${64 | 128 | 256 | 512}`;
@@ -32,10 +34,10 @@ export function createBigIntDecoder(ty: BigIntTypes): Decode<bigint>;
 export function createBigIntEncoder(ty: BigIntTypes): Encode<bigint>;
 
 // @public (undocumented)
-export function createEnumDecoder<E extends Enum<any>>(decoders: EnumDecoders<EnumDef<E>>): Decode<E>;
+export function createEnumDecoder<V extends VariantAny>(decoders: EnumDecoders<EnumOf<V>>): Decode<V>;
 
 // @public (undocumented)
-export function createEnumEncoder<E extends Enum<any>>(encoders: EnumEncoders<EnumDef<E>>): Encode<E>;
+export function createEnumEncoder<V extends VariantAny>(encoders: EnumEncoders<EnumOf<V>>): Encode<V>;
 
 // @public (undocumented)
 export function createIntDecoder(ty: IntTypes): Decode<number>;
@@ -52,19 +54,19 @@ export function createMapEncoder<K, V>(encodeKey: Encode<K>, encodeValue: Encode
 // Warning: (ae-forgotten-export) The symbol "OptionSome" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createOptionDecoder<T extends Option_2<any>>(decodeSome: Decode<OptionSome<T>>): Decode<T>;
+export function createOptionDecoder<T extends RustOption<any>>(decodeSome: Decode<OptionSome<T>>): Decode<T>;
 
 // @public (undocumented)
-export function createOptionEncoder<T extends Option_2<any>>(encodeSome: Encode<OptionSome<T>>): Encode<T>;
+export function createOptionEncoder<T extends RustOption<any>>(encodeSome: Encode<OptionSome<T>>): Encode<T>;
 
 // Warning: (ae-forgotten-export) The symbol "ResultOk" needs to be exported by the entry point lib.d.ts
 // Warning: (ae-forgotten-export) The symbol "ResultErr" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export function createResultDecoder<T extends Result<any, any>>(decodeOk: Decode<ResultOk<T>>, decodeErr: Decode<ResultErr<T>>): Decode<T>;
+export function createResultDecoder<T extends RustResult<any, any>>(decodeOk: Decode<ResultOk<T>>, decodeErr: Decode<ResultErr<T>>): Decode<T>;
 
 // @public (undocumented)
-export function createResultEncoder<T extends Result<any, any>>(encodeOk: Encode<ResultOk<T>>, encodeErr: Encode<ResultErr<T>>): Encode<T>;
+export function createResultEncoder<T extends RustResult<any, any>>(encodeOk: Encode<ResultOk<T>>, encodeErr: Encode<ResultErr<T>>): Encode<T>;
 
 // @public (undocumented)
 export function createSetDecoder<T>(decodeItem: Decode<T>): Decode<Set<T>>;
@@ -115,7 +117,7 @@ export const decodeBool: Decode<boolean>;
 export function decodeCompact(walker: Walker): bigint;
 
 // @public (undocumented)
-export function decodeEnum<E extends Enum<any>>(walker: Walker, decoders: EnumDecoders<EnumDef<E>>): E;
+export function decodeEnum<V extends VariantAny>(walker: Walker, decoders: EnumDecoders<EnumOf<V>>): V;
 
 // @public (undocumented)
 export const decodeI128: Decode<bigint>;
@@ -139,7 +141,7 @@ export function decodeInt(walker: Walker, ty: IntTypes): number;
 export function decodeMap<K, V>(walker: Walker, decodeKey: Decode<K>, decodeValue: Decode<V>): Map<K, V>;
 
 // @public
-export const decodeOptionBool: Decode<Option_2<boolean>>;
+export const decodeOptionBool: Decode<RustOption<boolean>>;
 
 // @public (undocumented)
 export function decodeSet<T>(walker: Walker, decodeItem: Decode<T>): Set<T>;
@@ -174,11 +176,11 @@ export function decodeUint8Array(walker: Walker, len: number): Uint8Array;
 // @public (undocumented)
 export const decodeUint8Vec: Decode<Uint8Array>;
 
+// @public
+export const decodeUnit: Decode<null>;
+
 // @public (undocumented)
 export function decodeVec<T>(walker: Walker, decodeItem: Decode<T>): T[];
-
-// @public
-export const decodeVoid: Decode<null>;
 
 // @public (undocumented)
 export type Encode<T> = {
@@ -202,10 +204,10 @@ export const encodeBool: Encode<boolean>;
 export const encodeCompact: Encode<bigint | number>;
 
 // @public (undocumented)
-export function encodeEnum<E extends Enum<any>>(value: E, encoders: EnumEncoders<EnumDef<E>>, walker: Walker): void;
+export function encodeEnum<V extends VariantAny>(value: V, encoders: EnumEncoders<EnumOf<V>>, walker: Walker): void;
 
 // @public (undocumented)
-export function encodeEnumSizeHint<E extends Enum<any>>(value: E, encoders: EnumEncoders<E extends Enum<infer D> ? D : never>): number;
+export function encodeEnumSizeHint<V extends VariantAny>(value: V, encoders: EnumEncoders<EnumOf<V>>): number;
 
 // @public (undocumented)
 export function encodeFactory<T>(fn: (value: T, walker: Walker) => void, sizeHint: (value: T) => number): Encode<T>;
@@ -235,7 +237,7 @@ export function encodeMap<K, V>(map: Map<K, V>, encodeKey: Encode<K>, encodeValu
 export function encodeMapSizeHint<K, V>(map: Map<K, V>, encodeKey: Encode<K>, encodeValue: Encode<V>): number;
 
 // @public
-export const encodeOptionBool: Encode<Option_2<boolean>>;
+export const encodeOptionBool: Encode<RustOption<boolean>>;
 
 // @public (undocumented)
 export function encodePositiveBigIntInto(positiveNum: bigint, mutSlice: Uint8Array, offset: number, bytesLimit: number): number;
@@ -282,20 +284,22 @@ export function encodeUint8Array(value: Uint8Array, len: number, walker: Walker)
 // @public (undocumented)
 export const encodeUint8Vec: Encode<Uint8Array>;
 
+// @public
+export const encodeUnit: Encode<null>;
+
 // @public (undocumented)
 export function encodeVec<T>(vec: T[], encodeItem: Encode<T>, walker: Walker): void;
 
 // @public (undocumented)
 export function encodeVecSizeHint<T>(vec: T[], encodeItem: Encode<T>): number;
 
-// @public
-export const encodeVoid: Encode<null>;
-
 // Warning: (ae-forgotten-export) The symbol "DecodeTuple" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export type EnumDecoders<Def extends EnumGenericDef> = {
-    [D in number]: TagsEmpty<Def> | (Def extends [infer T & string, infer V] ? DecodeTuple<T & string, V> : never);
+export type EnumDecoders<E extends EnumRecord> = {
+    [D in number]: {
+        [tag in keyof E]: E[tag] extends [infer C] ? DecodeTuple<tag & string, C> : tag & string;
+    }[keyof E];
 };
 
 // @public (undocumented)
@@ -306,14 +310,22 @@ export class EnumEncodeError extends Error {
 // Warning: (ae-forgotten-export) The symbol "EncodeTuple" needs to be exported by the entry point lib.d.ts
 //
 // @public (undocumented)
-export type EnumEncoders<Def extends EnumGenericDef> = {
-    [T in TagsEmpty<Def>]: number;
-} & {
-    [T in TagsValuable<Def>]: EncodeTuple<TagValue<Def, T>>;
+export type EnumEncoders<E extends EnumRecord> = {
+    [tag in keyof E]: E[tag] extends [infer C] ? EncodeTuple<C> : number;
 };
+
+export { Enumerate }
+
+export { EnumOf }
+
+export { EnumRecord }
 
 // @public
 export type IntTypes = `${'i' | 'u'}${8 | 16 | 32}`;
+
+export { RustOption }
+
+export { RustResult }
 
 // @public (undocumented)
 export class SliceWalkerFinalOffsetError extends Error {
@@ -335,6 +347,16 @@ export type TupleDecoders<Tuple extends any[]> = Tuple extends [infer Head, ...i
 
 // @public (undocumented)
 export type TupleEncoders<Tuple extends any[]> = Tuple extends [infer Head, ...infer Tail] ? [Encode<Head>, ...TupleEncoders<Tail>] : [];
+
+export { Variant }
+
+export { variant }
+
+export { VariantAny }
+
+export { VariantFactoryFn }
+
+export { VariantToFactoryArgs }
 
 // @public (undocumented)
 export interface Walker {
@@ -364,8 +386,5 @@ export class WalkerImpl implements Walker {
     // (undocumented)
     view: DataView;
 }
-
-
-export * from "@scale-codec/enum";
 
 ```

@@ -49,6 +49,6 @@
   },
   "devDependencies": {
     "hada": "^0.0.8",
-    "type-fest": "^2.13.0"
+    "type-fest": "^3.5.5"
   }
 }

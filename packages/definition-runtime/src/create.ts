@@ -1,14 +1,14 @@
 import {
   Decode,
   Encode,
-  Enum,
   EnumDecoders,
-  EnumDefToFactoryArgs,
   EnumEncoders,
-  Option,
-  Result,
+  RustOption,
+  RustResult,
   StructDecoders,
   StructEncoders,
+  VariantAny,
+  VariantToFactoryArgs,
   createArrayDecoder,
   createArrayEncoder,
   createEnumDecoder,
@@ -25,28 +25,29 @@ import {
   createUint8ArrayEncoder,
   createVecDecoder,
   createVecEncoder,
+  variant,
 } from '@scale-codec/core'
-import { Opaque } from 'type-fest'
 import { Codec, trackableCodec } from './core'
 import { trackRefineDecodeLoc } from './tracking'
 
-export type DefineOpaque<T, U extends Opaque<T, T>> = (actual: T) => U
+/**
+ * `U` should be the opaque version of `T`
+ */
+export type DefineOpaque<T, U extends T> = (actual: T) => U
 
 const createYetAnotherOpaqueReturn =
-  <T, U extends Opaque<T, T>>(): DefineOpaque<T, U> =>
+  <T, U extends T>(): DefineOpaque<T, U> =>
   (actual) =>
-    actual as U
-
-type OpaqueRecursive<T> = Opaque<T, T>
+    actual as unknown as U
 
 const mergePropsWithFunction = <F extends (...args: any[]) => any, P>(fn: F, props: P): F & P =>
   Object.assign(fn, props) as any
 
 // Arrays
 
-export type ArrayCodecAndFactory<T extends Array<any>, U extends OpaqueRecursive<T>> = Codec<U> & DefineOpaque<T, U>
+export type ArrayCodecAndFactory<T extends Array<any>, U extends T> = Codec<U> & DefineOpaque<T, U>
 
-export function createArrayCodec<T extends Array<any>, U extends OpaqueRecursive<T>>(
+export function createArrayCodec<T extends Array<any>, U extends T>(
   name: string,
   itemCodec: Codec<T extends Array<infer I> ? I : never>,
   len: number,
@@ -66,7 +67,7 @@ export function createArrayU8Codec(name: string, len: number): Codec<Uint8Array>
   return trackableCodec(name, createUint8ArrayEncoder(len), createUint8ArrayDecoder(len))
 }
 
-export function createVecCodec<T extends any[], U extends OpaqueRecursive<T>>(
+export function createVecCodec<T extends any[], U extends T>(
   name: string,
   itemCodec: Codec<T extends (infer V)[] ? V : never>,
 ): ArrayCodecAndFactory<T, U> {
@@ -85,7 +86,7 @@ export type TupleCodecs<T extends any[]> = T extends [infer Head, ...infer Tail]
   ? [Codec<Head>, ...TupleCodecs<Tail>]
   : []
 
-export function createTupleCodec<T extends Array<any>, U extends Opaque<T, T>>(
+export function createTupleCodec<T extends Array<any>, U extends T>(
   name: string,
   codecs: TupleCodecs<T>,
 ): Codec<U> & DefineOpaque<T, U> {
@@ -110,24 +111,14 @@ export function createTupleCodec<T extends Array<any>, U extends Opaque<T, T>>(
 
 // Enums
 
-export type EnumFactory<T> = T extends Enum<infer Def> ? (...args: EnumDefToFactoryArgs<Def>) => T : never
+export type CreateOpaqueEnumFn<V extends VariantAny> = (...args: VariantToFactoryArgs<V>) => V
 
-const simpleEnumFactory: EnumFactory<any> = (...args: EnumDefToFactoryArgs<any>) => Enum.variant(...args)
+export type EnumCodecAndFactory<T extends VariantAny> = Codec<T> & CreateOpaqueEnumFn<T>
 
-export type EnumDefAsSchema<T> = T extends Enum<infer Def>
-  ? (Def extends string
-      ? [discriminant: number, tag: Def]
-      : Def extends [infer Tag, infer Value]
-      ? [discriminant: number, tag: Tag, codec: Codec<Value>]
-      : never)[]
-  : never
-
-export type EnumCodecAndFactory<T> = Codec<T> & EnumFactory<T>
-
-export function createEnumCodec<T extends Enum<any>, U extends Opaque<T, T>>(
+export function createEnumCodec<T extends VariantAny>(
   name: string,
-  schema: EnumDefAsSchema<T>,
-): EnumCodecAndFactory<U> {
+  schema: [discriminant: number, tag: string, codec?: Codec<any>][],
+): EnumCodecAndFactory<T> {
   const encoders: EnumEncoders<any> = {} as any
   const decoders: EnumDecoders<any> = {}
 
@@ -138,30 +129,30 @@ export function createEnumCodec<T extends Enum<any>, U extends Opaque<T, T>>(
       : tag
   }
 
-  const codec = trackableCodec(name, createEnumEncoder(encoders as any), createEnumDecoder(decoders)) as Codec<U>
+  const codec = trackableCodec(name, createEnumEncoder(encoders as any), createEnumDecoder(decoders)) as Codec<T>
 
-  return mergePropsWithFunction(simpleEnumFactory.bind({}), codec)
+  return mergePropsWithFunction(variant.bind({}), codec)
 }
 
-export function createOptionCodec<T extends Option<any>, U extends Opaque<T, T>>(
+export function createOptionCodec<T extends RustOption<any>>(
   name: string,
-  someCodec: Codec<T extends Option<infer V> ? V : never>,
-): EnumCodecAndFactory<U> {
-  return createEnumCodec<T, U>(name, [
+  someCodec: Codec<T extends RustOption<infer V> ? V : never>,
+): EnumCodecAndFactory<T> {
+  return createEnumCodec<T>(name, [
     [0, 'None'],
     [1, 'Some', someCodec],
-  ] as EnumDefAsSchema<T>)
+  ])
 }
 
-export function createResultCodec<T extends Result<any, any>, U extends OpaqueRecursive<T>>(
+export function createResultCodec<T extends RustResult<any, any>>(
   name: string,
-  okCodec: Codec<T extends Result<infer Ok, any> ? Ok : never>,
-  errCodec: Codec<T extends Result<any, infer Err> ? Err : never>,
-): EnumCodecAndFactory<U> {
-  return createEnumCodec<T, U>(name, [
+  okCodec: Codec<T extends RustResult<infer Ok, any> ? Ok : never>,
+  errCodec: Codec<T extends RustResult<any, infer Err> ? Err : never>,
+): EnumCodecAndFactory<T> {
+  return createEnumCodec<T>(name, [
     [0, 'Ok', okCodec],
     [1, 'Err', errCodec],
-  ] as EnumDefAsSchema<T>)
+  ])
 }
 
 // Struct
@@ -170,9 +161,9 @@ export type StructCodecsSchema<T> = {
   [K in keyof T]: [K, Codec<T[K]>]
 }[keyof T][]
 
-export type StructCodecAndFactory<T, U extends Opaque<T, T>> = Codec<U> & DefineOpaque<T, U>
+export type StructCodecAndFactory<T, U extends T> = Codec<U> & DefineOpaque<T, U>
 
-export function createStructCodec<T, U extends Opaque<T, T>>(
+export function createStructCodec<T, U extends T>(
   name: string,
   orderedCodecs: StructCodecsSchema<T>,
 ): StructCodecAndFactory<T, U> {
@@ -191,9 +182,9 @@ export function createStructCodec<T, U extends Opaque<T, T>>(
 
 // Map & Set
 
-export type MapCodecAndFactory<T extends Map<any, any>, U extends Opaque<T, T>> = Codec<U> & DefineOpaque<T, U>
+export type MapCodecAndFactory<T extends Map<any, any>, U extends T> = Codec<U> & DefineOpaque<T, U>
 
-export function createMapCodec<T extends Map<any, any>, U extends Opaque<T, T>>(
+export function createMapCodec<T extends Map<any, any>, U extends T>(
   name: string,
   keyCodec: Codec<T extends Map<infer K, any> ? K : never>,
   valueCodec: Codec<T extends Map<any, infer V> ? V : never>,
@@ -210,9 +201,9 @@ export function createMapCodec<T extends Map<any, any>, U extends Opaque<T, T>>(
   return mergePropsWithFunction(createYetAnotherOpaqueReturn<T, U>(), codec)
 }
 
-export type SetCodecAndFactory<T extends Set<any>, U extends Opaque<T, T>> = Codec<U> & DefineOpaque<T, U>
+export type SetCodecAndFactory<T extends Set<any>, U extends T> = Codec<U> & DefineOpaque<T, U>
 
-export function createSetCodec<T extends Set<any>, U extends Opaque<T, T>>(
+export function createSetCodec<T extends Set<any>, U extends T>(
   name: string,
   itemCodec: Codec<T extends Set<infer V> ? V : never>,
 ): SetCodecAndFactory<T, U> {

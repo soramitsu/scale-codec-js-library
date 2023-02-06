@@ -1,6 +1,6 @@
 # @scale-codec/core ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![version](https://img.shields.io/npm/v/@scale-codec/core) ![license](https://img.shields.io/npm/l/@scale-codec/core)
 
-Low-level tools to perform serialization and deserialization via SCALE spec.
+Low-level tools to perform serialization and deserialization according to SCALE spec.
 
 [Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/core)
 

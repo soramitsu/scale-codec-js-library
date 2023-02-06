@@ -1,6 +1,7 @@
 import { List, Map, Record, RecordOf, Seq, Set } from 'immutable'
 import { optimizeDepsHierarchy } from './deps-analysis'
-import { renderImports } from './util'
+import { INDENTATION, renderImports } from './util'
+import { P, match } from 'ts-pattern'
 
 type TemplateFn<E extends any[], T> = (template: TemplateStringsArray, ...expressions: E) => T
 
@@ -91,6 +92,14 @@ export class NamespaceModel {
      */
     let moduleExports = List<string>()
 
+    let uniqueIdsHeap = Map<UniqueIdPart, string>()
+    const resolveUniqueId = (scope: RefScope, part: UniqueIdPart): string => {
+      if (uniqueIdsHeap.has(part)) return uniqueIdsHeap.get(part)!
+      const id = `__uid${uniqueIdsHeap.size}__${scope.name}__${part.label}`
+      uniqueIdsHeap = uniqueIdsHeap.set(part, id)
+      return id
+    }
+
     for (const scope of this.refs) {
       const circuits: undefined | Set<string> = optimizeData?.circuitsResolutions?.get(scope.name)
 
@@ -105,53 +114,52 @@ export class NamespaceModel {
           if (i < data.template.length - 1) {
             const expr = data.expressions[i]
 
-            if (typeof expr === 'string') {
-              parts.push(expr)
-            } else if (expr instanceof ModelPart) {
-              parts.push(expandExpressions(expr))
-            } else if (expr instanceof TypeReference) {
-              const { ref, isType, isPure } = expr
-
-              if (params.libTypes.has(ref)) {
-                libRefs = libRefs.add(ref)
-                parts.push(ref)
-              } else {
-                if (isType || isPure) {
+            match(expr)
+              .with(P.string, (x) => parts.push(x))
+              .with(P.instanceOf(ModelPart), (x) => parts.push(expandExpressions(x)))
+              .with(P.instanceOf(TypeReference), ({ ref, isType, isPure }) => {
+                if (params.libTypes.has(ref)) {
+                  libRefs = libRefs.add(ref)
                   parts.push(ref)
                 } else {
-                  // here we should determine whether we allocate "dyn" for it or not
-
-                  // eslint-disable-next-line max-depth
-                  if (optimizeData && (!circuits || !circuits.has(ref))) {
+                  if (isType || isPure) {
                     parts.push(ref)
                   } else {
-                    parts.push(dynPrefix(ref))
-                    dynRefs = dynRefs.add(ref)
+                    // here we should determine whether we allocate "dyn" for it or not
+
+                    // eslint-disable-next-line max-depth
+                    if (optimizeData && !circuits?.has(ref)) {
+                      parts.push(ref)
+                    } else {
+                      parts.push(dynPrefix(ref))
+                      dynRefs = dynRefs.add(ref)
+                    }
                   }
                 }
-              }
-            } else if (expr instanceof ImportPart) {
-              const importWhat = expr.whatAsStr(scope.name)
-              const importAs = expr.asAsStr(scope.name)
-              const moduleName = expr.moduleAsStr(params.libModule)
+              })
+              .with(P.instanceOf(ImportPart), (expr) => {
+                const importWhat = expr.whatAsStr(scope.name)
+                const importAs = expr.asAsStr(scope.name)
+                const moduleName = expr.moduleAsStr(params.libModule)
 
-              parts.push(renderImports([importAs ? { source: importWhat, as: importAs } : importWhat], moduleName))
-            } else if (expr instanceof LibHelper) {
-              const { id, type } = expr
+                parts.push(renderImports([importAs ? { source: importWhat, as: importAs } : importWhat], moduleName))
+              })
+              .with(P.instanceOf(UniqueIdPart), (expr) => {
+                parts.push(resolveUniqueId(scope, expr))
+              })
+              .with(P.instanceOf(LibHelper), ({ id, type }) => {
+                if (type === 'runtime') libRuntimeHelpers = libRuntimeHelpers.add(id)
+                else libTypeHelpers = libTypeHelpers.add(id)
 
-              if (type === 'runtime') libRuntimeHelpers = libRuntimeHelpers.add(id)
-              else libTypeHelpers = libTypeHelpers.add(id)
-
-              parts.push(id)
-            } else if (expr === SelfRef) {
-              parts.push(scope.name)
-            } else if (expr === LibName) {
-              parts.push(params.libModule)
-            } else {
-              const invalid: never = expr
-              console.error('Unable to handle:', invalid)
-              throw new Error(`Invalid: ${String(invalid)}`)
-            }
+                parts.push(id)
+              })
+              .with(SelfRef, () => {
+                parts.push(scope.name)
+              })
+              .with(LibName, () => {
+                parts.push(params.libModule)
+              })
+              .exhaustive()
           }
         }
 
@@ -179,7 +187,7 @@ export class NamespaceModel {
     }
 
     if (libTypeHelpers.size) {
-      finalParts = finalParts.push(renderImports(libTypeHelpers, params.libModule, true))
+      finalParts = finalParts.push(renderImports(libTypeHelpers, params.libModule, { type: true }))
     }
 
     if (renderedDyns) {
@@ -198,8 +206,10 @@ export class NamespaceModel {
     }
 
     if (moduleExports.size) {
-      const items = Seq(moduleExports).sort().join(', ')
-      finalParts = finalParts.push('// Exports').push(`export { ${items} }`)
+      const items = Seq(moduleExports)
+        .sort()
+        .join(',\n' + INDENTATION)
+      finalParts = finalParts.push('// Exports').push(`export {\n${INDENTATION}${items}\n}`)
     }
 
     return finalParts.join('\n\n')
@@ -249,11 +259,23 @@ export class ImportPart {
   }
 }
 
+export class UniqueIdPart {
+  public label: string
+}
+
 export const SelfRef = Symbol('Self')
 
 export const LibName = Symbol('LibName')
 
-export type Expression = string | ModelPart | TypeReference | LibHelper | typeof SelfRef | typeof LibName
+export type Expression =
+  | string
+  | ModelPart
+  | TypeReference
+  | LibHelper
+  | typeof SelfRef
+  | typeof LibName
+  | ImportPart
+  | UniqueIdPart
 
 export interface NamespaceFn<RuntimeHelpers extends string, TypeHelpers extends string> {
   (params: { refs: RefScope[] }): NamespaceModel
@@ -268,6 +290,7 @@ export interface NamespaceFn<RuntimeHelpers extends string, TypeHelpers extends 
   concat: (...parts: Expression[]) => ModelPart
   join: (items: Iterable<Expression>, joiner: Expression) => ModelPart
   import: (params: Pick<ImportPart, 'importWhat' | 'importAs' | 'moduleName'>) => ImportPart
+  uniqueId: (label: string) => UniqueIdPart
 }
 
 interface ModelPartRecordProps {
@@ -334,6 +357,8 @@ export function createNs<R extends string, T extends string>(): NamespaceFn<R, T
   ns.join = (items, joiner) => joinExpressions(items, joiner)
 
   ns.import = (params) => assignTyped(new ImportPart(), params)
+
+  ns.uniqueId = (label: string) => assignTyped(new UniqueIdPart(), { label })
 
   return ns
 }

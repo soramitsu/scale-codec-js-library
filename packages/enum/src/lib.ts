@@ -1,130 +1,63 @@
 /**
- * Minimal tool to work with Rust's Enums.
+ * Tagged union in TypeScript.
  *
  * @packageDocumentation
  */
 
-export type EnumGenericDef = string | [tag: string, value: any]
+declare const enumTags: unique symbol
 
-export type TagsEmpty<Def extends EnumGenericDef> = Def extends string ? Def : never
+export type EnumRecord = Record<string, [] | [any]>
 
-export type TagsValuable<Def extends EnumGenericDef> = Def extends [infer T, any] ? T & string : never
-
-export type Tags<Def extends EnumGenericDef> = TagsEmpty<Def> | TagsValuable<Def>
-
-export type TagValue<Def extends EnumGenericDef, T extends TagsValuable<Def>> = Def extends [T, infer V] ? V : never
-
-export type EnumDef<E> = E extends Enum<infer Def> ? Def : never
-
-export type EnumMatchMap<Def extends EnumGenericDef, R = any> = {
-  [T in TagsEmpty<Def>]: () => R
-} & {
-  [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => R
+export interface Variant<in out E extends EnumRecord, Tag extends string, in out Content extends [] | [any] = []> {
+  [enumTags]: E
+  readonly tag: Tag
+  readonly content: Content extends [infer C] ? C : undefined
+  readonly unit: Content extends [] ? true : false
 }
 
-export type EnumDefToFactoryArgs<Def extends EnumGenericDef> =
-  | [TagsEmpty<Def>]
-  | (Def extends [string, any] ? Def : never)
+export type VariantAny = Variant<any, any, any>
 
-/**
- * Special unique value to mark enum as empty
- */
-export const ENUM_EMPTY_VALUE = Symbol('empty')
+export type Enumerate<E extends EnumRecord> = {
+  [Tag in keyof E]: E[Tag] extends infer Content extends [] | [any] ? Variant<E, Tag & string, Content> : never
+}[keyof E]
 
-/**
- * Typed-wrapper to handle Rust's Enum concept.
- *
- * @remarks
- *
- * `Def` generic type is a **definition of enum variants**. It should be defined like this:
- *
- * ```ts
- * type MyDef = 'EmptyVariant' | ['VarWithBool', boolean]
- *
- * type MyEnum = Enum<MyDef>
- * ```
- *
- * Then you could create enums with that definition type-safely:
- *
- * ```ts
- * const val1: MyEnum = Enum.variant('EmptyVariant')
- * const val2: MyEnum = Enum.variant('VarWithBool', true)
- * ```
- */
-export class Enum<Def extends EnumGenericDef> {
-  public static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E
-  public static variant<Def extends EnumGenericDef>(...args: EnumDefToFactoryArgs<Def>): Enum<Def>
-  public static variant(tag: string, value = ENUM_EMPTY_VALUE) {
-    return new Enum(tag, value)
-  }
+export type EnumOf<V extends VariantAny> = V extends Variant<infer E, any, any> ? E : never
 
+export interface VariantFactoryFn {
+  <V extends VariantAny>(...args: VariantToFactoryArgs<V>): V
+  <E extends EnumRecord>(...args: VariantToFactoryArgs<Enumerate<E>>): Enumerate<E>
+}
+
+export type VariantToFactoryArgs<V extends VariantAny> = V extends Variant<any, infer Tag, infer Content>
+  ? Content extends [infer C]
+    ? [tag: Tag, content: C]
+    : [tag: Tag]
+  : never
+
+export const variant: VariantFactoryFn = <V extends VariantAny>(...args: VariantToFactoryArgs<V>): V =>
+  new (VariantImpl as any)(...args)
+
+class VariantImpl {
   public readonly tag: string
 
-  /**
-   * Inner value is untyped and should be used with caution
-   */
-  public readonly value: typeof ENUM_EMPTY_VALUE | unknown
+  private readonly __c: null | [any]
 
-  public constructor(tag: string, value: typeof ENUM_EMPTY_VALUE | unknown = ENUM_EMPTY_VALUE) {
-    this.tag = tag
-    this.value = value
+  public constructor(...args: [string, any?]) {
+    this.tag = args[0]
+    this.__c = args.length > 1 ? [args[1]] : null
   }
 
-  public get isEmpty(): boolean {
-    return this.value === ENUM_EMPTY_VALUE
+  public get unit(): boolean {
+    return !this.__c
   }
 
-  /**
-   * Check whether an enum instance has this variant name or not
-   */
-  public is(tag: Tags<Def>): boolean {
-    return this.tag === tag
-  }
-
-  /**
-   * Returns enum's content if **it exists** and **provided variant name matches with the enum's one**. If not, it
-   * throws.
-   *
-   * @remarks
-   * Use it in pair {@link Enum.is} to avoid runtime errors.
-   */
-  public as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T> {
-    if (this.is(tag)) {
-      if (this.isEmpty) {
-        throw new Error(`Enum cast failed - enum "${tag}" is empty`)
-      }
-
-      return this.value as any
-    }
-
-    throw new Error(`Enum cast failed - enum is "${this.tag}", not "${tag}"`)
-  }
-
-  /**
-   * Pretty simple alternative for 'pattern matching'
-   *
-   * @example
-   *
-   * ```ts
-   * const file: Result<string, Error> = Enum.variant('Err', new Error('Oops!'))
-   *
-   * const fileContents = file.match({
-   *     Ok: (txt) => txt,
-   *     Err: (err) => {
-   *         console.error(err)
-   *         throw new Error('Bad file')
-   *     }
-   * })
-   * ```
-   */
-  public match<R = any>(matchMap: EnumMatchMap<Def, R>): R {
-    const fn = (matchMap as any)[this.tag] as (...args: any[]) => any
-    return this.isEmpty ? fn() : fn(this.value)
+  public get content() {
+    return this.__c?.[0] ?? undefined
   }
 
   public toJSON() {
-    const { tag, value, isEmpty } = this
-    return isEmpty ? { tag } : { tag, value }
+    const { tag, content, unit } = this
+    return unit ? { tag } : { tag, content }
   }
 }
 
@@ -134,18 +67,18 @@ export class Enum<Def extends EnumGenericDef> {
  * @example
  *
  * ```ts
- * const maybeString: Option<string> = Enum.variant('None')
+ * const maybeString: RustOption<string> = variant('None')
  * ```
  */
-export type Option<T> = Enum<'None' | ['Some', T]>
+export type RustOption<T> = Enumerate<{ None: []; Some: [T] }>
 
 /**
- * Rust's `Result<O, E>` analog
+ * Rust's `Result<Ok, Err>` analog
  *
  * @example
  *
  * ```ts
- * const file: Result<string, Error> = Enum.variant('Ok', 'file contents')
+ * const file: RustResult<string, Error> = ('Ok', 'file contents')
  * ```
  */
-export type Result<Ok, Err> = Enum<['Ok', Ok] | ['Err', Err]>
+export type RustResult<Ok, Err> = Enumerate<{ Ok: [Ok]; Err: [Err] }>

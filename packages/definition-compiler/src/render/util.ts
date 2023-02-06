@@ -1,17 +1,25 @@
 import { Seq } from 'immutable'
 import { assert } from '@scale-codec/util'
 
+export const INDENTATION = ' '.repeat(4)
+
 export type ImportOptions = string | { source: string; as: string }
 
-export function renderImports(imports: Iterable<ImportOptions>, moduleName: string, type = false): string {
+export function renderImports(
+  imports: Iterable<ImportOptions>,
+  moduleName: string,
+  options?: {
+    type?: boolean
+  },
+): string {
   const joined = Seq(imports)
     .map((x) => (typeof x === 'string' ? x : `${x.source} as ${x.as}`))
     .sort()
-    .join(', ')
+    .join(',\n' + INDENTATION)
 
   assert(joined, 'Empty imports are not allowed')
 
-  return `import${type ? ' type' : ''} { ${joined} } from '${moduleName}'`
+  return `import${options?.type ? ' type' : ''} {\n${INDENTATION}${joined}\n} from '${moduleName}'`
 }
 
 export interface DIScope<T> {

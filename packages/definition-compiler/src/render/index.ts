@@ -1,23 +1,25 @@
 import { DefEnumVariant, DefStructField, NamespaceDefinition, RenderNamespaceDefinitionParams, TypeDef } from '../types'
 import { Set as ImmutableSet, Seq } from 'immutable'
-import { createDIScope } from './util'
+import { INDENTATION, createDIScope } from './util'
 import { DefaultAvailableBuilders } from '../const'
 import { Expression, LibName, ModelPart, RefScope, createNs } from './namespace'
+import { match } from 'ts-pattern'
 
 const ns = createNs<RuntimeLibExports, RuntimeLibTypeExports>()
 
-type RuntimeLibExports = 'dynCodec' | KnownCreators | 'Enum'
+type RuntimeLibExports = 'dynCodec' | KnownCreators
 
 type RuntimeLibTypeExports =
   | 'Codec'
-  | 'Result'
-  | 'Option'
+  | 'RustResult'
+  | 'RustOption'
   | 'Opaque'
   | 'ArrayCodecAndFactory'
   | 'StructCodecAndFactory'
   | 'EnumCodecAndFactory'
   | 'SetCodecAndFactory'
   | 'MapCodecAndFactory'
+  | 'Enumerate'
 
 type KnownCreators = `create${
   | 'Map'
@@ -42,15 +44,26 @@ const { provide: provideRenderParams, inject: injectRenderParams } = createDISco
 
 // =========
 
-const SELF_ACTUAL = ns.part`${ns.self}__actual`
+const DOUBLE_NEWLINE = '\n\n'
 
-const INTERFACE_SELF_ACTUAL_OPAQUE = ns.part`interface ${ns.self} extends ${ns.libTypeHelper(
-  'Opaque',
-)}<${SELF_ACTUAL}, ${ns.self}> {}`
+const SELF_TRANSPARENT = ns.part`__${ns.self}__transparent`
 
-const GENERICS_SELF_ACTUAL_AND_SELF = ns.part`<${SELF_ACTUAL}, ${ns.self}>`
+const selfOpaqueType = (): Expression => {
+  const sym = ns.uniqueId('brand')
+  return ns.join(
+    [
+      ns.part`declare const ${sym}: unique symbol`,
+      ns.part`type ${ns.self} = ${ns.libTypeHelper('Opaque')}<${SELF_TRANSPARENT}, typeof ${sym}>`,
+    ],
+    DOUBLE_NEWLINE,
+  )
+}
 
-const INDENTATION = ' '.repeat(4)
+const GENERICS_SELF_TRANSPARENT_AND_SELF = ns.part`<${SELF_TRANSPARENT}, ${ns.self}>`
+
+const GENERICS_SELF = ns.part`<${ns.self}>`
+
+const declareUniqueSymbol = (id: Expression): Expression => ns.part`declare const ${id}: unique symbol`
 
 function modelAlias(to: string): ModelPart {
   return ns.join(
@@ -67,15 +80,14 @@ function modelVoidAlias(): ModelPart {
 }
 
 function modelVec(item: string): ModelPart {
-  const actualDef = ns.part`type ${SELF_ACTUAL} = ${ns.refType(item)}[]`
-  const typePart = ns.part`interface ${ns.self} extends ${ns.libTypeHelper('Opaque')}<${SELF_ACTUAL}, ${ns.self}> {}`
-  const codec = ns.part`const ${ns.self}: ${ns.libTypeHelper(
-    'ArrayCodecAndFactory',
-  )}${GENERICS_SELF_ACTUAL_AND_SELF} = ${ns.libRuntimeHelper('createVecCodec')}${GENERICS_SELF_ACTUAL_AND_SELF}('${
-    ns.self
-  }', ${ns.refVar(item)})`
+  const actualDef = ns.part`type ${SELF_TRANSPARENT} = ${ns.refType(item)}[]`
+  const codec = ns.concat(
+    ns.part`const ${ns.self}: ${ns.libTypeHelper('ArrayCodecAndFactory')}${GENERICS_SELF_TRANSPARENT_AND_SELF}`,
+    ns.part` = ${ns.libRuntimeHelper('createVecCodec')}${GENERICS_SELF_TRANSPARENT_AND_SELF}`,
+    ns.part`('${ns.self}', ${ns.refVar(item)})`,
+  )
 
-  return ns.part`${actualDef}\n\n${typePart}\n\n${codec}`
+  return ns.join([actualDef, selfOpaqueType(), codec], DOUBLE_NEWLINE)
 }
 
 function modelStruct(fields: DefStructField[]): ModelPart {
@@ -90,13 +102,13 @@ function modelStruct(fields: DefStructField[]): ModelPart {
 
   return ns.join(
     [
-      ns.part`interface ${SELF_ACTUAL} {\n${INDENTATION}${ns.join(typeActualFields, `\n${INDENTATION}`)}\n}`,
-      INTERFACE_SELF_ACTUAL_OPAQUE,
+      ns.part`interface ${SELF_TRANSPARENT} {\n${INDENTATION}${ns.join(typeActualFields, `\n${INDENTATION}`)}\n}`,
+      selfOpaqueType(),
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('StructCodecAndFactory')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part` = ${ns.libRuntimeHelper('createStructCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part`('${ns.self}', [\n${INDENTATION}`,
         ns.join([...codecSchema], `,\n${INDENTATION}`),
         '\n])',
@@ -106,7 +118,7 @@ function modelStruct(fields: DefStructField[]): ModelPart {
   )
 }
 
-function renderTuple(refs: string[]): ModelPart {
+function modelTuple(refs: string[]): ModelPart {
   if (!refs.length) {
     return modelVoidAlias()
   }
@@ -116,16 +128,16 @@ function renderTuple(refs: string[]): ModelPart {
 
   return ns.join(
     [
-      ns.part`type ${SELF_ACTUAL} = [${ns.join(
+      ns.part`type ${SELF_TRANSPARENT} = [${ns.join(
         refs.map((x) => ns.refType(x)),
         ', ',
       )}]`,
-      INTERFACE_SELF_ACTUAL_OPAQUE,
+      selfOpaqueType(),
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('ArrayCodecAndFactory')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part` = ${ns.libRuntimeHelper('createTupleCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part`('${ns.self}', [`,
         ns.join(
           refs.map((x) => ns.refVar(x)),
@@ -140,32 +152,41 @@ function renderTuple(refs: string[]): ModelPart {
 
 function modelEnum(variants: DefEnumVariant[]): ModelPart {
   const parsed = Seq(variants).map<{ type: ModelPart; schema: ModelPart }>((variant) => {
+    // TODO if `variant.name` is valid TS id, omit quotes
+    const variantNameAsKey = ns.part`'${variant.name}'`
+
     if (variant.ref) {
       return {
-        type: ns.part`['${variant.name}', ${ns.refType(variant.ref)}]`,
+        type: ns.part`${variantNameAsKey}: [${ns.refType(variant.ref)}]`,
         schema: ns.part`[${String(variant.discriminant)}, '${variant.name}', ${ns.refVar(variant.ref)}]`,
       }
     }
     return {
-      type: ns.part`'${variant.name}'`,
+      type: ns.part`${variantNameAsKey}: []`,
       schema: ns.part`[${String(variant.discriminant)}, '${variant.name}']`,
     }
   })
 
+  const selfEnumTypeId = ns.part`__${ns.self}__enum`
+  const brand = ns.uniqueId('brand')
+
   return ns.join(
     [
+      // type self_enum = Enumerate<{ ... }>
       ns.concat(
-        ns.part`type ${SELF_ACTUAL} = ${ns.libRuntimeHelper('Enum')}<\n`,
-        INDENTATION,
-        ...parsed.map<Expression>((x) => ns.part`| ${x.type}`).interpose('\n' + INDENTATION),
-        '\n>',
+        ns.part`type ${selfEnumTypeId} = ${ns.libTypeHelper('Enumerate')}<{\n`,
+        ...parsed.map((x) => ns.concat(INDENTATION, x.type)).interpose(ns.part`\n`),
+        ns.part`\n}>`,
       ),
-      INTERFACE_SELF_ACTUAL_OPAQUE,
+      declareUniqueSymbol(brand),
+      // type self = Opaque<self_enum, brand>
+      ns.concat('type ', ns.self, ' = ', ns.libTypeHelper('Opaque'), '<', selfEnumTypeId, ', typeof ', brand, '>'),
+      // const self: EnumCodecAndFactory<self> = createEnumCodec<self>(...)
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('EnumCodecAndFactory')}`,
-        ns.part`<${ns.self}>`,
+        GENERICS_SELF,
         ns.part` = ${ns.libRuntimeHelper('createEnumCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF,
         ns.part`('${ns.self}', [\n${INDENTATION}`,
         ns.join(
           parsed.map((x) => x.schema),
@@ -181,13 +202,13 @@ function modelEnum(variants: DefEnumVariant[]): ModelPart {
 function modelSet(item: string): ModelPart {
   return ns.join(
     [
-      ns.part`type ${SELF_ACTUAL} = Set<${ns.refType(item)}>`,
-      INTERFACE_SELF_ACTUAL_OPAQUE,
+      ns.part`type ${SELF_TRANSPARENT} = Set<${ns.refType(item)}>`,
+      selfOpaqueType(),
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('SetCodecAndFactory')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part` = ${ns.libRuntimeHelper('createSetCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part`('${ns.self}', ${ns.refVar(item)})`,
       ),
     ],
@@ -198,13 +219,13 @@ function modelSet(item: string): ModelPart {
 function modelMap(key: string, value: string): ModelPart {
   return ns.join(
     [
-      ns.part`type ${SELF_ACTUAL} = Map<${ns.refType(key)}, ${ns.refType(value)}>`,
-      INTERFACE_SELF_ACTUAL_OPAQUE,
+      ns.part`type ${SELF_TRANSPARENT} = Map<${ns.refType(key)}, ${ns.refType(value)}>`,
+      selfOpaqueType(),
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('MapCodecAndFactory')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part` = ${ns.libRuntimeHelper('createMapCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part`('${ns.self}', ${ns.refVar(key)}, ${ns.refVar(value)})`,
       ),
     ],
@@ -215,13 +236,13 @@ function modelMap(key: string, value: string): ModelPart {
 function modelArray(item: string, len: number): ModelPart {
   return ns.join(
     [
-      ns.part`interface ${SELF_ACTUAL} extends Array<${ns.refType(item)}> {}`,
-      INTERFACE_SELF_ACTUAL_OPAQUE,
+      ns.part`interface ${SELF_TRANSPARENT} extends Array<${ns.refType(item)}> {}`,
+      selfOpaqueType(),
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('ArrayCodecAndFactory')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part` = ${ns.libRuntimeHelper('createArrayCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF_TRANSPARENT_AND_SELF,
         ns.part`('${ns.self}', ${ns.refVar(item)}, ${String(len)})`,
       ),
     ],
@@ -243,15 +264,29 @@ function modelBytesArray(len: number): ModelPart {
 }
 
 function modelOption(some: string): ModelPart {
+  const brand = ns.uniqueId('brand')
+
   return ns.join(
     [
-      ns.part`interface ${SELF_ACTUAL} extends ${ns.libTypeHelper('Option')}<${ns.refType(some)}> {}`,
-      INTERFACE_SELF_ACTUAL_OPAQUE,
+      declareUniqueSymbol(brand),
+      ns.concat(
+        'type ',
+        ns.self,
+        ' = ',
+        ns.libTypeHelper('Opaque'),
+        '<',
+        ns.libTypeHelper('RustOption'),
+        '<',
+        ns.refType(some),
+        '>, typeof ',
+        brand,
+        '>',
+      ),
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('EnumCodecAndFactory')}`,
-        ns.part`<${ns.self}>`,
+        GENERICS_SELF,
         ns.part` = ${ns.libRuntimeHelper('createOptionCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF,
         ns.part`('${ns.self}', ${ns.refVar(some)})`,
       ),
     ],
@@ -260,18 +295,27 @@ function modelOption(some: string): ModelPart {
 }
 
 function modelResult(ok: string, err: string): ModelPart {
+  const brand = ns.uniqueId('brand')
+
   return ns.join(
     [
+      declareUniqueSymbol(brand),
       ns.concat(
-        ns.part`interface ${SELF_ACTUAL} extends ${ns.libTypeHelper('Result')}`,
-        ns.part`<${ns.refType(ok)}, ${ns.refType(err)}> {}`,
+        'type ',
+        ns.self,
+        ' = ',
+        ns.libTypeHelper('Opaque'),
+        '<',
+        ns.libTypeHelper('RustResult'),
+        ns.part`<${ns.refType(ok)}, ${ns.refType(err)}>, typeof `,
+        brand,
+        '>',
       ),
-      INTERFACE_SELF_ACTUAL_OPAQUE,
       ns.concat(
         ns.part`const ${ns.self}: ${ns.libTypeHelper('EnumCodecAndFactory')}`,
-        ns.part`<${ns.self}>`,
+        GENERICS_SELF,
         ns.part` = ${ns.libRuntimeHelper('createResultCodec')}`,
-        GENERICS_SELF_ACTUAL_AND_SELF,
+        GENERICS_SELF,
         ns.part`('${ns.self}', ${ns.refVar(ok)}, ${ns.refVar(err)})`,
       ),
     ],
@@ -294,36 +338,20 @@ function renderImport({
 }
 
 function modelizeTypeDef(def: TypeDef): ModelPart {
-  switch (def.t) {
-    case 'alias':
-      return modelAlias(def.ref)
-    case 'vec':
-      return modelVec(def.item)
-    case 'struct':
-      return modelStruct(def.fields)
-    case 'tuple':
-      return renderTuple(def.items)
-    case 'enum':
-      return modelEnum(def.variants)
-    case 'set':
-      return modelSet(def.entry)
-    case 'map':
-      return modelMap(def.key, def.value)
-    case 'array':
-      return modelArray(def.item, def.len)
-    case 'bytes-array':
-      return modelBytesArray(def.len)
-    case 'option':
-      return modelOption(def.some)
-    case 'result':
-      return modelResult(def.ok, def.err)
-    case 'import':
-      return renderImport(def)
-    default: {
-      const uncovered: never = def
-      throw new Error(`Undefined type definition: ${uncovered}`)
-    }
-  }
+  return match(def)
+    .with({ t: 'alias' }, ({ ref }) => modelAlias(ref))
+    .with({ t: 'vec' }, ({ item }) => modelVec(item))
+    .with({ t: 'struct' }, ({ fields }) => modelStruct(fields))
+    .with({ t: 'tuple' }, ({ items }) => modelTuple(items))
+    .with({ t: 'enum' }, ({ variants }) => modelEnum(variants))
+    .with({ t: 'set' }, ({ entry }) => modelSet(entry))
+    .with({ t: 'map' }, ({ key, value }) => modelMap(key, value))
+    .with({ t: 'array' }, ({ item, len }) => modelArray(item, len))
+    .with({ t: 'bytes-array' }, ({ len }) => modelBytesArray(len))
+    .with({ t: 'option' }, ({ some }) => modelOption(some))
+    .with({ t: 'result' }, ({ ok, err }) => modelResult(ok, err))
+    .with({ t: 'import' }, (def) => renderImport(def))
+    .exhaustive()
 }
 
 function renderParticularDef(tyName: string, def: TypeDef): RefScope {

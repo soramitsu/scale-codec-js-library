@@ -2,8 +2,8 @@ import { describe, expect, test } from 'vitest'
 import {
   Codec,
   Encode,
-  Enum,
-  Option,
+  Enumerate,
+  RustOption,
   WalkerImpl,
   createEnumEncoder,
   createMapEncoder,
@@ -14,6 +14,7 @@ import {
   encodeBool,
   encodeStr,
   encodeU8,
+  variant,
 } from '@scale-codec/definition-runtime'
 import { Character, MapStrU8, Msg, OptionMsg, SetU8, StrAlias, VecBool } from '../samples/complexNamespace'
 
@@ -33,10 +34,10 @@ function defineCase<T>({
 
 const encodeSetU8: Encode<Set<number>> = createSetEncoder(encodeU8)
 
-type RawMsgEnum = Enum<'Quit' | ['Greeting', string]>
+type RawMsgEnum = Enumerate<{ Quit: []; Greeting: [string] }>
 const encodeMsgEnum: Encode<RawMsgEnum> = createEnumEncoder<RawMsgEnum>({ Quit: 0, Greeting: [1, encodeStr] })
 
-const encodeOption: Encode<Option<RawMsgEnum>> = createOptionEncoder(encodeMsgEnum)
+const encodeOption: Encode<RustOption<RawMsgEnum>> = createOptionEncoder(encodeMsgEnum)
 
 describe.concurrent('Complex namespace', () => {
   test.each([
@@ -63,7 +64,7 @@ describe.concurrent('Complex namespace', () => {
     defineCase({
       codec: Msg,
       value: Msg('Quit'),
-      expectedBytes: WalkerImpl.encode(Enum.variant('Quit'), encodeMsgEnum),
+      expectedBytes: WalkerImpl.encode(variant('Quit'), encodeMsgEnum),
     }),
     defineCase<VecBool>({
       codec: VecBool,
@@ -74,7 +75,7 @@ describe.concurrent('Complex namespace', () => {
     defineCase({
       codec: OptionMsg,
       value: OptionMsg('None'),
-      expectedBytes: WalkerImpl.encode(Enum.variant('None'), encodeOption),
+      expectedBytes: WalkerImpl.encode(variant('None'), encodeOption),
     }),
   ])('Encode & decode %p', (value, codec, expectedBytes) => {
     const actualBytes = (codec as Codec<any>).toBuffer(value)

@@ -223,19 +223,25 @@ export const circular = defineSample({
         ref: 'VecValue',
       },
       {
-        name: 'Alias',
+        name: 'Self',
         discriminant: 1,
-        ref: 'Alias',
+        ref: 'ValueWrap',
       },
     ],
   },
   VecValue: {
     t: 'vec',
-    item: 'Value',
+    item: 'ValueWrap',
   },
-  Alias: {
-    t: 'alias',
-    ref: 'Value',
+  // necessary to fix circular references
+  ValueWrap: {
+    t: 'struct',
+    fields: [
+      {
+        name: 'inner',
+        ref: 'Value',
+      },
+    ],
   },
 })
 
@@ -276,7 +282,8 @@ export const reallyDeepTypesTree = defineSample({
   VecHashOfVersionedValidBlock: { t: 'vec', item: 'HashOfVersionedValidBlock' },
   VecSignatureOfValidBlock: { t: 'vec', item: 'SignatureOfValidBlock' },
   VecSignatureOfTransactionPayload: { t: 'vec', item: 'SignatureOfTransactionPayload' },
-  VecValue: { t: 'vec', item: 'Value' },
+  VecValue: { t: 'vec', item: 'ValueWrap' },
+  ValueWrap: { t: 'struct', fields: [{ name: 'inner', ref: 'Value' }] },
   VecInstruction: { t: 'vec', item: 'Instruction' },
   VecPeerId: { t: 'vec', item: 'PeerId' },
   VecPermissionToken: { t: 'vec', item: 'PermissionToken' },

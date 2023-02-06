@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { fromHex, toHex } from '@scale-codec/util'
-import { encodeStr as _, decodeStr, encodeStr } from './str'
+import { decodeStr, encodeStr } from './str'
 import { WalkerImpl } from '../util'
 import RUST_STR_SAMPLES from '../../../rust-samples/output-strings.json'
 

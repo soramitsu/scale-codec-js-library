@@ -13,7 +13,7 @@ import {
   decodeU64,
   decodeU8,
   decodeUint8Vec,
-  decodeVoid,
+  decodeUnit,
   encodeBool,
   encodeCompact,
   encodeI128,
@@ -28,7 +28,7 @@ import {
   encodeU64,
   encodeU8,
   encodeUint8Vec,
-  encodeVoid,
+  encodeUnit,
 } from '@scale-codec/core'
 import { trackableCodec } from './core'
 
@@ -73,7 +73,7 @@ type Bool = boolean
 const Bool = trackableCodec<Bool>('bool', encodeBool, decodeBool)
 
 type Void = null
-const Void = trackableCodec<Void>('void', encodeVoid, decodeVoid)
+const Void = trackableCodec<Void>('void', encodeUnit, decodeUnit)
 
 type VecU8 = Uint8Array
 const VecU8 = trackableCodec<VecU8>('VecU8', encodeUint8Vec, decodeUint8Vec)

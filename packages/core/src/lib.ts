@@ -10,4 +10,15 @@ export * from './codecs'
 export * from './util'
 
 // re-export enums
-export * from '@scale-codec/enum'
+export {
+  Variant,
+  EnumRecord,
+  variant,
+  Enumerate,
+  EnumOf,
+  VariantAny,
+  VariantToFactoryArgs,
+  VariantFactoryFn,
+  RustResult,
+  RustOption,
+} from '@scale-codec/enum'

@@ -5,6 +5,9 @@ export const registry = new TypeRegistry()
 
 registry.register({
   Chain: {
+    inner: 'OptionChain',
+  },
+  OptionChain: {
     _enum: {
       None: null,
       Some: 'Chain',
@@ -12,9 +15,11 @@ registry.register({
   },
 })
 
-export const Type = registry.createClass('Chain')
+export const Chain = registry.createClass('Chain')
+
+export const OptionChain = registry.createClass('OptionChain')
 
 export default defineCodec<Enum>({
-  encode: (x) => new Type(registry, x).toU8a(),
-  decode: (bytes) => new Type(registry, bytes) as any,
+  encode: (x) => new Chain(registry, x).toU8a(),
+  decode: (bytes) => new Chain(registry, bytes) as any,
 })

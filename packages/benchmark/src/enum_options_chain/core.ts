@@ -1,24 +1,33 @@
 import {
   Decode,
   Encode,
-  Enum,
+  RustOption,
   WalkerImpl,
   createOptionDecoder,
   createOptionEncoder,
+  createStructDecoder,
+  createStructEncoder,
   encodeFactory,
 } from '@scale-codec/core'
 import { defineCodec } from '../types'
 
-export type Chain = Enum<'None' | ['Some', Chain]>
+export interface Chain {
+  inner: RustOption<Chain>
+}
 
-const encoder: Encode<Chain> = createOptionEncoder<Chain>(
-  encodeFactory(
-    (v, w) => encoder(v, w),
-    (v) => encoder.sizeHint(v),
-  ),
-)
+const encoder: Encode<Chain> = createStructEncoder([
+  [
+    'inner',
+    createOptionEncoder(
+      encodeFactory(
+        (v, w) => encoder(v, w),
+        (v) => encoder.sizeHint(v),
+      ),
+    ),
+  ],
+])
 
-const decoder: Decode<Chain> = createOptionDecoder<Chain>((w) => decoder(w))
+const decoder: Decode<Chain> = createStructDecoder([['inner', createOptionDecoder((w) => decoder(w))]])
 
 export default defineCodec({
   encode: (x) => WalkerImpl.encode(x, encoder),
