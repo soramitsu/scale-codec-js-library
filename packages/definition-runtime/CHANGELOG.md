@@ -1,5 +1,21 @@
 # @scale-codec/definition-runtime
 
+## 3.0.0
+
+### Major Changes
+
+- 7e81bbc: **refactor**: update due to the major update of the core library
+
+### Minor Changes
+
+- d7bff80: **chore**: update `type-fest` to v3
+
+### Patch Changes
+
+- Updated dependencies [7e81bbc]
+- Updated dependencies [7e81bbc]
+  - @scale-codec/core@2.0.0
+
 ## 2.2.2
 
 ### Patch Changes
