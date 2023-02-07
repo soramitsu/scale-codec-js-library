@@ -4,8 +4,15 @@
 
 ### Major Changes
 
-- 7e81bbc: Follows the major update of the re-exported `@scale-codec/enum` lib.
-- 7e81bbc: **refactor**: "void" types are renamed to "unit", i.e. `encodeVoid` -> `encodeUnit`, `decodeVoid` -> `decodeUnit`
+- 7e81bbc: **refactor**: follow the major update of the re-exported `@scale-codec/enum` lib. Update enum-related function signatures:
+  - `encodeEnum` / `encodeEnumSizeHint` / `decodeEnum` 
+  - `createEnumEncoder` / `createEnumDecoder`
+  - `createOptionEncoder` / `createOptionDecoder`
+  - `createResultEncoder` / `createResultDecoder`
+  - `encodeOptionBool` / `decodeOptionBool`
+- 7e81bbc: **refactor**: "void" types are renamed to "unit", i.e.:
+  - `encodeVoid` → `encodeUnit`
+  - `decodeVoid` → `decodeUnit`
 
 ### Patch Changes
 
