@@ -4,7 +4,7 @@
 
 ### Major Changes
 
-- 7e81bbc: **refactor**: update due to the major update of the core library and enums design. Update `createEnumCodec` function signature and `EnumCodecAndFactory` type.
+- 7e81bbc: **refactor**: update due to the major update of the core library and enum design. Update `createEnumCodec` function signature and `EnumCodecAndFactory` type.
 - 7e81bbc: **refactor**: remove `Opaque` usage from codec factories, but still provide a type argument to specify an opaque type returned by the factory
 
 ### Minor Changes

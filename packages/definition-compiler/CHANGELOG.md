@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 7e81bbc: **refactor**: generate each import/export on a new line
+- 7e81bbc: **style**: generate each import/export on a new line
 - 7e81bbc: **refactor**: update enum generation following the major update in enum design
 - 7e81bbc: **refactor**: generate `unique symbol` for opaque types
 
