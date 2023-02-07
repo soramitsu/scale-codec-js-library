@@ -10,9 +10,9 @@
   - `createOptionEncoder` / `createOptionDecoder`
   - `createResultEncoder` / `createResultDecoder`
   - `encodeOptionBool` / `decodeOptionBool`
-- 7e81bbc: **refactor**: "void" types are renamed to "unit", i.e.:
-  - `encodeVoid` → `encodeUnit`
-  - `decodeVoid` → `decodeUnit`
+- 7e81bbc: **refactor**: "void" types are renamed to "unit":
+  - ~~`encodeVoid`~~ `encodeUnit`
+  - ~~`decodeVoid`~~ `decodeUnit`
 
 ### Patch Changes
 
