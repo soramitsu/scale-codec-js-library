@@ -51,22 +51,17 @@ export function createMapDecoder<K, V>(decodeKey: Decode<K>, decodeValue: Decode
 // @public (undocumented)
 export function createMapEncoder<K, V>(encodeKey: Encode<K>, encodeValue: Encode<V>): Encode<Map<K, V>>;
 
-// Warning: (ae-forgotten-export) The symbol "OptionSome" needs to be exported by the entry point lib.d.ts
-//
 // @public (undocumented)
-export function createOptionDecoder<T extends RustOption<any>>(decodeSome: Decode<OptionSome<T>>): Decode<T>;
+export function createOptionDecoder<T>(decodeSome: Decode<T>): Decode<RustOption<T>>;
 
 // @public (undocumented)
-export function createOptionEncoder<T extends RustOption<any>>(encodeSome: Encode<OptionSome<T>>): Encode<T>;
-
-// Warning: (ae-forgotten-export) The symbol "ResultOk" needs to be exported by the entry point lib.d.ts
-// Warning: (ae-forgotten-export) The symbol "ResultErr" needs to be exported by the entry point lib.d.ts
-//
-// @public (undocumented)
-export function createResultDecoder<T extends RustResult<any, any>>(decodeOk: Decode<ResultOk<T>>, decodeErr: Decode<ResultErr<T>>): Decode<T>;
+export function createOptionEncoder<T>(encodeSome: Encode<T>): Encode<RustOption<T>>;
 
 // @public (undocumented)
-export function createResultEncoder<T extends RustResult<any, any>>(encodeOk: Encode<ResultOk<T>>, encodeErr: Encode<ResultErr<T>>): Encode<T>;
+export function createResultDecoder<Ok, Err>(decodeOk: Decode<Ok>, decodeErr: Decode<Err>): Decode<RustResult<Ok, Err>>;
+
+// @public (undocumented)
+export function createResultEncoder<Ok, Err>(encodeOk: Encode<Ok>, encodeErr: Encode<Err>): Encode<RustResult<Ok, Err>>;
 
 // @public (undocumented)
 export function createSetDecoder<T>(decodeItem: Decode<T>): Decode<Set<T>>;
