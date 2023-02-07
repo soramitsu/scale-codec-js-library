@@ -104,51 +104,46 @@ export function decodeEnum<V extends VariantAny>(walker: Walker, decoders: EnumD
     )
 
   const [tag, decode] = normalizeDecodeTuple(decoder)
-  if (decode) return variant<any>(tag, decode(walker)) as any
-  return variant(tag) as any
+  if (decode) return variant(tag, decode(walker)) as V
+  return variant(tag) as V
 }
 
 export function createEnumDecoder<V extends VariantAny>(decoders: EnumDecoders<EnumOf<V>>): Decode<V> {
   return (walker) => decodeEnum(walker, decoders)
 }
 
-type OptionSome<T> = T extends RustOption<infer V> ? V : never
-
-export function createOptionEncoder<T extends RustOption<any>>(encodeSome: Encode<OptionSome<T>>): Encode<T> {
+export function createOptionEncoder<T>(encodeSome: Encode<T>): Encode<RustOption<T>> {
   return createEnumEncoder({
     None: 0,
-    Some: [1, encodeSome] as any,
-  } as any)
+    Some: [1, encodeSome],
+  })
 }
 
-export function createOptionDecoder<T extends RustOption<any>>(decodeSome: Decode<OptionSome<T>>): Decode<T> {
+export function createOptionDecoder<T>(decodeSome: Decode<T>): Decode<RustOption<T>> {
   return createEnumDecoder({
     0: 'None',
     1: ['Some', decodeSome],
-  } as any)
+  })
 }
 
-type ResultOk<T> = T extends RustResult<infer Ok, any> ? Ok : never
-type ResultErr<T> = T extends RustResult<any, infer Err> ? Err : never
-
-export function createResultEncoder<T extends RustResult<any, any>>(
-  encodeOk: Encode<ResultOk<T>>,
-  encodeErr: Encode<ResultErr<T>>,
-): Encode<T> {
+export function createResultEncoder<Ok, Err>(
+  encodeOk: Encode<Ok>,
+  encodeErr: Encode<Err>,
+): Encode<RustResult<Ok, Err>> {
   return createEnumEncoder({
     Ok: [0, encodeOk],
     Err: [1, encodeErr],
-  } as any)
+  })
 }
 
-export function createResultDecoder<T extends RustResult<any, any>>(
-  decodeOk: Decode<ResultOk<T>>,
-  decodeErr: Decode<ResultErr<T>>,
-): Decode<T> {
+export function createResultDecoder<Ok, Err>(
+  decodeOk: Decode<Ok>,
+  decodeErr: Decode<Err>,
+): Decode<RustResult<Ok, Err>> {
   return createEnumDecoder({
     0: ['Ok', decodeOk],
     1: ['Err', decodeErr],
-  } as any)
+  })
 }
 
 function optBoolByteToEnum(byte: number): RustOption<boolean> {
