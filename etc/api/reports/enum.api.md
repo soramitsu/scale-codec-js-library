@@ -32,6 +32,8 @@ export interface Variant<in out E extends EnumRecord, Tag extends string, in out
     // (undocumented)
     [enumTags]: E;
     // (undocumented)
+    readonly as: <T extends keyof E>(tag: T) => [T, Content] extends [Tag, [infer C]] ? C : never;
+    // (undocumented)
     readonly content: Content extends [infer C] ? C : undefined;
     // (undocumented)
     readonly tag: Tag;

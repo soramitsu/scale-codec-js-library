@@ -53,3 +53,16 @@ match(sample)
 match(sample)
   .with({ content: P.number }, ({ tag }: { tag: 'Bar' }) => {})
   .otherwise(() => {})
+
+if (sample.tag === 'Foo') {
+  const _test: never = sample.as('Bar')
+} else {
+  const coords: Coords = sample.as('Baz')
+}
+
+declare const sample2: Sample
+const content = sample2.as('Baz')
+// Unfortunately, TypeScript cannot understand that this code is reachable only if `sample2` is `Baz`.
+// So, for now it is an error
+// @ts-expect-error
+const tag: 'Baz' = sample2.tag

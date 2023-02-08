@@ -13,6 +13,7 @@ export interface Variant<in out E extends EnumRecord, Tag extends string, in out
   readonly tag: Tag
   readonly content: Content extends [infer C] ? C : undefined
   readonly unit: Content extends [] ? true : false
+  readonly as: <T extends keyof E>(tag: T) => [T, Content] extends [Tag, [infer C]] ? C : never
 }
 
 export type VariantAny = Variant<any, any, any>
@@ -53,6 +54,15 @@ class VariantImpl {
 
   public get content() {
     return this.__c?.[0] ?? undefined
+  }
+
+  public as(tag: string) {
+    if (this.tag !== tag)
+      throw new Error(
+        `Cannot cast enum variant "${this.tag}${this.unit ? '' : `(${String(this.content)})`}" as "${tag}"`,
+      )
+    if (this.unit) throw new Error(`Cannot cast enum variant "${this.tag}" to its content because it is unit`)
+    return this.content
   }
 
   public toJSON() {
