@@ -102,11 +102,11 @@ describe('Render', () => {
 
       // Type: Tuple_u8_i128
 
-      type __Tuple_u8_i128__transparent = [U8, I128]
+      type __Tuple_u8_i128__pureTuple = [U8, I128]
 
-      type Tuple_u8_i128 = LocalOpaque<'Tuple_u8_i128', __Tuple_u8_i128__transparent>
+      type Tuple_u8_i128 = LocalOpaque<'Tuple_u8_i128', __Tuple_u8_i128__pureTuple>
 
-      const Tuple_u8_i128 = createTupleCodec<__Tuple_u8_i128__transparent, Tuple_u8_i128>('Tuple_u8_i128', [U8, I128])
+      const Tuple_u8_i128 = createTupleCodec<__Tuple_u8_i128__pureTuple, Tuple_u8_i128>('Tuple_u8_i128', [U8, I128])
 
       // Exports
 
@@ -477,11 +477,11 @@ describe('Render', () => {
 
       // Type: MultiTuple
 
-      type __MultiTuple__transparent = [U8, Bool]
+      type __MultiTuple__pureTuple = [U8, Bool]
 
-      type MultiTuple = LocalOpaque<'MultiTuple', __MultiTuple__transparent>
+      type MultiTuple = LocalOpaque<'MultiTuple', __MultiTuple__pureTuple>
 
-      const MultiTuple = createTupleCodec<__MultiTuple__transparent, MultiTuple>('MultiTuple', [U8, Bool])
+      const MultiTuple = createTupleCodec<__MultiTuple__pureTuple, MultiTuple>('MultiTuple', [U8, Bool])
 
       // Type: SingleTuple
 
