@@ -168,12 +168,10 @@ importers:
       '@scale-codec/definition-compiler': workspace:^3.0.0
       '@scale-codec/util': workspace:^1.1.1
       fmt-subs: ^1.1.1
-      type-fest: ^3.5.5
     dependencies:
       '@scale-codec/core': link:../core
       '@scale-codec/util': link:../util
       fmt-subs: 1.1.1
-      type-fest: 3.5.5
     devDependencies:
       '@scale-codec/definition-compiler': link:../definition-compiler
 
@@ -6196,6 +6194,7 @@ packages:
   /type-fest/3.5.5:
     resolution: {integrity: sha512-Nudle2CLcCaf9/1bVQunwzX1/ZH4Z6mvP8hkWWZCbKrxtnN52QwD5Xn/mo68aofQhGU4be1GlEC6LQCTKGXkRw==}
     engines: {node: '>=14.16'}
+    dev: true
 
   /typescript/4.8.4:
     resolution: {integrity: sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==}

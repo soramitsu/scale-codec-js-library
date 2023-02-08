@@ -25,6 +25,7 @@ import {
   createUint8ArrayEncoder,
   createVecDecoder,
   createVecEncoder,
+  encodeFactory,
   variant,
 } from '@scale-codec/core'
 import { Codec, trackableCodec } from './core'
@@ -33,10 +34,10 @@ import { trackRefineDecodeLoc } from './tracking'
 /**
  * `U` should be the opaque version of `T`
  */
-export type DefineOpaque<T, U extends T> = (actual: T) => U
+export type DefineOpaque<T, U> = (actual: T) => U
 
 const createYetAnotherOpaqueReturn =
-  <T, U extends T>(): DefineOpaque<T, U> =>
+  <T, U>(): DefineOpaque<T, U> =>
   (actual) =>
     actual as unknown as U
 
@@ -45,20 +46,20 @@ const mergePropsWithFunction = <F extends (...args: any[]) => any, P>(fn: F, pro
 
 // Arrays
 
-export type ArrayCodecAndFactory<T extends Array<any>, U extends T> = Codec<U> & DefineOpaque<T, U>
+export type CodecArray<T extends any[]> = Codec<T> & DefineOpaque<T[number][], T>
 
-export function createArrayCodec<T extends Array<any>, U extends T>(
+export function createArrayCodec<T extends Array<any>>(
   name: string,
   itemCodec: Codec<T extends Array<infer I> ? I : never>,
   len: number,
-): ArrayCodecAndFactory<T, U> {
-  const define = createYetAnotherOpaqueReturn<T, U>()
+): CodecArray<T> {
+  const define = createYetAnotherOpaqueReturn<T[number][], T>()
 
   const codec = trackableCodec(
     name,
     createArrayEncoder(itemCodec.encodeRaw, len),
     createArrayDecoder(itemCodec.decodeRaw, len),
-  ) as Codec<U>
+  ) as Codec<T>
 
   return mergePropsWithFunction(define, codec)
 }
@@ -67,17 +68,17 @@ export function createArrayU8Codec(name: string, len: number): Codec<Uint8Array>
   return trackableCodec(name, createUint8ArrayEncoder(len), createUint8ArrayDecoder(len))
 }
 
-export function createVecCodec<T extends any[], U extends T>(
+export function createVecCodec<T extends any[]>(
   name: string,
   itemCodec: Codec<T extends (infer V)[] ? V : never>,
-): ArrayCodecAndFactory<T, U> {
+): CodecArray<T> {
   const codec = trackableCodec(
     name,
     createVecEncoder(itemCodec.encodeRaw),
     createVecDecoder(itemCodec.decodeRaw),
-  ) as Codec<U>
+  ) as Codec<T>
 
-  const define = createYetAnotherOpaqueReturn<T, U>()
+  const define = createYetAnotherOpaqueReturn<T[number], T>()
 
   return mergePropsWithFunction(define, codec)
 }
@@ -86,7 +87,7 @@ export type TupleCodecs<T extends any[]> = T extends [infer Head, ...infer Tail]
   ? [Codec<Head>, ...TupleCodecs<Tail>]
   : []
 
-export function createTupleCodec<T extends Array<any>, U extends T>(
+export function createTupleCodec<T extends Array<any>, U>(
   name: string,
   codecs: TupleCodecs<T>,
 ): Codec<U> & DefineOpaque<T, U> {
@@ -111,14 +112,32 @@ export function createTupleCodec<T extends Array<any>, U extends T>(
 
 // Enums
 
-export type CreateOpaqueEnumFn<V extends VariantAny> = (...args: VariantToFactoryArgs<V>) => V
+// export type VariantFactoryFn<V extends VariantAny> = (...args: VariantToFactoryArgs<V>) => V
+//
+// export type EnumCodecAndFactory<T extends VariantAny> = Codec<T> & VariantFactoryFn<T>
+//
+export type EnumCodecSchema = [discriminant: number, tag: string, codec?: Codec<any>][]
+//
+// export type GetterEnumCodecAndFactory<T extends () => VariantAny> = Codec<T> &
+//   (T extends (() => infer V extends VariantAny) ? (...args: VariantToFactoryArgs<V>) => T : never)
+//
+// function variantAsGetter(...args: VariantToFactoryArgs<any>): () => VariantAny {
+//   return () => variant(...args)
+// }
 
-export type EnumCodecAndFactory<T extends VariantAny> = Codec<T> & CreateOpaqueEnumFn<T>
+export interface EnumBox<V extends VariantAny> {
+  enum: V
+}
 
-export function createEnumCodec<T extends VariantAny>(
-  name: string,
-  schema: [discriminant: number, tag: string, codec?: Codec<any>][],
-): EnumCodecAndFactory<T> {
+export type EnumBoxToFactory<E extends EnumBox<any>> = E extends EnumBox<infer V extends VariantAny>
+  ? (...args: VariantToFactoryArgs<V>) => E
+  : never
+
+export type CodecEnum<E extends EnumBox<any>> = Codec<E> & EnumBoxToFactory<E>
+
+const enumBoxFactory = (...args: VariantToFactoryArgs<any>): EnumBox<any> => ({ enum: variant(...args) })
+
+export function createEnumCodec<E extends EnumBox<any>>(name: string, schema: EnumCodecSchema): CodecEnum<E> {
   const encoders: EnumEncoders<any> = {} as any
   const decoders: EnumDecoders<any> = {}
 
@@ -129,27 +148,39 @@ export function createEnumCodec<T extends VariantAny>(
       : tag
   }
 
-  const codec = trackableCodec(name, createEnumEncoder(encoders as any), createEnumDecoder(decoders)) as Codec<T>
+  const codecBase = trackableCodec(name, createEnumEncoder(encoders as any), createEnumDecoder(decoders))
 
-  return mergePropsWithFunction(variant.bind({}), codec)
+  const codec: Codec<E> = {
+    encodeRaw: encodeFactory(
+      (e, walker) => codecBase.encodeRaw(e.enum, walker),
+      (e) => codecBase.encodeRaw.sizeHint(e.enum),
+    ),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    decodeRaw: (walker) => ({ enum: codecBase.decodeRaw(walker) } as E),
+    toBuffer: (e) => codecBase.toBuffer(e.enum),
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    fromBuffer: (src) => ({ enum: codecBase.fromBuffer(src) } as E),
+  }
+
+  // const factory =
+
+  // const codec = getterCodec(codecBase)
+  return mergePropsWithFunction(enumBoxFactory.bind({}), codec)
 }
 
-export function createOptionCodec<T extends RustOption<any>>(
-  name: string,
-  someCodec: Codec<T extends RustOption<infer V> ? V : never>,
-): EnumCodecAndFactory<T> {
-  return createEnumCodec<T>(name, [
+export function createOptionCodec<T>(name: string, someCodec: Codec<T>): CodecEnum<EnumBox<RustOption<T>>> {
+  return createEnumCodec(name, [
     [0, 'None'],
     [1, 'Some', someCodec],
   ])
 }
 
-export function createResultCodec<T extends RustResult<any, any>>(
+export function createResultCodec<Ok, Err>(
   name: string,
-  okCodec: Codec<T extends RustResult<infer Ok, any> ? Ok : never>,
-  errCodec: Codec<T extends RustResult<any, infer Err> ? Err : never>,
-): EnumCodecAndFactory<T> {
-  return createEnumCodec<T>(name, [
+  okCodec: Codec<Ok>,
+  errCodec: Codec<Err>,
+): CodecEnum<EnumBox<RustResult<Ok, Err>>> {
+  return createEnumCodec(name, [
     [0, 'Ok', okCodec],
     [1, 'Err', errCodec],
   ])
@@ -161,12 +192,16 @@ export type StructCodecsSchema<T> = {
   [K in keyof T]: [K, Codec<T[K]>]
 }[keyof T][]
 
-export type StructCodecAndFactory<T, U extends T> = Codec<U> & DefineOpaque<T, U>
+export type FilterStringKeys<T> = {
+  [K in keyof T & string]: T[K]
+}
 
-export function createStructCodec<T, U extends T>(
+export type CodecStruct<T> = Codec<T> & DefineOpaque<FilterStringKeys<T>, T>
+
+export function createStructCodec<T>(
   name: string,
-  orderedCodecs: StructCodecsSchema<T>,
-): StructCodecAndFactory<T, U> {
+  orderedCodecs: StructCodecsSchema<FilterStringKeys<T>>,
+): CodecStruct<T> {
   const decoders: StructDecoders<any> = []
   const encoders: StructEncoders<any> = []
 
@@ -175,20 +210,21 @@ export function createStructCodec<T, U extends T>(
     encoders.push([field, codec.encodeRaw])
   }
 
-  const codec = trackableCodec(name, createStructEncoder(encoders), createStructDecoder(decoders)) as Codec<U>
+  const codec = trackableCodec(name, createStructEncoder(encoders), createStructDecoder(decoders)) as Codec<T>
 
-  return mergePropsWithFunction(createYetAnotherOpaqueReturn<T, U>(), codec)
+  return mergePropsWithFunction(createYetAnotherOpaqueReturn<FilterStringKeys<T>, T>(), codec)
 }
 
 // Map & Set
 
-export type MapCodecAndFactory<T extends Map<any, any>, U extends T> = Codec<U> & DefineOpaque<T, U>
+export type CodecMap<T extends Map<any, any>> = Codec<T> &
+  DefineOpaque<T extends Map<infer K, infer V> ? Map<K, V> : never, T>
 
-export function createMapCodec<T extends Map<any, any>, U extends T>(
+export function createMapCodec<T extends Map<any, any>>(
   name: string,
   keyCodec: Codec<T extends Map<infer K, any> ? K : never>,
   valueCodec: Codec<T extends Map<any, infer V> ? V : never>,
-): MapCodecAndFactory<T, U> {
+): CodecMap<T> {
   const codec = trackableCodec(
     name,
     createMapEncoder(keyCodec.encodeRaw, valueCodec.encodeRaw),
@@ -196,22 +232,25 @@ export function createMapCodec<T extends Map<any, any>, U extends T>(
       (walker) => trackRefineDecodeLoc('<map>.<key>', () => keyCodec.decodeRaw(walker)),
       (walker) => trackRefineDecodeLoc('<map>.<value>', () => valueCodec.decodeRaw(walker)),
     ),
-  ) as Codec<U>
+  ) as Codec<T>
 
-  return mergePropsWithFunction(createYetAnotherOpaqueReturn<T, U>(), codec)
+  return mergePropsWithFunction(
+    createYetAnotherOpaqueReturn<T extends Map<infer K, infer V> ? Map<K, V> : never, T>(),
+    codec,
+  )
 }
 
-export type SetCodecAndFactory<T extends Set<any>, U extends T> = Codec<U> & DefineOpaque<T, U>
+export type CodecSet<T extends Set<any>> = Codec<T> & DefineOpaque<T extends Set<infer U> ? Set<U> : never, T>
 
-export function createSetCodec<T extends Set<any>, U extends T>(
+export function createSetCodec<T extends Set<any>>(
   name: string,
   itemCodec: Codec<T extends Set<infer V> ? V : never>,
-): SetCodecAndFactory<T, U> {
+): CodecSet<T> {
   const codec = trackableCodec(
     name,
     createSetEncoder(itemCodec.encodeRaw),
     createSetDecoder(itemCodec.decodeRaw),
-  ) as Codec<U>
+  ) as Codec<T>
 
-  return mergePropsWithFunction(createYetAnotherOpaqueReturn<T, U>(), codec)
+  return mergePropsWithFunction(createYetAnotherOpaqueReturn<T extends Set<infer U> ? Set<U> : never, T>(), codec)
 }

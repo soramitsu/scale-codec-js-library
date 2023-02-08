@@ -5,7 +5,7 @@ import core from './core'
 import runtime from './runtime'
 import { factory } from './util'
 
-describe.concurrent('Render imports', () => {
+describe.concurrent('Consistency', () => {
   test('Encode is consistent', () => {
     assertAllKeysHaveTheSameValue({
       core: core.encode(factory()),

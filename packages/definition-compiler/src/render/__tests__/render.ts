@@ -22,19 +22,18 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          ArrayCodecAndFactory,
-          Opaque
+          CodecArray
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Type: Vec_str
 
-      type __Vec_str__transparent = Str[]
+      type Vec_str = LocalOpaque<'Vec_str', Str[]>
 
-      declare const __uid0__Vec_str__brand: unique symbol
-
-      type Vec_str = Opaque<__Vec_str__transparent, typeof __uid0__Vec_str__brand>
-
-      const Vec_str: ArrayCodecAndFactory<__Vec_str__transparent, Vec_str> = createVecCodec<__Vec_str__transparent, Vec_str>('Vec_str', Str)
+      const Vec_str = createVecCodec('Vec_str', Str) as CodecArray<Vec_str>
 
       // Exports
 
@@ -78,10 +77,12 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          ArrayCodecAndFactory,
-          Opaque,
-          StructCodecAndFactory
+          CodecStruct
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Dynamic codecs
 
@@ -89,29 +90,23 @@ describe('Render', () => {
 
       // Type: Structural
 
-      interface __Structural__transparent {
+      type Structural = LocalOpaque<'Structural', {
           nums: Tuple_u8_i128
           mur: Bool
-      }
+      }>
 
-      declare const __uid0__Structural__brand: unique symbol
-
-      type Structural = Opaque<__Structural__transparent, typeof __uid0__Structural__brand>
-
-      const Structural: StructCodecAndFactory<__Structural__transparent, Structural> = createStructCodec<__Structural__transparent, Structural>('Structural', [
+      const Structural = createStructCodec('Structural', [
           ['nums', __dyn_Tuple_u8_i128],
           ['mur', Bool]
-      ])
+      ]) as CodecStruct<Structural>
 
       // Type: Tuple_u8_i128
 
       type __Tuple_u8_i128__transparent = [U8, I128]
 
-      declare const __uid1__Tuple_u8_i128__brand: unique symbol
+      type Tuple_u8_i128 = LocalOpaque<'Tuple_u8_i128', __Tuple_u8_i128__transparent>
 
-      type Tuple_u8_i128 = Opaque<__Tuple_u8_i128__transparent, typeof __uid1__Tuple_u8_i128__brand>
-
-      const Tuple_u8_i128: ArrayCodecAndFactory<__Tuple_u8_i128__transparent, Tuple_u8_i128> = createTupleCodec<__Tuple_u8_i128__transparent, Tuple_u8_i128>('Tuple_u8_i128', [U8, I128])
+      const Tuple_u8_i128 = createTupleCodec<__Tuple_u8_i128__transparent, Tuple_u8_i128>('Tuple_u8_i128', [U8, I128])
 
       // Exports
 
@@ -148,26 +143,27 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          EnumCodecAndFactory,
-          Enumerate,
-          Opaque
+          CodecEnum,
+          Enumerate
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Type: Message
 
-      type __Message__enum = Enumerate<{
-          'Quit': []
-          'Greeting': [Str]
+      type Message = LocalOpaque<'Message', {
+          enum: Enumerate<{
+              'Quit': []
+              'Greeting': [Str]
+          }>
       }>
 
-      declare const __uid0__Message__brand: unique symbol
-
-      type Message = Opaque<__Message__enum, typeof __uid0__Message__brand>
-
-      const Message: EnumCodecAndFactory<Message> = createEnumCodec<Message>('Message', [
+      const Message = createEnumCodec('Message', [
           [0, 'Quit'],
           [1, 'Greeting', Str]
-      ])
+      ]) as CodecEnum<Message>
 
       // Exports
 
@@ -199,9 +195,12 @@ describe('Render', () => {
 
       import type {
           Codec,
-          Opaque,
-          SetCodecAndFactory
+          CodecSet
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Dynamic codecs
 
@@ -215,13 +214,9 @@ describe('Render', () => {
 
       // Type: Set_Message
 
-      type __Set_Message__transparent = Set<Message>
+      type Set_Message = LocalOpaque<'Set_Message', Set<Message>>
 
-      declare const __uid0__Set_Message__brand: unique symbol
-
-      type Set_Message = Opaque<__Set_Message__transparent, typeof __uid0__Set_Message__brand>
-
-      const Set_Message: SetCodecAndFactory<__Set_Message__transparent, Set_Message> = createSetCodec<__Set_Message__transparent, Set_Message>('Set_Message', __dyn_Message)
+      const Set_Message = createSetCodec('Set_Message', __dyn_Message) as CodecSet<Set_Message>
 
       // Exports
 
@@ -249,19 +244,18 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          MapCodecAndFactory,
-          Opaque
+          CodecMap
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Type: Map_str_i64
 
-      type __Map_str_i64__transparent = Map<Str, I64>
+      type Map_str_i64 = LocalOpaque<'Map_str_i64', Map<Str, I64>>
 
-      declare const __uid0__Map_str_i64__brand: unique symbol
-
-      type Map_str_i64 = Opaque<__Map_str_i64__transparent, typeof __uid0__Map_str_i64__brand>
-
-      const Map_str_i64: MapCodecAndFactory<__Map_str_i64__transparent, Map_str_i64> = createMapCodec<__Map_str_i64__transparent, Map_str_i64>('Map_str_i64', Str, I64)
+      const Map_str_i64 = createMapCodec('Map_str_i64', Str, I64) as CodecMap<Map_str_i64>
 
       // Exports
 
@@ -287,19 +281,18 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          ArrayCodecAndFactory,
-          Opaque
+          CodecArray
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Type: Array_Str_15
 
-      interface __Array_Str_15__transparent extends Array<Str> {}
+      type Array_Str_15 = LocalOpaque<'Array_Str_15', Str[]>
 
-      declare const __uid0__Array_Str_15__brand: unique symbol
-
-      type Array_Str_15 = Opaque<__Array_Str_15__transparent, typeof __uid0__Array_Str_15__brand>
-
-      const Array_Str_15: ArrayCodecAndFactory<__Array_Str_15__transparent, Array_Str_15> = createArrayCodec<__Array_Str_15__transparent, Array_Str_15>('Array_Str_15', Str, 15)
+      const Array_Str_15 = createArrayCodec('Array_Str_15', Str, 15) as CodecArray<Array_Str_15>
 
       // Exports
 
@@ -355,18 +348,19 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          EnumCodecAndFactory,
-          Opaque,
+          CodecEnum,
           RustOption
       } from '@scale-codec/definition-runtime'
 
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
+
       // Type: OptionHash
 
-      declare const __uid0__OptionHash__brand: unique symbol
+      type OptionHash = LocalOpaque<'OptionHash', { enum: RustOption<U128> }>
 
-      type OptionHash = Opaque<RustOption<U128>, typeof __uid0__OptionHash__brand>
-
-      const OptionHash: EnumCodecAndFactory<OptionHash> = createOptionCodec<OptionHash>('OptionHash', U128)
+      const OptionHash = createOptionCodec('OptionHash', U128) as CodecEnum<OptionHash>
 
       // Exports
 
@@ -474,20 +468,20 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          ArrayCodecAndFactory,
-          Codec,
-          Opaque
+          Codec
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Type: MultiTuple
 
       type __MultiTuple__transparent = [U8, Bool]
 
-      declare const __uid0__MultiTuple__brand: unique symbol
+      type MultiTuple = LocalOpaque<'MultiTuple', __MultiTuple__transparent>
 
-      type MultiTuple = Opaque<__MultiTuple__transparent, typeof __uid0__MultiTuple__brand>
-
-      const MultiTuple: ArrayCodecAndFactory<__MultiTuple__transparent, MultiTuple> = createTupleCodec<__MultiTuple__transparent, MultiTuple>('MultiTuple', [U8, Bool])
+      const MultiTuple = createTupleCodec<__MultiTuple__transparent, MultiTuple>('MultiTuple', [U8, Bool])
 
       // Type: SingleTuple
 
@@ -568,18 +562,19 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          EnumCodecAndFactory,
-          Opaque,
+          CodecEnum,
           RustResult
       } from '@scale-codec/definition-runtime'
 
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
+
       // Type: ResultI128Str
 
-      declare const __uid0__ResultI128Str__brand: unique symbol
+      type ResultI128Str = LocalOpaque<'ResultI128Str', { enum: RustResult<I128, Str> }>
 
-      type ResultI128Str = Opaque<RustResult<I128, Str>, typeof __uid0__ResultI128Str__brand>
-
-      const ResultI128Str: EnumCodecAndFactory<ResultI128Str> = createResultCodec<ResultI128Str>('ResultI128Str', I128, Str)
+      const ResultI128Str = createResultCodec('ResultI128Str', I128, Str) as CodecEnum<ResultI128Str>
 
       // Exports
 
@@ -726,10 +721,13 @@ describe('Render', () => {
       } from '@scale-codec/definition-runtime'
 
       import type {
-          EnumCodecAndFactory,
-          Opaque,
+          CodecEnum,
           RustOption
       } from '@scale-codec/definition-runtime'
+
+      declare const __opaqueTag: unique symbol
+
+      type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 
       // Dynamic codecs
 
@@ -737,19 +735,15 @@ describe('Render', () => {
 
       // Type: Foo
 
-      declare const __uid1__Foo__brand: unique symbol
+      type Foo = LocalOpaque<'Foo', { enum: RustOption<Bar> }>
 
-      type Foo = Opaque<RustOption<Bar>, typeof __uid1__Foo__brand>
-
-      const Foo: EnumCodecAndFactory<Foo> = createOptionCodec<Foo>('Foo', __dyn_Bar)
+      const Foo = createOptionCodec('Foo', __dyn_Bar) as CodecEnum<Foo>
 
       // Type: Bar
 
-      declare const __uid0__Bar__brand: unique symbol
+      type Bar = LocalOpaque<'Bar', { enum: RustOption<Foo> }>
 
-      type Bar = Opaque<RustOption<Foo>, typeof __uid0__Bar__brand>
-
-      const Bar: EnumCodecAndFactory<Bar> = createOptionCodec<Bar>('Bar', Foo)
+      const Bar = createOptionCodec('Bar', Foo) as CodecEnum<Bar>
 
       // Exports
 

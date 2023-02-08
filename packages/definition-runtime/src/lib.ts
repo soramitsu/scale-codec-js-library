@@ -13,5 +13,3 @@ export * from './core'
 export * from './create'
 export * from './codecs'
 export * from './tracking'
-
-export type { Opaque } from 'type-fest'

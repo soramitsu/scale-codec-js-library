@@ -225,23 +225,61 @@ export const circular = defineSample({
       {
         name: 'Self',
         discriminant: 1,
-        ref: 'ValueWrap',
+        ref: 'Value',
       },
     ],
   },
   VecValue: {
     t: 'vec',
-    item: 'ValueWrap',
+    item: 'Value',
   },
-  // necessary to fix circular references
-  ValueWrap: {
+  VecSelf: {
+    t: 'vec',
+    item: 'VecSelf',
+  },
+  ArrSelf: {
+    t: 'array',
+    len: 4,
+    item: 'ArrSelf',
+  },
+  Opt: {
+    t: 'option',
+    some: 'Opt',
+  },
+  Res: {
+    t: 'result',
+    ok: 'Res',
+    err: 'Opt',
+  },
+  CircMap: {
+    t: 'map',
+    key: 'CircMap',
+    value: 'CircMap',
+  },
+  CircSet: {
+    t: 'set',
+    entry: 'CircSet',
+  },
+  CircTuple: {
+    t: 'tuple',
+    items: ['CircTupleOption'],
+  },
+  CircTupleOption: {
+    t: 'option',
+    some: 'CircTuple',
+  },
+  CircStruct: {
     t: 'struct',
     fields: [
       {
-        name: 'inner',
-        ref: 'Value',
+        name: 'self',
+        ref: 'CircStructOption',
       },
     ],
+  },
+  CircStructOption: {
+    t: 'option',
+    some: 'CircStruct',
   },
 })
 
@@ -282,8 +320,7 @@ export const reallyDeepTypesTree = defineSample({
   VecHashOfVersionedValidBlock: { t: 'vec', item: 'HashOfVersionedValidBlock' },
   VecSignatureOfValidBlock: { t: 'vec', item: 'SignatureOfValidBlock' },
   VecSignatureOfTransactionPayload: { t: 'vec', item: 'SignatureOfTransactionPayload' },
-  VecValue: { t: 'vec', item: 'ValueWrap' },
-  ValueWrap: { t: 'struct', fields: [{ name: 'inner', ref: 'Value' }] },
+  VecValue: { t: 'vec', item: 'Value' },
   VecInstruction: { t: 'vec', item: 'Instruction' },
   VecPeerId: { t: 'vec', item: 'PeerId' },
   VecPermissionToken: { t: 'vec', item: 'PermissionToken' },

@@ -100,6 +100,8 @@ export class NamespaceModel {
       return id
     }
 
+    let includeLocalOpaquePrelude = false
+
     for (const scope of this.refs) {
       const circuits: undefined | Set<string> = optimizeData?.circuitsResolutions?.get(scope.name)
 
@@ -159,6 +161,10 @@ export class NamespaceModel {
               .with(LibName, () => {
                 parts.push(params.libModule)
               })
+              .with(LocalOpaque, () => {
+                parts.push(LOCAL_OPAQUE_ID)
+                includeLocalOpaquePrelude = true
+              })
               .exhaustive()
           }
         }
@@ -188,6 +194,13 @@ export class NamespaceModel {
 
     if (libTypeHelpers.size) {
       finalParts = finalParts.push(renderImports(libTypeHelpers, params.libModule, { type: true }))
+    }
+
+    if (includeLocalOpaquePrelude) {
+      finalParts = finalParts.push(
+        `declare const __opaqueTag: unique symbol`,
+        `type ${LOCAL_OPAQUE_ID}<Tag, T> = { [__opaqueTag]: Tag } & T`,
+      )
     }
 
     if (renderedDyns) {
@@ -267,6 +280,10 @@ export const SelfRef = Symbol('Self')
 
 export const LibName = Symbol('LibName')
 
+export const LocalOpaque = Symbol('LocalOpaque')
+
+const LOCAL_OPAQUE_ID = 'LocalOpaque'
+
 export type Expression =
   | string
   | ModelPart
@@ -274,6 +291,7 @@ export type Expression =
   | LibHelper
   | typeof SelfRef
   | typeof LibName
+  | typeof LocalOpaque
   | ImportPart
   | UniqueIdPart
 
@@ -291,6 +309,7 @@ export interface NamespaceFn<RuntimeHelpers extends string, TypeHelpers extends 
   join: (items: Iterable<Expression>, joiner: Expression) => ModelPart
   import: (params: Pick<ImportPart, 'importWhat' | 'importAs' | 'moduleName'>) => ImportPart
   uniqueId: (label: string) => UniqueIdPart
+  Opaque: typeof LocalOpaque
 }
 
 interface ModelPartRecordProps {
@@ -351,6 +370,7 @@ export function createNs<R extends string, T extends string>(): NamespaceFn<R, T
 
   ns.self = SelfRef
   ns.lib = LibName
+  ns.Opaque = LocalOpaque
 
   ns.part = (template, ...expressions) => assignTyped(new ModelPart(), { template, expressions })
   ns.concat = (...parts) => concatExpressions(parts)
