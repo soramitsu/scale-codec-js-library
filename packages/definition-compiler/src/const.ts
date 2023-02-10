@@ -4,7 +4,7 @@
 export const DefaultAvailableBuilders = new Set([
   'Str',
   'Bool',
-  'Void',
+  'Unit',
   'Compact',
   'VecU8',
   'U8',

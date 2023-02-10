@@ -183,12 +183,12 @@ describe('Render', () => {
 
         Message: {
           t: 'alias',
-          ref: 'Void',
+          ref: 'Unit',
         },
       }),
     ).toMatchInlineSnapshot(`
       "import {
-          Void,
+          Unit,
           createSetCodec,
           dynCodec
       } from '@scale-codec/definition-runtime'
@@ -208,9 +208,9 @@ describe('Render', () => {
 
       // Type: Message
 
-      type Message = Void
+      type Message = Unit
 
-      const Message: Codec<Message> = Void
+      const Message: Codec<Message> = Unit
 
       // Type: Set_Message
 
@@ -370,7 +370,7 @@ describe('Render', () => {
     `)
   })
 
-  test('Renders empty struct as void alias', () => {
+  test('Renders empty struct as unit alias', () => {
     expect(
       renderFactory({
         EmptyStruct: {
@@ -382,7 +382,7 @@ describe('Render', () => {
       "// Type: EmptyStruct
 
       import {
-          Void as EmptyStruct
+          Unit as EmptyStruct
       } from '@scale-codec/definition-runtime'
 
       // Exports
@@ -393,7 +393,7 @@ describe('Render', () => {
     `)
   })
 
-  test('Renders empty tuple as void alias', () => {
+  test('Renders empty tuple as unit alias', () => {
     expect(
       renderFactory({
         EmptyTuple: {
@@ -405,7 +405,7 @@ describe('Render', () => {
       "// Type: EmptyTuple
 
       import {
-          Void as EmptyTuple
+          Unit as EmptyTuple
       } from '@scale-codec/definition-runtime'
 
       // Exports
@@ -678,7 +678,7 @@ describe('Render', () => {
           },
         },
 
-        { typeForVoidAliasing: 'SomeCustomVoid' },
+        { typeForUnitAliasing: 'SomeCustomVoid' },
       ),
     ).toMatchInlineSnapshot(`
       "// Type: EmptyTuple

@@ -307,16 +307,16 @@ export type U8 = number;
 export const U8: Codec<number, number>;
 
 // @public (undocumented)
+export type Unit = null;
+
+// @public (undocumented)
+export const Unit: Codec<null, null>;
+
+// @public (undocumented)
 export type VecU8 = Uint8Array;
 
 // @public (undocumented)
 export const VecU8: Codec<Uint8Array, Uint8Array>;
-
-// @public (undocumented)
-export type Void = null;
-
-// @public (undocumented)
-export const Void: Codec<null, null>;
 
 
 export * from "@scale-codec/core";

@@ -32,7 +32,7 @@ type KnownCreators = `create${
 
 interface RenderParams {
   rollupSingleTuples: boolean
-  typeForVoidAlias: string
+  typeForUnitAlias: string
 }
 
 const { provide: provideRenderParams, inject: injectRenderParams } = createDIScope<RenderParams>()
@@ -68,8 +68,8 @@ function modelAlias(to: string): ModelPart {
   )
 }
 
-function modelVoidAlias(): ModelPart {
-  return renderImport({ nameInModule: injectRenderParams().typeForVoidAlias, module: ns.lib })
+function modelUnitAlias(): ModelPart {
+  return renderImport({ nameInModule: injectRenderParams().typeForUnitAlias, module: ns.lib })
 }
 
 function modelVec(item: string): ModelPart {
@@ -88,7 +88,7 @@ function modelVec(item: string): ModelPart {
 
 function modelStruct(fields: DefStructField[]): ModelPart {
   if (!fields.length) {
-    return modelVoidAlias()
+    return modelUnitAlias()
   }
 
   const seq = Seq(fields)
@@ -113,7 +113,7 @@ function modelStruct(fields: DefStructField[]): ModelPart {
 
 function modelTuple(refs: string[]): ModelPart {
   if (!refs.length) {
-    return modelVoidAlias()
+    return modelUnitAlias()
   }
 
   const { rollupSingleTuples } = injectRenderParams()
@@ -159,7 +159,6 @@ function modelEnum(variants: DefEnumVariant[]): ModelPart {
       schema: ns.part`[${String(variant.discriminant)}, '${variant.name}']`,
     }
   })
-
 
   return ns.join(
     [
@@ -322,7 +321,7 @@ export function renderNamespaceDefinition(
   return provideRenderParams(
     {
       rollupSingleTuples: params?.rollupSingleTuplesIntoAliases ?? false,
-      typeForVoidAlias: params?.typeForVoidAliasing ?? 'Void',
+      typeForUnitAlias: params?.typeForUnitAliasing ?? 'Unit',
     },
     () => {
       return ns({
