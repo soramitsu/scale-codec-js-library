@@ -9,33 +9,39 @@ const SAMPLE_RENDER_PARAMS: ModelRenderParams = {
   libTypes: Set(),
 }
 
-describe.concurrent('namespace', () => {
+describe('namespace', () => {
   test('When model is empty, result is empty too', () => {
     expect(ns({ refs: [] }).render(SAMPLE_RENDER_PARAMS)).toEqual('')
   })
 
-  test('When some runtime helper is used, import is rendered', ({ expect }) => {
+  test('When some runtime helper is used, import is rendered', () => {
     expect(
       ns({
         refs: [ns.refScope('a')`const a = ${ns.libRuntimeHelper('createArrayCodec')}()`],
       }).render(SAMPLE_RENDER_PARAMS),
     ).toMatchInlineSnapshot(`
-        "import { createArrayCodec } from 'test'
+      "import {
+          createArrayCodec
+      } from 'test'
 
-        // Type: a
+      // Type: a
 
-        const a = createArrayCodec()
+      const a = createArrayCodec()
 
-        // Exports
+      // Exports
 
-        export { a }"
+      export {
+          a
+      }"
     `)
   })
 
-  test('When some type helper is used, import is rendered', ({ expect }) => {
+  test('When some type helper is used, import is rendered', () => {
     expect(ns({ refs: [ns.refScope('A')`const a: ${ns.libTypeHelper('Codec')}`] }).render(SAMPLE_RENDER_PARAMS))
       .toMatchInlineSnapshot(`
-        "import type { Codec } from 'test'
+        "import type {
+            Codec
+        } from 'test'
 
         // Type: A
 
@@ -43,37 +49,44 @@ describe.concurrent('namespace', () => {
 
         // Exports
 
-        export { A }"
-    `)
+        export {
+            A
+        }"
+      `)
   })
 
-  test('When (non-lib) ref is used as a variable, dynCodec for it should be rendered', ({ expect }) => {
+  test('When (non-lib) ref is used as a variable, dynCodec for it should be rendered', () => {
     expect(
       ns({
         refs: [ns.refScope('something')`const ${ns.self} = ${ns.refVar('another')}`, ns.refScope('another')`p`],
       }).render(SAMPLE_RENDER_PARAMS),
     ).toMatchInlineSnapshot(`
-        "import { dynCodec } from 'test'
+      "import {
+          dynCodec
+      } from 'test'
 
-        // Dynamic codecs
+      // Dynamic codecs
 
-        const __dyn_another = dynCodec(() => another)
+      const __dyn_another = dynCodec(() => another)
 
-        // Type: another
+      // Type: another
 
-        p
+      p
 
-        // Type: something
+      // Type: something
 
-        const something = __dyn_another
+      const something = __dyn_another
 
-        // Exports
+      // Exports
 
-        export { another, something }"
+      export {
+          another,
+          something
+      }"
     `)
   })
 
-  test('When ref from lib is used, then it is imported', ({ expect }) => {
+  test('When ref from lib is used, then it is imported', () => {
     expect(
       ns({
         refs: [
@@ -86,21 +99,25 @@ describe.concurrent('namespace', () => {
         libTypes: Set(['Str']),
       }),
     ).toMatchInlineSnapshot(`
-        "import { Str } from 'test'
+      "import {
+          Str
+      } from 'test'
 
-        // Type: StrOption
+      // Type: StrOption
 
-        type StrOption = Str
+      type StrOption = Str
 
-        const StrOption = createOption(Str)
+      const StrOption = createOption(Str)
 
-        // Exports
+      // Exports
 
-        export { StrOption }"
+      export {
+          StrOption
+      }"
     `)
   })
 
-  test('When ns is constructed from multiple refs with custom parts, it is rendered OK', ({ expect }) => {
+  test('When ns is constructed from multiple refs with custom parts, it is rendered OK', () => {
     const self = ns.part`${ns.self}`
 
     const foo = ns.refScope('Foo')`const ${self}: ${ns.libTypeHelper('Codec')} = ${ns.libRuntimeHelper(
@@ -117,45 +134,56 @@ describe.concurrent('namespace', () => {
     })
 
     expect(result).toMatchInlineSnapshot(`
-        "import { Str, createArrayCodec, dynCodec } from 'foobar'
+      "import {
+          Str,
+          createArrayCodec,
+          dynCodec
+      } from 'foobar'
 
-        import type { Codec } from 'foobar'
+      import type {
+          Codec
+      } from 'foobar'
 
-        // Dynamic codecs
+      // Dynamic codecs
 
-        const __dyn_Bar = dynCodec(() => Bar)
+      const __dyn_Bar = dynCodec(() => Bar)
 
-        // Type: Bar
+      // Type: Bar
 
-        const Bar: Codec = createArrayCodec(Str)
+      const Bar: Codec = createArrayCodec(Str)
 
-        // Type: Foo
+      // Type: Foo
 
-        const Foo: Codec = createArrayCodec(__dyn_Bar)
+      const Foo: Codec = createArrayCodec(__dyn_Bar)
 
-        // Exports
+      // Exports
 
-        export { Bar, Foo }"
+      export {
+          Bar,
+          Foo
+      }"
     `)
   })
 
-  test('When ref used as var, but as pure var, then dyn is not rendered', ({ expect }) => {
+  test('When ref used as var, but as pure var, then dyn is not rendered', () => {
     expect(
       ns({
         refs: [ns.refScope('a')`const a = ${ns.refVar('NotDyn', true)}()`],
       }).render(SAMPLE_RENDER_PARAMS),
     ).toMatchInlineSnapshot(`
-        "// Type: a
+      "// Type: a
 
-        const a = NotDyn()
+      const a = NotDyn()
 
-        // Exports
+      // Exports
 
-        export { a }"
+      export {
+          a
+      }"
     `)
   })
 
-  test('When import is used, it is rendered', ({ expect }) => {
+  test('When import is used, it is rendered', () => {
     expect(
       ns({
         refs: [
@@ -164,33 +192,42 @@ describe.concurrent('namespace', () => {
         ],
       }).render(SAMPLE_RENDER_PARAMS),
     ).toMatchInlineSnapshot(`
-        "// Type: Bar
+      "// Type: Bar
 
-        import { Something as Bar } from 'test'
+      import {
+          Something as Bar
+      } from 'test'
 
-        // Type: Foo
+      // Type: Foo
 
-        import { Foo } from 'SOME MODULE'
+      import {
+          Foo
+      } from 'SOME MODULE'
 
-        // Exports
+      // Exports
 
-        export { Bar, Foo }"
+      export {
+          Bar,
+          Foo
+      }"
     `)
   })
 
-  test('When lib name is used, it is rendered', ({ expect }) => {
+  test('When lib name is used, it is rendered', () => {
     expect(
       ns({
         refs: [ns.refScope('Foo')`${ns.lib}`],
       }).render(SAMPLE_RENDER_PARAMS),
     ).toMatchInlineSnapshot(`
-        "// Type: Foo
+      "// Type: Foo
 
-        test
+      test
 
-        // Exports
+      // Exports
 
-        export { Foo }"
+      export {
+          Foo
+      }"
     `)
   })
 
@@ -237,7 +274,7 @@ describe.concurrent('namespace', () => {
   })
 
   describe('Dyns optimization', () => {
-    test('When related option is used, it is applied fine (complex test)', ({ expect }) => {
+    test('When related option is used, it is applied fine (complex test)', () => {
       expect(
         ns({
           refs: [
@@ -255,44 +292,54 @@ describe.concurrent('namespace', () => {
           optimizeDyns: true,
         }),
       ).toMatchInlineSnapshot(`
-            "import { dynCodec } from 'lib'
+        "import {
+            dynCodec
+        } from 'lib'
 
-            // Dynamic codecs
+        // Dynamic codecs
 
-            const __dyn_C1 = dynCodec(() => C1)
+        const __dyn_C1 = dynCodec(() => C1)
 
-            // Type: B
+        // Type: B
 
-            nothing here
+        nothing here
 
-            // Type: A
+        // Type: A
 
-            link to B: B
+        link to B: B
 
-            // Type: C2
+        // Type: C2
 
-            cyclic: __dyn_C1
+        cyclic: __dyn_C1
 
-            // Type: C1
+        // Type: C1
 
-            cyclic: C2
+        cyclic: C2
 
-            // Type: CT2
+        // Type: CT2
 
-            cyclic, but only type: CT1
+        cyclic, but only type: CT1
 
-            // Type: CT1
+        // Type: CT1
 
-            cyclic, but only type: CT2
+        cyclic, but only type: CT2
 
-            // Type: Z
+        // Type: Z
 
-            no links here, just testing alphabetic sorting
+        no links here, just testing alphabetic sorting
 
-            // Exports
+        // Exports
 
-            export { A, B, C1, C2, CT1, CT2, Z }"
-        `)
+        export {
+            A,
+            B,
+            C1,
+            C2,
+            CT1,
+            CT2,
+            Z
+        }"
+      `)
     })
   })
 })

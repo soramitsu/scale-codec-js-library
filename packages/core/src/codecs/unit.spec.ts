@@ -1,13 +1,13 @@
 import { describe, expect, test } from 'vitest'
 import { WalkerImpl } from '../util'
-import { decodeVoid, encodeVoid } from './void'
+import { decodeUnit, encodeUnit } from './unit'
 
 describe.concurrent('Array codec', () => {
   test('Encodes into empty bytes', () => {
-    expect(WalkerImpl.encode(null, encodeVoid)).toEqual(new Uint8Array())
+    expect(WalkerImpl.encode(null, encodeUnit)).toEqual(new Uint8Array())
   })
 
   test('Decodes into null result', () => {
-    expect(WalkerImpl.decode(new Uint8Array(), decodeVoid)).toEqual(null)
+    expect(WalkerImpl.decode(new Uint8Array(), decodeUnit)).toEqual(null)
   })
 })

@@ -1,5 +1,18 @@
 # @scale-codec/definition-compiler
 
+## 3.0.0
+
+### Minor Changes
+
+- 7e81bbc: **style**: generate each import/export on a new line
+- 7e81bbc: **refactor**: update enum generation following the major update in enum design
+- 7e81bbc: **refactor**: generate `unique symbol` for opaque types
+
+### Patch Changes
+
+- Updated dependencies [7e81bbc]
+  - @scale-codec/enum@2.0.0
+
 ## 2.2.2
 
 ### Patch Changes

@@ -1,4 +1,4 @@
-import { Enum, EnumDef, EnumGenericDef, Option, Result, TagValue, TagsEmpty, TagsValuable } from '@scale-codec/enum'
+import { EnumOf, EnumRecord, RustOption, RustResult, VariantAny, variant } from '@scale-codec/enum'
 import { Decode, Encode, Walker } from '../types'
 import { encodeFactory } from '../util'
 
@@ -6,14 +6,12 @@ type EncodeTuple<V> = [discriminant: number, encode: Encode<V>]
 
 type DecodeTuple<T extends string, V> = [tag: T, decode: Decode<V>]
 
-export type EnumEncoders<Def extends EnumGenericDef> = {
-  [T in TagsEmpty<Def>]: number
-} & {
-  [T in TagsValuable<Def>]: EncodeTuple<TagValue<Def, T>>
+export type EnumEncoders<E extends EnumRecord> = {
+  [tag in keyof E]: E[tag] extends [infer C] ? EncodeTuple<C> : number
 }
 
-export type EnumDecoders<Def extends EnumGenericDef> = {
-  [D in number]: TagsEmpty<Def> | (Def extends [infer T & string, infer V] ? DecodeTuple<T & string, V> : never)
+export type EnumDecoders<E extends EnumRecord> = {
+  [D in number]: { [tag in keyof E]: E[tag] extends [infer C] ? DecodeTuple<tag & string, C> : tag & string }[keyof E]
 }
 
 const getEncodeData = (
@@ -32,7 +30,7 @@ function normalizeDecodeTuple(tuple: string | DecodeTuple<string, any>): [tag: s
 
 const formatEncodersSchema = (encoders: EnumEncoders<any>): string => {
   return Object.entries(encoders)
-    .map(([tag, encodeData]) => {
+    .map(([tag, encodeData]: [string, number | EncodeTuple<any>]) => {
       const [discriminant, isValuable] =
         typeof encodeData === 'number' ? [encodeData, false] : [(encodeData as any)[0], true]
       const maybeTagSuffix = isValuable ? '(...)' : ''
@@ -47,22 +45,19 @@ export class EnumEncodeError extends Error {
   }
 }
 
-export function encodeEnum<E extends Enum<any>>(value: E, encoders: EnumEncoders<EnumDef<E>>, walker: Walker): void {
+export function encodeEnum<V extends VariantAny>(value: V, encoders: EnumEncoders<EnumOf<V>>, walker: Walker): void {
   // here we can skip encoders and emptyness validation because it is already done
   // during the size hint computation step
 
   const [dis, encode] = getEncodeData(encoders, value.tag)!
   walker.u8[walker.idx++] = dis
   if (encode) {
-    encode(value.value, walker)
+    encode(value.content, walker)
   }
 }
 
-export function encodeEnumSizeHint<E extends Enum<any>>(
-  value: E,
-  encoders: EnumEncoders<E extends Enum<infer D> ? D : never>,
-): number {
-  const { tag, isEmpty } = value
+export function encodeEnumSizeHint<V extends VariantAny>(value: V, encoders: EnumEncoders<EnumOf<V>>): number {
+  const { tag, unit } = value
 
   const encodeData = getEncodeData(encoders, tag)
   if (encodeData === null)
@@ -71,17 +66,15 @@ export function encodeEnumSizeHint<E extends Enum<any>>(
   const [, encode] = encodeData
 
   if (encode) {
-    // valuable
-    if (isEmpty) throw new EnumEncodeError(`Enum with tag "${tag}" is empty, but supposed not to be`, encoders)
-    return 1 + encode.sizeHint(value.value)
+    if (unit) throw new EnumEncodeError(`Enum with tag "${tag}" is empty, but supposed not to be`, encoders)
+    return 1 + encode.sizeHint(value.content)
   }
 
-  // empty
-  if (!isEmpty) throw new EnumEncodeError(`Enum with tag "${tag}" is not empty, but supposed to be`, encoders)
+  if (!unit) throw new EnumEncodeError(`Enum with tag "${tag}" is not empty, but supposed to be`, encoders)
   return 1
 }
 
-export function createEnumEncoder<E extends Enum<any>>(encoders: EnumEncoders<EnumDef<E>>): Encode<E> {
+export function createEnumEncoder<V extends VariantAny>(encoders: EnumEncoders<EnumOf<V>>): Encode<V> {
   return encodeFactory(
     (val, walker) => encodeEnum(val, encoders, walker),
     (val) => encodeEnumSizeHint(val, encoders),
@@ -101,7 +94,7 @@ function formatDecoders(decoders: EnumDecoders<any>): string {
     .join(', ')
 }
 
-export function decodeEnum<E extends Enum<any>>(walker: Walker, decoders: EnumDecoders<EnumDef<E>>): E {
+export function decodeEnum<V extends VariantAny>(walker: Walker, decoders: EnumDecoders<EnumOf<V>>): V {
   const discriminant = walker.u8[walker.idx++]
 
   const decoder = decoders[discriminant]
@@ -111,61 +104,56 @@ export function decodeEnum<E extends Enum<any>>(walker: Walker, decoders: EnumDe
     )
 
   const [tag, decode] = normalizeDecodeTuple(decoder)
-  if (decode) return Enum.variant(tag, decode(walker)) as any
-  return Enum.variant(tag) as any
+  if (decode) return variant(tag, decode(walker)) as V
+  return variant(tag) as V
 }
 
-export function createEnumDecoder<E extends Enum<any>>(decoders: EnumDecoders<EnumDef<E>>): Decode<E> {
+export function createEnumDecoder<V extends VariantAny>(decoders: EnumDecoders<EnumOf<V>>): Decode<V> {
   return (walker) => decodeEnum(walker, decoders)
 }
 
-type OptionSome<T extends Option<any>> = T extends Option<infer V> ? V : never
-
-export function createOptionEncoder<T extends Option<any>>(encodeSome: Encode<OptionSome<T>>): Encode<T> {
-  return createEnumEncoder<Enum<'None' | ['Some', OptionSome<T>]>>({
+export function createOptionEncoder<T>(encodeSome: Encode<T>): Encode<RustOption<T>> {
+  return createEnumEncoder({
     None: 0,
     Some: [1, encodeSome],
   })
 }
 
-export function createOptionDecoder<T extends Option<any>>(decodeSome: Decode<OptionSome<T>>): Decode<T> {
-  return createEnumDecoder<Enum<'None' | ['Some', OptionSome<T>]>>({
+export function createOptionDecoder<T>(decodeSome: Decode<T>): Decode<RustOption<T>> {
+  return createEnumDecoder({
     0: 'None',
     1: ['Some', decodeSome],
-  }) as Decode<T>
+  })
 }
 
-type ResultOk<T> = T extends Result<infer Ok, any> ? Ok : never
-type ResultErr<T> = T extends Result<any, infer Err> ? Err : never
-
-export function createResultEncoder<T extends Result<any, any>>(
-  encodeOk: Encode<ResultOk<T>>,
-  encodeErr: Encode<ResultErr<T>>,
-): Encode<T> {
-  return createEnumEncoder<Enum<['Ok', ResultOk<T>] | ['Err', ResultErr<T>]>>({
+export function createResultEncoder<Ok, Err>(
+  encodeOk: Encode<Ok>,
+  encodeErr: Encode<Err>,
+): Encode<RustResult<Ok, Err>> {
+  return createEnumEncoder({
     Ok: [0, encodeOk],
     Err: [1, encodeErr],
   })
 }
 
-export function createResultDecoder<T extends Result<any, any>>(
-  decodeOk: Decode<ResultOk<T>>,
-  decodeErr: Decode<ResultErr<T>>,
-): Decode<T> {
-  return createEnumDecoder<Enum<['Ok', ResultOk<T>] | ['Err', ResultErr<T>]>>({
+export function createResultDecoder<Ok, Err>(
+  decodeOk: Decode<Ok>,
+  decodeErr: Decode<Err>,
+): Decode<RustResult<Ok, Err>> {
+  return createEnumDecoder({
     0: ['Ok', decodeOk],
     1: ['Err', decodeErr],
-  }) as Decode<T>
+  })
 }
 
-function optBoolByteToEnum(byte: number): Option<boolean> {
+function optBoolByteToEnum(byte: number): RustOption<boolean> {
   switch (byte) {
     case 0:
-      return Enum.variant('None')
+      return variant('None')
     case 1:
-      return Enum.variant('Some', true)
+      return variant('Some', true)
     case 2:
-      return Enum.variant('Some', false)
+      return variant('Some', false)
     default:
       throw new Error(`Failed to decode OptionBool - byte is ${byte}`)
   }
@@ -174,9 +162,9 @@ function optBoolByteToEnum(byte: number): Option<boolean> {
 /**
  * Special encoder for `OptionBool` type from Rust's parity_scale_codec
  */
-export const encodeOptionBool: Encode<Option<boolean>> = encodeFactory(
+export const encodeOptionBool: Encode<RustOption<boolean>> = encodeFactory(
   (value, walker) => {
-    walker.u8[walker.idx++] = value.is('None') ? 0 : value.as('Some') ? 1 : 2
+    walker.u8[walker.idx++] = value.tag === 'None' ? 0 : value.content ? 1 : 2
   },
   () => 1,
 )
@@ -184,4 +172,4 @@ export const encodeOptionBool: Encode<Option<boolean>> = encodeFactory(
 /**
  * Special decoder for `OptionBool` type from Rust's parity_scale_codec
  */
-export const decodeOptionBool: Decode<Option<boolean>> = (walker) => optBoolByteToEnum(walker.u8[walker.idx++])
+export const decodeOptionBool: Decode<RustOption<boolean>> = (walker) => optBoolByteToEnum(walker.u8[walker.idx++])

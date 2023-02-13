@@ -6,7 +6,7 @@ import polka from './polka'
 import runtime from './runtime'
 import { factoryCore, factoryCoreV04, factoryPolka } from './util'
 
-describe.concurrent('Render imports', () => {
+describe('Render imports', () => {
   test('Encode is the same', () => {
     assertAllKeysHaveTheSameValue({
       core: core.encode(factoryCore(40)),

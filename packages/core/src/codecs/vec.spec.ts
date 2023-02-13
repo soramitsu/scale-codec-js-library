@@ -1,6 +1,6 @@
 import { describe, expect, it, test } from 'vitest'
 import { fromHex, toHex } from '@scale-codec/util'
-import { Enum, Option } from '@scale-codec/enum'
+import { RustOption, variant } from '@scale-codec/enum'
 import { WalkerImpl } from '../util'
 import { createVecDecoder, createVecEncoder, decodeUint8Vec, encodeUint8Vec } from './vec'
 import { decodeI16, decodeI8, decodeU8, encodeI16, encodeI8, encodeU8 } from './int'
@@ -42,7 +42,7 @@ describe.concurrent('Vec codec', () => {
 
     // https://github.com/paritytech/parity-scale-codec/blob/master/src/codec.rs#L1336
     it('vec of option int encoded as expected', () => {
-      const VEC: Option<number>[] = [Enum.variant('Some', 1), Enum.variant('Some', -1), Enum.variant('None')]
+      const VEC: RustOption<number>[] = [variant('Some', 1), variant('Some', -1), variant('None')]
       const HEX = '0c 01 01 01 ff 00'
 
       expect(toHex(WalkerImpl.encode(VEC, createVecEncoder(createOptionEncoder(encodeI8))))).toEqual(HEX)
@@ -53,7 +53,7 @@ describe.concurrent('Vec codec', () => {
     // it is a special type, OptionBool. see related Rust's source code
     // it encodes not like default enum
     it('vec of option bool encoded as expected', () => {
-      const VEC: Option<boolean>[] = [Enum.variant('Some', true), Enum.variant('Some', false), Enum.variant('None')]
+      const VEC: RustOption<boolean>[] = [variant('Some', true), variant('Some', false), variant('None')]
       const HEX = '0c 01 02 00'
 
       expect(toHex(WalkerImpl.encode(VEC, createVecEncoder(encodeOptionBool)))).toEqual(HEX)

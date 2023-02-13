@@ -1,22 +1,22 @@
 import { Chain as ChainCore } from './core'
-import { Enum as EnumCore } from '@scale-codec/core'
+import { variant as createCoreEnum } from '@scale-codec/core'
 import { Chain as ChainCoreV04 } from './core-v04'
 import { Enum as EnumV04 } from 'scale-codec-core-v-4'
-import { Type as TypePolka, registry } from './polka'
+import { Chain as PolkaChain, OptionChain as PolkaOptionChain, registry } from './polka'
 import { Enum as EnumPolka } from '@polkadot/types-codec'
 
 export function factoryCore(depth: number): ChainCore {
-  if (depth > 0) return EnumCore.variant('Some', factoryCore(depth - 1))
-  return EnumCore.variant('None')
+  return { inner: depth > 0 ? createCoreEnum('Some', factoryCore(depth - 1)) : createCoreEnum('None') }
 }
 
 export function factoryCoreV04(depth: number): ChainCoreV04 {
-  if (depth > 0) return EnumV04.valuable('Some', factoryCoreV04(depth - 1))
-  return EnumV04.empty('None')
+  return {
+    inner: depth > 0 ? EnumV04.valuable('Some', factoryCoreV04(depth - 1)) : EnumV04.empty('None'),
+  }
 }
 
 export function factoryPolka(depth: number): EnumPolka {
-  return (
-    depth > 0 ? new TypePolka(registry, { Some: factoryPolka(depth - 1) }) : new TypePolka(registry, { None: null })
-  ) as any
+  return new PolkaChain(registry, {
+    inner: new PolkaOptionChain(registry, depth > 0 ? { Some: factoryPolka(depth - 1) } : { None: null }),
+  }) as EnumPolka
 }

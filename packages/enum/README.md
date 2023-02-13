@@ -1,49 +1,47 @@
-# enum ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![version](https://img.shields.io/npm/v/@scale-codec/enum) ![license](https://img.shields.io/npm/l/@scale-codec/enum)
+# `@scale-codec/enum` ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![version](https://img.shields.io/npm/v/@scale-codec/enum) ![license](https://img.shields.io/npm/l/@scale-codec/enum)
 
-Lightweight tool for working with Rust enums in JavaScript (with TypeScript support).
+Small tagged-union library for TypeScript.
 
-[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/enum)
+[//]: # 'TODO'
+[//]: # '[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/enum)'
+
+## Features
+
+- **Type narrowing** and **exhaustiveness check** (due to the library following TypeScript's [discriminated union pattern](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions))
+- Type-safe variants creation with type inference
 
 ## Example
 
-```ts
-import { Enum } from '@scale-codec/enum'
+**Enum in Rust:**
 
-// Define enum
-type Event = Enum<
-  | 'PageLoaded'
-  | ['KeyPress', string]
-  | [
-      'MouseClick',
-      {
-        x: number
-        y: number
-      },
-    ]
->
-
-// Construct actual value (100% typed)
-const event1: Event = Enum.variant('KeyPress', '<enter>')
-const event2: Event = Enum.variant('MouseClick', { x: 5, y: 10 })
-const event3: Event = Enum.variant('PageLoaded')
-
-// Access to the content
-
-// with `is` & `as`
-if (event1.is('MouseClick')) {
-  const { x, y } = event1.as('MouseClick')
+```rust
+enum Event {
+  PageLoaded,
+  KeyPress(String),
+  MouseClick { x: u32, y: u32 }
 }
+```
 
-// with match
-event1.match({
-  PageLoaded() {
-    console.log('Loaded')
-  },
-  MouseClick({ x, y }) {
-    console.log('Click at %o : %o', x, y)
-  },
-  KeyPress(key) {
-    console.log('Key pressed:', key)
-  },
-})
+**Enum in TypeScript:**
+
+```ts
+import { Enumerate, variant } from '@scale-codec/enum'
+
+// Define the enum
+type Event = Enumerate<{
+  PageLoaded: []
+  KeyPress: [string]
+  MouseClick: [{ x: number; y: number }]
+}>
+
+// Construct an actual value
+const event1: Event = variant('KeyPress', '<enter>')
+const event2 = variant<Event>('MouseClick', { x: 5, y: 10 })
+const event3 = variant<Event>('PageLoaded')
+
+// Access the content
+if (event1.tag === 'MouseClick') {
+  // Types are narrowed
+  const { x, y } = event1.content
+}
 ```

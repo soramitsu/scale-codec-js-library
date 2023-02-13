@@ -1,5 +1,24 @@
 # @scale-codec/core
 
+## 2.0.0
+
+### Major Changes
+
+- 7e81bbc: **refactor**: follow the major update of the re-exported `@scale-codec/enum` lib. Update enum-related function signatures:
+  - `encodeEnum` / `encodeEnumSizeHint` / `decodeEnum` 
+  - `createEnumEncoder` / `createEnumDecoder`
+  - `createOptionEncoder` / `createOptionDecoder`
+  - `createResultEncoder` / `createResultDecoder`
+  - `encodeOptionBool` / `decodeOptionBool`
+- 7e81bbc: **refactor**: "void" types are renamed to "unit":
+  - ~~`encodeVoid`~~ `encodeUnit`
+  - ~~`decodeVoid`~~ `decodeUnit`
+
+### Patch Changes
+
+- Updated dependencies [7e81bbc]
+  - @scale-codec/enum@2.0.0
+
 ## 1.1.1
 
 ### Patch Changes

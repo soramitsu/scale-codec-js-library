@@ -4,67 +4,56 @@
 
 ```ts
 
+// @public (undocumented)
+export type Enumerate<E extends EnumRecord> = {
+    [Tag in keyof E]: E[Tag] extends infer Content extends [] | [any] ? Variant<E, Tag & string, Content> : never;
+}[keyof E];
+
+// @public (undocumented)
+export type EnumOf<V extends VariantAny> = V extends Variant<infer E, any, any> ? E : never;
+
+// @public (undocumented)
+export type EnumRecord = Record<string, [] | [any]>;
+
 // @public
-export class Enum<Def extends EnumGenericDef> {
-    constructor(tag: string, value?: typeof ENUM_EMPTY_VALUE | unknown);
-    as<T extends TagsValuable<Def>>(tag: T): TagValue<Def, T>;
-    is(tag: Tags<Def>): boolean;
+export type RustOption<T> = Enumerate<{
+    None: [];
+    Some: [T];
+}>;
+
+// @public
+export type RustResult<Ok, Err> = Enumerate<{
+    Ok: [Ok];
+    Err: [Err];
+}>;
+
+// @public (undocumented)
+export interface Variant<in out E extends EnumRecord, Tag extends string, in out Content extends [] | [any] = []> {
     // (undocumented)
-    get isEmpty(): boolean;
-    match<R = any>(matchMap: EnumMatchMap<Def, R>): R;
+    [enumTags]: E;
     // (undocumented)
-    readonly tag: string;
+    readonly content: Content extends [infer C] ? C : undefined;
     // (undocumented)
-    toJSON(): {
-        tag: string;
-        value?: undefined;
-    } | {
-        tag: string;
-        value: unknown;
-    };
-    readonly value: typeof ENUM_EMPTY_VALUE | unknown;
+    readonly tag: Tag;
     // (undocumented)
-    static variant<E extends Enum<any>>(...args: EnumDefToFactoryArgs<EnumDef<E>>): E;
-    // (undocumented)
-    static variant<Def extends EnumGenericDef>(...args: EnumDefToFactoryArgs<Def>): Enum<Def>;
+    readonly unit: Content extends [] ? true : false;
 }
 
-// @public
-export const ENUM_EMPTY_VALUE: unique symbol;
+// @public (undocumented)
+export const variant: VariantFactoryFn;
 
 // @public (undocumented)
-export type EnumDef<E> = E extends Enum<infer Def> ? Def : never;
+export type VariantAny = Variant<any, any, any>;
 
 // @public (undocumented)
-export type EnumDefToFactoryArgs<Def extends EnumGenericDef> = [TagsEmpty<Def>] | (Def extends [string, any] ? Def : never);
-
-// @public
-export type EnumGenericDef = string | [tag: string, value: any];
-
-// @public (undocumented)
-export type EnumMatchMap<Def extends EnumGenericDef, R = any> = {
-    [T in TagsEmpty<Def>]: () => R;
-} & {
-    [T in TagsValuable<Def>]: (value: TagValue<Def, T>) => R;
-};
-
-// @public
-type Option_2<T> = Enum<'None' | ['Some', T]>;
-export { Option_2 as Option }
-
-// @public
-export type Result<Ok, Err> = Enum<['Ok', Ok] | ['Err', Err]>;
+export interface VariantFactoryFn {
+    // (undocumented)
+    <V extends VariantAny>(...args: VariantToFactoryArgs<V>): V;
+    // (undocumented)
+    <E extends EnumRecord>(...args: VariantToFactoryArgs<Enumerate<E>>): Enumerate<E>;
+}
 
 // @public (undocumented)
-export type Tags<Def extends EnumGenericDef> = TagsEmpty<Def> | TagsValuable<Def>;
-
-// @public (undocumented)
-export type TagsEmpty<Def extends EnumGenericDef> = Def extends string ? Def : never;
-
-// @public (undocumented)
-export type TagsValuable<Def extends EnumGenericDef> = Def extends [infer T, any] ? T & string : never;
-
-// @public (undocumented)
-export type TagValue<Def extends EnumGenericDef, T extends TagsValuable<Def>> = Def extends [T, infer V] ? V : never;
+export type VariantToFactoryArgs<V extends VariantAny> = V extends Variant<any, infer Tag, infer Content> ? Content extends [infer C] ? [tag: Tag, content: C] : [tag: Tag] : never;
 
 ```

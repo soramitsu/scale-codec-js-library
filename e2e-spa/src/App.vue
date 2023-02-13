@@ -12,29 +12,27 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from 'vue'
-import { Enum, Option, Result } from '@scale-codec/definition-runtime'
+import { computed, defineComponent, shallowRef } from 'vue'
+import { RustOption, RustResult, variant } from '@scale-codec/definition-runtime'
 import { encodeAndDecodeReallyComplexData } from './encode-decode'
+import { P, match } from 'ts-pattern'
 
 export default defineComponent({
   setup() {
-    type ResultOpt = Option<Result<null, Error>>
+    type ResultOpt = RustOption<RustResult<null, Error>>
 
-    const result = ref<ResultOpt>(Enum.variant('None'))
+    const result = shallowRef<ResultOpt>(variant('None'))
 
     const resultFormatted = computed<null | string>(() =>
-      result.value.match({
-        None: () => null,
-        Some: (result) =>
-          result.match({
-            Ok: () => 'ok',
-            Err: ({ message }) => `Not ok: ${message}`,
-          }),
-      }),
+      match(result.value)
+        .with({ tag: 'None' }, () => null)
+        .with({ content: { tag: 'Ok' } }, () => 'ok')
+        .with({ content: { tag: 'Err', content: P.select() } }, ({ message }) => `Not ok: ${message}`)
+        .exhaustive(),
     )
 
     function act() {
-      result.value = Enum.variant<ResultOpt>('Some', encodeAndDecodeReallyComplexData())
+      result.value = variant('Some', encodeAndDecodeReallyComplexData())
     }
 
     return {

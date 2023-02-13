@@ -1,4 +1,4 @@
-import { describe, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 import { renderNamespaceDefinition } from '..'
 import { NamespaceDefinition, RenderNamespaceDefinitionParams } from '../../types'
 
@@ -6,8 +6,8 @@ function renderFactory(def: NamespaceDefinition, params?: RenderNamespaceDefinit
   return renderNamespaceDefinition(def, params)
 }
 
-describe.concurrent('Render', () => {
-  test('Renders vec', ({ expect }) => {
+describe('Render', () => {
+  test('Renders vec', () => {
     expect(
       renderFactory({
         Vec_str: {
@@ -16,25 +16,35 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { Str, createVecCodec } from '@scale-codec/definition-runtime'
+      "import {
+          Str,
+          createVecCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { ArrayCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
+      import type {
+          ArrayCodecAndFactory,
+          Opaque
+      } from '@scale-codec/definition-runtime'
 
-        // Type: Vec_str
+      // Type: Vec_str
 
-        type Vec_str__actual = Str[]
+      type __Vec_str__transparent = Str[]
 
-        interface Vec_str extends Opaque<Vec_str__actual, Vec_str> {}
+      declare const __uid0__Vec_str__brand: unique symbol
 
-        const Vec_str: ArrayCodecAndFactory<Vec_str__actual, Vec_str> = createVecCodec<Vec_str__actual, Vec_str>('Vec_str', Str)
+      type Vec_str = Opaque<__Vec_str__transparent, typeof __uid0__Vec_str__brand>
 
-        // Exports
+      const Vec_str: ArrayCodecAndFactory<__Vec_str__transparent, Vec_str> = createVecCodec<__Vec_str__transparent, Vec_str>('Vec_str', Str)
 
-        export { Vec_str }"
+      // Exports
+
+      export {
+          Vec_str
+      }"
     `)
   })
 
-  test('Renders struct + tuple', ({ expect }) => {
+  test('Renders struct + tuple', () => {
     expect(
       renderFactory({
         Structural: {
@@ -58,43 +68,61 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { Bool, I128, U8, createStructCodec, createTupleCodec, dynCodec } from '@scale-codec/definition-runtime'
+      "import {
+          Bool,
+          I128,
+          U8,
+          createStructCodec,
+          createTupleCodec,
+          dynCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { ArrayCodecAndFactory, Opaque, StructCodecAndFactory } from '@scale-codec/definition-runtime'
+      import type {
+          ArrayCodecAndFactory,
+          Opaque,
+          StructCodecAndFactory
+      } from '@scale-codec/definition-runtime'
 
-        // Dynamic codecs
+      // Dynamic codecs
 
-        const __dyn_Tuple_u8_i128 = dynCodec(() => Tuple_u8_i128)
+      const __dyn_Tuple_u8_i128 = dynCodec(() => Tuple_u8_i128)
 
-        // Type: Structural
+      // Type: Structural
 
-        interface Structural__actual {
-            nums: Tuple_u8_i128
-            mur: Bool
-        }
+      interface __Structural__transparent {
+          nums: Tuple_u8_i128
+          mur: Bool
+      }
 
-        interface Structural extends Opaque<Structural__actual, Structural> {}
+      declare const __uid0__Structural__brand: unique symbol
 
-        const Structural: StructCodecAndFactory<Structural__actual, Structural> = createStructCodec<Structural__actual, Structural>('Structural', [
-            ['nums', __dyn_Tuple_u8_i128],
-            ['mur', Bool]
-        ])
+      type Structural = Opaque<__Structural__transparent, typeof __uid0__Structural__brand>
 
-        // Type: Tuple_u8_i128
+      const Structural: StructCodecAndFactory<__Structural__transparent, Structural> = createStructCodec<__Structural__transparent, Structural>('Structural', [
+          ['nums', __dyn_Tuple_u8_i128],
+          ['mur', Bool]
+      ])
 
-        type Tuple_u8_i128__actual = [U8, I128]
+      // Type: Tuple_u8_i128
 
-        interface Tuple_u8_i128 extends Opaque<Tuple_u8_i128__actual, Tuple_u8_i128> {}
+      type __Tuple_u8_i128__transparent = [U8, I128]
 
-        const Tuple_u8_i128: ArrayCodecAndFactory<Tuple_u8_i128__actual, Tuple_u8_i128> = createTupleCodec<Tuple_u8_i128__actual, Tuple_u8_i128>('Tuple_u8_i128', [U8, I128])
+      declare const __uid1__Tuple_u8_i128__brand: unique symbol
 
-        // Exports
+      type Tuple_u8_i128 = Opaque<__Tuple_u8_i128__transparent, typeof __uid1__Tuple_u8_i128__brand>
 
-        export { Structural, Tuple_u8_i128 }"
+      const Tuple_u8_i128: ArrayCodecAndFactory<__Tuple_u8_i128__transparent, Tuple_u8_i128> = createTupleCodec<__Tuple_u8_i128__transparent, Tuple_u8_i128>('Tuple_u8_i128', [U8, I128])
+
+      // Exports
+
+      export {
+          Structural,
+          Tuple_u8_i128
+      }"
     `)
   })
 
-  test('Renders enum', ({ expect }) => {
+  test('Renders enum', () => {
     expect(
       renderFactory({
         Message: {
@@ -114,31 +142,42 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { Enum, Str, createEnumCodec } from '@scale-codec/definition-runtime'
+      "import {
+          Str,
+          createEnumCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { EnumCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
+      import type {
+          EnumCodecAndFactory,
+          Enumerate,
+          Opaque
+      } from '@scale-codec/definition-runtime'
 
-        // Type: Message
+      // Type: Message
 
-        type Message__actual = Enum<
-            | 'Quit'
-            | ['Greeting', Str]
-        >
+      type __Message__enum = Enumerate<{
+          'Quit': []
+          'Greeting': [Str]
+      }>
 
-        interface Message extends Opaque<Message__actual, Message> {}
+      declare const __uid0__Message__brand: unique symbol
 
-        const Message: EnumCodecAndFactory<Message> = createEnumCodec<Message__actual, Message>('Message', [
-            [0, 'Quit'],
-            [1, 'Greeting', Str]
-        ])
+      type Message = Opaque<__Message__enum, typeof __uid0__Message__brand>
 
-        // Exports
+      const Message: EnumCodecAndFactory<Message> = createEnumCodec<Message>('Message', [
+          [0, 'Quit'],
+          [1, 'Greeting', Str]
+      ])
 
-        export { Message }"
+      // Exports
+
+      export {
+          Message
+      }"
     `)
   })
 
-  test('Renders set', ({ expect }) => {
+  test('Renders set', () => {
     expect(
       renderFactory({
         Set_Message: {
@@ -152,35 +191,48 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { Void, createSetCodec, dynCodec } from '@scale-codec/definition-runtime'
+      "import {
+          Void,
+          createSetCodec,
+          dynCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { Codec, Opaque, SetCodecAndFactory } from '@scale-codec/definition-runtime'
+      import type {
+          Codec,
+          Opaque,
+          SetCodecAndFactory
+      } from '@scale-codec/definition-runtime'
 
-        // Dynamic codecs
+      // Dynamic codecs
 
-        const __dyn_Message = dynCodec(() => Message)
+      const __dyn_Message = dynCodec(() => Message)
 
-        // Type: Message
+      // Type: Message
 
-        type Message = Void
+      type Message = Void
 
-        const Message: Codec<Message> = Void
+      const Message: Codec<Message> = Void
 
-        // Type: Set_Message
+      // Type: Set_Message
 
-        type Set_Message__actual = Set<Message>
+      type __Set_Message__transparent = Set<Message>
 
-        interface Set_Message extends Opaque<Set_Message__actual, Set_Message> {}
+      declare const __uid0__Set_Message__brand: unique symbol
 
-        const Set_Message: SetCodecAndFactory<Set_Message__actual, Set_Message> = createSetCodec<Set_Message__actual, Set_Message>('Set_Message', __dyn_Message)
+      type Set_Message = Opaque<__Set_Message__transparent, typeof __uid0__Set_Message__brand>
 
-        // Exports
+      const Set_Message: SetCodecAndFactory<__Set_Message__transparent, Set_Message> = createSetCodec<__Set_Message__transparent, Set_Message>('Set_Message', __dyn_Message)
 
-        export { Message, Set_Message }"
+      // Exports
+
+      export {
+          Message,
+          Set_Message
+      }"
     `)
   })
 
-  test('Renders map', ({ expect }) => {
+  test('Renders map', () => {
     expect(
       renderFactory({
         Map_str_i64: {
@@ -190,25 +242,36 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { I64, Str, createMapCodec } from '@scale-codec/definition-runtime'
+      "import {
+          I64,
+          Str,
+          createMapCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { MapCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
+      import type {
+          MapCodecAndFactory,
+          Opaque
+      } from '@scale-codec/definition-runtime'
 
-        // Type: Map_str_i64
+      // Type: Map_str_i64
 
-        type Map_str_i64__actual = Map<Str, I64>
+      type __Map_str_i64__transparent = Map<Str, I64>
 
-        interface Map_str_i64 extends Opaque<Map_str_i64__actual, Map_str_i64> {}
+      declare const __uid0__Map_str_i64__brand: unique symbol
 
-        const Map_str_i64: MapCodecAndFactory<Map_str_i64__actual, Map_str_i64> = createMapCodec<Map_str_i64__actual, Map_str_i64>('Map_str_i64', Str, I64)
+      type Map_str_i64 = Opaque<__Map_str_i64__transparent, typeof __uid0__Map_str_i64__brand>
 
-        // Exports
+      const Map_str_i64: MapCodecAndFactory<__Map_str_i64__transparent, Map_str_i64> = createMapCodec<__Map_str_i64__transparent, Map_str_i64>('Map_str_i64', Str, I64)
 
-        export { Map_str_i64 }"
+      // Exports
+
+      export {
+          Map_str_i64
+      }"
     `)
   })
 
-  test('Renders array', ({ expect }) => {
+  test('Renders array', () => {
     expect(
       renderFactory({
         Array_Str_15: {
@@ -218,25 +281,35 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { Str, createArrayCodec } from '@scale-codec/definition-runtime'
+      "import {
+          Str,
+          createArrayCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { ArrayCodecAndFactory, Opaque } from '@scale-codec/definition-runtime'
+      import type {
+          ArrayCodecAndFactory,
+          Opaque
+      } from '@scale-codec/definition-runtime'
 
-        // Type: Array_Str_15
+      // Type: Array_Str_15
 
-        interface Array_Str_15__actual extends Array<Str> {}
+      interface __Array_Str_15__transparent extends Array<Str> {}
 
-        interface Array_Str_15 extends Opaque<Array_Str_15__actual, Array_Str_15> {}
+      declare const __uid0__Array_Str_15__brand: unique symbol
 
-        const Array_Str_15: ArrayCodecAndFactory<Array_Str_15__actual, Array_Str_15> = createArrayCodec<Array_Str_15__actual, Array_Str_15>('Array_Str_15', Str, 15)
+      type Array_Str_15 = Opaque<__Array_Str_15__transparent, typeof __uid0__Array_Str_15__brand>
 
-        // Exports
+      const Array_Str_15: ArrayCodecAndFactory<__Array_Str_15__transparent, Array_Str_15> = createArrayCodec<__Array_Str_15__transparent, Array_Str_15>('Array_Str_15', Str, 15)
 
-        export { Array_Str_15 }"
+      // Exports
+
+      export {
+          Array_Str_15
+      }"
     `)
   })
 
-  test('Renders bytes array', ({ expect }) => {
+  test('Renders bytes array', () => {
     expect(
       renderFactory({
         Hash: {
@@ -245,23 +318,29 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { createArrayU8Codec } from '@scale-codec/definition-runtime'
+      "import {
+          createArrayU8Codec
+      } from '@scale-codec/definition-runtime'
 
-        import type { Codec } from '@scale-codec/definition-runtime'
+      import type {
+          Codec
+      } from '@scale-codec/definition-runtime'
 
-        // Type: Hash
+      // Type: Hash
 
-        type Hash = Uint8Array
+      type Hash = Uint8Array
 
-        const Hash: Codec<Hash> = createArrayU8Codec('Hash', 64)
+      const Hash: Codec<Hash> = createArrayU8Codec('Hash', 64)
 
-        // Exports
+      // Exports
 
-        export { Hash }"
+      export {
+          Hash
+      }"
     `)
   })
 
-  test('Renders option', ({ expect }) => {
+  test('Renders option', () => {
     expect(
       renderFactory({
         OptionHash: {
@@ -270,25 +349,34 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { U128, createOptionCodec } from '@scale-codec/definition-runtime'
+      "import {
+          U128,
+          createOptionCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { EnumCodecAndFactory, Opaque, Option } from '@scale-codec/definition-runtime'
+      import type {
+          EnumCodecAndFactory,
+          Opaque,
+          RustOption
+      } from '@scale-codec/definition-runtime'
 
-        // Type: OptionHash
+      // Type: OptionHash
 
-        interface OptionHash__actual extends Option<U128> {}
+      declare const __uid0__OptionHash__brand: unique symbol
 
-        interface OptionHash extends Opaque<OptionHash__actual, OptionHash> {}
+      type OptionHash = Opaque<RustOption<U128>, typeof __uid0__OptionHash__brand>
 
-        const OptionHash: EnumCodecAndFactory<OptionHash> = createOptionCodec<OptionHash__actual, OptionHash>('OptionHash', U128)
+      const OptionHash: EnumCodecAndFactory<OptionHash> = createOptionCodec<OptionHash>('OptionHash', U128)
 
-        // Exports
+      // Exports
 
-        export { OptionHash }"
+      export {
+          OptionHash
+      }"
     `)
   })
 
-  test('Renders empty struct as void alias', ({ expect }) => {
+  test('Renders empty struct as void alias', () => {
     expect(
       renderFactory({
         EmptyStruct: {
@@ -297,17 +385,21 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "// Type: EmptyStruct
+      "// Type: EmptyStruct
 
-        import { Void as EmptyStruct } from '@scale-codec/definition-runtime'
+      import {
+          Void as EmptyStruct
+      } from '@scale-codec/definition-runtime'
 
-        // Exports
+      // Exports
 
-        export { EmptyStruct }"
+      export {
+          EmptyStruct
+      }"
     `)
   })
 
-  test('Renders empty tuple as void alias', ({ expect }) => {
+  test('Renders empty tuple as void alias', () => {
     expect(
       renderFactory({
         EmptyTuple: {
@@ -316,17 +408,21 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "// Type: EmptyTuple
+      "// Type: EmptyTuple
 
-        import { Void as EmptyTuple } from '@scale-codec/definition-runtime'
+      import {
+          Void as EmptyTuple
+      } from '@scale-codec/definition-runtime'
 
-        // Exports
+      // Exports
 
-        export { EmptyTuple }"
+      export {
+          EmptyTuple
+      }"
     `)
   })
 
-  test('Renders an alias for some inner type', ({ expect }) => {
+  test('Renders an alias for some inner type', () => {
     expect(
       renderFactory({
         StringAlias: {
@@ -335,23 +431,29 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { Str } from '@scale-codec/definition-runtime'
+      "import {
+          Str
+      } from '@scale-codec/definition-runtime'
 
-        import type { Codec } from '@scale-codec/definition-runtime'
+      import type {
+          Codec
+      } from '@scale-codec/definition-runtime'
 
-        // Type: StringAlias
+      // Type: StringAlias
 
-        type StringAlias = Str
+      type StringAlias = Str
 
-        const StringAlias: Codec<StringAlias> = Str
+      const StringAlias: Codec<StringAlias> = Str
 
-        // Exports
+      // Exports
 
-        export { StringAlias }"
+      export {
+          StringAlias
+      }"
     `)
   })
 
-  test('Renders single tuple as alias in case when the related option is enabled', async ({ expect }) => {
+  test('Renders single tuple as alias in case when the related option is enabled', async () => {
     expect(
       renderFactory(
         {
@@ -364,31 +466,45 @@ describe.concurrent('Render', () => {
         },
       ),
     ).toMatchInlineSnapshot(`
-        "import { Bool, U128, U8, createTupleCodec } from '@scale-codec/definition-runtime'
+      "import {
+          Bool,
+          U128,
+          U8,
+          createTupleCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { ArrayCodecAndFactory, Codec, Opaque } from '@scale-codec/definition-runtime'
+      import type {
+          ArrayCodecAndFactory,
+          Codec,
+          Opaque
+      } from '@scale-codec/definition-runtime'
 
-        // Type: MultiTuple
+      // Type: MultiTuple
 
-        type MultiTuple__actual = [U8, Bool]
+      type __MultiTuple__transparent = [U8, Bool]
 
-        interface MultiTuple extends Opaque<MultiTuple__actual, MultiTuple> {}
+      declare const __uid0__MultiTuple__brand: unique symbol
 
-        const MultiTuple: ArrayCodecAndFactory<MultiTuple__actual, MultiTuple> = createTupleCodec<MultiTuple__actual, MultiTuple>('MultiTuple', [U8, Bool])
+      type MultiTuple = Opaque<__MultiTuple__transparent, typeof __uid0__MultiTuple__brand>
 
-        // Type: SingleTuple
+      const MultiTuple: ArrayCodecAndFactory<__MultiTuple__transparent, MultiTuple> = createTupleCodec<__MultiTuple__transparent, MultiTuple>('MultiTuple', [U8, Bool])
 
-        type SingleTuple = U128
+      // Type: SingleTuple
 
-        const SingleTuple: Codec<SingleTuple> = U128
+      type SingleTuple = U128
 
-        // Exports
+      const SingleTuple: Codec<SingleTuple> = U128
 
-        export { MultiTuple, SingleTuple }"
+      // Exports
+
+      export {
+          MultiTuple,
+          SingleTuple
+      }"
     `)
   })
 
-  test('Render import for the external type as expected', ({ expect }) => {
+  test('Render import for the external type as expected', () => {
     expect(
       renderFactory({
         MyCustomExternal: {
@@ -397,17 +513,21 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "// Type: MyCustomExternal
+      "// Type: MyCustomExternal
 
-        import { MyCustomExternal } from './module-with-externals'
+      import {
+          MyCustomExternal
+      } from './module-with-externals'
 
-        // Exports
+      // Exports
 
-        export { MyCustomExternal }"
+      export {
+          MyCustomExternal
+      }"
     `)
   })
 
-  test('Renders imports for the external type using the custom name if provided', ({ expect }) => {
+  test('Renders imports for the external type using the custom name if provided', () => {
     expect(
       renderFactory({
         ReExportMe: {
@@ -417,17 +537,21 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "// Type: ReExportMe
+      "// Type: ReExportMe
 
-        import { re_export_me as ReExportMe } from 'some-package'
+      import {
+          re_export_me as ReExportMe
+      } from 'some-package'
 
-        // Exports
+      // Exports
 
-        export { ReExportMe }"
+      export {
+          ReExportMe
+      }"
     `)
   })
 
-  test('Renders result', ({ expect }) => {
+  test('Renders result', () => {
     expect(
       renderFactory({
         ResultI128Str: {
@@ -437,25 +561,35 @@ describe.concurrent('Render', () => {
         },
       }),
     ).toMatchInlineSnapshot(`
-        "import { I128, Str, createResultCodec } from '@scale-codec/definition-runtime'
+      "import {
+          I128,
+          Str,
+          createResultCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { EnumCodecAndFactory, Opaque, Result } from '@scale-codec/definition-runtime'
+      import type {
+          EnumCodecAndFactory,
+          Opaque,
+          RustResult
+      } from '@scale-codec/definition-runtime'
 
-        // Type: ResultI128Str
+      // Type: ResultI128Str
 
-        interface ResultI128Str__actual extends Result<I128, Str> {}
+      declare const __uid0__ResultI128Str__brand: unique symbol
 
-        interface ResultI128Str extends Opaque<ResultI128Str__actual, ResultI128Str> {}
+      type ResultI128Str = Opaque<RustResult<I128, Str>, typeof __uid0__ResultI128Str__brand>
 
-        const ResultI128Str: EnumCodecAndFactory<ResultI128Str> = createResultCodec<ResultI128Str__actual, ResultI128Str>('ResultI128Str', I128, Str)
+      const ResultI128Str: EnumCodecAndFactory<ResultI128Str> = createResultCodec<ResultI128Str>('ResultI128Str', I128, Str)
 
-        // Exports
+      // Exports
 
-        export { ResultI128Str }"
+      export {
+          ResultI128Str
+      }"
     `)
   })
 
-  test('Respects custom `runtimeLib` param', ({ expect }) => {
+  test('Respects custom `runtimeLib` param', () => {
     expect(
       renderFactory(
         {
@@ -468,23 +602,29 @@ describe.concurrent('Render', () => {
         { runtimeLib: 'custom-runtime-lib' },
       ),
     ).toMatchInlineSnapshot(`
-        "import { Str } from 'custom-runtime-lib'
+      "import {
+          Str
+      } from 'custom-runtime-lib'
 
-        import type { Codec } from 'custom-runtime-lib'
+      import type {
+          Codec
+      } from 'custom-runtime-lib'
 
-        // Type: S
+      // Type: S
 
-        type S = Str
+      type S = Str
 
-        const S: Codec<S> = Str
+      const S: Codec<S> = Str
 
-        // Exports
+      // Exports
 
-        export { S }"
+      export {
+          S
+      }"
     `)
   })
 
-  test('When custom runtimeTypes set is used, it is respected', ({ expect }) => {
+  test('When custom runtimeTypes set is used, it is respected', () => {
     expect(
       renderFactory(
         {
@@ -497,23 +637,29 @@ describe.concurrent('Render', () => {
         { runtimeTypes: new Set(['Foo']) },
       ),
     ).toMatchInlineSnapshot(`
-        "import { Foo } from '@scale-codec/definition-runtime'
+      "import {
+          Foo
+      } from '@scale-codec/definition-runtime'
 
-        import type { Codec } from '@scale-codec/definition-runtime'
+      import type {
+          Codec
+      } from '@scale-codec/definition-runtime'
 
-        // Type: FooAlias
+      // Type: FooAlias
 
-        type FooAlias = Foo
+      type FooAlias = Foo
 
-        const FooAlias: Codec<FooAlias> = Foo
+      const FooAlias: Codec<FooAlias> = Foo
 
-        // Exports
+      // Exports
 
-        export { FooAlias }"
+      export {
+          FooAlias
+      }"
     `)
   })
 
-  test('When custom runtimeTypes set is used, default types are not available', ({ expect }) => {
+  test('When custom runtimeTypes set is used, default types are not available', () => {
     expect(() =>
       renderFactory(
         {
@@ -527,7 +673,7 @@ describe.concurrent('Render', () => {
     ).toThrowError()
   })
 
-  test('When type for void aliases is defined, it is used', ({ expect }) => {
+  test('When type for void aliases is defined, it is used', () => {
     expect(
       renderFactory(
         {
@@ -540,17 +686,21 @@ describe.concurrent('Render', () => {
         { typeForVoidAliasing: 'SomeCustomVoid' },
       ),
     ).toMatchInlineSnapshot(`
-        "// Type: EmptyTuple
+      "// Type: EmptyTuple
 
-        import { SomeCustomVoid as EmptyTuple } from '@scale-codec/definition-runtime'
+      import {
+          SomeCustomVoid as EmptyTuple
+      } from '@scale-codec/definition-runtime'
 
-        // Exports
+      // Exports
 
-        export { EmptyTuple }"
+      export {
+          EmptyTuple
+      }"
     `)
   })
 
-  test('When optimizeDyns param is set to true, it is applied', ({ expect }) => {
+  test('When optimizeDyns param is set to true, it is applied', () => {
     expect(
       renderFactory(
         {
@@ -570,33 +720,43 @@ describe.concurrent('Render', () => {
         },
       ),
     ).toMatchInlineSnapshot(`
-        "import { createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
+      "import {
+          createOptionCodec,
+          dynCodec
+      } from '@scale-codec/definition-runtime'
 
-        import type { EnumCodecAndFactory, Opaque, Option } from '@scale-codec/definition-runtime'
+      import type {
+          EnumCodecAndFactory,
+          Opaque,
+          RustOption
+      } from '@scale-codec/definition-runtime'
 
-        // Dynamic codecs
+      // Dynamic codecs
 
-        const __dyn_Bar = dynCodec(() => Bar)
+      const __dyn_Bar = dynCodec(() => Bar)
 
-        // Type: Foo
+      // Type: Foo
 
-        interface Foo__actual extends Option<Bar> {}
+      declare const __uid1__Foo__brand: unique symbol
 
-        interface Foo extends Opaque<Foo__actual, Foo> {}
+      type Foo = Opaque<RustOption<Bar>, typeof __uid1__Foo__brand>
 
-        const Foo: EnumCodecAndFactory<Foo> = createOptionCodec<Foo__actual, Foo>('Foo', __dyn_Bar)
+      const Foo: EnumCodecAndFactory<Foo> = createOptionCodec<Foo>('Foo', __dyn_Bar)
 
-        // Type: Bar
+      // Type: Bar
 
-        interface Bar__actual extends Option<Foo> {}
+      declare const __uid0__Bar__brand: unique symbol
 
-        interface Bar extends Opaque<Bar__actual, Bar> {}
+      type Bar = Opaque<RustOption<Foo>, typeof __uid0__Bar__brand>
 
-        const Bar: EnumCodecAndFactory<Bar> = createOptionCodec<Bar__actual, Bar>('Bar', Foo)
+      const Bar: EnumCodecAndFactory<Bar> = createOptionCodec<Bar>('Bar', Foo)
 
-        // Exports
+      // Exports
 
-        export { Bar, Foo }"
+      export {
+          Bar,
+          Foo
+      }"
     `)
   })
 })

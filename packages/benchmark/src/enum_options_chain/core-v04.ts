@@ -1,13 +1,12 @@
-import { Decode, DecodeResult, Encode, Enum, decodeEnum, encodeEnum } from 'scale-codec-core-v-4'
+import { DecodeResult, Option, decodeEnum, decodeStruct, encodeEnum, encodeStruct } from 'scale-codec-core-v-4'
 import { defineCodec } from '../types'
 
-export type Chain = Enum<{
-  None: null
-  Some: { value: Chain }
-}>
+export interface Chain {
+  inner: Option<Chain>
+}
 
 function encode(x: Chain): Uint8Array {
-  return encodeEnum(x, ENCODE_SCHEMA)
+  return encodeStruct(x, { inner: (x) => encodeEnum(x, ENCODE_SCHEMA) }, ['inner'])
 }
 
 const ENCODE_SCHEMA = {
@@ -16,7 +15,7 @@ const ENCODE_SCHEMA = {
 }
 
 function decode(x: Uint8Array): DecodeResult<Chain> {
-  return decodeEnum(x, DECODE_SCHEMA)
+  return decodeStruct(x, { inner: (x) => decodeEnum(x, DECODE_SCHEMA) }, ['inner'])
 }
 
 const DECODE_SCHEMA = {
