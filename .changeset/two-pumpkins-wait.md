@@ -3,7 +3,7 @@
 '@scale-codec/definition-runtime': major
 ---
 
-**refactor**: use local opaque type pattern, remove `type-fest` dep (and `Opaque` re-export); workaround enum issues with `EnumBox` type; update generation, generate less code
+**refactor**: use local opaque type pattern, remove `type-fest` dependency (and `Opaque` re-export accordingly); work around enum issues with `EnumBox` type; update generation to produce less code
 
 #### Opaque types
 
