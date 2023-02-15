@@ -66,3 +66,9 @@ const content = sample2.as('Baz')
 // So, for now it is an error
 // @ts-expect-error
 const tag: 'Baz' = sample2.tag
+
+const wrapped = { enum: sample }
+if (wrapped.enum.tag === 'Baz') {
+  // still narrows!
+  const { x, y } = wrapped.enum.content
+}
