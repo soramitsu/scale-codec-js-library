@@ -2,7 +2,7 @@
 '@scale-codec/enum': minor
 ---
 
-**feature**: add typed `Variant.as()` method to cast variant to a particular tag:
+**feature**: add typed `Variant.as()` method to cast a variant to a particular tag:
 
 ```ts
 declare const value: Enumerate<{

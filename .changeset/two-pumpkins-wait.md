@@ -7,7 +7,7 @@
 
 #### Opaque types
 
-Each generated codec type is **opaque** - it can be instantiated only through the codec factory or by explicit `as` conversion. It **was** implemented with `Opaque` type from `type-fest` library. Now it is implemented with the following technique:
+Each generated codec type is **opaque**, which means it can be instantiated only through the codec factory or by an explicit `as` conversion. It used to be implemented via `Opaque` type from `type-fest` library. Now it is implemented in the following way:
 
 ```ts
 declare const __opaqueTag: unique symbol
@@ -18,13 +18,13 @@ type LocalOpaque<Tag, T> = { [__opaqueTag]: Tag } & T
 type VecU32 = LocalOpaque<'VecU32', number[]>
 ```
 
-This approach allows to define types with same name in different generated modules and not to worry about their intersections.
+With this approach it is possible to define types with the same name in different generated modules without worrying about naming conflicts.
 
-**A consumer shouldn't update their code**, unless they used `Opaque` type on their own.
+**No code updates are required unless `Opaque` type was used.**
 
 #### Enum issues and `EnumBox`
 
-Previous enum generation approach had a set of drawbacks when it came to large namespaces and circular references. TypeScript computed wrong types for enum factories and frequently failed to resolve types in general because of circuits.
+The previous enum generation approach had a set of drawbacks when it came to large namespaces and circular references. TypeScript computed wrong types for enum factories and frequently failed to resolve types in general because of circuits.
 
 Now all enum codecs are based on `EnumBox<V>` type:
 
@@ -34,9 +34,9 @@ type EnumBox<V extends VariantAny> = {
 }
 ```
 
-With this approach, TypeScript is able to handle abovementioned problems, but it has a runtime drawback - **each enum is now wrapped** into `EnumBox`.
+With this approach, TypeScript is able to handle abovementioned problems. However, it has a runtime drawback: each enum is now wrapped into `EnumBox`.
 
-A consumer should add `.enum` property accessor in any place they work with enums:
+You should add `.enum` property accessor in any place you work with enums:
 
 ```ts
 import { OptionString } from './generated-definition'
