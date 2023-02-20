@@ -38,7 +38,7 @@ module.exports = {
     },
     {
       plugins: ['cypress'],
-      files: ['**/e2e-spa/cypress/**/*.spec.js'],
+      files: ['**/e2e-spa/cypress/**/*.cy.js'],
       env: {
         'cypress/globals': true,
       },

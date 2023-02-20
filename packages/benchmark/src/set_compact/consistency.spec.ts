@@ -1,7 +1,6 @@
 import { describe, test } from 'vitest'
 import { assertAllCodecsDecodeTheSame, assertAllCodecsEncodeTheSame } from '../../test/util'
 import core from './core'
-import coreV4 from './core-v4'
 // import polka from './polka'
 import runtime from './runtime'
 import {
@@ -9,7 +8,7 @@ import {
   // nativeToPolka
 } from './util'
 
-const CODECS = { core, coreV4, runtime }
+const CODECS = { core, runtime }
 
 describe.concurrent('Consistency', () => {
   test('Encode is consistent', () => {

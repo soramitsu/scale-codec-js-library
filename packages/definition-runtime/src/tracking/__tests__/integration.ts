@@ -12,7 +12,7 @@ import {
   SetU8,
   TupleMsgMsg,
   VecBool,
-} from '@scale-codec/definition-compiler/tests/samples/complexNamespace'
+} from '../../../../definition-compiler/tests/samples/complexNamespace'
 
 function valueFactory(): AllInOne {
   return AllInOne({

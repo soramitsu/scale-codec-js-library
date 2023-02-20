@@ -1,133 +1,47 @@
-import { defineConfigWithTheme, MarkdownOptions } from 'vitepress'
+import { defineConfig } from 'vitepress'
 import WindiCSS from 'vite-plugin-windicss'
 import path from 'path'
-import customHighlight from './highlight'
-
-const LIBS = ['core', 'enum', 'util', 'definition-compiler', 'definition-runtime']
-
-interface SidebarLink {
-  text: string
-  link?: string
-  children?: SidebarLink[]
-}
-
-function guideSidebar(): SidebarLink[] {
-  return [
-    {
-      text: 'Guide',
-      children: [
-        {
-          text: 'Introduction',
-          link: '/guide/introduction',
-        },
-        {
-          text: 'Handling Rust enums',
-          link: '/guide/enum',
-        },
-        {
-          text: 'Core library',
-          link: '/guide/core',
-        },
-        {
-          text: 'Compiler',
-          link: '/guide/compiler',
-        },
-      ],
-    },
-  ]
-}
-
-function apiSidebar(): SidebarLink[] {
-  return [
-    {
-      text: 'API',
-      children: [
-        {
-          text: 'Index',
-          link: '/api/',
-        },
-        ...LIBS.map((x) => ({
-          text: `@scale-codec/${x}`,
-          link: `/api/${x}`,
-        })),
-      ],
-    },
-  ]
-}
-
-function miscSidebar(): SidebarLink[] {
-  return [
-    {
-      text: 'Miscellaneous',
-      children: [
-        {
-          text: 'Benchmarks',
-          link: '/misc/benchmarks',
-        },
-        {
-          text: 'Maintanence',
-          link: '/misc/maintanence',
-        },
-      ],
-    },
-  ]
-}
-
-function nav() {
-  return [
-    {
-      text: 'Guide',
-      link: '/guide/introduction',
-      activeMatch: '^/guide/',
-    },
-    {
-      text: 'API',
-      link: '/api/',
-    },
-    {
-      text: 'Misc',
-      items: [
-        {
-          text: 'Benchmarks',
-          link: '/misc/benchmarks',
-        },
-        {
-          text: 'Maintanence',
-          link: '/misc/maintanence',
-        },
-      ],
-    },
-  ]
-}
+import { PUBLIC_PACKAGES_UNSCOPED } from '../../../etc/meta'
 
 export default async () =>
-  defineConfigWithTheme({
+  defineConfig({
     srcDir: 'src',
     base: process.env.PUBLIC_PATH || '/',
-    title: 'SCALE Codec JavaScript',
-    description: 'JavaScript Implementation of the SCALE Codec',
-    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+    title: 'Scale JS',
+    description: 'JavaScript SCALE Codec Implementation',
     markdown: {
       attrs: {
-        // `@microsoft/api-documenter` uses curly braces and markdown breaks because of it
+        // `typedoc` uses curly braces and markdown breaks because of it
         leftDelimiter: '.{',
         rightDelimiter: '}.',
       },
-      highlight: await customHighlight(),
-    } as MarkdownOptions & { highlight: any },
+    },
     themeConfig: {
-      repo: 'soramitsu/scale-codec-js-library',
-      docsDir: 'packages/docs/src',
-      editLinks: true,
-      editLinkText: 'Edit this page',
-      lastUpdated: 'Last Updated',
-
-      nav: nav(),
+      nav: [
+        {
+          text: 'API',
+          link: '/api/',
+          activeMatch: '/api/',
+        },
+        {
+          text: 'Benchmarks',
+          link: '/benchmarks',
+        },
+      ],
       sidebar: {
-        '/guide/': guideSidebar(),
-        '/api/': apiSidebar(),
-        '/misc/': miscSidebar(),
+        '/api/': [
+          {
+            text: 'API - Modules',
+            items: [
+              ...PUBLIC_PACKAGES_UNSCOPED.map((x) => ({
+                text: x,
+                link: `/api/modules/scale_codec_${x.replace('-', '_')}`,
+              })),
+            ],
+          },
+        ],
       },
+      socialLinks: [{ icon: 'github', link: 'https://github.com/soramitsu/scale-codec-js-library' }],
     },
     vite: {
       plugins: [WindiCSS({ config: path.resolve(__dirname, '../windi.config.ts') })],

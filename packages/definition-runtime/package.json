@@ -2,15 +2,7 @@
   "name": "@scale-codec/definition-runtime",
   "version": "3.0.0",
   "description": "Runtime for compiled result from @scale-codec/definition-compiler",
-  "keywords": [
-    "SCALE",
-    "scale-codec",
-    "typescript",
-    "namespace",
-    "codec",
-    "serialization",
-    "binary"
-  ],
+  "keywords": ["SCALE", "scale-codec", "typescript", "namespace", "codec", "serialization", "binary"],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -20,30 +12,34 @@
     "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
   },
   "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
-  "main": "src/lib.ts",
-  "publishConfig": {
-    "main": "./dist/lib.cjs",
-    "module": "./dist/lib.mjs",
-    "types": "./dist/lib.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/lib.d.ts",
-        "import": "./dist/lib.mjs",
-        "require": "./dist/lib.cjs"
-      },
-      "./*": "./*"
-    }
+  "main": "./dist/lib.cjs",
+  "module": "./dist/lib.mjs",
+  "types": "./dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.mjs",
+      "require": "./dist/lib.cjs"
+    },
+    "./*": "./*"
   },
-  "files": [
-    "dist",
-    "CHANGELOG.md"
-  ],
+  "typedoc": {
+    "entryPoint": "./src/lib.ts",
+    "tsconfig": "../../tsconfig.build.json"
+  },
+  "files": ["dist", "CHANGELOG.md"],
   "dependencies": {
     "@scale-codec/core": "workspace:^2.0.0",
     "@scale-codec/util": "workspace:^1.1.1",
     "fmt-subs": "^1.1.1"
   },
   "devDependencies": {
-    "@scale-codec/definition-compiler": "workspace:^3.0.0"
+    "@scale-codec/definition-compiler": "workspace:^3.0.0",
+    "tsx": "^3.12.3",
+    "vite": "^4.1.1"
+  },
+  "scripts": {
+    "logger-demo:vite": "vite dev logger-demo",
+    "logger-demo:node": "tsx logger-demo/main"
   }
 }

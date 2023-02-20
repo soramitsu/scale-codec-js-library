@@ -1,5 +1,40 @@
 # @scale-codec/definition-runtime ![build status](https://img.shields.io/github/checks-status/soramitsu/scale-codec-js-library/master) ![version](https://img.shields.io/npm/v/@scale-codec/definition-runtime) ![license](https://img.shields.io/npm/l/@scale-codec/definition-runtime)
 
-Runtime for `@scale-codec/definition-compiler`.
+Runtime for `@scale-codec/definition-compiler`. Includes standard codecs (such as `U8`, `Str`, `Bool`, `Unit` etc), codec factories and [logging facilities](#tracking-and-logging).
 
-[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/compiler)
+## Installation
+
+Available on NPM:
+
+```shell
+npm i @scale-codec/definition-compiler
+```
+
+## Usage
+
+Usually, it is paired with the output of the compiler - it is the library that the compiled code imports utilities from.
+
+For advanced usage you can explore the package's [API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_definition_runtime).
+
+## Tracking and Logging
+
+All codecs use tracking API. This API could be used to track how decoding (there is no need to track encoding for now) goes, which might be useful for debugging. In order to see what is happening, a _tracker_ should be mounted. No any tracker is mounted by default, and the runtime cost in that case is minimal.
+
+This library provides `Logger`[^1] - a tracker implementation that logs decoding to the console. The following code creates a logger instance and "mounts" it as a current tracker:
+
+```ts
+import { Logger } from '@scale-codec/definition-runtime'
+
+// some options could be passed
+new Logger().mount()
+```
+
+[^1]: while `Logger` has quite large amount of code within it (more than the rest of the runtime library), **it is tree-shakeable**, i.e. if you bundle your code which doesn't use `Logger`, it will be tree-shaken.
+
+After it is mounted, it will print debug information about how encoding/decoding is going. Here are screenshots of how it looks in Node.js and in Browser:
+
+![in Node.js](logger-demo/img/node.png)
+
+![in Firefox Devtools](logger-demo/img/firefox.png)
+
+Tracking API is exposed from the library and could be used for custom implementations as well.

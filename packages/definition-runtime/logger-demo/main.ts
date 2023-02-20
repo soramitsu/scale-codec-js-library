@@ -1,25 +1,28 @@
 import {
-  Enum,
-  EnumCodec,
+  CodecEnum,
+  CodecStruct,
+  EnumBox,
+  Enumerate,
   Logger,
   Str,
-  StructCodec,
   U8,
   createEnumCodec,
   createStructCodec,
-} from '@scale-codec/definition-runtime'
+} from '../src/lib'
 
 // Codecs
 
-const Gender: EnumCodec<'Male' | 'Female'> = createEnumCodec('Gender', [
+type Gender = EnumBox<Enumerate<{ Male: []; Female: [] }>>
+
+const Gender: CodecEnum<Gender> = createEnumCodec('Gender', [
   [0, 'Male'],
   [1, 'Female'],
 ])
 
-const Person: StructCodec<{
-  name: typeof Str
-  age: typeof U8
-  gender: typeof Gender
+const Person: CodecStruct<{
+  name: Str
+  age: U8
+  gender: Gender
 }> = createStructCodec('Person', [
   ['name', Str],
   ['age', U8],
@@ -30,15 +33,13 @@ const Person: StructCodec<{
 
 new Logger({
   logDecodeSuccesses: true,
-
-  // default
   logDecodeErrors: true,
 }).mount()
 
 const buff = Person.toBuffer({
   name: 'John',
   age: 55,
-  gender: Enum.variant('Male'),
+  gender: Gender('Male'),
 })
 
 Person.fromBuffer(buff)

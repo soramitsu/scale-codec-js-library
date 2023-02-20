@@ -11,14 +11,14 @@ export * from './util'
 
 // re-export enums
 export {
-  Variant,
-  EnumRecord,
+  type Variant,
+  type EnumRecord,
   variant,
-  Enumerate,
-  EnumOf,
-  VariantAny,
-  VariantToFactoryArgs,
-  VariantFactoryFn,
-  RustResult,
-  RustOption,
+  type Enumerate,
+  type EnumOf,
+  type VariantAny,
+  type VariantToFactoryArgs,
+  type VariantFactoryFn,
+  type RustResult,
+  type RustOption,
 } from '@scale-codec/enum'

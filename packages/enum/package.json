@@ -2,11 +2,7 @@
   "name": "@scale-codec/enum",
   "version": "2.0.0",
   "description": "Simple JavaScript abstraction around Rust Enums",
-  "keywords": [
-    "rust",
-    "enum",
-    "typescript"
-  ],
+  "keywords": ["rust", "enum", "typescript"],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -16,25 +12,23 @@
     "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
   },
   "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
-  "main": "src/lib.ts",
-  "publishConfig": {
-    "main": "./dist/lib.cjs",
-    "module": "./dist/lib.mjs",
-    "types": "./dist/lib.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/lib.d.ts",
-        "import": "./dist/lib.mjs",
-        "require": "./dist/lib.cjs"
-      },
-      "./*": "./*"
-    }
+  "main": "./dist/lib.cjs",
+  "module": "./dist/lib.mjs",
+  "types": "./dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.mjs",
+      "require": "./dist/lib.cjs"
+    },
+    "./*": "./*"
   },
-  "files": [
-    "dist",
-    "CHANGELOG.md"
-  ],
+  "typedoc": {
+    "entryPoint": "./src/lib.ts",
+    "tsconfig": "../../tsconfig.build.json"
+  },
+  "files": ["dist", "CHANGELOG.md"],
   "devDependencies": {
-    "ts-pattern": "^4.1.3"
+    "ts-pattern": "^4.1.4"
   }
 }

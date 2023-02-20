@@ -10,15 +10,12 @@
     "strictNullChecks": true,
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@scale-codec/*": ["./packages/*/src/lib.ts"]
+    }
   },
   // Include every .ts file in the project, for development
-  "exclude": [
-    "**/dist",
-    "./types",
-    "./e2e-spa",
-    "./packages/namespace*/**",
-    // temporary
-    "./packages/docs/**"
-  ]
+  // But exclude this:
+  "exclude": ["**/dist", "./tsc-build", "./e2e-spa", "./packages/namespace*/**"]
 }
