@@ -11,7 +11,7 @@ import {
 
 const CODECS = { core, coreV4, runtime }
 
-describe.concurrent('Render imports', () => {
+describe.concurrent('Consistency', () => {
   test('Encode is consistent', () => {
     assertAllCodecsEncodeTheSame(factory(), CODECS)
   })

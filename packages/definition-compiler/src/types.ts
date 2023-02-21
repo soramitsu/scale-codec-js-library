@@ -18,9 +18,9 @@ export interface RenderNamespaceDefinitionParams {
   rollupSingleTuplesIntoAliases?: boolean
 
   /**
-   * @default 'Void'
+   * @default 'Unit'
    */
-  typeForVoidAliasing?: string
+  typeForUnitAliasing?: string
 
   /**
    * Enable sorting of types to minimize amount of allocated dynamic references between them

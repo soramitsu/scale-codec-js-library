@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { RustOption, variant } from './lib'
 
-describe.concurrent('Enum', () => {
+describe('Enum', () => {
   type OptionString = RustOption<string>
 
   test('variant() with 1 arg creates empty enum', () => {
@@ -18,7 +18,7 @@ describe.concurrent('Enum', () => {
     expect(item.content).toBe('foobar')
   })
 
-  describe.concurrent('JSON representation', () => {
+  describe('JSON representation', () => {
     const jsonify = (x: unknown) => JSON.parse(JSON.stringify(x))
 
     test('JSON repr of empty enum', ({ expect }) => {
@@ -40,5 +40,27 @@ describe.concurrent('Enum', () => {
 
   test('variant with `undefined` content is not unit', () => {
     expect(variant<RustOption<undefined>>('Some', undefined).unit).toBe(false)
+  })
+
+  test('when contentful variant is casted to its actual tag, it is ok', () => {
+    expect(variant<RustOption<string>>('Some', 'foo').as('Some')).toEqual('foo')
+  })
+
+  test('when empty variant is casted to not its actual tag, it throws', () => {
+    expect(() => variant('Pop').as('Push')).toThrowErrorMatchingInlineSnapshot(
+      '"Cannot cast enum variant \\"Pop\\" as \\"Push\\""',
+    )
+  })
+
+  test('when contentful variant is casted to not its actual tag, it throws', () => {
+    expect(() => variant('Foo', 'bAr').as('Baz')).toThrowErrorMatchingInlineSnapshot(
+      '"Cannot cast enum variant \\"Foo(bAr)\\" as \\"Baz\\""',
+    )
+  })
+
+  test('when empty variant is casted to its actual tag, it throws', () => {
+    expect(() => variant<RustOption<string>>('None').as('None')).toThrowErrorMatchingInlineSnapshot(
+      '"Cannot cast enum variant \\"None\\" to its content because it is unit"',
+    )
   })
 })

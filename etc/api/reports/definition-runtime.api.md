@@ -7,15 +7,11 @@
 import { Decode } from '@scale-codec/core';
 import { Encode } from '@scale-codec/core';
 import { Fmt } from 'fmt-subs';
-import { Opaque } from 'type-fest';
 import { RustOption } from '@scale-codec/core';
 import { RustResult } from '@scale-codec/core';
 import { VariantAny } from '@scale-codec/core';
 import { VariantToFactoryArgs } from '@scale-codec/core';
 import { Walker } from '@scale-codec/core';
-
-// @public (undocumented)
-export type ArrayCodecAndFactory<T extends Array<any>, U extends T> = Codec<U> & DefineOpaque<T, U>;
 
 // @public (undocumented)
 export type Bool = boolean;
@@ -41,6 +37,21 @@ export interface Codec<Encoded, Decoded = Encoded> {
 // @public (undocumented)
 export type CodecAny = Codec<any, any>;
 
+// @public (undocumented)
+export type CodecArray<T extends any[]> = Codec<T> & DefineOpaque<T[number][], T>;
+
+// @public (undocumented)
+export type CodecEnum<E extends EnumBox<any>> = Codec<E> & EnumBoxToFactory<E>;
+
+// @public (undocumented)
+export type CodecMap<T extends Map<any, any>> = Codec<T> & DefineOpaque<T extends Map<infer K, infer V> ? Map<K, V> : never, T>;
+
+// @public (undocumented)
+export type CodecSet<T extends Set<any>> = Codec<T> & DefineOpaque<T extends Set<infer U> ? Set<U> : never, T>;
+
+// @public (undocumented)
+export type CodecStruct<T> = Codec<T> & DefineOpaque<FilterStringKeys<T>, T>;
+
 // @public
 export interface CodecTracker {
     decode?: TrackDecodeFn;
@@ -60,37 +71,34 @@ export type Compact = bigint;
 export const Compact: Codec<bigint, bigint>;
 
 // @public (undocumented)
-export function createArrayCodec<T extends Array<any>, U extends T>(name: string, itemCodec: Codec<T extends Array<infer I> ? I : never>, len: number): ArrayCodecAndFactory<T, U>;
+export function createArrayCodec<T extends Array<any>>(name: string, itemCodec: Codec<T extends Array<infer I> ? I : never>, len: number): CodecArray<T>;
 
 // @public (undocumented)
 export function createArrayU8Codec(name: string, len: number): Codec<Uint8Array>;
 
 // @public (undocumented)
-export function createEnumCodec<T extends VariantAny>(name: string, schema: [discriminant: number, tag: string, codec?: Codec<any>][]): EnumCodecAndFactory<T>;
+export function createEnumCodec<E extends EnumBox<any>>(name: string, schema: EnumCodecSchema): CodecEnum<E>;
 
 // @public (undocumented)
-export function createMapCodec<T extends Map<any, any>, U extends T>(name: string, keyCodec: Codec<T extends Map<infer K, any> ? K : never>, valueCodec: Codec<T extends Map<any, infer V> ? V : never>): MapCodecAndFactory<T, U>;
+export function createMapCodec<T extends Map<any, any>>(name: string, keyCodec: Codec<T extends Map<infer K, any> ? K : never>, valueCodec: Codec<T extends Map<any, infer V> ? V : never>): CodecMap<T>;
 
 // @public (undocumented)
-export type CreateOpaqueEnumFn<V extends VariantAny> = (...args: VariantToFactoryArgs<V>) => V;
+export function createOptionCodec<T>(name: string, someCodec: Codec<T>): CodecEnum<EnumBox<RustOption<T>>>;
 
 // @public (undocumented)
-export function createOptionCodec<T extends RustOption<any>>(name: string, someCodec: Codec<T extends RustOption<infer V> ? V : never>): EnumCodecAndFactory<T>;
+export function createResultCodec<Ok, Err>(name: string, okCodec: Codec<Ok>, errCodec: Codec<Err>): CodecEnum<EnumBox<RustResult<Ok, Err>>>;
 
 // @public (undocumented)
-export function createResultCodec<T extends RustResult<any, any>>(name: string, okCodec: Codec<T extends RustResult<infer Ok, any> ? Ok : never>, errCodec: Codec<T extends RustResult<any, infer Err> ? Err : never>): EnumCodecAndFactory<T>;
+export function createSetCodec<T extends Set<any>>(name: string, itemCodec: Codec<T extends Set<infer V> ? V : never>): CodecSet<T>;
 
 // @public (undocumented)
-export function createSetCodec<T extends Set<any>, U extends T>(name: string, itemCodec: Codec<T extends Set<infer V> ? V : never>): SetCodecAndFactory<T, U>;
+export function createStructCodec<T>(name: string, orderedCodecs: StructCodecsSchema<FilterStringKeys<T>>): CodecStruct<T>;
 
 // @public (undocumented)
-export function createStructCodec<T, U extends T>(name: string, orderedCodecs: StructCodecsSchema<T>): StructCodecAndFactory<T, U>;
+export function createTupleCodec<T extends Array<any>, U>(name: string, codecs: TupleCodecs<T>): Codec<U> & DefineOpaque<T, U>;
 
 // @public (undocumented)
-export function createTupleCodec<T extends Array<any>, U extends T>(name: string, codecs: TupleCodecs<T>): Codec<U> & DefineOpaque<T, U>;
-
-// @public (undocumented)
-export function createVecCodec<T extends any[], U extends T>(name: string, itemCodec: Codec<T extends (infer V)[] ? V : never>): ArrayCodecAndFactory<T, U>;
+export function createVecCodec<T extends any[]>(name: string, itemCodec: Codec<T extends (infer V)[] ? V : never>): CodecArray<T>;
 
 // @public (undocumented)
 export class DecodeTrace {
@@ -136,13 +144,27 @@ export class DecodeTraceCollector {
 }
 
 // @public
-export type DefineOpaque<T, U extends T> = (actual: T) => U;
+export type DefineOpaque<T, U> = (actual: T) => U;
 
 // @public (undocumented)
 export function dynCodec<C extends CodecAny>(getter: () => C): Codec<CodecValueEncodable<C>, CodecValueDecoded<C>>;
 
 // @public (undocumented)
-export type EnumCodecAndFactory<T extends VariantAny> = Codec<T> & CreateOpaqueEnumFn<T>;
+export interface EnumBox<V extends VariantAny> {
+    // (undocumented)
+    enum: V;
+}
+
+// @public (undocumented)
+export type EnumBoxToFactory<E extends EnumBox<any>> = E extends EnumBox<infer V extends VariantAny> ? (...args: VariantToFactoryArgs<V>) => E : never;
+
+// @public (undocumented)
+export type EnumCodecSchema = [discriminant: number, tag: string, codec?: Codec<any>][];
+
+// @public (undocumented)
+export type FilterStringKeys<T> = {
+    [K in keyof T & string]: T[K];
+};
 
 // @public (undocumented)
 export function formatWalkerStep(params: FormatWalkerStepParams): string;
@@ -211,15 +233,7 @@ export interface LoggerConfig {
 }
 
 // @public (undocumented)
-export type MapCodecAndFactory<T extends Map<any, any>, U extends T> = Codec<U> & DefineOpaque<T, U>;
-
-export { Opaque }
-
-// @public (undocumented)
 export type RefineDecodeLocFn = <T>(loc: string, headlessDecode: () => T) => T;
-
-// @public (undocumented)
-export type SetCodecAndFactory<T extends Set<any>, U extends T> = Codec<U> & DefineOpaque<T, U>;
 
 // @public
 export function setCurrentTracker(tracker: null | CodecTracker): void;
@@ -229,9 +243,6 @@ export type Str = string;
 
 // @public (undocumented)
 export const Str: Codec<string, string>;
-
-// @public (undocumented)
-export type StructCodecAndFactory<T, U extends T> = Codec<U> & DefineOpaque<T, U>;
 
 // @public (undocumented)
 export type StructCodecsSchema<T> = {
@@ -296,16 +307,16 @@ export type U8 = number;
 export const U8: Codec<number, number>;
 
 // @public (undocumented)
+export type Unit = null;
+
+// @public (undocumented)
+export const Unit: Codec<null, null>;
+
+// @public (undocumented)
 export type VecU8 = Uint8Array;
 
 // @public (undocumented)
 export const VecU8: Codec<Uint8Array, Uint8Array>;
-
-// @public (undocumented)
-export type Void = null;
-
-// @public (undocumented)
-export const Void: Codec<null, null>;
 
 
 export * from "@scale-codec/core";

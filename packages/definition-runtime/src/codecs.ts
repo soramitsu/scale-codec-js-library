@@ -72,8 +72,8 @@ const Str = trackableCodec<Str>('str', encodeStr, decodeStr)
 type Bool = boolean
 const Bool = trackableCodec<Bool>('bool', encodeBool, decodeBool)
 
-type Void = null
-const Void = trackableCodec<Void>('void', encodeUnit, decodeUnit)
+type Unit = null
+const Unit = trackableCodec<Unit>('()', encodeUnit, decodeUnit)
 
 type VecU8 = Uint8Array
 const VecU8 = trackableCodec<VecU8>('VecU8', encodeUint8Vec, decodeUint8Vec)
@@ -81,4 +81,4 @@ const VecU8 = trackableCodec<VecU8>('VecU8', encodeUint8Vec, decodeUint8Vec)
 type Compact = bigint
 const Compact = trackableCodec<Compact>('compact', encodeCompact, decodeCompact)
 
-export { U8, I8, U16, I16, U32, I32, U64, I64, U128, I128, Str, Void, VecU8, Bool, Compact }
+export { U8, I8, U16, I16, U32, I32, U64, I64, U128, I128, Str, Unit, VecU8, Bool, Compact }

@@ -8,7 +8,7 @@ import { factory, factoryPolka } from './util'
 
 const CODECS = { core, coreV04, runtime }
 
-describe.concurrent('Render imports', () => {
+describe.concurrent('Consistency', () => {
   test('Encode is consistent', () => {
     assertAllCodecsEncodeTheSame(factory(), CODECS)
   })
