@@ -1,5 +1,28 @@
 # @scale-codec/enum
 
+## 2.1.0
+
+### Minor Changes
+
+- 7da2814: **feature**: add typed `Variant.as()` method to cast a variant to a particular tag:
+
+  ```ts
+  declare const value: Enumerate<{
+    Foo: [string]
+    Bar: [number]
+    Baz: []
+  }>
+
+  if (value.tag === 'Foo') {
+    const str: string = value.as('Foo')
+
+    // type error
+    const num: number = value.as('Bar') // => never
+  }
+
+  value.as('Baz') // => never
+  ```
+
 ## 2.0.0
 
 ### Major Changes
@@ -33,7 +56,7 @@
     User: [{ name: string }]
   }>
   ```
-  
+
   Once enum type is declared, it could be used to create its **variants**.
 
   **Creating variants in Rust:**
@@ -65,53 +88,52 @@
     console.log(msg.content.trim())
   }
   ```
-  
+
   There are other changes as well, but that's all for the major ones.
 
+#### Why the change was made
 
-  #### Why the change was made
+The goal is to be consistent with [TypeScript support of discriminated unions](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions). As a consequence, TypeScript can now narrow types and check for exhaustiveness in code that works with enums. In other words, **new enums are type-stronger**.
 
-  The goal is to be consistent with [TypeScript support of discriminated unions](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions). As a consequence, TypeScript can now narrow types and check for exhaustiveness in code that works with enums. In other words, **new enums are type-stronger**.
+#### How a consumer should update their code
 
-  #### How a consumer should update their code
+- Re-write enum declarations:
 
-  - Re-write enum declarations:
+  ```ts
+  // before
+  type MyEnum = Enum<'None' | ['Some', string]>
 
-    ```ts
-    // before
-    type MyEnum = Enum<'None' | ['Some', string]>
+  // after
+  type MyEnum = Enum<{ None: []; Some: [string] }>
+  ```
 
-    // after
-    type MyEnum = Enum<{ None: []; Some: [string] }>
-    ```
+- Create variants with `variant` helper:
 
-  - Create variants with `variant` helper:
+  ```ts
+  // before
+  const value1: MyEnum = Enum.variant('Some', 'foo')
 
-    ```ts
-    // before
-    const value1: MyEnum = Enum.variant('Some', 'foo')
+  // after
+  const value2 = variant<MyEnum>('Some', 'foo')
+  const value3: MyEnum = variant('Some', 'foo')
+  ```
 
-    // after
-    const value2 = variant<MyEnum>('Some', 'foo')
-    const value3: MyEnum = variant('Some', 'foo')
-    ```
+- Replace `Option` and `Result` imports with `RustOption` and `RustResult`.
 
-  - Replace `Option` and `Result` imports with `RustOption` and `RustResult`.
+- Remove `.match()` usage. If you need real pattern-matching in TypeScript, consider using `ts-pattern` library:
 
-  - Remove `.match()` usage. If you need real pattern-matching in TypeScript, consider using `ts-pattern` library:
+  ```ts
+  import { match } from 'ts-pattern'
+  import { VariantOf, RustOption } from '@scale-codec/enum'
 
-    ```ts
-    import { match } from 'ts-pattern'
-    import { VariantOf, RustOption } from '@scale-codec/enum'
+  declare const value: VariantOf<RustOption<string>>
 
-    declare const value: VariantOf<RustOption<string>>
-
-    const show = match(value)
-      .with({ tag: 'None' }, () => 'Nothing')
-      .with({ tag: 'Some', content: 'foo' }, () => 'Foo!')
-      .with({ tag: 'Some' }, ({ content }) => `Some(${content})`)
-      .exhaustive()
-    ```
+  const show = match(value)
+    .with({ tag: 'None' }, () => 'Nothing')
+    .with({ tag: 'Some', content: 'foo' }, () => 'Foo!')
+    .with({ tag: 'Some' }, ({ content }) => `Some(${content})`)
+    .exhaustive()
+  ```
 
 ## 1.1.1
 
