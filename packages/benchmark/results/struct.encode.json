@@ -1,0 +1,39 @@
+{
+  "name": "Struct (encode)",
+  "date": "2023-02-22T00:58:23.105Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 699854,
+      "margin": 0.28,
+      "percentSlower": 0.06
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 700291,
+      "margin": 0.17,
+      "percentSlower": 0
+    },
+    {
+      "name": "[@polkadot/types][9.14.2]",
+      "ops": 131859,
+      "margin": 0.32,
+      "percentSlower": 81.17
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 537947,
+      "margin": 0.11,
+      "percentSlower": 23.18
+    }
+  ],
+  "fastest": {
+    "name": "[@scale-codec/definition-runtime][3.0.0]",
+    "index": 1
+  },
+  "slowest": {
+    "name": "[@polkadot/types][9.14.2]",
+    "index": 2
+  }
+}

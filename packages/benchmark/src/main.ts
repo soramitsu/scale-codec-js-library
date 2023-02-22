@@ -7,10 +7,10 @@ import suite_struct from './struct'
 
 async function main() {
   await suite_array_u64_l32()
-  // await suite_set_compact()
-  // await suite_map_str_bool()
-  // await suite_enum_options_chain()
-  // await suite_struct()
+  await suite_set_compact()
+  await suite_map_str_bool()
+  await suite_enum_options_chain()
+  await suite_struct()
 }
 
 main().catch((err) => {

@@ -8,13 +8,15 @@
     "start:run": "node dist/main.js"
   },
   "devDependencies": {
-    "@polkadot/types": "7.7.1",
-    "@polkadot/types-codec": "7.7.1",
+    "@polkadot/types": "9.14.2",
+    "@polkadot/types-codec": "9.14.2",
     "@scale-codec/core": "workspace:*",
     "@scale-codec/definition-runtime": "workspace:*",
+    "@scale-codec/util": "workspace:*",
     "benny": "^3.7.1",
     "consola": "^2.15.3",
     "esbuild": "^0.17.7",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "scale-codec": "0.10.2"
   }
 }

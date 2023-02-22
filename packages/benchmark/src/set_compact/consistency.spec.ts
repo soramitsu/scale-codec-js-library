@@ -7,10 +7,11 @@ import {
   factory,
   // nativeToPolka
 } from './util'
+import parity from './parity'
 
-const CODECS = { core, runtime }
+const CODECS = { core, runtime, parity }
 
-describe.concurrent('Consistency', () => {
+describe('Consistency', () => {
   test('Encode is consistent', () => {
     assertAllCodecsEncodeTheSame(factory(), CODECS)
   })

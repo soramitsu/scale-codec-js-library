@@ -1,0 +1,39 @@
+{
+  "name": "Array [u64; 32] (encode)",
+  "date": "2023-02-22T00:55:38.943Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 1168047,
+      "margin": 0.17,
+      "percentSlower": 0.54
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 1174392,
+      "margin": 1.03,
+      "percentSlower": 0
+    },
+    {
+      "name": "[@polkadot/types][9.14.2]",
+      "ops": 187031,
+      "margin": 0.92,
+      "percentSlower": 84.07
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 400477,
+      "margin": 0.14,
+      "percentSlower": 65.9
+    }
+  ],
+  "fastest": {
+    "name": "[@scale-codec/definition-runtime][3.0.0]",
+    "index": 1
+  },
+  "slowest": {
+    "name": "[@polkadot/types][9.14.2]",
+    "index": 2
+  }
+}
