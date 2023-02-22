@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
-import WindiCSS from 'vite-plugin-windicss'
 import path from 'path'
 import { PUBLIC_PACKAGES_UNSCOPED } from '../../../etc/meta'
+import vitePluginBenchReports from './vite-plugin-bench-reports'
 
 export default async () =>
   defineConfig({
@@ -44,7 +44,6 @@ export default async () =>
       socialLinks: [{ icon: 'github', link: 'https://github.com/soramitsu/scale-codec-js-library' }],
     },
     vite: {
-      plugins: [WindiCSS({ config: path.resolve(__dirname, '../windi.config.ts') })],
       build: {
         target: 'es2020',
       },
@@ -53,5 +52,6 @@ export default async () =>
           allow: [path.resolve(__dirname, '../../benchmark/results')],
         },
       },
+      plugins: [vitePluginBenchReports()],
     },
   })

@@ -1,5 +1,5 @@
 import { expect } from 'vitest'
-import { CodecSimplified } from '../src/types'
+import { CodecSimplified } from '../src/codec'
 import { toHex } from '@scale-codec/util'
 
 export function assertAllKeysHaveTheSameValue<T>(rec: Record<string, T>, value?: T) {

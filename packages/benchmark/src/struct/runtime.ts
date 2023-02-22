@@ -1,5 +1,5 @@
 import { Bool, createStructCodec } from '@scale-codec/definition-runtime'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 import { factory } from './util'
 
 const SampleCodec = createStructCodec(

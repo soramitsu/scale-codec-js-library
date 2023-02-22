@@ -1,5 +1,5 @@
 import * as Scale from 'scale-codec'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 export type Chain = { tag: 'None' } | { tag: 'Some'; some: Chain }
 

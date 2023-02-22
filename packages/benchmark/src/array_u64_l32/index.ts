@@ -4,7 +4,7 @@ import polka from './polka'
 import scaleCodecCore from './scale-codec-core'
 import scaleCodecRuntime from './scale-codec-runtime'
 import { nativeToPolka } from './util'
-import { caseName, encodeDecodeSuitePair } from '../shared'
+import { caseName, encodeDecodeSuitePair } from '../bench-util'
 import parity from './parity'
 
 export default async function () {

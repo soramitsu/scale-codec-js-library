@@ -1,37 +1,16 @@
-import {
-  PKG_CORE,
-  PKG_PARITY,
-  PKG_POLKA,
-  PKG_RUNTIME,
-  Pkg,
-  VERSION_CORE_CURRENT,
-  VERSION_PARITY,
-  VERSION_POLKA,
-  VERSION_RUNTIME_CURRENT,
-} from './const'
 import { match } from 'ts-pattern'
-import { add, complete, cycle, save, suite } from 'benny'
+import { version as VERSION_CORE_CURRENT } from '@scale-codec/core/package.json'
+import { version as VERSION_RUNTIME_CURRENT } from '@scale-codec/definition-runtime/package.json'
+import { devDependencies as thispkgdeps } from '../package.json'
 
-export function saveCustom(name: string) {
-  return save({
-    folder: 'results',
-    file: name,
-    format: 'json',
-  })
-}
+const { '@polkadot/types': VERSION_POLKA, 'scale-codec': VERSION_PARITY } = thispkgdeps
 
-type BennyAddReturn = ReturnType<typeof add>
+export type Pkg = typeof PKG_CORE | typeof PKG_RUNTIME | typeof PKG_POLKA | typeof PKG_PARITY
 
-// eslint-disable-next-line max-params
-export async function encodeDecodeSuitePair(
-  name: string,
-  fileName: string,
-  encodeCases: BennyAddReturn[],
-  decodeCases: BennyAddReturn[],
-) {
-  await suite(`${name} (encode)`, ...encodeCases, cycle(), complete(), saveCustom(fileName + '.encode'))
-  await suite(`${name} (decode)`, ...decodeCases, cycle(), complete(), saveCustom(fileName + '.decode'))
-}
+export const PKG_CORE = '@scale-codec/core'
+export const PKG_RUNTIME = '@scale-codec/definition-runtime'
+export const PKG_POLKA = '@polkadot/types'
+export const PKG_PARITY = 'parity-scale-codec'
 
 export function caseName(pkg: 'core' | 'runtime' | 'polka' | 'parity'): string {
   type Tuple = [Pkg, string]

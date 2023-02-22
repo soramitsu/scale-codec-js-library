@@ -1,5 +1,5 @@
 import { TypeRegistry, U64, VecFixed } from '@polkadot/types'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 export const reg = new TypeRegistry()
 export const Arr = reg.createClass('[u64; 32]')

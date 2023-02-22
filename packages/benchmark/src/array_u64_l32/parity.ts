@@ -1,5 +1,5 @@
 import * as Scale from 'scale-codec'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 const codec = Scale.sizedArray(Scale.u64, 32)
 

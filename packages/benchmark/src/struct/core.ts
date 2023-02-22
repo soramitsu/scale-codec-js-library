@@ -7,7 +7,7 @@ import {
   decodeBool,
   encodeBool,
 } from '@scale-codec/core'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 import { factory } from './util'
 
 type Rec = Record<string, boolean>

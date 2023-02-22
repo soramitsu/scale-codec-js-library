@@ -1,5 +1,5 @@
 import * as Scale from 'scale-codec'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 const codec = Scale.set(Scale.compact(Scale.u128))
 

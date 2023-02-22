@@ -1,5 +1,5 @@
 import { add } from 'benny'
-import { caseName, encodeDecodeSuitePair } from '../shared'
+import { caseName, encodeDecodeSuitePair } from '../bench-util'
 import core from './core'
 import runtime from './runtime'
 import { factory } from './util'

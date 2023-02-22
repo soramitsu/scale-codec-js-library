@@ -1,5 +1,5 @@
 import { add } from 'benny'
-import { caseName, encodeDecodeSuitePair } from '../shared'
+import { caseName, encodeDecodeSuitePair } from '../bench-util'
 import core from './core'
 import parity from './parity'
 import polka from './polka'

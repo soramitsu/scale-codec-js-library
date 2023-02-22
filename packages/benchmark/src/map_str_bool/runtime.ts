@@ -1,5 +1,5 @@
 import { Bool, Str, createMapCodec } from '@scale-codec/definition-runtime'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 type MyMap = Map<Str, Bool>
 

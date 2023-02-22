@@ -7,7 +7,7 @@ import {
   encodeBool,
   encodeStr,
 } from '@scale-codec/core'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 const encoder = createMapEncoder(encodeStr, encodeBool)
 const decoder = createMapDecoder(decodeStr, decodeBool)
