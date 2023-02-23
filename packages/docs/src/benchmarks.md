@@ -1,5 +1,14 @@
 # Benchmarks
 
+Benchmark is driven by [`benny`](https://www.npmjs.com/package/benny) framework.
+
+Libraries included:
+
+- `@scale-codec/core` from this project
+- `@scale-codec/definition-runtime` also from this project. It is based on the core library, but provides some higher-level utilities, so it is interesting to see how do they affect performance.
+- [`@polkadot/types`](https://www.npmjs.com/package/@polkadot/types/v/9.14.2)
+- `parity-scale-codec`, or [`scale-codec` on NPM](https://www.npmjs.com/package/scale-codec/v/0.10.2), or [`scale-ts` in GitHub](https://github.com/paritytech/scale-ts/tree/5a6465ac7bf6135f12ef5392a6782343b7f88697)
+
 ## `[u64; 32]`
 
 **Encode:**
@@ -25,6 +34,30 @@ A struct with 40 boolean fields is used as a sample.
 **Decode:**
 
 <BenchmarkReport report-key="struct.decode" />
+
+## Nested structs with a single `u32` value
+
+**Encode:**
+
+<BenchmarkReport report-key="struct-deep-u32.encode" />
+
+**Decode:**
+
+<BenchmarkReport report-key="struct-deep-u32.decode" />
+
+## Nested zero-size structs
+
+:::info
+This case is not very realistic, by the way.
+:::
+
+**Encode:**
+
+<BenchmarkReport report-key="struct-deep-unit.encode" />
+
+**Decode:**
+
+<BenchmarkReport report-key="struct-deep-unit.decode" />
 
 ## Deep nested enums
 

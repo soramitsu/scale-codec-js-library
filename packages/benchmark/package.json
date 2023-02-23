@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "run-s start:build start:run",
-    "start:build": "esbuild --bundle src/main.ts --outfile=dist/main.js --platform=node --target=esnext --external:benny",
+    "start:build": "esbuild --bundle src/main.ts --outfile=dist/main.js --platform=node --target=esnext --external:benny --define:import.meta.vitest=undefined",
     "start:run": "node dist/main.js"
   },
   "devDependencies": {

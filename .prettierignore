@@ -8,3 +8,4 @@ packages/rust-samples
 e2e-spa/runtime-rollup
 e2e-spa/src/namespace.ts
 packages/docs/src/api
+/packages/docs/.vitepress/cache

@@ -1,0 +1,33 @@
+{
+  "name": "Deep zero-size struct (decode)",
+  "date": "2023-02-23T03:02:36.447Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 855421,
+      "margin": 0.14,
+      "percentSlower": 0
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 656635,
+      "margin": 0.23,
+      "percentSlower": 23.24
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 571514,
+      "margin": 0.24,
+      "percentSlower": 33.19
+    }
+  ],
+  "fastest": {
+    "name": "[@scale-codec/core][2.0.0]",
+    "index": 0
+  },
+  "slowest": {
+    "name": "[parity-scale-codec][0.10.2]",
+    "index": 2
+  }
+}

@@ -1,6 +1,6 @@
 import { match } from 'ts-pattern'
-import { version as VERSION_CORE_CURRENT } from '@scale-codec/core/package.json'
-import { version as VERSION_RUNTIME_CURRENT } from '@scale-codec/definition-runtime/package.json'
+import { version as VERSION_CORE_CURRENT } from '../../core/package.json'
+import { version as VERSION_RUNTIME_CURRENT } from '../../definition-runtime/package.json'
 import { devDependencies as thispkgdeps } from '../package.json'
 
 const { '@polkadot/types': VERSION_POLKA, 'scale-codec': VERSION_PARITY } = thispkgdeps

@@ -11,7 +11,7 @@
     "type-check": "tsc --noEmit",
     "clean": "jake clean",
     "publish:all": "jake publish-all",
-    "lint:base": "prettier-eslint \"**/*.{js,ts,vue}\"",
+    "lint:base": "prettier-eslint \"**/*.{js,ts,vue}\" \"**/.vitepress/**/*.{js,ts,vue}\"",
     "lint:check": "pnpm lint:base --list-different",
     "lint:fix": "pnpm lint:base --write",
     "check-code-integrity": "jake check-code-integrity",

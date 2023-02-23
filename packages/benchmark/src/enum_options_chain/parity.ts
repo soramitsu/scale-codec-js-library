@@ -1,5 +1,4 @@
 import * as Scale from 'scale-codec'
-import { defineCodec } from '../codec'
 
 export type Chain = { tag: 'None' } | { tag: 'Some'; some: Chain }
 
@@ -14,7 +13,4 @@ const codec: Scale.Codec<Chain> = Scale.taggedUnion('tag', [
   ),
 ])
 
-export default defineCodec<Chain>({
-  encode: (v) => codec.encode(v),
-  decode: (arr) => codec.decode(arr),
-})
+export default codec

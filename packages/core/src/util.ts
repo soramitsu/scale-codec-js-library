@@ -8,7 +8,9 @@ export class SliceWalkerFinalOffsetError extends Error {
 
 export class WalkerImpl implements Walker {
   public static encode<T>(value: T, encode: Encode<T>): Uint8Array {
-    const walker = new WalkerImpl(new Uint8Array(encode.sizeHint(value)))
+    const sizeHint = encode.sizeHint(value)
+    if (!sizeHint) return new Uint8Array()
+    const walker = new WalkerImpl(new Uint8Array(sizeHint))
     encode(value, walker)
     walker.checkFinalOffset()
     return walker.u8
