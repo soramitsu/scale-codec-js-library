@@ -21,5 +21,8 @@ const chart = computed(() => {
 </script>
 
 <template>
-  <BenchmarkReportChart :title="chart.title" :datasets="chart.datasets" />
+  <BenchmarkReportChart
+    :title="chart.title"
+    :datasets="chart.datasets"
+  />
 </template>

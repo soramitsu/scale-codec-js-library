@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {onUnmounted, ref, watch,} from 'vue'
-import {BarController, BarElement, CategoryScale, Chart, Legend, LinearScale} from 'chart.js'
-import {match} from 'ts-pattern'
+import { onUnmounted, ref, watch } from 'vue'
+import { Chart } from 'chart.js'
 import colorLib from '@kurkle/color'
-import {templateRef, useIntersectionObserver} from '@vueuse/core'
-import {parseCaseName, Pkg} from '../re-benchmark'
-
-Chart.register(BarElement, BarController, CategoryScale, LinearScale, Legend)
+import { templateRef, useIntersectionObserver } from '@vueuse/core'
+import { Pkg, parseCaseName } from '../re-benchmark'
+import { CASE_COLORS } from '../const'
 
 const props = defineProps<{
   title: string
@@ -14,12 +12,7 @@ const props = defineProps<{
 }>()
 
 function caseColor(pkg: Pkg) {
-  return match(pkg)
-    .with('@scale-codec/core', () => '#7c82df')
-    .with('@scale-codec/definition-runtime', () => '#6b70c0')
-    .with('@polkadot/types', () => '#ff8c00')
-    .with('parity-scale-codec', () => '#98cf88')
-    .exhaustive()
+  return CASE_COLORS[pkg]
 }
 
 const canvas = ref<null | HTMLCanvasElement>(null)
@@ -81,9 +74,20 @@ useIntersectionObserver(
 </script>
 
 <template>
-  <div ref="container" class="container" style="height: 344px">
-    <Transition name="fade" appear>
-      <canvas v-if="shouldRenderCanvas" ref="canvas" role="img">
+  <div
+    ref="container"
+    class="container"
+    style="height: 344px"
+  >
+    <Transition
+      name="fade"
+      appear
+    >
+      <canvas
+        v-if="shouldRenderCanvas"
+        ref="canvas"
+        role="img"
+      >
         <p>Your browser does not support the canvas element.</p>
       </canvas>
     </Transition>
