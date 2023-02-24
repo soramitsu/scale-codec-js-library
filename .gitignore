@@ -5,7 +5,5 @@ dist
 .pnpm-debug.log
 tsdoc-metadata.json
 /types
-/etc/api/tmp
 /coverage
 .idea
-/tsc-build

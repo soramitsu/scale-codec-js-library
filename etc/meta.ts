@@ -35,15 +35,14 @@ export const PACKAGE_EXTERNALS: Record<ScaleCodecPackageUnscopedName, string[]> 
   'definition-runtime': getProdDeps(packageRuntime),
 }
 
-export function resolvePackageEntrypoint(
-  name: ScaleCodecPackageUnscopedName,
-  mode: 'ts' | 'js' | 'd.ts' | 'dir',
-): string {
-  return match(mode)
-    .with('dir', () => resolve('packages', name))
-    .with('ts', () => resolve(resolvePackageEntrypoint(name, 'dir'), 'src/lib.ts'))
-    .with('js', 'd.ts', (mode) => resolve(TSC_BUILD_OUTPUT_DIR, name, `src/lib.${mode}`))
-    .exhaustive()
+export function resolvePackageEntrypoint(name: ScaleCodecPackageUnscopedName, mode: 'ts' | 'dir'): string {
+  return (
+    match(mode)
+      .with('dir', () => resolve('packages', name))
+      .with('ts', () => resolve(resolvePackageEntrypoint(name, 'dir'), 'src/lib.ts'))
+      // .with('js', 'd.ts', (mode) => resolve(TSC_BUILD_OUTPUT_DIR, name, `src/lib.${mode}`))
+      .exhaustive()
+  )
 }
 
 export function resolvePackageDist(name: ScaleCodecPackageUnscopedName): string {
@@ -58,22 +57,10 @@ export const DOCS_NAMESPACE_SCHEMA_COMPILED_SNIPPET_PATH = resolve(
 
 export const API_DOCUMENTATION_OUT = resolve('packages/docs/src/api')
 
-export function resolveApiExtractorConfig(pkg: ScaleCodecPackageUnscopedName): string {
-  return path.join(resolvePackageEntrypoint(pkg, 'dir'), 'api-extractor.json')
-}
-
 export const E2E_RUNTIME_ROLLUP_OUTPUT_DIR = resolve('e2e-spa/runtime-rollup')
-
-export const TSC_BUILD_OUTPUT_DIR = resolve('tsc-build')
-
-export const API_EXTRACTOR_TMP_DIR = resolve('etc/api/tmp')
 
 export const E2E_ROOT = resolve('e2e-spa')
 
-export const BUILD_ARTIFACTS_GLOBS = [
-  '**/dist',
-  'tsc-build',
-  'packages/docs/src/api',
-  'etc/api/tmp',
-  'e2e-spa/runtime-rollup',
-].map((x) => resolve(x))
+export const BUILD_ARTIFACTS_GLOBS = ['**/dist', 'packages/docs/src/api', 'e2e-spa/runtime-rollup'].map((x) =>
+  resolve(x),
+)

@@ -6,11 +6,7 @@ import del from 'del'
 import consola from 'consola'
 import definition from './__definition__'
 
-// doing a typing trick to use actual CommonJS build
-// dist/lib.cjs is untyped
-import type * as CompilerLibType from '@scale-codec/definition-compiler'
-import * as compilerLibCjs from '@scale-codec/definition-compiler/dist/lib.cjs'
-const { renderNamespaceDefinition } = compilerLibCjs as typeof CompilerLibType
+import { renderNamespaceDefinition } from '@scale-codec/definition-compiler'
 
 const resolve = (...paths: string[]) => path.resolve(__dirname, '../', ...paths)
 const NAMESPACE_OUT_FILE = resolve('src/namespace.ts')
