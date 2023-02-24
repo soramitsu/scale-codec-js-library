@@ -1,9 +1,6 @@
 {
+  // limited TSConfig for faster typedoc build,
   "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "outDir": "tsc-build",
-    "declaration": true
-  },
   "include": [
     "./packages/core/src",
     "./packages/enum/src",
