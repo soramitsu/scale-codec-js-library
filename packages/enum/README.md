@@ -54,4 +54,4 @@ if (event1.tag === 'MouseClick') {
 
 ## API
 
-[Link](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_enum)
+[`@scale-codec/enum` API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_enum)

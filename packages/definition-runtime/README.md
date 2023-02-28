@@ -14,7 +14,7 @@ npm i @scale-codec/definition-compiler
 
 Usually, this package is paired with the output of the compiler. It is the library that the compiled code imports utilities from.
 
-For advanced usage you can explore the package's [API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_definition_runtime).
+For advanced usage you can explore [`@scale-codec/definition-runtime` API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_definition_runtime).
 
 ## Tracking and Logging
 

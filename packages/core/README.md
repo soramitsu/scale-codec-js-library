@@ -79,4 +79,4 @@ const foo = WalkerImpl.decode(bytes, decodeFoo)
 
 ## API
 
-[Link](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_core)
+[`@scale-codec/core` API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_core)

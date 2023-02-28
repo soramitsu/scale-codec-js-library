@@ -139,5 +139,5 @@ const bytes: Uint8Array = Person.toBuffer(person)
 
 ## API
 
-[Link](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_definition_compiler)
+[`@scale-codec/definition-compiler` API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_definition_compiler)
 
