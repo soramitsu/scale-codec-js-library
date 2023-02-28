@@ -5,8 +5,8 @@ Small tagged-union library for TypeScript.
 ## Features
 
 - **Type narrowing** and **exhaustiveness check** (due to the library following TypeScript's [discriminated union pattern](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions))
-- Type-safe variants creation
-- Type inference on variants creation
+- Creation of type-safe variants
+- Type inference during variant creation
 
 ## Installation
 
