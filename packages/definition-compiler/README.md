@@ -15,7 +15,7 @@ npm i @scale-codec/definition-compiler
 - Support all codecs provided by `@scale-codec/core`
 - Support type aliases
 - Support circular references between types
-- Support importing types from other places
+- Support type imports from other places
 - Each compiled type is opaque (except aliases)
 - Defaults are configurable, including "std" types and the runtime library itself
 

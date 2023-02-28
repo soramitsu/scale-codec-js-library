@@ -12,7 +12,7 @@ npm i @scale-codec/definition-compiler
 
 ## Usage
 
-Usually, it is paired with the output of the compiler - it is the library that the compiled code imports utilities from.
+Usually, this package is paired with the output of the compiler. It is the library that the compiled code imports utilities from.
 
 For advanced usage you can explore the package's [API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_definition_runtime).
 
@@ -20,7 +20,7 @@ For advanced usage you can explore the package's [API](https://soramitsu.github.
 
 All codecs use tracking API. This API could be used to track how decoding (there is no need to track encoding for now) goes, which might be useful for debugging. In order to see what is happening, a _tracker_ should be mounted. No any tracker is mounted by default, and the runtime cost in that case is minimal.
 
-This library provides `Logger`[^1] - a tracker implementation that logs decoding to the console. The following code creates a logger instance and "mounts" it as a current tracker:
+This library provides `Logger`[^1], a tracker implementation that logs decoding to the console. The following code creates a logger instance and "mounts" it as a current tracker:
 
 ```ts
 import { Logger } from '@scale-codec/definition-runtime'
@@ -29,9 +29,9 @@ import { Logger } from '@scale-codec/definition-runtime'
 new Logger().mount()
 ```
 
-[^1]: while `Logger` has quite large amount of code within it (more than the rest of the runtime library), **it is tree-shakeable**, i.e. if you bundle your code which doesn't use `Logger`, it will be tree-shaken.
+[^1]: While `Logger` has quite large amount of code within it (more than the rest of the runtime library), **it is tree-shakeable**, i.e. if you bundle the code that doesn't use `Logger`, it will be tree-shaken.
 
-After it is mounted, it will print debug information about how encoding/decoding is going. Here are screenshots of how it looks in Node.js and in Browser:
+After the tracker is mounted, it will print debug information on how encoding/decoding is going. Here are screenshots of how it looks in Node.js and in Browser:
 
 ![in Node.js](logger-demo/img/node.png)
 
