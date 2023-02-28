@@ -1,4 +1,15 @@
 import path from 'path'
+import packageUtil from '../packages/util/package.json'
+import packageCore from '../packages/core/package.json'
+import packageEnum from '../packages/enum/package.json'
+import packageCompiler from '../packages/definition-compiler/package.json'
+import packageRuntime from '../packages/definition-runtime/package.json'
+import { PackageJson } from 'type-fest'
+import { match } from 'ts-pattern'
+
+function getProdDeps({ dependencies }: PackageJson): string[] {
+  return Object.keys(dependencies ?? {})
+}
 
 export const MONOREPO_ROOT = path.resolve(__dirname, '../')
 
@@ -17,15 +28,22 @@ export function scoped(name: ScaleCodecPackageUnscopedName): string {
 }
 
 export const PACKAGE_EXTERNALS: Record<ScaleCodecPackageUnscopedName, string[]> = {
-  enum: [],
-  util: [],
-  core: [scoped('enum'), scoped('util')],
-  'definition-compiler': ['sort-es', 'immutable', scoped('enum'), scoped('util')],
-  'definition-runtime': [scoped('enum'), scoped('util'), scoped('core'), 'fmt-subs'],
+  enum: getProdDeps(packageEnum),
+  util: getProdDeps(packageUtil),
+  core: getProdDeps(packageCore),
+  'definition-compiler': getProdDeps(packageCompiler),
+  'definition-runtime': getProdDeps(packageRuntime),
 }
 
-export function resolvePackageEntrypoint(name: ScaleCodecPackageUnscopedName): string {
-  return resolve('packages', name, 'src/lib.ts')
+export function resolvePackageEntrypoint(
+  name: ScaleCodecPackageUnscopedName,
+  mode: 'ts' | 'js' | 'd.ts' | 'dir',
+): string {
+  return match(mode)
+    .with('dir', () => resolve('packages', name))
+    .with('ts', () => resolve(resolvePackageEntrypoint(name, 'dir'), 'src/lib.ts'))
+    .with('js', 'd.ts', (mode) => resolve(TSC_BUILD_OUTPUT_DIR, name, `src/lib.${mode}`))
+    .exhaustive()
 }
 
 export function resolvePackageDist(name: ScaleCodecPackageUnscopedName): string {
@@ -38,32 +56,24 @@ export const DOCS_NAMESPACE_SCHEMA_COMPILED_SNIPPET_PATH = resolve(
   'packages/docs/src/snippets/namespace-schema-compiled.ts',
 )
 
-export const API_DOCUMENTER_OUTPUT = resolve('packages/docs/src/api')
+export const API_DOCUMENTATION_OUT = resolve('packages/docs/src/api')
 
 export function resolveApiExtractorConfig(pkg: ScaleCodecPackageUnscopedName): string {
-  return resolve('packages', pkg, 'api-extractor.json')
+  return path.join(resolvePackageEntrypoint(pkg, 'dir'), 'api-extractor.json')
 }
 
 export const E2E_RUNTIME_ROLLUP_OUTPUT_DIR = resolve('e2e-spa/runtime-rollup')
 
-export const TSC_BUILD_OUTPUT_DIR = resolve('types')
-
-/**
- * Resolves to package's `lib.d.ts`
- */
-export function resolvePackageDeclarationEntry(name: ScaleCodecPackageUnscopedName): string {
-  return path.join(TSC_BUILD_OUTPUT_DIR, name, 'src/lib.d.ts')
-}
+export const TSC_BUILD_OUTPUT_DIR = resolve('tsc-build')
 
 export const API_EXTRACTOR_TMP_DIR = resolve('etc/api/tmp')
 
 export const E2E_ROOT = resolve('e2e-spa')
 
 export const BUILD_ARTIFACTS_GLOBS = [
-  'dist',
-  './types',
-  'packages/*/dist',
+  '**/dist',
+  'tsc-build',
   'packages/docs/src/api',
-  'api-extractor/temp',
+  'etc/api/tmp',
   'e2e-spa/runtime-rollup',
 ].map((x) => resolve(x))

@@ -4,7 +4,5 @@ dist
 dist-ssr
 *.local
 
-cypress/*
-!cypress/integration
 src/namespace.ts
 runtime-rollup

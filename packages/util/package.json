@@ -11,22 +11,20 @@
     "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
   },
   "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
-  "main": "src/lib.ts",
-  "publishConfig": {
-    "main": "./dist/lib.cjs",
-    "module": "./dist/lib.mjs",
-    "types": "./dist/lib.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/lib.d.ts",
-        "import": "./dist/lib.mjs",
-        "require": "./dist/lib.cjs"
-      },
-      "./*": "./*"
-    }
+  "main": "./dist/lib.cjs",
+  "module": "./dist/lib.mjs",
+  "types": "./dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.mjs",
+      "require": "./dist/lib.cjs"
+    },
+    "./*": "./*"
   },
-  "files": [
-    "dist",
-    "CHANGELOG.md"
-  ]
+  "typedoc": {
+    "entryPoint": "./src/lib.ts",
+    "tsconfig": "../../tsconfig.build.json"
+  },
+  "files": ["dist", "CHANGELOG.md"]
 }

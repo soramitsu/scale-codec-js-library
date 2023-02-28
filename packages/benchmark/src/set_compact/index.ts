@@ -1,7 +1,6 @@
 import { add, complete, cycle, suite } from 'benny'
 import { saveCustom } from '../shared'
 import core from './core'
-import coreV4 from './core-v4'
 import runtime from './runtime'
 import { factory } from './util'
 
@@ -17,9 +16,6 @@ export default async function () {
     add('runtime', () => {
       runtime.encode(VALUE)
     }),
-    add('core@0.4', () => {
-      coreV4.encode(VALUE)
-    }),
     cycle(),
     complete(),
     saveCustom('set-compact-encode'),
@@ -32,9 +28,6 @@ export default async function () {
     }),
     add('runtime', () => {
       runtime.decode(ENCODED)
-    }),
-    add('core 0.4', () => {
-      coreV4.decode(ENCODED)
     }),
     cycle(),
     complete(),

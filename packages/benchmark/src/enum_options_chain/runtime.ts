@@ -1,23 +1,14 @@
-import { Codec, RustOption, createOptionCodec, createStructCodec, dynCodec } from '@scale-codec/definition-runtime'
+import { Codec, EnumBox, RustOption, createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
 import { defineCodec } from '../types'
 
-export type Chain = {
-  inner: {
-    enum: RustOption<Chain>
-  }
-}
+export type Chain = EnumBox<RustOption<Chain>>
 
-const ChainCodec: Codec<Chain> = createStructCodec('Chain', [
-  [
-    'inner',
-    createOptionCodec<Chain>(
-      'OptionChain',
-      dynCodec(() => ChainCodec),
-    ),
-  ],
-])
+const Chain: Codec<Chain> = createOptionCodec(
+  'Chain',
+  dynCodec(() => Chain),
+)
 
 export default defineCodec<Chain>({
-  encode: (x) => ChainCodec.toBuffer(x),
-  decode: (x) => ChainCodec.fromBuffer(x),
+  encode: (x) => Chain.toBuffer(x),
+  decode: (x) => Chain.fromBuffer(x),
 })

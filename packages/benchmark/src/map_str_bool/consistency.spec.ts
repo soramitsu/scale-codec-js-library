@@ -1,12 +1,11 @@
 import { describe, expect, test } from 'vitest'
 import { assertAllCodecsDecodeTheSame, assertAllCodecsEncodeTheSame } from '../../test/util'
 import core from './core'
-import coreV04 from './core-v04'
 import polka from './polka'
 import runtime from './runtime'
 import { factory, factoryPolka } from './util'
 
-const CODECS = { core, coreV04, runtime }
+const CODECS = { core, runtime }
 
 describe.concurrent('Consistency', () => {
   test('Encode is consistent', () => {

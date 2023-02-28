@@ -3,9 +3,8 @@ packages/definition-compiler/tests/samples
 pnpm-lock.yaml
 CHANGELOG.md
 dist
-/types
+/tsc-build
 packages/rust-samples
 e2e-spa/runtime-rollup
 e2e-spa/src/namespace.ts
 packages/docs/src/api
-namespace-schema-compiled.ts

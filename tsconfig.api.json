@@ -1,6 +1,9 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["./types"],
+  "compilerOptions": {
+    "paths": {}
+  },
+  "include": ["./tsc-build"],
   // override exclude from the original config
   "exclude": []
 }

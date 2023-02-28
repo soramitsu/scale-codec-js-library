@@ -2,13 +2,19 @@
 
 Small tagged-union library for TypeScript.
 
-[//]: # 'TODO'
-[//]: # '[Documentation](https://soramitsu.github.io/scale-codec-js-library/guide/enum)'
-
 ## Features
 
 - **Type narrowing** and **exhaustiveness check** (due to the library following TypeScript's [discriminated union pattern](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions))
-- Type-safe variants creation with type inference
+- Creation of type-safe variants
+- Type inference during variant creation
+
+## Installation
+
+Available on NPM:
+
+```shell
+npm i @scale-codec/enum
+```
 
 ## Example
 
@@ -45,3 +51,7 @@ if (event1.tag === 'MouseClick') {
   const { x, y } = event1.content
 }
 ```
+
+## API
+
+[`@scale-codec/enum` API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_enum)

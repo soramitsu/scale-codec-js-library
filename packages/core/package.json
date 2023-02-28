@@ -3,16 +3,7 @@
   "version": "2.0.0",
   "description": "Low-level tools to perform serialization and deserialization via SCALE spec",
   "license": "Apache-2.0",
-  "keywords": [
-    "SCALE",
-    "codec",
-    "binary",
-    "parity-scale-codec",
-    "serialization",
-    "typescript",
-    "rust",
-    "encoding"
-  ],
+  "keywords": ["SCALE", "codec", "binary", "parity-scale-codec", "serialization", "typescript", "rust", "encoding"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
@@ -21,28 +12,26 @@
     "url": "https://github.com/soramitsu/scale-codec-js-library/issues"
   },
   "homepage": "https://soramitsu.github.io/scale-codec-js-library/",
-  "main": "src/lib.ts",
   "engines": {
     "node": ">=14.5.0"
   },
   "engineStrict": true,
-  "publishConfig": {
-    "main": "./dist/lib.cjs",
-    "module": "./dist/lib.mjs",
-    "types": "./dist/lib.d.ts",
-    "exports": {
-      ".": {
-        "types": "./dist/lib.d.ts",
-        "import": "./dist/lib.mjs",
-        "require": "./dist/lib.cjs"
-      },
-      "./*": "./*"
-    }
+  "main": "./dist/lib.cjs",
+  "module": "./dist/lib.mjs",
+  "types": "./dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "import": "./dist/lib.mjs",
+      "require": "./dist/lib.cjs"
+    },
+    "./*": "./*"
   },
-  "files": [
-    "dist",
-    "CHANGELOG.md"
-  ],
+  "typedoc": {
+    "entryPoint": "./src/lib.ts",
+    "tsconfig": "../../tsconfig.build.json"
+  },
+  "files": ["dist", "CHANGELOG.md"],
   "dependencies": {
     "@scale-codec/enum": "workspace:^2.0.0",
     "@scale-codec/util": "workspace:^1.1.1"

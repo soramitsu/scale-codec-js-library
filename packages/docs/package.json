@@ -5,25 +5,28 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "serve": "vitepress serve",
-    "logger-demo:vite": "vite dev logger-demo",
-    "logger-demo:node": "tsx logger-demo/main"
+    "serve": "vitepress serve"
+  },
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@algolia/client-search"
+      ]
+    }
   },
   "devDependencies": {
     "@scale-codec/benchmark": "workspace:*",
     "@scale-codec/definition-compiler": "workspace:*",
     "@scale-codec/definition-runtime": "workspace:*",
-    "@types/object-inspect": "^1.8.1",
-    "@vueuse/core": "^7.6.1",
+    "@vueuse/core": "^9.12.0",
     "chart.js": "^3.7.1",
-    "immutable": "^4.1.0",
+    "immutable": "^4.2.4",
     "sass": "^1.49.8",
-    "shiki": "^0.10.1",
-    "tsx": "^3.12.3",
-    "vite": "^3.1.0",
-    "vite-plugin-windicss": "^1.7.0",
-    "vitepress": "^0.22.0",
-    "vue": "^3.2.36",
+    "vite": "^4.1.1",
+    "vite-plugin-inspect": "^0.7.15",
+    "vite-plugin-windicss": "^1.8.10",
+    "vitepress": "1.0.0-alpha.45",
+    "vue": "^3.2.47",
     "windicss": "^3.4.3"
   }
 }

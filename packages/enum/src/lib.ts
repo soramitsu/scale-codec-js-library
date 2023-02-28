@@ -88,7 +88,7 @@ export type RustOption<T> = Enumerate<{ None: []; Some: [T] }>
  * @example
  *
  * ```ts
- * const file: RustResult<string, Error> = ('Ok', 'file contents')
+ * const file: RustResult<string, Error> = variant('Ok', 'file contents')
  * ```
  */
 export type RustResult<Ok, Err> = Enumerate<{ Ok: [Ok]; Err: [Err] }>
