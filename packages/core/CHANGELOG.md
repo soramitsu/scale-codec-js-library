@@ -1,11 +1,22 @@
 # @scale-codec/core
 
+## 2.0.1
+
+### Patch Changes
+
+- c3d70a8: **docs**: update README
+- c3d70a8: **fix**: put `type` mark for type re-exports from `@scale-codec/enum`
+- Updated dependencies [c3d70a8]
+- Updated dependencies [c3d70a8]
+  - @scale-codec/enum@2.1.1
+  - @scale-codec/util@1.1.2
+
 ## 2.0.0
 
 ### Major Changes
 
 - 7e81bbc: **refactor**: follow the major update of the re-exported `@scale-codec/enum` lib. Update enum-related function signatures:
-  - `encodeEnum` / `encodeEnumSizeHint` / `decodeEnum` 
+  - `encodeEnum` / `encodeEnumSizeHint` / `decodeEnum`
   - `createEnumEncoder` / `createEnumDecoder`
   - `createOptionEncoder` / `createOptionDecoder`
   - `createResultEncoder` / `createResultDecoder`

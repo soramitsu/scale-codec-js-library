@@ -1,5 +1,11 @@
 # @scale-codec/util
 
+## 1.1.2
+
+### Patch Changes
+
+- c3d70a8: **docs**: update README
+
 ## 1.1.1
 
 ### Patch Changes
