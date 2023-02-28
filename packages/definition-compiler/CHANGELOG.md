@@ -1,5 +1,16 @@
 # @scale-codec/definition-compiler
 
+## 4.0.1
+
+### Patch Changes
+
+- c3d70a8: **chore**: bump `immutable` and `ts-pattern`
+- c3d70a8: **docs**: update README
+- Updated dependencies [c3d70a8]
+- Updated dependencies [c3d70a8]
+  - @scale-codec/enum@2.1.1
+  - @scale-codec/util@1.1.2
+
 ## 4.0.0
 
 ### Major Changes

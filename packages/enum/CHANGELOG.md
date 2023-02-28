@@ -1,5 +1,12 @@
 # @scale-codec/enum
 
+## 2.1.1
+
+### Patch Changes
+
+- c3d70a8: **docs**: fix doc comment for `RustResult`
+- c3d70a8: **docs**: update README
+
 ## 2.1.0
 
 ### Minor Changes
