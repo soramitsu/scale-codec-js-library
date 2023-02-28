@@ -18,7 +18,7 @@ For advanced usage you can explore the package's [API](https://soramitsu.github.
 
 ## Tracking and Logging
 
-All codecs use tracking API. This API could be used to track how decoding (there is no need to track encoding for now) goes, which might be useful for debugging. In order to see what is happening, a _tracker_ should be mounted. No any tracker is mounted by default, and the runtime cost in that case is minimal.
+All codecs use tracking API. For now, there is no need to track encoding, but you can use this API to track the decoding process. This might be useful for debugging purposes. To see what is happening, a _tracker_ should be mounted. Trackers are not mounted by default, and the runtime cost in that case is minimal.
 
 This library provides `Logger`[^1], a tracker implementation that logs decoding to the console. The following code creates a logger instance and "mounts" it as a current tracker:
 
