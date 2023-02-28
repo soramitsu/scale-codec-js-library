@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/definition-compiler",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "SCALE-codec types namespace definition compiler",
   "keywords": ["SCALE", "scale-codec", "typescript", "compiler", "namespace"],
   "license": "Apache-2.0",
@@ -29,7 +29,7 @@
   },
   "files": ["dist", "CHANGELOG.md"],
   "dependencies": {
-    "@scale-codec/enum": "workspace:^2.0.0",
+    "@scale-codec/enum": "workspace:^2.1.0",
     "@scale-codec/util": "workspace:^1.1.1",
     "immutable": "^4.2.4",
     "sort-es": "^1.4.6",
@@ -37,7 +37,7 @@
     "ts-pattern": "^4.1.4"
   },
   "devDependencies": {
-    "@scale-codec/definition-runtime": "workspace:^3.0.0",
+    "@scale-codec/definition-runtime": "workspace:^4.0.0",
     "jest-immutable-matchers": "^3.0.0"
   },
   "engines": {

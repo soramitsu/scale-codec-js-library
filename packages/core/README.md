@@ -53,11 +53,11 @@ const foo = WalkerImpl.decode(bytes, decodeFoo)
 
 | Spec      | JS Type             | Details                                                                                                                                                           |
 | --------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Int       | `number`, `bigint`  | signed/unsigned, 8/16/32/64/128/etc bits. For ints with bits less than or equal 32 both `number` & `bigint` could be used, for 64+ bits integers - only `bigint`. |
+| Int       | `number`, `bigint`  | signed/unsigned, 8/16/32/64/128/etc bits. For integers with 64+ bits, you can only use `bigint`. For integers with less bits, you can use both `number` and `bigint`. |
 | Compact   | `number`, `bigint`  | -                                                                                                                                                                 |
 | String    | `string`            | -                                                                                                                                                                 |
 | Bool      | `boolean`           | -                                                                                                                                                                 |
-| Unit type | `null`, `undefined` | `()` in Rust. Unfortunately, JavaScript doesn't have zero-cost abstractions, so this codec could be used to handle it.                                            |
+| Unit type | `null`, `undefined` | `()` in Rust. JavaScript doesn't have zero-cost abstractions, so this codec could be used to handle them.                                            |
 
 **Higher-order:**
 
@@ -73,10 +73,10 @@ const foo = WalkerImpl.decode(bytes, decodeFoo)
 
 **Special:**
 
-- Efficient codec for arrays of bytes, or `[u8; x]` in Rust and `Uint8Array` in JS
-- Efficient codec for vectors of bytes, or `Vec<u8>` in Rust and `Uint8Array` in JS
+- Efficient codec for arrays of bytes (`[u8; x]` in Rust and `Uint8Array` in JS)
+- Efficient codec for vectors of bytes (`Vec<u8>` in Rust and `Uint8Array` in JS)
 - `OptionBool`
 
 ## API
 
-[Link](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_core)
+[`@scale-codec/core` API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_core)

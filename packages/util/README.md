@@ -12,4 +12,4 @@ npm i @scale-codec/util
 
 ## API
 
-[Link](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_util)
+[`@scale-codec/util` API](https://soramitsu.github.io/scale-codec-js-library/api/modules/scale_codec_util)
