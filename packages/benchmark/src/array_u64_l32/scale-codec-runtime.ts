@@ -1,5 +1,5 @@
 import { U64, createArrayCodec } from '@scale-codec/definition-runtime'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 type ArrU64L32 = bigint[]
 

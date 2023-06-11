@@ -1,5 +1,4 @@
 dist
-/tsc-build
 packages/definition-compiler/tests/samples
 e2e-spa/src/namespace.ts
 e2e-spa/runtime-rollup

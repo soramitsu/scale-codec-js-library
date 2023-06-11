@@ -13,9 +13,10 @@
     "resolveJsonModule": true,
     "paths": {
       "@scale-codec/*": ["./packages/*/src/lib.ts"]
-    }
+    },
+    "types": ["vitest/importMeta"]
   },
   // Include every .ts file in the project, for development
   // But exclude this:
-  "exclude": ["**/dist", "./tsc-build", "./e2e-spa", "./packages/namespace*/**"]
+  "exclude": ["**/dist", "./e2e-spa", "./packages/namespace*/**"]
 }

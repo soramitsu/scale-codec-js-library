@@ -15,18 +15,15 @@
     }
   },
   "devDependencies": {
+    "@kurkle/color": "^0.3.2",
     "@scale-codec/benchmark": "workspace:*",
     "@scale-codec/definition-compiler": "workspace:*",
     "@scale-codec/definition-runtime": "workspace:*",
     "@vueuse/core": "^9.12.0",
-    "chart.js": "^3.7.1",
-    "immutable": "^4.2.4",
+    "chart.js": "^4.2.1",
     "sass": "^1.49.8",
-    "vite": "^4.1.1",
-    "vite-plugin-inspect": "^0.7.15",
-    "vite-plugin-windicss": "^1.8.10",
-    "vitepress": "1.0.0-alpha.45",
-    "vue": "^3.2.47",
-    "windicss": "^3.4.3"
+    "vite": "^4.1.4",
+    "vitepress": "1.0.0-alpha.47",
+    "vue": "^3.2.47"
   }
 }

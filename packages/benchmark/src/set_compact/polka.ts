@@ -1,5 +1,5 @@
 import { TypeRegistry } from '@polkadot/types'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 export const reg = new TypeRegistry()
 

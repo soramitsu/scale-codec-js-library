@@ -1,11 +1,21 @@
-import { WalkerImpl, createStructDecoder, createStructEncoder, decodeBool, encodeBool } from '@scale-codec/core'
-import { defineCodec } from '../types'
+import {
+  Decode,
+  Encode,
+  WalkerImpl,
+  createStructDecoder,
+  createStructEncoder,
+  decodeBool,
+  encodeBool,
+} from '@scale-codec/core'
+import { defineCodec } from '../codec'
 import { factory } from './util'
 
-const encoder = createStructEncoder(Object.keys(factory()).map((key) => [key, encodeBool]))
-const decoder = createStructDecoder(Object.keys(factory()).map((key) => [key, decodeBool]))
+type Rec = Record<string, boolean>
 
-export default defineCodec({
+const encoder: Encode<Rec> = createStructEncoder(Object.keys(factory()).map((key) => [key, encodeBool]))
+const decoder: Decode<Rec> = createStructDecoder(Object.keys(factory()).map((key) => [key, decodeBool]))
+
+export default defineCodec<Rec>({
   encode: (val) => WalkerImpl.encode(val, encoder),
   decode: (input) => WalkerImpl.decode(input, decoder),
 })

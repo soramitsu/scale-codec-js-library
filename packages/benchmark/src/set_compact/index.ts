@@ -1,36 +1,38 @@
-import { add, complete, cycle, suite } from 'benny'
-import { saveCustom } from '../shared'
+import { add } from 'benny'
+import { caseName, encodeDecodeSuitePair } from '../bench-util'
 import core from './core'
 import runtime from './runtime'
 import { factory } from './util'
+import parity from './parity'
 
 export default async function () {
   const VALUE = factory()
   const ENCODED = core.encode(VALUE)
 
-  await suite(
-    'Encode Set<Compact> (with 50 entries)',
-    add('core', () => {
-      core.encode(VALUE)
-    }),
-    add('runtime', () => {
-      runtime.encode(VALUE)
-    }),
-    cycle(),
-    complete(),
-    saveCustom('set-compact-encode'),
-  )
-
-  await suite(
-    'Decode Set<Compact> with 50 entries',
-    add('core', () => {
-      core.decode(ENCODED)
-    }),
-    add('runtime', () => {
-      runtime.decode(ENCODED)
-    }),
-    cycle(),
-    complete(),
-    saveCustom('set-compact-decode'),
+  await encodeDecodeSuitePair(
+    'Set<Compact> with 50 entries',
+    'set-compact',
+    [
+      add(caseName('core'), () => {
+        core.encode(VALUE)
+      }),
+      add(caseName('runtime'), () => {
+        runtime.encode(VALUE)
+      }),
+      add(caseName('parity'), () => {
+        parity.encode(VALUE)
+      }),
+    ],
+    [
+      add(caseName('core'), () => {
+        core.decode(ENCODED)
+      }),
+      add(caseName('runtime'), () => {
+        runtime.decode(ENCODED)
+      }),
+      add(caseName('parity'), () => {
+        parity.decode(ENCODED)
+      }),
+    ],
   )
 }

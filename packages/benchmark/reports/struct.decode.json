@@ -1,0 +1,39 @@
+{
+  "name": "Struct (decode)",
+  "date": "2023-02-22T00:58:44.867Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 900093,
+      "margin": 0.17,
+      "percentSlower": 20.16
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 647111,
+      "margin": 0.63,
+      "percentSlower": 42.6
+    },
+    {
+      "name": "[@polkadot/types][9.14.2]",
+      "ops": 266046,
+      "margin": 0.13,
+      "percentSlower": 76.4
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 1127429,
+      "margin": 0.14,
+      "percentSlower": 0
+    }
+  ],
+  "fastest": {
+    "name": "[parity-scale-codec][0.10.2]",
+    "index": 3
+  },
+  "slowest": {
+    "name": "[@polkadot/types][9.14.2]",
+    "index": 2
+  }
+}

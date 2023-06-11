@@ -1,5 +1,5 @@
 import { WalkerImpl, createSetDecoder, createSetEncoder, decodeCompact, encodeCompact } from '@scale-codec/core'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 const encoder = createSetEncoder(encodeCompact)
 const decoder = createSetDecoder(decodeCompact)

@@ -4,10 +4,11 @@ import core from './core'
 import polka from './polka'
 import runtime from './runtime'
 import { factory, factoryPolka } from './util'
+import parity from './parity'
 
-const CODECS = { core, runtime }
+const CODECS = { core, runtime, parity }
 
-describe.concurrent('Consistency', () => {
+describe('Consistency', () => {
   test('Encode is consistent', () => {
     assertAllCodecsEncodeTheSame(factory(), CODECS)
   })

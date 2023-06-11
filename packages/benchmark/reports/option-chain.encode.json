@@ -1,0 +1,39 @@
+{
+  "name": "Option Chain (encode)",
+  "date": "2023-02-22T00:57:39.125Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 663645,
+      "margin": 0.3,
+      "percentSlower": 0
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 623662,
+      "margin": 0.11,
+      "percentSlower": 6.02
+    },
+    {
+      "name": "[@polkadot/types][9.14.2]",
+      "ops": 139755,
+      "margin": 0.15,
+      "percentSlower": 78.94
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 62538,
+      "margin": 0.3,
+      "percentSlower": 90.58
+    }
+  ],
+  "fastest": {
+    "name": "[@scale-codec/core][2.0.0]",
+    "index": 0
+  },
+  "slowest": {
+    "name": "[parity-scale-codec][0.10.2]",
+    "index": 3
+  }
+}

@@ -1,5 +1,5 @@
 import { Enum, TypeRegistry } from '@polkadot/types'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 export const registry = new TypeRegistry()
 

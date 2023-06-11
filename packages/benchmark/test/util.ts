@@ -1,5 +1,6 @@
 import { expect } from 'vitest'
-import { CodecSimplified } from '../src/types'
+import { CodecSimplified } from '../src/codec'
+import { toHex } from '@scale-codec/util'
 
 export function assertAllKeysHaveTheSameValue<T>(rec: Record<string, T>, value?: T) {
   const expected: Record<string, T> = {}
@@ -17,7 +18,7 @@ export function assertAllKeysHaveTheSameValue<T>(rec: Record<string, T>, value?:
 
 export function assertAllCodecsEncodeTheSame<T>(value: T, codecs: Record<string, CodecSimplified<T>>) {
   assertAllKeysHaveTheSameValue(
-    Object.fromEntries(Object.entries(codecs).map(([name, codec]) => [name, codec.encode(value)])),
+    Object.fromEntries(Object.entries(codecs).map(([name, codec]) => [name, toHex(codec.encode(value))])),
   )
 }
 

@@ -7,7 +7,7 @@ import {
   createOptionEncoder,
   encodeFactory,
 } from '@scale-codec/core'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 export interface Chain {
   enum: RustOption<Chain>

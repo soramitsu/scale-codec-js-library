@@ -1,0 +1,33 @@
+{
+  "name": "Set<Compact> with 50 entries (encode)",
+  "date": "2023-02-22T00:56:17.201Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 26299,
+      "margin": 0.25,
+      "percentSlower": 0.39
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 26403,
+      "margin": 0.12,
+      "percentSlower": 0
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 25031,
+      "margin": 0.17,
+      "percentSlower": 5.2
+    }
+  ],
+  "fastest": {
+    "name": "[@scale-codec/definition-runtime][3.0.0]",
+    "index": 1
+  },
+  "slowest": {
+    "name": "[parity-scale-codec][0.10.2]",
+    "index": 2
+  }
+}

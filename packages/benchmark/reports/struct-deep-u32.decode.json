@@ -1,0 +1,33 @@
+{
+  "name": "Deep struct with a single u32 value (decode)",
+  "date": "2023-02-23T03:03:08.978Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 855433,
+      "margin": 0.17,
+      "percentSlower": 0
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 646283,
+      "margin": 0.47,
+      "percentSlower": 24.45
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 582713,
+      "margin": 0.24,
+      "percentSlower": 31.88
+    }
+  ],
+  "fastest": {
+    "name": "[@scale-codec/core][2.0.0]",
+    "index": 0
+  },
+  "slowest": {
+    "name": "[parity-scale-codec][0.10.2]",
+    "index": 2
+  }
+}

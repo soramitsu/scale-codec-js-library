@@ -31,7 +31,7 @@
   },
   "typedoc": {
     "entryPoint": "./src/lib.ts",
-    "tsconfig": "../../tsconfig.build.json"
+    "tsconfig": "../../tsconfig.typedoc.json"
   },
   "files": [
     "dist",

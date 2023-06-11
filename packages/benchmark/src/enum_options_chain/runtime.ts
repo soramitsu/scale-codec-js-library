@@ -1,5 +1,5 @@
 import { Codec, EnumBox, RustOption, createOptionCodec, dynCodec } from '@scale-codec/definition-runtime'
-import { defineCodec } from '../types'
+import { defineCodec } from '../codec'
 
 export type Chain = EnumBox<RustOption<Chain>>
 

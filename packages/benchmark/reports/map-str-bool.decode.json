@@ -1,0 +1,39 @@
+{
+  "name": "Map<string, boolean> (decode)",
+  "date": "2023-02-22T00:57:17.439Z",
+  "version": null,
+  "results": [
+    {
+      "name": "[@scale-codec/core][2.0.0]",
+      "ops": 59170,
+      "margin": 0.16,
+      "percentSlower": 0
+    },
+    {
+      "name": "[@scale-codec/definition-runtime][3.0.0]",
+      "ops": 59004,
+      "margin": 0.12,
+      "percentSlower": 0.28
+    },
+    {
+      "name": "[@polkadot/types][9.14.2]",
+      "ops": 11442,
+      "margin": 0.13,
+      "percentSlower": 80.66
+    },
+    {
+      "name": "[parity-scale-codec][0.10.2]",
+      "ops": 34782,
+      "margin": 0.53,
+      "percentSlower": 41.22
+    }
+  ],
+  "fastest": {
+    "name": "[@scale-codec/core][2.0.0]",
+    "index": 0
+  },
+  "slowest": {
+    "name": "[@polkadot/types][9.14.2]",
+    "index": 2
+  }
+}

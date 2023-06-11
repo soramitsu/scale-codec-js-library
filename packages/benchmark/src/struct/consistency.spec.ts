@@ -1,17 +1,14 @@
 import { describe, test } from 'vitest'
-import { assertAllKeysHaveTheSameValue } from '../../test/util'
+import { assertAllCodecsEncodeTheSame, assertAllKeysHaveTheSameValue } from '../../test/util'
 import polka from './polka'
 import core from './core'
 import runtime from './runtime'
 import { factory } from './util'
+import parity from './parity'
 
-describe.concurrent('Consistency', () => {
+describe('Consistency', () => {
   test('Encode is consistent', () => {
-    assertAllKeysHaveTheSameValue({
-      core: core.encode(factory()),
-      runtime: runtime.encode(factory()),
-      polka: polka.encode(factory() as any),
-    })
+    assertAllCodecsEncodeTheSame(factory(), { core, runtime, polka, parity })
   })
 
   test('Decode is consistent', () => {
@@ -21,6 +18,7 @@ describe.concurrent('Consistency', () => {
       core: core.decode(ENCODED),
       runtime: runtime.decode(ENCODED),
       polka: polka.decode(ENCODED).toHuman(),
+      parity: parity.decode(ENCODED),
     })
   })
 })

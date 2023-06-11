@@ -1,0 +1,12 @@
+{
+  // limited TSConfig for faster typedoc build,
+  "extends": "./tsconfig.json",
+  "include": [
+    "./packages/core/src",
+    "./packages/enum/src",
+    "./packages/definition-compiler/src",
+    "./packages/definition-runtime/src",
+    "./packages/util/src"
+  ],
+  "exclude": ["**/*.spec.ts", "**/__tests__"]
+}
