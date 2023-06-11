@@ -1,8 +1,12 @@
 {
   "name": "@scale-codec/enum",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Simple JavaScript abstraction around Rust Enums",
-  "keywords": ["rust", "enum", "typescript"],
+  "keywords": [
+    "rust",
+    "enum",
+    "typescript"
+  ],
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -27,7 +31,10 @@
     "entryPoint": "./src/lib.ts",
     "tsconfig": "../../tsconfig.typedoc.json"
   },
-  "files": ["dist", "CHANGELOG.md"],
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "devDependencies": {
     "ts-pattern": "^4.1.4"
   }

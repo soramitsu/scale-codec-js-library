@@ -1,9 +1,18 @@
 {
   "name": "@scale-codec/core",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Low-level tools to perform serialization and deserialization via SCALE spec",
   "license": "Apache-2.0",
-  "keywords": ["SCALE", "codec", "binary", "parity-scale-codec", "serialization", "typescript", "rust", "encoding"],
+  "keywords": [
+    "SCALE",
+    "codec",
+    "binary",
+    "parity-scale-codec",
+    "serialization",
+    "typescript",
+    "rust",
+    "encoding"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/soramitsu/scale-codec-js-library.git"
@@ -31,10 +40,13 @@
     "entryPoint": "./src/lib.ts",
     "tsconfig": "../../tsconfig.typedoc.json"
   },
-  "files": ["dist", "CHANGELOG.md"],
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "dependencies": {
-    "@scale-codec/enum": "workspace:^2.0.0",
-    "@scale-codec/util": "workspace:^1.1.1"
+    "@scale-codec/enum": "workspace:^2.1.1",
+    "@scale-codec/util": "workspace:^1.1.2"
   },
   "devDependencies": {
     "hada": "^0.0.8",

@@ -63,8 +63,8 @@ importers:
   e2e-spa:
     specifiers:
       '@esbuild-kit/cjs-loader': ^2.4.2
-      '@scale-codec/definition-compiler': workspace:^4.0.0
-      '@scale-codec/definition-runtime': workspace:^4.0.0
+      '@scale-codec/definition-compiler': workspace:^4.0.1
+      '@scale-codec/definition-runtime': workspace:^4.0.1
       '@types/jake': ^0.0.33
       '@vitejs/plugin-vue': ^4.0.0
       chalk: ^4.1.2
@@ -130,8 +130,8 @@ importers:
 
   packages/core:
     specifiers:
-      '@scale-codec/enum': workspace:^2.0.0
-      '@scale-codec/util': workspace:^1.1.1
+      '@scale-codec/enum': workspace:^2.1.1
+      '@scale-codec/util': workspace:^1.1.2
       hada: ^0.0.8
       type-fest: ^3.5.5
     dependencies:
@@ -143,9 +143,9 @@ importers:
 
   packages/definition-compiler:
     specifiers:
-      '@scale-codec/definition-runtime': workspace:^4.0.0
-      '@scale-codec/enum': workspace:^2.1.0
-      '@scale-codec/util': workspace:^1.1.1
+      '@scale-codec/definition-runtime': workspace:^4.0.1
+      '@scale-codec/enum': workspace:^2.1.1
+      '@scale-codec/util': workspace:^1.1.2
       immutable: ^4.2.4
       jest-immutable-matchers: ^3.0.0
       sort-es: ^1.4.6
@@ -164,9 +164,9 @@ importers:
 
   packages/definition-runtime:
     specifiers:
-      '@scale-codec/core': workspace:^2.0.0
-      '@scale-codec/definition-compiler': workspace:^4.0.0
-      '@scale-codec/util': workspace:^1.1.1
+      '@scale-codec/core': workspace:^2.0.1
+      '@scale-codec/definition-compiler': workspace:^4.0.1
+      '@scale-codec/util': workspace:^1.1.2
       fmt-subs: ^1.1.1
       tsx: ^3.12.3
       vite: ^4.1.1

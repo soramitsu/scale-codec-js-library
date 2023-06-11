@@ -1,6 +1,6 @@
 {
   "name": "@scale-codec/util",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Shared @scale-codec utilities",
   "license": "Apache-2.0",
   "repository": {
@@ -26,5 +26,8 @@
     "entryPoint": "./src/lib.ts",
     "tsconfig": "../../tsconfig.typedoc.json"
   },
-  "files": ["dist", "CHANGELOG.md"]
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ]
 }
