@@ -47,7 +47,7 @@
   "devDependencies": {
     "@scale-codec/definition-compiler": "workspace:^4.0.1",
     "tsx": "^3.12.3",
-    "vite": "^4.1.1"
+    "vite": "^4.1.5"
   },
   "scripts": {
     "logger-demo:vite": "vite dev logger-demo",
