@@ -22,7 +22,7 @@
     "chart.js": "^3.7.1",
     "immutable": "^4.2.4",
     "sass": "^1.49.8",
-    "vite": "^4.1.1",
+    "vite": "^4.1.5",
     "vite-plugin-inspect": "^0.7.15",
     "vite-plugin-windicss": "^1.8.10",
     "vitepress": "1.0.0-alpha.45",
